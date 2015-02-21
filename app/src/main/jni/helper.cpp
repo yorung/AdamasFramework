@@ -35,9 +35,8 @@ double GetTime()
 	return (double)t.tv_sec + (double)t.tv_nsec / 1000000000;
 }
 #endif
-/*
+
 float Random()
 {
 	return (float)rand() / RAND_MAX;
 }
-*/
