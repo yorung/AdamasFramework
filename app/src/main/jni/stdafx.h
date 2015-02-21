@@ -1,15 +1,15 @@
 #ifdef _MSC_VER
 #define NOMINMAX
 #include <Windows.h>
+#include "wgl_grabber_gen.h"
 #else
 #include <jni.h>
 #include <android/log.h>
 extern JNIEnv* jniEnv;
 extern const char* boundJavaClass;
-#endif
-
 #include <gles2/gl2.h>
 #include <gles2/gl2ext.h>
+#endif
 
 #include <vector>
 #include <algorithm>
@@ -25,3 +25,6 @@ extern const char* boundJavaClass;
 #include <ctype.h>
 
 #include "hub.h"
+#include "helper.h"
+#include "helper_gldx.h"
+#include "helper_text.h"
