@@ -1,0 +1,27 @@
+#ifdef _MSC_VER
+#define NOMINMAX
+#include <Windows.h>
+#else
+#include <jni.h>
+#include <android/log.h>
+extern JNIEnv* jniEnv;
+extern const char* boundJavaClass;
+#endif
+
+#include <gles2/gl2.h>
+#include <gles2/gl2ext.h>
+
+#include <vector>
+#include <algorithm>
+#include <string>
+#include <map>
+#include <deque>
+
+#define _USE_MATH_DEFINES
+#include <math.h>
+#include <assert.h>
+#include <time.h>
+#include <stdint.h>
+#include <ctype.h>
+
+#include "hub.h"

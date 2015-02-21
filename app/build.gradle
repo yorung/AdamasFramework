@@ -10,6 +10,14 @@ android {
         targetSdkVersion 21
         versionCode 1
         versionName "1.0"
+        ndk {
+            moduleName 'AdamasNative'
+            cFlags "-std=c++11"
+            ldLibs "log"
+            ldLibs "GLESv2"
+            abiFilters "armeabi", "mips", "x86"
+            stl "stlport_static"
+        }
     }
     buildTypes {
         release {
