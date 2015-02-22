@@ -11,14 +11,20 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\app\src\main\jni\helper.cpp" />
-    <ClCompile Include="..\app\src\main\jni\helper_gldx.cpp" />
-    <ClCompile Include="..\app\src\main\jni\hub.cpp" />
-    <ClCompile Include="..\app\src\main\jni\stdafx.cpp">
+    <ClCompile Include="..\cpp\helper.cpp" />
+    <ClCompile Include="..\cpp\helper_gldx.cpp" />
+    <ClCompile Include="..\cpp\hub.cpp" />
+    <ClCompile Include="..\cpp\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="helper_win.cpp" />
+    <ClCompile Include="helper_win.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="wgl_grabber_gen.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
@@ -26,11 +32,11 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\app\src\main\jni\helper.h" />
-    <ClInclude Include="..\app\src\main\jni\helper_gldx.h" />
-    <ClInclude Include="..\app\src\main\jni\helper_text.h" />
-    <ClInclude Include="..\app\src\main\jni\hub.h" />
-    <ClInclude Include="..\app\src\main\jni\stdafx.h" />
+    <ClInclude Include="..\cpp\helper.h" />
+    <ClInclude Include="..\cpp\helper_gldx.h" />
+    <ClInclude Include="..\cpp\helper_text.h" />
+    <ClInclude Include="..\cpp\hub.h" />
+    <ClInclude Include="..\cpp\stdafx.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="wgl_grabber_gen.h" />
   </ItemGroup>
@@ -83,7 +89,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\app\src\main\jni;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\cpp;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -99,7 +105,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\app\src\main\jni;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\cpp;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

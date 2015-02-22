@@ -4,6 +4,10 @@ android {
     compileSdkVersion 8
     buildToolsVersion "21.1.2"
 
+    sourceSets {
+        main.jni.srcDirs = ['../cpp']
+    }
+
     defaultConfig {
         applicationId "com.pinotnoir.adamas"
         minSdkVersion 8
