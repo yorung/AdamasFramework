@@ -24,7 +24,13 @@ extern const char* boundJavaClass;
 #include <stdint.h>
 #include <ctype.h>
 
+#include "af_math.h"
 #include "hub.h"
 #include "helper.h"
 #include "helper_gldx.h"
 #include "helper_text.h"
+#include "matrix_man.h"
+#include "tex_man.h"
+#include "shader_man.h"
+#include "water_surface.h"
+#include "app.h"

@@ -11,13 +11,18 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\cpp\app.cpp" />
     <ClCompile Include="..\cpp\helper.cpp" />
     <ClCompile Include="..\cpp\helper_gldx.cpp" />
     <ClCompile Include="..\cpp\hub.cpp" />
+    <ClCompile Include="..\cpp\matrix_man.cpp" />
+    <ClCompile Include="..\cpp\shader_man.cpp" />
     <ClCompile Include="..\cpp\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="..\cpp\tex_man.cpp" />
+    <ClCompile Include="..\cpp\water_surface.cpp" />
     <ClCompile Include="helper_win.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
@@ -32,11 +37,17 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\cpp\af_math.h" />
+    <ClInclude Include="..\cpp\app.h" />
     <ClInclude Include="..\cpp\helper.h" />
     <ClInclude Include="..\cpp\helper_gldx.h" />
     <ClInclude Include="..\cpp\helper_text.h" />
     <ClInclude Include="..\cpp\hub.h" />
+    <ClInclude Include="..\cpp\matrix_man.h" />
+    <ClInclude Include="..\cpp\shader_man.h" />
     <ClInclude Include="..\cpp\stdafx.h" />
+    <ClInclude Include="..\cpp\tex_man.h" />
+    <ClInclude Include="..\cpp\water_surface.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="wgl_grabber_gen.h" />
   </ItemGroup>

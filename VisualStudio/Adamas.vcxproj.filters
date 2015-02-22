@@ -22,6 +22,21 @@
     <ClCompile Include="..\cpp\stdafx.cpp">
       <Filter>PlatformIndipendent</Filter>
     </ClCompile>
+    <ClCompile Include="..\cpp\app.cpp">
+      <Filter>PlatformIndipendent</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cpp\matrix_man.cpp">
+      <Filter>PlatformIndipendent</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cpp\shader_man.cpp">
+      <Filter>PlatformIndipendent</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cpp\tex_man.cpp">
+      <Filter>PlatformIndipendent</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cpp\water_surface.cpp">
+      <Filter>PlatformIndipendent</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="wgl_grabber_gen.h">
@@ -43,6 +58,24 @@
       <Filter>PlatformIndipendent</Filter>
     </ClInclude>
     <ClInclude Include="..\cpp\stdafx.h">
+      <Filter>PlatformIndipendent</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cpp\app.h">
+      <Filter>PlatformIndipendent</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cpp\matrix_man.h">
+      <Filter>PlatformIndipendent</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cpp\shader_man.h">
+      <Filter>PlatformIndipendent</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cpp\tex_man.h">
+      <Filter>PlatformIndipendent</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cpp\water_surface.h">
+      <Filter>PlatformIndipendent</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cpp\af_math.h">
       <Filter>PlatformIndipendent</Filter>
     </ClInclude>
   </ItemGroup>

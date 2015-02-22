@@ -4,7 +4,7 @@ Hub hub;
 
 void Hub::Init(int screenW, int screenH)
 {
-	glClearColor(0.0f, 0.5f, 1.0f, 1.0f);
+	app.Create();
 }
 
 Hub::Hub()
@@ -14,9 +14,11 @@ Hub::Hub()
 
 void Hub::Destroy()
 {
+	app.Destroy();
 }
 
-void Hub::Update(float aspect, float offset)
+void Hub::Update(int screenW, int screenH, float offset)
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	app.Update(screenW, screenH, offset);
+	app.Draw();
 }

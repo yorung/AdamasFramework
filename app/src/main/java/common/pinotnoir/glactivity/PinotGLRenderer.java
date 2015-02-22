@@ -23,8 +23,7 @@ public class PinotGLRenderer implements GLSurfaceView.Renderer {
             lastWidth = width;
             lastHeight = height;
         }
-        float aspect = (float)width / (float)height;
-        Native.update(aspect, 0.5f);
+        Native.update(width, height, 0.5f);
     }
     public void onSurfaceChanged(GL10 unused, int width_, int height_) {
         width = width_;

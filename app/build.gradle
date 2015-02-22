@@ -6,6 +6,7 @@ android {
 
     sourceSets {
         main.jni.srcDirs = ['../cpp']
+        main.assets.srcDirs = ['../assets']
     }
 
     defaultConfig {

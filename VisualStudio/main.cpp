@@ -171,7 +171,7 @@ static void Input()
 		int w = rc.right - rc.left;
 		int h = rc.bottom - rc.top;
 
-//		app.CreateRipple((float)pt.x / w * 2 - 1, (float)pt.y / h * -2 + 1);
+		app.CreateRipple((float)pt.x / w * 2 - 1, (float)pt.y / h * -2 + 1);
 	}
 }
 
@@ -211,7 +211,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE,
 	hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_WGLTEST));
 
 	GoMyDir();
-	SetCurrentDirectoryA("../../app/src/main/assets");
+	SetCurrentDirectoryA("../assets");
 	CreateWGL(hWnd);
 //	app.Create();
 
@@ -230,13 +230,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE,
 		int w = rc.right - rc.left;
 		int h = rc.bottom - rc.top;
 		if (w != lastW || h != lastH) {
-			w = lastW;
-			h = lastH;
+			lastW = w;
+			lastH = h;
 			hub.Destroy();
 			hub.Init(lastW, lastH);
 		}
 		float aspect = (float)w / (float)h;
-		hub.Update(aspect, 0.5);
+		hub.Update(w, h, 0.5);
 		SwapBuffers(wglGetCurrentDC());
 		Sleep(1);
 	}

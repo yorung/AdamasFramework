@@ -19,10 +19,10 @@ JNIEXPORT void JNICALL FUNC(destroy)(JNIEnv* env, jobject obj)
 	jniEnv = nullptr;
 }
 
-JNIEXPORT void JNICALL FUNC(update)(JNIEnv* env, jobject obj, jfloat aspect, jfloat offset)
+JNIEXPORT void JNICALL FUNC(update)(JNIEnv* env, jobject obj, jint screenW, jint screenH, jfloat offset)
 {
 	jniEnv = env;
-	hub.Update(aspect, offset);
+	hub.Update(screenW, screenH, offset);
 	jniEnv = nullptr;
 }
 }
