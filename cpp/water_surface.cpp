@@ -230,6 +230,12 @@ void WaterSurface::Init()
 	glActiveTexture(GL_TEXTURE0);
 	for (int i = 0; i < dimof(texFiles); i++) {
 		texId[i] = texMan.Create(texFiles[i].name);
+        if (!texFiles[i].clamp) {
+            glBindTexture(GL_TEXTURE_2D, texId[i]);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glBindTexture(GL_TEXTURE_2D, 0);
+        }
 	}
 
 	glGenSamplers(1, &samplerRepeat);
