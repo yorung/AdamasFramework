@@ -5,8 +5,8 @@ android {
     buildToolsVersion "21.1.2"
 
     sourceSets {
-        main.jni.srcDirs = ['../cpp']
-        main.assets.srcDirs = ['../assets']
+        main.jni.srcDirs = ['../../cpp']
+        main.assets.srcDirs = ['../../assets']
     }
 
     defaultConfig {
