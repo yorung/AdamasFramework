@@ -52,11 +52,7 @@
     <ClInclude Include="wgl_grabber_gen.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="small.ico" />
-    <Image Include="WGLTest.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="WGLTest.rc" />
+    <ResourceCompile Include="Resource.rc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{D13F848D-7701-43BA-B781-1481A54FE77D}</ProjectGuid>

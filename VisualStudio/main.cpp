@@ -199,7 +199,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE,
 
 	// Initialize global strings
 	LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
-	LoadString(hInstance, IDC_WGLTEST, szWindowClass, MAX_LOADSTRING);
+	LoadString(hInstance, IDC_ADAMAS, szWindowClass, MAX_LOADSTRING);
 	MyRegisterClass(hInstance);
 
 	// Perform application initialization:
@@ -208,7 +208,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE,
 		return FALSE;
 	}
 
-	hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_WGLTEST));
+	hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_ADAMAS));
 
 	GoMyDir();
 	SetCurrentDirectoryA("../assets");
@@ -261,12 +261,12 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 	wcex.cbClsExtra		= 0;
 	wcex.cbWndExtra		= 0;
 	wcex.hInstance		= hInstance;
-	wcex.hIcon			= LoadIcon(hInstance, MAKEINTRESOURCE(IDI_WGLTEST));
+	wcex.hIcon			= LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON));
 	wcex.hCursor		= LoadCursor(NULL, IDC_ARROW);
 	wcex.hbrBackground	= (HBRUSH)(COLOR_WINDOW+1);
-	wcex.lpszMenuName	= MAKEINTRESOURCE(IDC_WGLTEST);
+	wcex.lpszMenuName	= MAKEINTRESOURCE(IDC_ADAMAS);
 	wcex.lpszClassName	= szWindowClass;
-	wcex.hIconSm		= LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
+	wcex.hIconSm		= LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_ICON));
 
 	return RegisterClassEx(&wcex);
 }

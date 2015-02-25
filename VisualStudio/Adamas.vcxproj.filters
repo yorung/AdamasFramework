@@ -88,15 +88,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="small.ico">
-      <Filter>Windows</Filter>
-    </Image>
-    <Image Include="WGLTest.ico">
-      <Filter>Windows</Filter>
-    </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="WGLTest.rc">
+    <ResourceCompile Include="Resource.rc">
       <Filter>Windows</Filter>
     </ResourceCompile>
   </ItemGroup>
