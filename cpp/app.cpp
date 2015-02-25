@@ -18,7 +18,7 @@ void App::Create()
 	waterSurface.Init();
 }
 
-void App::CreateRipple(float x, float y)
+void App::OnTap(float x, float y)
 {
 	Mat matP, matV;
 	matrixMan.Get(MatrixMan::PROJ, matP);

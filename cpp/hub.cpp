@@ -2,14 +2,18 @@
 
 Hub hub;
 
-void Hub::Init(int screenW, int screenH)
-{
-	app.Create();
-}
-
 Hub::Hub()
 {
 
+}
+void Hub::OnTap(float x, float y)
+{
+	app.OnTap(x, y);
+}
+
+void Hub::Init(int screenW, int screenH)
+{
+	app.Create();
 }
 
 void Hub::Destroy()

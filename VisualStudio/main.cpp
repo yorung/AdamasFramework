@@ -171,7 +171,7 @@ static void Input()
 		int w = rc.right - rc.left;
 		int h = rc.bottom - rc.top;
 
-		app.CreateRipple((float)pt.x / w * 2 - 1, (float)pt.y / h * -2 + 1);
+		hub.OnTap((float)pt.x / w * 2 - 1, (float)pt.y / h * -2 + 1);
 	}
 }
 
