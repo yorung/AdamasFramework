@@ -23,6 +23,10 @@ public class PinotGLRenderer implements GLSurfaceView.Renderer {
             lastWidth = width;
             lastHeight = height;
         }
+        if (PinotGLActivity.tapped) {
+            Native.onTap(PinotGLActivity.x, PinotGLActivity.y);
+            PinotGLActivity.tapped = false;
+        }
         Native.update(width, height, 0.5f);
     }
     public void onSurfaceChanged(GL10 unused, int width_, int height_) {
