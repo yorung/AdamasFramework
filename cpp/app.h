@@ -8,3 +8,5 @@ public:
 };
 
 extern App app;
+
+extern std::string g_type;

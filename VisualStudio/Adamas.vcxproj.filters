@@ -46,6 +46,24 @@
     <ClCompile Include="..\cpp\fps.cpp">
       <Filter>PlatformIndipendent</Filter>
     </ClCompile>
+    <ClCompile Include="..\cpp\mesh_renderer.cpp">
+      <Filter>PlatformIndipendent</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cpp\mesh_x.cpp">
+      <Filter>PlatformIndipendent</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cpp\joint_db.cpp">
+      <Filter>PlatformIndipendent</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cpp\mat_man.cpp">
+      <Filter>PlatformIndipendent</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cpp\bvh.cpp">
+      <Filter>PlatformIndipendent</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cpp\debug_renderer.cpp">
+      <Filter>PlatformIndipendent</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="wgl_grabber_gen.h">
@@ -94,6 +112,24 @@
       <Filter>PlatformIndipendent</Filter>
     </ClInclude>
     <ClInclude Include="..\cpp\fps.h">
+      <Filter>PlatformIndipendent</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cpp\mesh_renderer.h">
+      <Filter>PlatformIndipendent</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cpp\mesh_x.h">
+      <Filter>PlatformIndipendent</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cpp\joint_db.h">
+      <Filter>PlatformIndipendent</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cpp\mat_man.h">
+      <Filter>PlatformIndipendent</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cpp\bvh.h">
+      <Filter>PlatformIndipendent</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cpp\debug_renderer.h">
       <Filter>PlatformIndipendent</Filter>
     </ClInclude>
   </ItemGroup>

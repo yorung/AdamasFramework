@@ -24,6 +24,8 @@ extern const char* boundJavaClass;
 #include <stdint.h>
 #include <ctype.h>
 
+static const int BONE_MAX = 50;
+
 #include "af_math.h"
 #include "hub.h"
 #include "helper.h"
@@ -37,3 +39,9 @@ extern const char* boundJavaClass;
 #include "font_man.h"
 #include "water_surface.h"
 #include "app.h"
+#include "joint_db.h"
+#include "mat_man.h"
+#include "mesh_renderer.h"
+#include "mesh_x.h"
+#include "debug_renderer.h"
+#include "bvh.h"

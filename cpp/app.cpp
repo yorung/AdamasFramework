@@ -2,6 +2,8 @@
 
 App app;
 
+std::string g_type;
+
 void App::Draw()
 {
 	glClearColor(1, 1, 0, 1);
