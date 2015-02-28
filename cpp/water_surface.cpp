@@ -38,10 +38,7 @@ static Vec3 MakePos(int x, int z, float hmap[vertMax][vertMax])
 
 void WaterSurface::CreateRipple(Vec2 scrPos)
 {
-	Mat matP, matV;
-	matrixMan.Get(MatrixMan::PROJ, matP);
-	matrixMan.Get(MatrixMan::VIEW, matV);
-	Vec3 surfacePos = transform(Vec3(scrPos.x, scrPos.y, 0), inv(matV * matP));
+	Vec3 surfacePos = transform(Vec3(scrPos.x, scrPos.y, 0), inv(matView * matProj));
 
 	WaterRipple r;
 	r.generatedTime = elapsedTime;
@@ -301,19 +298,19 @@ void WaterSurface::Update(int w, int h, float offset)
 	float aspect = (float)h / w;
 	glViewport(0, 0, w, h);
 	if (aspect < 1) {
-		matrixMan.Set(MatrixMan::VIEW, fastInv(translate(0, 0.5f * (1 - aspect), 0)));
-		matrixMan.Set(MatrixMan::PROJ, Mat(
+		matView = fastInv(translate(0, 0.5f * (1 - aspect), 0));
+		matProj = Mat(
 			1, 0, 0, 0,
 			0, 1 / aspect, 0, 0,
 			0, 0, 1, 0,
-			0, 0, 0, 1));
+			0, 0, 0, 1);
 	} else {
-		matrixMan.Set(MatrixMan::VIEW, fastInv(translate(offset * (1 - 1 / aspect), 0, 0)));
-		matrixMan.Set(MatrixMan::PROJ, Mat(
+		matView = fastInv(translate(offset * (1 - 1 / aspect), 0, 0));
+		matProj = Mat(
 			aspect, 0, 0, 0,
 			0, 1, 0, 0,
 			0, 0, 1, 0,
-			0, 0, 0, 1));
+			0, 0, 0, 1);
 	}
 
 #if 0	// if glGetTextureLevelParameteriv available
@@ -371,12 +368,9 @@ void WaterSurface::Draw()
 	glUniform1f(glGetUniformLocation(shaderId, "time"), (float)modf(elapsedTime * (1.0f / loopTime), &dummy) * loopTime);
 
 	Mat matW = q2m(Quat(Vec3(1,0,0), (float)M_PI / 180 * -90));
-	Mat matP, matV;
-	matrixMan.Get(MatrixMan::PROJ, matP);
-	matrixMan.Get(MatrixMan::VIEW, matV);
 	glUniformMatrix4fv(glGetUniformLocation(shaderId, "matW"), 1, GL_FALSE, &matW.m[0][0]);
-	glUniformMatrix4fv(glGetUniformLocation(shaderId, "matV"), 1, GL_FALSE, &matV.m[0][0]);
-	glUniformMatrix4fv(glGetUniformLocation(shaderId, "matP"), 1, GL_FALSE, &matP.m[0][0]);
+	glUniformMatrix4fv(glGetUniformLocation(shaderId, "matV"), 1, GL_FALSE, &matView.m[0][0]);
+	glUniformMatrix4fv(glGetUniformLocation(shaderId, "matP"), 1, GL_FALSE, &matProj.m[0][0]);
 
 	V(glBindFramebuffer(GL_FRAMEBUFFER, framebufferObject));
 	V(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texRenderTarget, 0));

@@ -16,6 +16,7 @@ struct WaterRipple
 
 class WaterSurface
 {
+	Mat matProj, matView;
 	ShaderMan::SMID shaderId;
 	ShaderMan::SMID shaderIdFullScr;
 	int lines;
