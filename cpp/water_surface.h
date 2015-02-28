@@ -40,7 +40,7 @@ public:
 	~WaterSurface();
 	void Destroy();
 	void Init();
-	void Update(int w, int h);
+	void Update(int w, int h, float offset);
 	void Draw();
 	void CreateRipple(Vec2 pos);
 };

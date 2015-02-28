@@ -36,11 +36,16 @@ static Vec3 MakePos(int x, int z, float hmap[vertMax][vertMax])
 	return Vec3(((float)x - tileMax / 2) * pitch, height, ((float)z - tileMax / 2) * pitch);
 }
 
-void WaterSurface::CreateRipple(Vec2 pos)
+void WaterSurface::CreateRipple(Vec2 scrPos)
 {
+	Mat matP, matV;
+	matrixMan.Get(MatrixMan::PROJ, matP);
+	matrixMan.Get(MatrixMan::VIEW, matV);
+	Vec3 surfacePos = transform(Vec3(scrPos.x, scrPos.y, 0), inv(matV * matP));
+
 	WaterRipple r;
 	r.generatedTime = elapsedTime;
-	r.centerPos = pos;
+	r.centerPos = Vec2(surfacePos.x, surfacePos.y);
 	ripples[ripplesNext++] = r;
 	ripplesNext %= dimof(ripples);
 }
@@ -291,8 +296,26 @@ void WaterSurface::Update()
 	}
 }
 
-void WaterSurface::Update(int w, int h)
+void WaterSurface::Update(int w, int h, float offset)
 {
+	float aspect = (float)h / w;
+	glViewport(0, 0, w, h);
+	if (aspect < 1) {
+		matrixMan.Set(MatrixMan::VIEW, fastInv(translate(0, 0.5f * (1 - aspect), 0)));
+		matrixMan.Set(MatrixMan::PROJ, Mat(
+			1, 0, 0, 0,
+			0, 1 / aspect, 0, 0,
+			0, 0, 1, 0,
+			0, 0, 0, 1));
+	} else {
+		matrixMan.Set(MatrixMan::VIEW, fastInv(translate(offset * (1 - 1 / aspect), 0, 0)));
+		matrixMan.Set(MatrixMan::PROJ, Mat(
+			aspect, 0, 0, 0,
+			0, 1, 0, 0,
+			0, 0, 1, 0,
+			0, 0, 0, 1));
+	}
+
 #if 0	// if glGetTextureLevelParameteriv available
 	int storedW, storedH;
 	glBindTexture(GL_TEXTURE_2D, texRenderTarget);
