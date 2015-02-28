@@ -12,6 +12,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\cpp\app.cpp" />
+    <ClCompile Include="..\cpp\dib.cpp" />
+    <ClCompile Include="..\cpp\font_man.cpp" />
+    <ClCompile Include="..\cpp\fps.cpp" />
     <ClCompile Include="..\cpp\helper.cpp" />
     <ClCompile Include="..\cpp\helper_gldx.cpp" />
     <ClCompile Include="..\cpp\hub.cpp" />
@@ -39,6 +42,9 @@
   <ItemGroup>
     <ClInclude Include="..\cpp\af_math.h" />
     <ClInclude Include="..\cpp\app.h" />
+    <ClInclude Include="..\cpp\dib.h" />
+    <ClInclude Include="..\cpp\font_man.h" />
+    <ClInclude Include="..\cpp\fps.h" />
     <ClInclude Include="..\cpp\helper.h" />
     <ClInclude Include="..\cpp\helper_gldx.h" />
     <ClInclude Include="..\cpp\helper_text.h" />

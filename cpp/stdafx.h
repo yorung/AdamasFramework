@@ -32,5 +32,8 @@ extern const char* boundJavaClass;
 #include "matrix_man.h"
 #include "tex_man.h"
 #include "shader_man.h"
+#include "dib.h"
+#include "fps.h"
+#include "font_man.h"
 #include "water_surface.h"
 #include "app.h"

@@ -1,6 +1,6 @@
 class App {
 public:
-	void Create();
+	void Init(int screenW, int screenH);
 	void Update(int w, int h, float offset);
 	void Draw();
 	void OnTap(float x, float y);

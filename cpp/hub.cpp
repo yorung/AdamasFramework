@@ -13,7 +13,7 @@ void Hub::OnTap(float x, float y)
 
 void Hub::Init(int screenW, int screenH)
 {
-	app.Create();
+	app.Init(screenW, screenH);
 }
 
 void Hub::Destroy()
