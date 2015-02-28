@@ -15,8 +15,10 @@ static GLuint LoadTextureViaOS(const char* name)
 #endif
 
 #ifdef _MSC_VER
-using std::min;
-using std::max;
+namespace Gdiplus {
+	using std::min;
+	using std::max;
+}
 #include <gdiplus.h>
 #pragma comment(lib, "gdiplus.lib")
 
