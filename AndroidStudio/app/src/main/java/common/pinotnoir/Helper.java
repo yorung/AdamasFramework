@@ -35,18 +35,16 @@ public class Helper {
     }
 
     public static byte[] makeFontBitmap(String font, String code, int size, float[] arrayOfPos) {
-        Log.v(TAG, String.format("makeFontBitmap called(Java): font=%s code=%s", font, code));
         Canvas c = new Canvas();
         Paint p = new Paint();
-        Log.v(TAG, "get density");
         float density = context.getResources().getDisplayMetrics().density;
-        Log.v(TAG, String.format("makeFontBitmap density: %f", density));
+//        Log.v(TAG, String.format("makeFontBitmap called(Java): font=%s code=%s density=%f", font, code, density));
         p.setTextSize((float)size * density);
         p.setAntiAlias(true);
 
         Rect textBounds = new Rect();
         p.getTextBounds(code, 0, code.length(), textBounds);
-        Log.v(TAG, String.format("makeFontBitmap textBounds: %d,%d,%d,%d", textBounds.left, textBounds.top, textBounds.right, textBounds.bottom));
+//        Log.v(TAG, String.format("makeFontBitmap textBounds: %d,%d,%d,%d", textBounds.left, textBounds.top, textBounds.right, textBounds.bottom));
 
         Rect textBoundsAxA = new Rect();
         String axa = String.format("A%sA", code);
@@ -81,20 +79,16 @@ public class Helper {
         c.drawRect(r, p);
         p.setARGB(255, 255, 255, 255);
 
-        Log.v(TAG, "makeFontBitmap: drawText");
+//        Log.v(TAG, "makeFontBitmap: drawText");
         c.drawText(code, -textBounds.left, -textBounds.top, p);
-        Log.v(TAG, String.format("makeFontBitmap: w=%.2f h=%.2f", arrayOfPos[2], arrayOfPos[3]));
+//        Log.v(TAG, String.format("makeFontBitmap: w=%.2f h=%.2f", arrayOfPos[2], arrayOfPos[3]));
 
         ByteBuffer buf = ByteBuffer.allocate(textBounds.width() * textBounds.height() * 4);
-//		ByteBuffer buf = ByteBuffer.allocate(b.getRowBytes());
-        Log.v(TAG, String.format("makeFontBitmap: b.getRowBytes() %d", b.getRowBytes()));
+//        Log.v(TAG, String.format("makeFontBitmap: b.getRowBytes() %d", b.getRowBytes()));
         buf.position(0);
         b.copyPixelsToBuffer(buf);
-        Log.v(TAG, String.format("makeFontBitmap results: capacity=%d", buf.capacity()));
+//        Log.v(TAG, String.format("makeFontBitmap results: capacity=%d", buf.capacity()));
 
-//		byte bytes[] = buf.array();
-//		for (int i = 0; i < size * size * 2; i++)
-//			bytes[i] = (byte)(Math.random() * 255);
         return buf.array();
     }
 
