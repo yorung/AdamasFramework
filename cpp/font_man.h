@@ -23,7 +23,7 @@ class FontMan
 	TexMan::TMID texture;
 	DIB texSrc;
 
-	static const int SPRITE_MAX = 512;
+	static const int SPRITE_MAX = 4096;
 	static const int SPRITE_VERTS = SPRITE_MAX * 4;
 	CharSprite charSprites[SPRITE_MAX];
 	int numSprites;
@@ -50,6 +50,7 @@ public:
 	void DrawString(Vec2 pos, int fontSize, const wchar_t *text);
 	void DrawString(Vec2 pos, int fontSize, const char *text);
 	void Render();
+	Vec2 MeasureString(int fontSize, const char *text);
 };
 
 extern FontMan fontMan;

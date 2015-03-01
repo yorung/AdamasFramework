@@ -186,7 +186,11 @@ void FontMan::Destroy()
 	texSrc.Destroy();
 	afSafeDeleteBuffer(ibo);
 	afSafeDeleteBuffer(vbo);
-
+#ifndef GL_TRUE
+	SAFE_RELEASE(pSamplerState);
+	SAFE_RELEASE(pDSState);
+	SAFE_RELEASE(blendState);
+#endif
 	ClearCache();
 }
 
@@ -308,7 +312,7 @@ void FontMan::Render()
 			continue;
 		}
 		const CharCache& cc = it->second;
-		for (int j = 0; j < dimof(fontVertAlign); j++) {
+		for (int j = 0; j < (int)dimof(fontVertAlign); j++) {
 			verts[i * 4 + j].pos = (((cs.pos + cc.distDelta + fontVertAlign[j] * cc.srcWidth)) * Vec2(2, -2)) / scrSize + Vec2(-1, 1);
 			verts[i * 4 + j].coord = (cc.srcPos + fontVertAlign[j] * cc.srcWidth) / Vec2(TEX_W, TEX_H);
 		}
@@ -316,8 +320,11 @@ void FontMan::Render()
 	afWriteBuffer(vbo, verts, 4 * numSprites * sizeof(FontVertex));
 	shaderMan.Apply(shader);
 
+#ifdef GL_TRUE
 	GLsizei stride = sizeof(FontVertex);
 	shaderMan.SetVertexBuffers(shader, 1, &vbo, &stride);
+#endif
+
 #ifndef GL_TRUE
 	float factor[] = { 0, 0, 0, 0 };
 	deviceMan11.GetContext()->OMSetDepthStencilState(pDSState, 1);
@@ -329,12 +336,16 @@ void FontMan::Render()
 	deviceMan11.GetContext()->IASetVertexBuffers(0, 1, &vbo, &stride, &offset);
 	ID3D11ShaderResourceView* tx = texMan.Get(texture);
 	deviceMan11.GetContext()->PSSetShaderResources(0, 1, &tx);
+	afDrawIndexedTriangleList(ibo, numSprites * 6);
 #endif
+
+#ifdef GL_TRUE
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	afDrawIndexedTriangleList(ibo, numSprites * 6);
 	glDisable(GL_BLEND);
+#endif
 
 #ifndef GL_TRUE
 	tx = nullptr;
@@ -362,6 +373,27 @@ void FontMan::DrawChar(Vec2& pos, const CharSignature& sig)
 	if (it != caches.end()) {
 		pos.x += it->second.step;
 	}
+}
+
+Vec2 FontMan::MeasureString(int fontSize, const char *text)
+{
+	int len = strlen(text);
+	Vec2 pos(0, 0);
+	Vec2 size(0, 0);
+	for (int i = 0; i < len; i++)
+	{
+		CharSignature sig;
+		sig.code = text[i];
+		sig.fontSize = fontSize;
+		Cache(sig);
+		Caches::iterator it = caches.find(sig);
+		if (it != caches.end()) {
+			size.y = std::max(size.y, it->second.srcWidth.y);
+			size.x = pos.x + it->second.distDelta.x + it->second.srcWidth.x;
+			pos.x += it->second.step;
+		}
+	}
+	return size;
 }
 
 void FontMan::DrawString(Vec2 pos, int fontSize, const wchar_t *text)
