@@ -12,14 +12,14 @@ void App::Draw()
 	fontMan.Render();
 }
 
-void App::Init(int screenW, int screenH)
+void App::Init()
 {
 	glClearColor(0.0f, 0.2f, 0.5f, 1.0f);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
 	glDepthMask(GL_TRUE);
 	waterSurface.Init();
-	fontMan.Init(screenW, screenH);
+	fontMan.Init();
 }
 
 void App::OnTap(float x, float y)

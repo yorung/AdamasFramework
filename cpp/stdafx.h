@@ -27,6 +27,7 @@ extern const char* boundJavaClass;
 static const int BONE_MAX = 50;
 
 #include "af_math.h"
+#include "system_metrics.h"
 #include "hub.h"
 #include "helper.h"
 #include "helper_gldx.h"

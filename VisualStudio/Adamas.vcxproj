@@ -30,6 +30,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="..\cpp\system_metrics.cpp" />
     <ClCompile Include="..\cpp\tex_man.cpp" />
     <ClCompile Include="..\cpp\water_surface.cpp" />
     <ClCompile Include="helper_win.cpp">
@@ -64,6 +65,7 @@
     <ClInclude Include="..\cpp\mesh_x.h" />
     <ClInclude Include="..\cpp\shader_man.h" />
     <ClInclude Include="..\cpp\stdafx.h" />
+    <ClInclude Include="..\cpp\system_metrics.h" />
     <ClInclude Include="..\cpp\tex_man.h" />
     <ClInclude Include="..\cpp\water_surface.h" />
     <ClInclude Include="Resource.h" />

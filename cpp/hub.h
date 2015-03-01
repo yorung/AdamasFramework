@@ -2,7 +2,7 @@ class Hub
 {
 public:
 	Hub();
-	void Init(int screenW, int screenH);
+	void Init();
 	void Update(int screenW, int screenH, float offset);
 	void Destroy();
 	void OnTap(float x, float y);

@@ -233,7 +233,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE,
 			lastW = w;
 			lastH = h;
 			hub.Destroy();
-			hub.Init(lastW, lastH);
+			hub.Init();
 		}
 		float aspect = (float)w / (float)h;
 		hub.Update(w, h, 0.5);
@@ -343,6 +343,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		DestroyWGL(hWnd);
 		DestroyWindow(hWnd);
 		return 0;
+	case WM_SIZE:
+		systemMetrics.SetScreenSize(ivec2(LOWORD(lParam), HIWORD(lParam)));
+		break;
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;

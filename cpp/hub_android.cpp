@@ -10,9 +10,8 @@ extern "C" {
 JNIEXPORT void JNICALL FUNC(init)(JNIEnv* env, jobject obj, jint screenW, jint screenH)
 {
 	jniEnv = env;
-	width = screenW;
-	height = screenH;
-	hub.Init(screenW, screenH);
+	systemMetrics.SetScreenSize(ivec2(screenW, screenH));
+	hub.Init();
 	jniEnv = nullptr;
 }
 
