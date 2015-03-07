@@ -73,7 +73,10 @@ void ShaderMan::SetVertexBuffers(SMID id, int numBuffers, GLuint const *vertexBu
 	for (int i = 0; i < it.numElements; i++) {
 		const InputElement& d = it.elements[i];
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferIds[d.inputSlot]);
-		int h = glGetAttribLocation(it.program, d.name);
+		GLint h = glGetAttribLocation(it.program, d.name);
+		if (h == -1) {
+			continue;
+		}
 		glEnableVertexAttribArray(h);
 		switch (d.format) {
 		case SF_R32_FLOAT:
