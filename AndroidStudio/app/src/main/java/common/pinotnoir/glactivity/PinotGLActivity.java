@@ -19,6 +19,19 @@ public class PinotGLActivity extends Activity {
         view = new PinotGLSurfaceView(this);
         setContentView(view);
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        view.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        view.onPause();
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         switch(event.getAction()) {

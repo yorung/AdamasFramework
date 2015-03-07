@@ -11,17 +11,19 @@ import common.pinotnoir.Native;
 public class PinotGLRenderer implements GLSurfaceView.Renderer {
     private int width, height;
     private int lastWidth, lastHeight;
+    private boolean recreateRequired;
     public void onSurfaceCreated(GL10 unused, EGLConfig config) {
     }
     public void onDrawFrame(GL10 unused) {
         if (width <= 0 || height <= 0) {
             return;
         }
-        if (width != lastWidth && height != lastHeight) {
+        if (recreateRequired) {
             Native.destroy();
             Native.init(width, height);
             lastWidth = width;
             lastHeight = height;
+            recreateRequired = false;
         }
         if (PinotGLActivity.tapped) {
             Native.onTap(PinotGLActivity.x, PinotGLActivity.y);
@@ -32,5 +34,6 @@ public class PinotGLRenderer implements GLSurfaceView.Renderer {
     public void onSurfaceChanged(GL10 unused, int width_, int height_) {
         width = width_;
         height = height_;
+        recreateRequired = true;
     }
 }
