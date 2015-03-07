@@ -14,6 +14,7 @@
     <ClCompile Include="..\cpp\app.cpp" />
     <ClCompile Include="..\cpp\bvh.cpp" />
     <ClCompile Include="..\cpp\debug_renderer.cpp" />
+    <ClCompile Include="..\cpp\dev_camera.cpp" />
     <ClCompile Include="..\cpp\dib.cpp" />
     <ClCompile Include="..\cpp\font_man.cpp" />
     <ClCompile Include="..\cpp\fps.cpp" />
@@ -51,6 +52,7 @@
     <ClInclude Include="..\cpp\app.h" />
     <ClInclude Include="..\cpp\bvh.h" />
     <ClInclude Include="..\cpp\debug_renderer.h" />
+    <ClInclude Include="..\cpp\dev_camera.h" />
     <ClInclude Include="..\cpp\dib.h" />
     <ClInclude Include="..\cpp\font_man.h" />
     <ClInclude Include="..\cpp\fps.h" />

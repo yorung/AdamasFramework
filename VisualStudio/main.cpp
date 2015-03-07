@@ -315,6 +315,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	PAINTSTRUCT ps;
 	HDC hdc;
 
+	ivec2 screenSize = systemMetrics.GetScreenSize();
 	switch (message)
 	{
 	case WM_COMMAND:
@@ -343,6 +344,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		DestroyWGL(hWnd);
 		DestroyWindow(hWnd);
 		return 0;
+	case WM_LBUTTONDOWN:
+		SetCapture(hWnd);
+		devCamera.LButtonDown(LOWORD(lParam) / (float)screenSize.x, HIWORD(lParam) / (float)screenSize.y);
+		break;
+	case WM_LBUTTONUP:
+		ReleaseCapture();
+		devCamera.LButtonUp(LOWORD(lParam) / (float)screenSize.x, HIWORD(lParam) / (float)screenSize.y);
+		break;
+	case WM_MOUSEMOVE:
+		devCamera.MouseMove(MAKEPOINTS(lParam).x / (float)screenSize.x, MAKEPOINTS(lParam).y / (float)screenSize.y);
+		break;
+	case WM_MOUSEWHEEL:
+		devCamera.MouseWheel((short)HIWORD(wParam) / (float)WHEEL_DELTA);
+		break;
 	case WM_SIZE:
 		systemMetrics.SetScreenSize(ivec2(LOWORD(lParam), HIWORD(lParam)));
 		break;
