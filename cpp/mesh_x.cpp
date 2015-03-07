@@ -990,6 +990,11 @@ void MeshX::LoadSub()
 
 	if (m_frames.empty()) {
 		m_frames.resize(1);
+		auto it = m_frames.begin();
+		it->parentId = -1;
+		it->siblingId = -1;
+		it->childId = -1;
+		it->name[0] = '\0';
 	}
 
 	aflog("===============DumpFrames begin\n");
