@@ -52,6 +52,7 @@ void MeshRenderer::Init(int numVertices, const MeshVertex* vertices, const MeshC
 		{ 2, "vTexcoord", SF_R32G32_FLOAT, 4 },
 	};
 	shaderId = shaderMan.Create("skin", elements, dimof(elements));
+	assert(shaderId);
 	posBuffer = afCreateVertexBuffer(numVertices * sizeof(MeshVertex), vertices);
 	skinBuffer = afCreateVertexBuffer(numVertices * sizeof(MeshSkin), skin);
 	colorBuffer = afCreateVertexBuffer(numVertices * sizeof(MeshColor), color);
