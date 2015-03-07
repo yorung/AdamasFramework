@@ -30,8 +30,10 @@ void App::Draw()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glDepthMask(GL_FALSE);
+	glDepthFunc(GL_ALWAYS);
 	waterSurface.Draw();
 	glDepthMask(GL_TRUE);
+	glDepthFunc(GL_GEQUAL);
 
 	fontMan.Render();
 
@@ -66,7 +68,6 @@ void App::Init()
 {
 	glClearColor(0.0f, 0.2f, 0.5f, 1.0f);
 	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_GEQUAL);
 	glClearDepthf(0);
 	waterSurface.Init();
 	fontMan.Init();
