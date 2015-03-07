@@ -35,6 +35,10 @@ public class PinotGLActivity extends Activity {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         switch(event.getAction()) {
+            case MotionEvent.ACTION_MOVE:
+                x = event.getX();
+                y = event.getY();
+                return true;
             case MotionEvent.ACTION_UP:
                 x = event.getX();
                 y = event.getY();
