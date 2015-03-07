@@ -227,7 +227,9 @@ void WaterSurface::Init()
 	static const InputElement elementsFullScr[] = {
 		{ 0, "vPosition", SF_R32G32_FLOAT, 0 },
 	};
-	shaderIdFullScr = shaderMan.Create("vivid", elementsFullScr, dimof(elementsFullScr));
+//	const char* shaderName = "vivid";
+	const char* shaderName = "letterbox";
+	shaderIdFullScr = shaderMan.Create(shaderName, elementsFullScr, dimof(elementsFullScr));
 
 	glActiveTexture(GL_TEXTURE0);
 	for (int i = 0; i < dimof(texFiles); i++) {
