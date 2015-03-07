@@ -38,14 +38,18 @@ public class PinotGLActivity extends Activity {
             case MotionEvent.ACTION_UP:
                 x = event.getX();
                 y = event.getY();
-                tapped = true;
-                Log.v("TEST", String.format("ACTION_UP %f,%f", x, y));
+                pressed = false;
+                return true;
+            case MotionEvent.ACTION_DOWN:
+                x = event.getX();
+                y = event.getY();
+                pressed = true;
                 return true;
         }
         super.onTouchEvent(event);
         return false;
     }
-    public static boolean tapped;
+    public static boolean pressed;
     public static float x;
     public static float y;
 }
