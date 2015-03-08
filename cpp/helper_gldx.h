@@ -31,7 +31,13 @@ inline void afSafeDeleteSampler(GLuint& s)
 		glDeleteSamplers(1, &s);
 		s = 0;
 	}
-
+}
+inline void afSafeDeleteTexture(GLuint& s)
+{
+	if (s != 0) {
+		glDeleteTextures(1, &s);
+		s = 0;
+	}
 }
 #endif
 

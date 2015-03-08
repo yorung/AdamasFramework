@@ -137,10 +137,7 @@ void WaterSurface::Destroy()
 	afSafeDeleteSampler(samplerRepeat);
 	afSafeDeleteSampler(samplerClamp);
 	afSafeDeleteSampler(samplerNoMipmap);
-	if (texRenderTarget) {
-		glDeleteTextures(1, &texRenderTarget);
-		texRenderTarget = 0;
-	}
+	afSafeDeleteTexture(texRenderTarget);
 	if (framebufferObject) {
 		glDeleteFramebuffers(1, &framebufferObject);
 		framebufferObject = 0;
