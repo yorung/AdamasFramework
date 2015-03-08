@@ -179,7 +179,7 @@ void WaterSurface::Init()
 	storedW = 0;
 	storedH = 0;
 
-	std::vector<short> indi;
+	std::vector<AFIndex> indi;
 	std::vector<WaterVert> vert;
 	UpdateVert(vert);
 
@@ -201,24 +201,14 @@ void WaterSurface::Init()
 	lines = indi.size() / 2;
 	nIndi = indi.size();
 
-	glGenBuffers(1, &vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, vert.size() * sizeof(WaterVert), &vert[0], GL_DYNAMIC_DRAW);
+	vbo = afCreateDynamicVertexBuffer(vert.size() * sizeof(WaterVert));
+	ibo = afCreateIndexBuffer(&indi[0], indi.size());
 
-	glGenBuffers(1, &ibo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indi.size() * sizeof(short), &indi[0], GL_STATIC_DRAW);
-
-	short iboFullScrSrc[] = {0, 1, 2, 3};
+	AFIndex iboFullScrSrc[] = {0, 1, 2, 3};
 	Vec2 vboFullScrSrc[] = {{-1, -1}, {-1, 1}, {1, -1}, {1, 1}};
 
-	glGenBuffers(1, &vboFullScr);
-	glBindBuffer(GL_ARRAY_BUFFER, vboFullScr);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vboFullScrSrc), &vboFullScrSrc[0], GL_STATIC_DRAW);
-
-	glGenBuffers(1, &iboFullScr);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboFullScr);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(iboFullScrSrc), &iboFullScrSrc[0], GL_STATIC_DRAW);
+	vboFullScr = afCreateVertexBuffer(sizeof(vboFullScrSrc), &vboFullScrSrc[0]);
+	iboFullScr = afCreateIndexBuffer(&iboFullScrSrc[0], dimof(iboFullScrSrc));
 
 	static const InputElement elements[] = {
 		{ 0, "vPosition", SF_R32G32B32_FLOAT, 0 },
