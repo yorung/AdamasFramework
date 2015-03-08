@@ -16,14 +16,15 @@ static void err(char *msg)
 #ifdef _DEBUG
 static void DumpInfo()
 {
-	puts((char*)glGetString(GL_VERSION));
-	puts((char*)glGetString(GL_RENDERER));
-	puts((char*)glGetString(GL_VENDOR));
-	puts((char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
+	printf("GL_VERSION = %s\n", (char*)glGetString(GL_VERSION));
+	printf("GL_RENDERER = %s\n", (char*)glGetString(GL_RENDERER));
+	printf("GL_VENDOR = %s\n", (char*)glGetString(GL_VENDOR));
+	printf("GL_SHADING_LANGUAGE_VERSION = %s\n", (char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
+	puts("------ GL_EXTENSIONS");
 	const GLubyte* ext = glGetString(GL_EXTENSIONS);
-	do {
+	for (; *ext; ext++) {
 		printf("%c", *ext == ' ' ? '\n' : *ext);
-	}while(*ext++);
+	}
 }
 
 static void APIENTRY debugMessageHandler(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam)
