@@ -236,7 +236,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE,
 			hub.Init();
 		}
 		float aspect = (float)w / (float)h;
-		hub.Update(w, h, 0.5);
+		hub.Update();
 		SwapBuffers(wglGetCurrentDC());
 		Sleep(1);
 	}

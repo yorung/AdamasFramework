@@ -96,9 +96,9 @@ void App::Destroy()
 	fontMan.Destroy();
 }
 
-void App::Update(int w, int h, float offset)
+void App::Update()
 {
-	waterSurface.Update(w, h, offset);
+	waterSurface.Update();
 	fps.Update();
 	fontMan.DrawString(Vec2(20, 20), 20, SPrintf("FPS: %f", fps.Get()));
 }

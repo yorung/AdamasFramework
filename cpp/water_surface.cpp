@@ -119,6 +119,8 @@ WaterSurface::WaterSurface()
 	texRenderTarget = 0;
 	framebufferObject = 0;
 	renderbufferObject = 0;
+	storedW = 0;
+	storedH = 0;
 }
 
 WaterSurface::~WaterSurface()
@@ -176,6 +178,9 @@ void WaterSurface::Init()
 	Destroy();
 
 	lastTime = GetTime();
+
+	storedW = 0;
+	storedH = 0;
 
 	std::vector<short> indi;
 	std::vector<WaterVert> vert;
@@ -277,7 +282,7 @@ void WaterSurface::Init()
 	glGenFramebuffers(1, &framebufferObject);
 }
 
-void WaterSurface::Update()
+void WaterSurface::UpdateRipple()
 {
 	double now = GetTime();
 	elapsedTime += now - lastTime;
@@ -295,10 +300,11 @@ void WaterSurface::Update()
 	}
 }
 
-void WaterSurface::Update(int w, int h, float offset)
+void WaterSurface::Update()
 {
-	float aspect = (float)h / w;
-	glViewport(0, 0, w, h);
+	ivec2 scrSize = systemMetrics.GetScreenSize();
+	float offset = 0.5f;
+	float aspect = (float)scrSize.y / scrSize.x;
 	if (aspect < 1) {
 		matView = fastInv(translate(0, 0.5f * (1 - aspect), 0));
 		matProj = Mat(
@@ -330,14 +336,13 @@ void WaterSurface::Update(int w, int h, float offset)
 		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, w, h);
 	}
 #else
-	static int storedW, storedH;
-	if (w != storedW || h != storedH) {
-		storedW = w;
-		storedH = h;
+	if (scrSize.x != storedW || scrSize.y != storedH) {
+		storedW = scrSize.x;
+		storedH = scrSize.y;
 		glBindTexture(GL_TEXTURE_2D, texRenderTarget);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, nullptr);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, storedW, storedH, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, nullptr);
 		glBindRenderbuffer(GL_RENDERBUFFER, renderbufferObject);
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, w, h);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, storedW, storedH);
 	}
 #endif
 }
@@ -346,7 +351,7 @@ void WaterSurface::Draw()
 {
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
-	Update();
+	UpdateRipple();
 
 	shaderMan.Apply(shaderId);
 

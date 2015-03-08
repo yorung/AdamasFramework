@@ -4,7 +4,7 @@ public:
 	App();
 	~App();
 	void Init();
-	void Update(int w, int h, float offset);
+	void Update();
 	void Draw();
 	void OnTap(float x, float y);
 	void Destroy();

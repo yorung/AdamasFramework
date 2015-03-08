@@ -21,8 +21,8 @@ void Hub::Destroy()
 	app.Destroy();
 }
 
-void Hub::Update(int screenW, int screenH, float offset)
+void Hub::Update()
 {
-	app.Update(screenW, screenH, offset);
+	app.Update();
 	app.Draw();
 }

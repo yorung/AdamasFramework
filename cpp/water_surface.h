@@ -21,7 +21,7 @@ class WaterSurface
 	ShaderMan::SMID shaderIdFullScr;
 	int lines;
 	void UpdateVert(std::vector<WaterVert>& vert);
-	void Update();
+	void UpdateRipple();
 	WaterRipple ripples[2];
 	int ripplesNext;
 	double elapsedTime;
@@ -36,12 +36,13 @@ class WaterSurface
 	GLuint texRenderTarget;
 	GLuint framebufferObject;
 	GLuint renderbufferObject;
+	int storedW, storedH;
 public:
 	WaterSurface();
 	~WaterSurface();
 	void Destroy();
 	void Init();
-	void Update(int w, int h, float offset);
+	void Update();
 	void Draw();
 	void CreateRipple(Vec2 pos);
 };

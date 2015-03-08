@@ -51,7 +51,7 @@ JNIEXPORT void JNICALL FUNC(update)(JNIEnv* env, jobject obj, jint screenW, jint
     lastInputState.y = inputY;
     lastInputState.pressed = pressed;
 
-	hub.Update(screenW, screenH, 0.5f);
+	hub.Update();
 	jniEnv = nullptr;
 }
 }
