@@ -26,7 +26,7 @@ JNIEXPORT void JNICALL FUNC(destroy)(JNIEnv* env, jobject obj)
 	jniEnv = nullptr;
 }
 
-JNIEXPORT void JNICALL FUNC(update)(JNIEnv* env, jobject obj, jint screenW, jint screenH, jfloat inputX, jfloat inputY, jboolean pressed)
+JNIEXPORT void JNICALL FUNC(update)(JNIEnv* env, jobject obj, jfloat inputX, jfloat inputY, jboolean pressed)
 {
 	jniEnv = env;
 
