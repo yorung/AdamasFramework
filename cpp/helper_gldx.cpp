@@ -38,6 +38,29 @@ void afWriteBuffer(GLuint bufName, const void* buf, int size)
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
+GLuint afCreateDynamicTexture(int w, int h, AFDTFormat format)
+{
+	GLuint texture;
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	switch (format) {
+	case AFDT_R8G8B8A8_UINT:
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+		break;
+	case AFDT_R5G6B5_UINT:
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 2);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 512, 512, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, nullptr);
+		break;
+	}
+	glBindTexture(GL_TEXTURE_2D, 0);
+	return texture;
+}
+
 #else
 ID3D11Buffer* afCreateIndexBuffer(const AFIndex* indi, int numIndi)
 {

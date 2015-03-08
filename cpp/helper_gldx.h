@@ -39,6 +39,13 @@ inline void afSafeDeleteTexture(GLuint& s)
 		s = 0;
 	}
 }
+
+enum AFDTFormat
+{
+	AFDT_R8G8B8A8_UINT,
+	AFDT_R5G6B5_UINT,
+};
+GLuint afCreateDynamicTexture(int w, int h, AFDTFormat format);
 #endif
 
 #ifdef __d3d11_h__

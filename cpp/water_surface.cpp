@@ -252,14 +252,7 @@ void WaterSurface::Init()
 	glSamplerParameteri(samplerNoMipmap, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glSamplerParameteri(samplerNoMipmap, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-	glGenTextures(1, &texRenderTarget);
-	glBindTexture(GL_TEXTURE_2D, texRenderTarget);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 512, 512, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, nullptr);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glBindTexture(GL_TEXTURE_2D, 0);
+	texRenderTarget = afCreateDynamicTexture(512, 512, AFDT_R5G6B5_UINT);
 
 	glGenRenderbuffers(1, &renderbufferObject);
 	glBindRenderbuffer(GL_RENDERBUFFER, renderbufferObject);
