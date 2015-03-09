@@ -18,15 +18,17 @@ struct InputElement {
 	const char* name;
 	ShaderFormat format;
 	int offset;
+	bool perInstance;
 };
 
 class CInputElement : public InputElement {
 public:
-	CInputElement(int inputSlot, const char* name, ShaderFormat format, int offset) {
+	CInputElement(int inputSlot, const char* name, ShaderFormat format, int offset, bool perInstance = false) {
 		this->name = name;
 		this->format = format;
 		this->inputSlot = inputSlot;
 		this->offset = offset;
+		this->perInstance = perInstance;
 	}
 };
 

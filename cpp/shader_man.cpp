@@ -98,6 +98,9 @@ void ShaderMan::SetVertexBuffers(SMID id, int numBuffers, GLuint const *vertexBu
 			glVertexAttribPointer(h, d.format - SF_R8_UINT + 1, GL_UNSIGNED_BYTE, GL_FALSE, strides[d.inputSlot], (void*)d.offset);
 			break;
 		}
+		if (d.perInstance) {
+			glVertexAttribDivisor(h, 1);
+		}
 	}
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }

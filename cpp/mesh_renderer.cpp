@@ -44,12 +44,12 @@ void MeshRenderer::Init(int numVertices, const MeshVertex* vertices, const MeshC
 {
 	Destroy();
 	static const InputElement elements[] = {
-		{ 0, "POSITION", SF_R32G32B32_FLOAT, 0 },
-		{ 0, "NORMAL", SF_R32G32B32_FLOAT, 12 },
-		{ 1, "vBlendWeights", SF_R32G32B32_FLOAT, 0 },
-		{ 1, "vBlendIndices", SF_R8G8B8A8_UINT, 12 },
-		{ 2, "vColor", SF_R8G8B8A8_UNORM, 0 },
-		{ 2, "vTexcoord", SF_R32G32_FLOAT, 4 },
+		CInputElement(0, "POSITION", SF_R32G32B32_FLOAT, 0),
+		CInputElement(0, "NORMAL", SF_R32G32B32_FLOAT, 12),
+		CInputElement(1, "vBlendWeights", SF_R32G32B32_FLOAT, 0),
+		CInputElement(1, "vBlendIndices", SF_R8G8B8A8_UINT, 12),
+		CInputElement(2, "vColor", SF_R8G8B8A8_UNORM, 0),
+		CInputElement(2, "vTexcoord", SF_R32G32_FLOAT, 4),
 	};
 	shaderId = shaderMan.Create("skin.400", elements, dimof(elements));
 	assert(shaderId);
