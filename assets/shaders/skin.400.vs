@@ -22,9 +22,11 @@ void main() {
 		bones[int(vBlendIndices.z)] * vBlendWeights.z +
 		bones[int(vBlendIndices.w)] * (1.0 - vBlendWeights.x - vBlendWeights.y - vBlendWeights.z);
 
-	gl_Position = matP * matWV * comb * vec4(POSITION.xyz, 1);
-//	gl_Position = matWV * comb * vec4(POSITION.xyz, 1) * matP;
-//	gl_Position = matWV * vec4(POSITION.xyz, 1) * matP;
+
+	vec3 pos = POSITION.xyz;
+	pos.x += gl_InstanceID * 2.1;
+
+	gl_Position = matP * matWV * comb * vec4(pos, 1);
 	texcoord = vTexcoord;
 	color = vColor;
 }

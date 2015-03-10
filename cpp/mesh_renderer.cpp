@@ -188,7 +188,16 @@ void MeshRenderer::Draw(const Mat BoneMatrices[BONE_MAX], int nBones, const Bloc
 		deviceMan11.GetContext()->VSSetConstantBuffers(0, 1, &buf);
 		deviceMan11.GetContext()->PSSetConstantBuffers(0, 1, &buf);
 		*/
-		afDrawIndexedTriangleList(pIndexBuffer, matMap.faces * 3, matMap.faceStartIndex * 3);
+
+	//	afDrawIndexedTriangleList(pIndexBuffer, matMap.faces * 3, matMap.faceStartIndex * 3);
+
+		int count = matMap.faces * 3;
+		int start = matMap.faceStartIndex * 3;
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, pIndexBuffer);
+//		glDrawElements(GL_TRIANGLES, count, AFIndexTypeToDevice, (void*)(start));
+		glDrawElementsInstanced(GL_TRIANGLES, count, AFIndexTypeToDevice, (void*)(start), 3);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
 	}
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
