@@ -195,7 +195,10 @@ void MeshRenderer::Draw(const Mat BoneMatrices[BONE_MAX], int nBones, const Bloc
 		int start = matMap.faceStartIndex * 3;
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, pIndexBuffer);
 //		glDrawElements(GL_TRIANGLES, count, AFIndexTypeToDevice, (void*)(start));
-		glDrawElementsInstanced(GL_TRIANGLES, count, AFIndexTypeToDevice, (void*)(start), 3);
+//		glDrawElementsInstanced(GL_TRIANGLES, count, AFIndexTypeToDevice, (void*)(start), 3);
+		GLsizei counts[] = {count, count, count};
+		void* starts[] = {(void*)(start), (void*)(start), (void*)(start)};
+		glMultiDrawElements(GL_TRIANGLES, counts, AFIndexTypeToDevice, starts, 3);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	}
