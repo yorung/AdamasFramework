@@ -95,13 +95,13 @@ void ShaderMan::SetVertexBuffers(SMID id, int numBuffers, GLuint const *vertexBu
 		case SF_R8G8_UINT:
 		case SF_R8G8B8_UINT:
 		case SF_R8G8B8A8_UINT:
-			glVertexAttribPointer(h, d.format - SF_R8_UINT + 1, GL_UNSIGNED_BYTE, GL_FALSE, strides[d.inputSlot], (void*)d.offset);
+//			glVertexAttribPointer(h, d.format - SF_R8_UINT + 1, GL_UNSIGNED_BYTE, GL_FALSE, strides[d.inputSlot], (void*)d.offset);
+			glVertexAttribIPointer(h, d.format - SF_R8_UINT + 1, GL_UNSIGNED_BYTE, strides[d.inputSlot], (void*)d.offset);
 			break;
 		case SF_R16_UINT:
 		case SF_R16G16_UINT:
 		case SF_R16G16B16_UINT:
 		case SF_R16G16B16A16_UINT:
-//			glVertexAttribPointer(h, d.format - SF_R16_UINT + 1, GL_UNSIGNED_SHORT, GL_FALSE, 0, (void*)d.offset);
 //			glVertexAttribPointer(h, d.format - SF_R16_UINT + 1, GL_UNSIGNED_SHORT, GL_FALSE, strides[d.inputSlot], (void*)d.offset);
 			glVertexAttribIPointer(h, d.format - SF_R16_UINT + 1, GL_UNSIGNED_SHORT, strides[d.inputSlot], (void*)d.offset);
 			break;

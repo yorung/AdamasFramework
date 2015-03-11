@@ -4,7 +4,7 @@ in vec3 NORMAL;
 in vec2 vTexcoord;
 in vec4 vColor;
 in vec3 vBlendWeights;
-in vec4 vBlendIndices;
+in uvec4 vBlendIndices;
 in uint drawId;
 out vec2 texcoord;
 out vec4 color;
@@ -18,10 +18,10 @@ void main() {
 	mat4 matWV = matV * matW;
 
 	mat4 comb =
-		bones[int(vBlendIndices.x)] * vBlendWeights.x +
-		bones[int(vBlendIndices.y)] * vBlendWeights.y +
-		bones[int(vBlendIndices.z)] * vBlendWeights.z +
-		bones[int(vBlendIndices.w)] * (1.0 - vBlendWeights.x - vBlendWeights.y - vBlendWeights.z);
+		bones[vBlendIndices.x] * vBlendWeights.x +
+		bones[vBlendIndices.y] * vBlendWeights.y +
+		bones[vBlendIndices.z] * vBlendWeights.z +
+		bones[vBlendIndices.w] * (1.0 - vBlendWeights.x - vBlendWeights.y - vBlendWeights.z);
 
 
 	vec3 pos = POSITION.xyz;
