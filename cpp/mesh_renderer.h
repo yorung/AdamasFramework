@@ -8,6 +8,7 @@ class MeshRenderer
 	GLuint posBuffer;
 	GLuint colorBuffer;
 	GLuint skinBuffer;
+	GLuint perInstanceBuffer;
 	GLuint pIndexBuffer;
 	GLuint drawIndirectBuffer;
 	ShaderMan::SMID shaderId;

@@ -1,5 +1,8 @@
 #include "stdafx.h"
 
+static const uint16_t perInstanceBufferSource[] = { 0, 1, 2 };
+//static const uint16_t perInstanceBufferSource[] = { 2, 1, 0 };
+
 struct DrawElementsIndirectCommand
 {
 	GLuint count;
@@ -27,6 +30,7 @@ MeshRenderer::MeshRenderer()
 	skinBuffer = 0;
 	drawIndirectBuffer = 0;
 	pIndexBuffer = 0;
+	perInstanceBuffer = 0;
 }
 
 MeshRenderer::~MeshRenderer()
@@ -41,6 +45,7 @@ void MeshRenderer::Destroy()
 	afSafeDeleteBuffer(colorBuffer);
 	afSafeDeleteBuffer(skinBuffer);
 	afSafeDeleteBuffer(drawIndirectBuffer);
+	afSafeDeleteBuffer(perInstanceBuffer);
 }
 
 void MeshRenderer::Init(const Block& block)
@@ -67,12 +72,14 @@ void MeshRenderer::Init(const Block& block)
 		CInputElement(1, "vBlendIndices", SF_R8G8B8A8_UINT, 12),
 		CInputElement(2, "vColor", SF_R8G8B8A8_UNORM, 0),
 		CInputElement(2, "vTexcoord", SF_R32G32_FLOAT, 4),
+		CInputElement(3, "drawId", SF_R16_UINT, 0, true),
 	};
 	shaderId = shaderMan.Create("skin.400", elements, dimof(elements));
 	assert(shaderId);
 	posBuffer = afCreateVertexBuffer(numVertices * sizeof(MeshVertex), vertices);
 	skinBuffer = afCreateVertexBuffer(numVertices * sizeof(MeshSkin), skin);
 	colorBuffer = afCreateVertexBuffer(numVertices * sizeof(MeshColor), color);
+	perInstanceBuffer = afCreateVertexBuffer(sizeof(perInstanceBufferSource), perInstanceBufferSource);
 	pIndexBuffer = afCreateIndexBuffer(indices, numIndices);
 
 	std::vector<DrawElementsIndirectCommand> cmds;
@@ -85,6 +92,10 @@ void MeshRenderer::Init(const Block& block)
 		int start = matMap.faceStartIndex * 3;
 		DrawElementsIndirectCommand cmd = { count, 1, start, 0, 0 };
 		cmds.push_back(cmd);
+		DrawElementsIndirectCommand cmd2 = { count, 1, start, 0, 1 };
+		cmds.push_back(cmd2);
+		DrawElementsIndirectCommand cmd3 = { count, 1, start, 0, 2 };
+		cmds.push_back(cmd3);
 	}
 	glGenBuffers(1, &drawIndirectBuffer);
 	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, drawIndirectBuffer);
@@ -185,8 +196,8 @@ void MeshRenderer11::Draw(const Mat BoneMatrices[BONE_MAX], int nBones, const Bl
 void MeshRenderer::Draw(const Mat BoneMatrices[BONE_MAX], int nBones, const Block& block) const
 {
 	shaderMan.Apply(shaderId);
-	GLuint verts[] = { posBuffer, skinBuffer, colorBuffer };
-	GLsizei strides[] = { sizeof(MeshVertex), sizeof(MeshSkin), sizeof(MeshColor) };
+	GLuint verts[] = { posBuffer, skinBuffer, colorBuffer, perInstanceBuffer };
+	GLsizei strides[] = { sizeof(MeshVertex), sizeof(MeshSkin), sizeof(MeshColor), sizeof(perInstanceBufferSource[0]) };
 	shaderMan.SetVertexBuffers(shaderId, block.indices.size(), verts, strides);
 
 	Mat matW, matV, matP;
@@ -209,7 +220,7 @@ void MeshRenderer::Draw(const Mat BoneMatrices[BONE_MAX], int nBones, const Bloc
 
 	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, drawIndirectBuffer);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, pIndexBuffer);
-	glMultiDrawElementsIndirect(GL_TRIANGLES, AFIndexTypeToDevice, nullptr, block.materialMaps.size(), 0);
+	glMultiDrawElementsIndirect(GL_TRIANGLES, AFIndexTypeToDevice, nullptr, block.materialMaps.size() * dimof(perInstanceBufferSource), 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);
 #if 0

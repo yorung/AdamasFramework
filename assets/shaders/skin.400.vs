@@ -5,6 +5,7 @@ in vec2 vTexcoord;
 in vec4 vColor;
 in vec3 vBlendWeights;
 in vec4 vBlendIndices;
+in uint drawId;
 out vec2 texcoord;
 out vec4 color;
 uniform mat4 matW;
@@ -24,7 +25,7 @@ void main() {
 
 
 	vec3 pos = POSITION.xyz;
-	pos.x += gl_InstanceID * 2.1;
+	pos.x += drawId * 2.1;
 
 	gl_Position = matP * matWV * comb * vec4(pos, 1);
 	texcoord = vTexcoord;
