@@ -1,5 +1,14 @@
 #include "stdafx.h"
 
+struct DrawElementsIndirectCommand
+{
+	GLuint count;
+	GLuint instanceCount;
+	GLuint firstIndex;
+	GLuint baseVertex;
+	GLuint baseInstance;
+};
+
 struct MeshConstantBuffer
 {
 	Mat matW;
@@ -16,6 +25,7 @@ MeshRenderer::MeshRenderer()
 	posBuffer = 0;
 	colorBuffer = 0;
 	skinBuffer = 0;
+	drawIndirectBuffer = 0;
 	pIndexBuffer = 0;
 }
 
@@ -30,19 +40,26 @@ void MeshRenderer::Destroy()
 	afSafeDeleteBuffer(posBuffer);
 	afSafeDeleteBuffer(colorBuffer);
 	afSafeDeleteBuffer(skinBuffer);
+	afSafeDeleteBuffer(drawIndirectBuffer);
 }
 
 void MeshRenderer::Init(const Block& block)
 {
 	block.Verify();
-	if (!block.vertices.empty() && !block.indices.empty() && !block.color.empty()) {
-		Init(block.vertices.size(), &block.vertices[0], &block.color[0], &block.skin[0], block.indices.size(), &block.indices[0]);
-	}
-}
 
-void MeshRenderer::Init(int numVertices, const MeshVertex* vertices, const MeshColor* color, const MeshSkin* skin, int numIndices, const AFIndex* indices)
-{
+	if (block.vertices.empty() || block.indices.empty() || block.color.empty()) {
+		return;
+	}
+
+	int numVertices = block.vertices.size();
+	const MeshVertex* vertices = &block.vertices[0];
+	const MeshColor* color = &block.color[0];
+	const MeshSkin* skin = &block.skin[0];
+	int numIndices = block.indices.size();
+	const AFIndex* indices = &block.indices[0];
+
 	Destroy();
+
 	static const InputElement elements[] = {
 		CInputElement(0, "POSITION", SF_R32G32B32_FLOAT, 0),
 		CInputElement(0, "NORMAL", SF_R32G32B32_FLOAT, 12),
@@ -57,6 +74,22 @@ void MeshRenderer::Init(int numVertices, const MeshVertex* vertices, const MeshC
 	skinBuffer = afCreateVertexBuffer(numVertices * sizeof(MeshSkin), skin);
 	colorBuffer = afCreateVertexBuffer(numVertices * sizeof(MeshColor), color);
 	pIndexBuffer = afCreateIndexBuffer(indices, numIndices);
+
+	std::vector<DrawElementsIndirectCommand> cmds;
+	for (int j = 0; (unsigned)j < block.materialMaps.size(); j++) {
+		const MaterialMap& matMap = block.materialMaps[j];
+		const Material* mat = matMan.Get(matMap.materialId);
+		assert(mat);
+
+		int count = matMap.faces * 3;
+		int start = matMap.faceStartIndex * 3;
+		DrawElementsIndirectCommand cmd = { count, 1, start, 0, 0 };
+		cmds.push_back(cmd);
+	}
+	glGenBuffers(1, &drawIndirectBuffer);
+	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, drawIndirectBuffer);
+	glBufferData(GL_DRAW_INDIRECT_BUFFER, cmds.size() * sizeof(DrawElementsIndirectCommand), &cmds[0], GL_STATIC_DRAW);
+	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);
 }
 /*
 void MeshRenderer::Calc(const Mat BoneMatrices[BONE_MAX], const Block& block) const
@@ -169,6 +202,17 @@ void MeshRenderer::Draw(const Mat BoneMatrices[BONE_MAX], int nBones, const Bloc
 
 	glActiveTexture(GL_TEXTURE0);
 
+	assert(block.materialMaps.size() > 0);
+	const MaterialMap& matMap = block.materialMaps[0];
+	const Material* mat = matMan.Get(matMap.materialId);
+	glBindTexture(GL_TEXTURE_2D, mat->tmid);
+
+	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, drawIndirectBuffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, pIndexBuffer);
+	glMultiDrawElementsIndirect(GL_TRIANGLES, AFIndexTypeToDevice, nullptr, block.materialMaps.size(), 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);
+#if 0
 	for (int j = 0; (unsigned)j < block.materialMaps.size(); j++) {
 		const MaterialMap& matMap = block.materialMaps[j];
 		const Material* mat = matMan.Get(matMap.materialId);
@@ -218,6 +262,7 @@ void MeshRenderer::Draw(const Mat BoneMatrices[BONE_MAX], int nBones, const Bloc
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	}
+#endif
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }

@@ -9,12 +9,12 @@ class MeshRenderer
 	GLuint colorBuffer;
 	GLuint skinBuffer;
 	GLuint pIndexBuffer;
+	GLuint drawIndirectBuffer;
 	ShaderMan::SMID shaderId;
 public:
 	MeshRenderer();
 	~MeshRenderer();
 	void Destroy();
-	void Init(int numVertices, const MeshVertex* vertices, const MeshColor* color, const MeshSkin* skin, int numIndices, const AFIndex* indices);
 	void Init(const Block& block);
 	void Draw(const Mat BoneMatrices[BONE_MAX], int nBones, const Block& block) const;
 };
