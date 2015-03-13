@@ -22,7 +22,7 @@ App::App()
 
 App::~App()
 {
-	SAFE_DELETE(mesh);
+	Destroy();
 }
 
 void App::Draw()
@@ -74,8 +74,13 @@ void App::Init()
 	glClearDepthf(0);
 	waterSurface.Init();
 	fontMan.Init();
+	LoadMesh("jiji.x");
+}
 
-	mesh = new MeshX("jiji.x");
+void App::LoadMesh(const char* fileName)
+{
+	SAFE_DELETE(mesh);
+	mesh = new MeshX(fileName);
 	float radius = CalcRadius(mesh);
 	float scale = std::max(0.00001f, radius);
 	devCamera.SetDistance(scale * 3);
@@ -90,6 +95,7 @@ void App::OnTap(float x, float y)
 
 void App::Destroy()
 {
+	SAFE_DELETE(mesh);
 	texMan.Destroy();
 	shaderMan.Destroy();
 	waterSurface.Destroy();

@@ -297,6 +297,7 @@ BOOL InitInstance(HINSTANCE hInstance)
    ShowWindow(hWnd, SW_SHOWNORMAL);
    UpdateWindow(hWnd);
 
+   DragAcceptFiles(hWnd, TRUE);
    return TRUE;
 }
 
@@ -345,6 +346,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		DestroyWGL(hWnd);
 		DestroyWindow(hWnd);
 		return 0;
+	case WM_DROPFILES:
+	{
+		HDROP hDrop = (HDROP)wParam;
+		char fileName[MAX_PATH];
+		DragQueryFileA(hDrop, 0, fileName, MAX_PATH);
+		DragFinish(hDrop);
+		app.LoadMesh(fileName);
+		break;
+	}
 	case WM_LBUTTONDOWN:
 		SetCapture(hWnd);
 		devCamera.LButtonDown(LOWORD(lParam) / (float)screenSize.x, HIWORD(lParam) / (float)screenSize.y);
