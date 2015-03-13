@@ -97,6 +97,7 @@ void MeshRenderer::Init(const Block& block)
 		DrawElementsIndirectCommand cmd3 = { count, 1, start, 0, 2 };
 		cmds.push_back(cmd3);
 	}
+	assert(cmds.size());
 	glGenBuffers(1, &drawIndirectBuffer);
 	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, drawIndirectBuffer);
 	glBufferData(GL_DRAW_INDIRECT_BUFFER, cmds.size() * sizeof(DrawElementsIndirectCommand), &cmds[0], GL_STATIC_DRAW);

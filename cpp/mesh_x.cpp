@@ -354,8 +354,6 @@ void MeshX::CreateBoneMesh()
 		CreateCone(bones, v1, v2, pId, depthToColor[depth % dimof(depthToColor)]);
 	}
 
-	bonesRenderer.Init(bones);
-
 	Material mat;
 	mat.faceColor.x = 0.6f;
 	mat.faceColor.y = 0.6f;
@@ -377,6 +375,8 @@ void MeshX::CreateBoneMesh()
 	map.faceStartIndex = 0;
 	map.faces = bones.indices.size() / 3;
 	bones.materialMaps.push_back(map);
+
+	bonesRenderer.Init(bones);
 }
 
 
