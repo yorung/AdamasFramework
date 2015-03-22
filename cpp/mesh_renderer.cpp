@@ -82,6 +82,13 @@ void MeshRenderer::Init(const Block& block)
 	perInstanceBuffer = afCreateVertexBuffer(sizeof(perInstanceBufferSource), perInstanceBufferSource);
 	pIndexBuffer = afCreateIndexBuffer(indices, numIndices);
 
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+	GLuint verts[] = { posBuffer, skinBuffer, colorBuffer, perInstanceBuffer };
+	GLsizei strides[] = { sizeof(MeshVertex), sizeof(MeshSkin), sizeof(MeshColor), sizeof(perInstanceBufferSource[0]) };
+	afSetVertexAttributes(shaderId, elements, dimof(elements), block.indices.size(), verts, strides);
+	glBindVertexArray(0);
+
 	std::vector<DrawElementsIndirectCommand> cmds;
 	for (int j = 0; (unsigned)j < block.materialMaps.size(); j++) {
 		const MaterialMap& matMap = block.materialMaps[j];
@@ -107,9 +114,6 @@ void MeshRenderer::Init(const Block& block)
 void MeshRenderer::Draw(const Mat BoneMatrices[BONE_MAX], int nBones, const Block& block) const
 {
 	shaderMan.Apply(shaderId);
-	GLuint verts[] = { posBuffer, skinBuffer, colorBuffer, perInstanceBuffer };
-	GLsizei strides[] = { sizeof(MeshVertex), sizeof(MeshSkin), sizeof(MeshColor), sizeof(perInstanceBufferSource[0]) };
-	afSetVertexAttributes(shaderId, elements, dimof(elements), block.indices.size(), verts, strides);
 
 	Mat matW, matV, matP;
 	matrixMan.Get(MatrixMan::WORLD, matW);
@@ -128,10 +132,12 @@ void MeshRenderer::Draw(const Mat BoneMatrices[BONE_MAX], int nBones, const Bloc
 	const MaterialMap& matMap = block.materialMaps[0];
 	const Material* mat = matMan.Get(matMap.materialId);
 	glBindTexture(GL_TEXTURE_2D, mat->tmid);
+	glBindVertexArray(vao);
 	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, drawIndirectBuffer);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, pIndexBuffer);
 	glMultiDrawElementsIndirect(GL_TRIANGLES, AFIndexTypeToDevice, nullptr, block.materialMaps.size() * dimof(perInstanceBufferSource), 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);
+	glBindVertexArray(0);
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
