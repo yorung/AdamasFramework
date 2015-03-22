@@ -32,11 +32,18 @@ inline void afSafeDeleteSampler(GLuint& s)
 		s = 0;
 	}
 }
-inline void afSafeDeleteTexture(GLuint& s)
+inline void afSafeDeleteTexture(GLuint& t)
 {
-	if (s != 0) {
-		glDeleteTextures(1, &s);
-		s = 0;
+	if (t != 0) {
+		glDeleteTextures(1, &t);
+		t = 0;
+	}
+}
+inline void afSafeDeleteVertexArray(GLuint& vao)
+{
+	if (vao != 0) {
+		glDeleteVertexArrays(1, &vao);
+		vao = 0;
 	}
 }
 

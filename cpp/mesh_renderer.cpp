@@ -45,6 +45,7 @@ void MeshRenderer::Destroy()
 	afSafeDeleteBuffer(skinBuffer);
 	afSafeDeleteBuffer(drawIndirectBuffer);
 	afSafeDeleteBuffer(perInstanceBuffer);
+	afSafeDeleteVertexArray(vao);
 }
 
 static const InputElement elements[] = {
