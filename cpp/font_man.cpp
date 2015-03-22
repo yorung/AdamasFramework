@@ -130,6 +130,11 @@ void FontMan::ClearCache()
 	curX = curY = curLineMaxH = 0;
 }
 
+static InputElement elements[] = {
+	CInputElement(0, "POSITION", SF_R32G32_FLOAT, 0),
+	CInputElement(0, "TEXCOORD", SF_R32G32_FLOAT, 8),
+};
+
 bool FontMan::Init()
 {
 	Destroy();
@@ -139,10 +144,6 @@ bool FontMan::Init()
 	}
 	texture = texMan.CreateDynamicTexture("$FontMan", TEX_W, TEX_H);
 
-	static InputElement elements[] = {
-		CInputElement(0, "POSITION", SF_R32G32_FLOAT, 0),
-		CInputElement(0, "TEXCOORD", SF_R32G32_FLOAT, 8),
-	};
 	shader = shaderMan.Create("font", elements, dimof(elements));
 	assert(shader);
 
@@ -322,7 +323,7 @@ void FontMan::Render()
 
 #ifdef GL_TRUE
 	GLsizei stride = sizeof(FontVertex);
-	shaderMan.SetVertexBuffers(shader, 1, &vbo, &stride);
+	afSetVertexAttributes(shader, elements, dimof(elements), 1, &vbo, &stride);
 #endif
 
 #ifndef GL_TRUE

@@ -67,7 +67,7 @@ static GLuint CreateProgram(const char* name)
 	return program;
 }
 
-static void SetVertexAttributes(int program, const InputElement elements[], int numElements, int numBuffers, GLuint const *vertexBufferIds, const GLsizei* strides)
+void afSetVertexAttributes(GLuint program, const InputElement elements[], int numElements, int numBuffers, GLuint const *vertexBufferIds, const GLsizei* strides)
 {
 	for (int i = 0; i < numElements; i++) {
 		const InputElement& d = elements[i];
@@ -110,12 +110,6 @@ static void SetVertexAttributes(int program, const InputElement elements[], int 
 		}
 	}
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-}
-
-void ShaderMan::SetVertexBuffers(SMID id, int numBuffers, GLuint const *vertexBufferIds, const GLsizei* strides)
-{
-	Effect& it = effects[id];
-	SetVertexAttributes(id, it.elements, it.numElements, numBuffers, vertexBufferIds, strides);
 }
 
 ShaderMan::SMID ShaderMan::Create(const char *name, const InputElement elements[], int numElements)

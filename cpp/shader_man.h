@@ -25,6 +25,8 @@ struct InputElement {
 	bool perInstance;
 };
 
+void afSetVertexAttributes(GLuint program, const InputElement elements[], int numElements, int numBuffers, GLuint const *vertexBufferIds, const GLsizei* strides);
+
 class CInputElement : public InputElement {
 public:
 	CInputElement(int inputSlot, const char* name, ShaderFormat format, int offset, bool perInstance = false) {
@@ -56,7 +58,6 @@ public:
 	void Destroy();
 	void Reload();
 	void Apply(SMID id);
-	void SetVertexBuffers(SMID id, int numBuffers, GLuint const *vertexBufferIds, const GLsizei* strides);
 };
 
 extern ShaderMan shaderMan;

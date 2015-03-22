@@ -170,6 +170,15 @@ static void HandleGLError(const char* func, int line, const char* command)
 
 #define V(command) do{ command; HandleGLError(__FUNCTION__, __LINE__, #command); } while(0)
 
+static const InputElement elements[] = {
+	{ 0, "vPosition", SF_R32G32B32_FLOAT, 0 },
+	{ 0, "vNormal", SF_R32G32B32_FLOAT, 12 },
+};
+
+static const InputElement elementsFullScr[] = {
+	{ 0, "vPosition", SF_R32G32_FLOAT, 0 },
+};
+
 void WaterSurface::Init()
 {
 	Destroy();
@@ -210,15 +219,9 @@ void WaterSurface::Init()
 	vboFullScr = afCreateVertexBuffer(sizeof(vboFullScrSrc), &vboFullScrSrc[0]);
 	iboFullScr = afCreateIndexBuffer(&iboFullScrSrc[0], dimof(iboFullScrSrc));
 
-	static const InputElement elements[] = {
-		{ 0, "vPosition", SF_R32G32B32_FLOAT, 0 },
-		{ 0, "vNormal", SF_R32G32B32_FLOAT, 12 },
-	};
 	shaderId = shaderMan.Create("water", elements, dimof(elements));
 
-	static const InputElement elementsFullScr[] = {
-		{ 0, "vPosition", SF_R32G32_FLOAT, 0 },
-	};
+
 //	const char* shaderName = "vivid";
 	const char* shaderName = "letterbox";
 	shaderIdFullScr = shaderMan.Create(shaderName, elementsFullScr, dimof(elementsFullScr));
@@ -343,7 +346,7 @@ void WaterSurface::Draw()
 
 	GLuint vertexBufferIds[] = { vbo };
 	GLsizei strides[] = { sizeof(WaterVert) };
-	shaderMan.SetVertexBuffers(shaderId, 1, vertexBufferIds, strides);
+	afSetVertexAttributes(shaderId, elements, dimof(elements), 1, vertexBufferIds, strides);
 
 	glUniform1i(glGetUniformLocation(shaderId, "sampler0"), 0);
 	glUniform1i(glGetUniformLocation(shaderId, "sampler1"), 1);
@@ -383,7 +386,7 @@ void WaterSurface::Draw()
 
 		GLuint vertexBufferIdsFullScr[] = { vboFullScr };
 		GLsizei strides[] = { sizeof(Vec2) };
-		shaderMan.SetVertexBuffers(shaderIdFullScr, 1, vertexBufferIdsFullScr, strides);
+		afSetVertexAttributes(shaderIdFullScr, elementsFullScr, dimof(elementsFullScr), 1, vertexBufferIdsFullScr, strides);
 
 		glBindBuffer(GL_ARRAY_BUFFER, vboFullScr);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboFullScr);

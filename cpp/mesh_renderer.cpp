@@ -47,6 +47,16 @@ void MeshRenderer::Destroy()
 	afSafeDeleteBuffer(perInstanceBuffer);
 }
 
+static const InputElement elements[] = {
+	CInputElement(0, "POSITION", SF_R32G32B32_FLOAT, 0),
+	CInputElement(0, "NORMAL", SF_R32G32B32_FLOAT, 12),
+	CInputElement(1, "vBlendWeights", SF_R32G32B32_FLOAT, 0),
+	CInputElement(1, "vBlendIndices", SF_R8G8B8A8_UINT, 12),
+	CInputElement(2, "vColor", SF_R8G8B8A8_UNORM, 0),
+	CInputElement(2, "vTexcoord", SF_R32G32_FLOAT, 4),
+	CInputElement(3, "drawId", SF_R16_UINT, 0, true),
+};
+
 void MeshRenderer::Init(const Block& block)
 {
 	block.Verify();
@@ -64,15 +74,6 @@ void MeshRenderer::Init(const Block& block)
 
 	Destroy();
 
-	static const InputElement elements[] = {
-		CInputElement(0, "POSITION", SF_R32G32B32_FLOAT, 0),
-		CInputElement(0, "NORMAL", SF_R32G32B32_FLOAT, 12),
-		CInputElement(1, "vBlendWeights", SF_R32G32B32_FLOAT, 0),
-		CInputElement(1, "vBlendIndices", SF_R8G8B8A8_UINT, 12),
-		CInputElement(2, "vColor", SF_R8G8B8A8_UNORM, 0),
-		CInputElement(2, "vTexcoord", SF_R32G32_FLOAT, 4),
-		CInputElement(3, "drawId", SF_R16_UINT, 0, true),
-	};
 	shaderId = shaderMan.Create("skin.400", elements, dimof(elements));
 	assert(shaderId);
 	posBuffer = afCreateVertexBuffer(numVertices * sizeof(MeshVertex), vertices);
@@ -108,7 +109,7 @@ void MeshRenderer::Draw(const Mat BoneMatrices[BONE_MAX], int nBones, const Bloc
 	shaderMan.Apply(shaderId);
 	GLuint verts[] = { posBuffer, skinBuffer, colorBuffer, perInstanceBuffer };
 	GLsizei strides[] = { sizeof(MeshVertex), sizeof(MeshSkin), sizeof(MeshColor), sizeof(perInstanceBufferSource[0]) };
-	shaderMan.SetVertexBuffers(shaderId, block.indices.size(), verts, strides);
+	afSetVertexAttributes(shaderId, elements, dimof(elements), block.indices.size(), verts, strides);
 
 	Mat matW, matV, matP;
 	matrixMan.Get(MatrixMan::WORLD, matW);
