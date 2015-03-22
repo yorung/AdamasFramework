@@ -24,9 +24,7 @@ struct MeshConstantBuffer
 
 MeshRenderer::MeshRenderer()
 {
-	posBuffer = 0;
-	colorBuffer = 0;
-	skinBuffer = 0;
+	vbo = 0;
 	drawIndirectBuffer = 0;
 	pIndexBuffer = 0;
 	perInstanceBuffer = 0;
@@ -40,23 +38,11 @@ MeshRenderer::~MeshRenderer()
 void MeshRenderer::Destroy()
 {
 	afSafeDeleteBuffer(pIndexBuffer);
-	afSafeDeleteBuffer(posBuffer);
-	afSafeDeleteBuffer(colorBuffer);
-	afSafeDeleteBuffer(skinBuffer);
+	afSafeDeleteBuffer(vbo);
 	afSafeDeleteBuffer(drawIndirectBuffer);
 	afSafeDeleteBuffer(perInstanceBuffer);
 	afSafeDeleteVertexArray(vao);
 }
-
-static const InputElement elements[] = {
-	CInputElement(0, "POSITION", SF_R32G32B32_FLOAT, 0),
-	CInputElement(0, "NORMAL", SF_R32G32B32_FLOAT, 12),
-	CInputElement(1, "vBlendWeights", SF_R32G32B32_FLOAT, 0),
-	CInputElement(1, "vBlendIndices", SF_R8G8B8A8_UINT, 12),
-	CInputElement(2, "vColor", SF_R8G8B8A8_UNORM, 0),
-	CInputElement(2, "vTexcoord", SF_R32G32_FLOAT, 4),
-	CInputElement(3, "drawId", SF_R16_UINT, 0, true),
-};
 
 void MeshRenderer::Init(const Block& block)
 {
@@ -77,9 +63,31 @@ void MeshRenderer::Init(const Block& block)
 
 	shaderId = shaderMan.Create("skin.400");
 	assert(shaderId);
-	posBuffer = afCreateVertexBuffer(numVertices * sizeof(MeshVertex), vertices);
-	skinBuffer = afCreateVertexBuffer(numVertices * sizeof(MeshSkin), skin);
-	colorBuffer = afCreateVertexBuffer(numVertices * sizeof(MeshColor), color);
+
+	int sizePos = numVertices * sizeof(MeshVertex);
+	int sizeSkin = numVertices * sizeof(MeshSkin);
+	int sizeColor = numVertices * sizeof(MeshColor);
+	int sizeAll = sizePos + sizeSkin + sizeColor;
+	int ofsPos = 0;
+	int ofsSkin = sizePos;
+	int ofsColor = ofsSkin + sizeSkin;
+	std::vector<uint8_t> uni;
+	uni.resize(sizeAll);
+	memcpy(&uni[ofsPos], &block.vertices[0], sizePos);
+	memcpy(&uni[ofsSkin], &block.skin[0], sizeSkin);
+	memcpy(&uni[ofsColor], &block.color[0], sizeColor);
+
+	const InputElement elements[] = {
+		CInputElement(0, "POSITION", SF_R32G32B32_FLOAT, ofsPos + 0),
+		CInputElement(0, "NORMAL", SF_R32G32B32_FLOAT, ofsPos + 12),
+		CInputElement(1, "vBlendWeights", SF_R32G32B32_FLOAT, ofsSkin + 0),
+		CInputElement(1, "vBlendIndices", SF_R8G8B8A8_UINT, ofsSkin + 12),
+		CInputElement(2, "vColor", SF_R8G8B8A8_UNORM, ofsColor + 0),
+		CInputElement(2, "vTexcoord", SF_R32G32_FLOAT, ofsColor + 4),
+		CInputElement(3, "drawId", SF_R16_UINT, 0, true),
+	};
+
+	vbo = afCreateVertexBuffer(sizeAll, &uni[0]);
 	perInstanceBuffer = afCreateVertexBuffer(sizeof(perInstanceBufferSource), perInstanceBufferSource);
 	pIndexBuffer = afCreateIndexBuffer(indices, numIndices);
 
@@ -106,7 +114,7 @@ void MeshRenderer::Init(const Block& block)
 
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
-	GLuint verts[] = { posBuffer, skinBuffer, colorBuffer, perInstanceBuffer };
+	GLuint verts[] = { vbo, vbo, vbo, perInstanceBuffer };
 	GLsizei strides[] = { sizeof(MeshVertex), sizeof(MeshSkin), sizeof(MeshColor), sizeof(perInstanceBufferSource[0]) };
 	afSetVertexAttributes(shaderId, elements, dimof(elements), block.indices.size(), verts, strides);
 	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, drawIndirectBuffer);

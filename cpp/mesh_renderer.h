@@ -6,9 +6,7 @@ struct MeshSkin;
 class MeshRenderer
 {
 	GLuint vao;
-	GLuint posBuffer;
-	GLuint colorBuffer;
-	GLuint skinBuffer;
+	GLuint vbo;
 	GLuint perInstanceBuffer;
 	GLuint pIndexBuffer;
 	GLuint drawIndirectBuffer;
