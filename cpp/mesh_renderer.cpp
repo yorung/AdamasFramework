@@ -1,7 +1,6 @@
 #include "stdafx.h"
 
 static const uint16_t perInstanceBufferSource[] = { 0, 1, 2 };
-//static const uint16_t perInstanceBufferSource[] = { 2, 1, 0 };
 
 struct DrawElementsIndirectCommand
 {
@@ -128,50 +127,10 @@ void MeshRenderer::Draw(const Mat BoneMatrices[BONE_MAX], int nBones, const Bloc
 	const MaterialMap& matMap = block.materialMaps[0];
 	const Material* mat = matMan.Get(matMap.materialId);
 	glBindTexture(GL_TEXTURE_2D, mat->tmid);
-
 	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, drawIndirectBuffer);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, pIndexBuffer);
 	glMultiDrawElementsIndirect(GL_TRIANGLES, AFIndexTypeToDevice, nullptr, block.materialMaps.size() * dimof(perInstanceBufferSource), 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);
-#if 0
-	for (int j = 0; (unsigned)j < block.materialMaps.size(); j++) {
-		const MaterialMap& matMap = block.materialMaps[j];
-		const Material* mat = matMan.Get(matMap.materialId);
-		assert(mat);
-
-		glBindTexture(GL_TEXTURE_2D, mat->tmid);
-
-	//	afDrawIndexedTriangleList(pIndexBuffer, matMap.faces * 3, matMap.faceStartIndex * 3);
-
-		int count = matMap.faces * 3;
-		int start = matMap.faceStartIndex * 3;
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, pIndexBuffer);
-//		glDrawElements(GL_TRIANGLES, count, AFIndexTypeToDevice, (void*)(start));
-
-//		glDrawElementsInstanced(GL_TRIANGLES, count, AFIndexTypeToDevice, (void*)(start), 3);
-
-//		GLsizei counts[] = {count, count, count};
-//		void* starts[] = {(void*)(start), (void*)(start), (void*)(start)};
-//		glMultiDrawElements(GL_TRIANGLES, counts, AFIndexTypeToDevice, starts, 3);
-
-//		glDrawElementsInstancedBaseVertexBaseInstance(GL_TRIANGLES, count, AFIndexTypeToDevice, (void*)start, 3, 0, 3);
-
-		struct Commands {
-			GLuint count;
-			GLuint instanceCount;
-			GLuint firstIndex;
-			GLuint baseVertex;
-			GLuint baseInstance;
-		};
-
-		Commands cmd = { count, 3, start, 0, 0 };
-		glDrawElementsIndirect(GL_TRIANGLES, AFIndexTypeToDevice, &cmd);
-
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-	}
-#endif
 	glBindTexture(GL_TEXTURE_2D, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
