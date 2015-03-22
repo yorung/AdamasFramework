@@ -44,17 +44,10 @@ public:
 	typedef GLuint SMID;
 	static const SMID INVALID_SMID = 0;
 private:
-	struct Effect
-	{
-		const InputElement *elements;
-		int numElements;
-	};
 	typedef std::map<std::string, SMID> NameToId;
 	NameToId nameToId;
-	typedef std::map<SMID, Effect> Effects;
-	Effects effects;
 public:
-	SMID Create(const char *name, const InputElement elements[], int numElements);
+	SMID Create(const char *name);
 	void Destroy();
 	void Reload();
 	void Apply(SMID id);

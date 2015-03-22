@@ -112,32 +112,22 @@ void afSetVertexAttributes(GLuint program, const InputElement elements[], int nu
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-ShaderMan::SMID ShaderMan::Create(const char *name, const InputElement elements[], int numElements)
+ShaderMan::SMID ShaderMan::Create(const char *name)
 {
 	NameToId::iterator it = nameToId.find(name);
 	if (it != nameToId.end())
 	{
 		return it->second;
 	}
-
-	Effect effect;
-	memset(&effect, 0, sizeof(effect));
-
-	GLuint id = CreateProgram(name);
-	effect.elements = elements;
-	effect.numElements = numElements;
-
-	effects[id] = effect;
-	return nameToId[name] = id;
+	return nameToId[name] = CreateProgram(name);
 }
 
 void ShaderMan::Destroy()
 {
-	for (Effects::iterator it = effects.begin(); it != effects.end(); it++)
+	for (auto it = nameToId.begin(); it != nameToId.end(); it++)
 	{
-		glDeleteProgram(it->first);
+		glDeleteProgram(it->second);
 	}
-	effects.clear();
 	nameToId.clear();
 }
 

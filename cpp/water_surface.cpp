@@ -219,12 +219,12 @@ void WaterSurface::Init()
 	vboFullScr = afCreateVertexBuffer(sizeof(vboFullScrSrc), &vboFullScrSrc[0]);
 	iboFullScr = afCreateIndexBuffer(&iboFullScrSrc[0], dimof(iboFullScrSrc));
 
-	shaderId = shaderMan.Create("water", elements, dimof(elements));
+	shaderId = shaderMan.Create("water");
 
 
 //	const char* shaderName = "vivid";
 	const char* shaderName = "letterbox";
-	shaderIdFullScr = shaderMan.Create(shaderName, elementsFullScr, dimof(elementsFullScr));
+	shaderIdFullScr = shaderMan.Create(shaderName);
 
 	glActiveTexture(GL_TEXTURE0);
 	for (int i = 0; i < dimof(texFiles); i++) {

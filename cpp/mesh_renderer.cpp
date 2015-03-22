@@ -74,7 +74,7 @@ void MeshRenderer::Init(const Block& block)
 
 	Destroy();
 
-	shaderId = shaderMan.Create("skin.400", elements, dimof(elements));
+	shaderId = shaderMan.Create("skin.400");
 	assert(shaderId);
 	posBuffer = afCreateVertexBuffer(numVertices * sizeof(MeshVertex), vertices);
 	skinBuffer = afCreateVertexBuffer(numVertices * sizeof(MeshSkin), skin);
