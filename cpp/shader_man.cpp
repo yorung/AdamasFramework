@@ -67,13 +67,12 @@ static GLuint CreateProgram(const char* name)
 	return program;
 }
 
-void ShaderMan::SetVertexBuffers(SMID id, int numBuffers, GLuint const *vertexBufferIds, const GLsizei* strides)
+static void SetVertexAttributes(int program, const InputElement elements[], int numElements, int numBuffers, GLuint const *vertexBufferIds, const GLsizei* strides)
 {
-	const Effect& it = effects[id];
-	for (int i = 0; i < it.numElements; i++) {
-		const InputElement& d = it.elements[i];
+	for (int i = 0; i < numElements; i++) {
+		const InputElement& d = elements[i];
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferIds[d.inputSlot]);
-		GLint h = glGetAttribLocation(it.program, d.name);
+		GLint h = glGetAttribLocation(program, d.name);
 		if (h == -1) {
 			continue;
 		}
@@ -111,6 +110,12 @@ void ShaderMan::SetVertexBuffers(SMID id, int numBuffers, GLuint const *vertexBu
 		}
 	}
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void ShaderMan::SetVertexBuffers(SMID id, int numBuffers, GLuint const *vertexBufferIds, const GLsizei* strides)
+{
+	Effect& it = effects[id];
+	SetVertexAttributes(it.program, it.elements, it.numElements, numBuffers, vertexBufferIds, strides);
 }
 
 ShaderMan::SMID ShaderMan::Create(const char *name, const InputElement elements[], int numElements)
