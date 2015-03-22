@@ -115,7 +115,7 @@ static void SetVertexAttributes(int program, const InputElement elements[], int 
 void ShaderMan::SetVertexBuffers(SMID id, int numBuffers, GLuint const *vertexBufferIds, const GLsizei* strides)
 {
 	Effect& it = effects[id];
-	SetVertexAttributes(it.program, it.elements, it.numElements, numBuffers, vertexBufferIds, strides);
+	SetVertexAttributes(id, it.elements, it.numElements, numBuffers, vertexBufferIds, strides);
 }
 
 ShaderMan::SMID ShaderMan::Create(const char *name, const InputElement elements[], int numElements)
@@ -129,19 +129,19 @@ ShaderMan::SMID ShaderMan::Create(const char *name, const InputElement elements[
 	Effect effect;
 	memset(&effect, 0, sizeof(effect));
 
-	effect.program = CreateProgram(name);
+	GLuint id = CreateProgram(name);
 	effect.elements = elements;
 	effect.numElements = numElements;
 
-	effects[effect.program] = effect;
-	return nameToId[name] = effect.program;
+	effects[id] = effect;
+	return nameToId[name] = id;
 }
 
 void ShaderMan::Destroy()
 {
 	for (Effects::iterator it = effects.begin(); it != effects.end(); it++)
 	{
-		glDeleteProgram(it->second.program);
+		glDeleteProgram(it->first);
 	}
 	effects.clear();
 	nameToId.clear();
@@ -149,6 +149,5 @@ void ShaderMan::Destroy()
 
 void ShaderMan::Apply(SMID id)
 {
-	const Effect& it = effects[id];
-	glUseProgram(it.program);
+	glUseProgram(id);
 }

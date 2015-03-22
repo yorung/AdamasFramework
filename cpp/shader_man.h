@@ -44,7 +44,6 @@ public:
 private:
 	struct Effect
 	{
-		SMID program;
 		const InputElement *elements;
 		int numElements;
 	};
