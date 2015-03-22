@@ -2,7 +2,6 @@ class App {
 	MeshX* mesh;
 public:
 	App();
-	~App();
 	void Init();
 	void LoadMesh(const char* fileName);
 	void Update();
