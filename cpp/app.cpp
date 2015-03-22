@@ -56,6 +56,7 @@ void App::Draw()
 	matrixMan.Set(MatrixMan::PROJ, proj);
 
 	MeshXAnimResult r;
+	mesh->CalcAnimation(0, GetTime(), r);
 	mesh->Draw(r);
 }
 
