@@ -463,7 +463,7 @@ struct SkinWeights {
 	}
 };
 
-void MeshX::_storeWeight(MeshSkin& v, int frameId, float weight)
+void MeshX::_storeWeight(MeshVertex& v, int frameId, float weight)
 {
 	if (v.blendWeights.x == 0) {
 		v.blendWeights.x = weight;
@@ -486,7 +486,6 @@ void MeshX::_storeWeight(MeshSkin& v, int frameId, float weight)
 bool MeshX::ParseMesh(char* imgFrame, Block& block, BONE_ID frameId)
 {
 	auto& vertices = block.vertices;
-	auto& skin = block.skin;
 	auto& indices = block.indices;
 	vertices.clear();
 	indices.clear();
@@ -611,17 +610,15 @@ bool MeshX::ParseMesh(char* imgFrame, Block& block, BONE_ID frameId)
 			Vec4 f4 = vertexColors[i];
 			v.color = _convF4ToU32(f4);
 		}
-		vertices.push_back(v);
 
-		MeshSkin s;
-		s.blendWeights.x = 0;
-		s.blendWeights.y = 0;
-		s.blendWeights.z = 0;
-		s.blendIndices.x = 0;
-		s.blendIndices.y = 0;
-		s.blendIndices.z = 0;
-		s.blendIndices.w = frameId;
-		skin.push_back(s);
+		v.blendWeights.x = 0;
+		v.blendWeights.y = 0;
+		v.blendWeights.z = 0;
+		v.blendIndices.x = 0;
+		v.blendIndices.y = 0;
+		v.blendIndices.z = 0;
+		v.blendIndices.w = frameId;
+		vertices.push_back(v);
 	}
 
 	for (auto it = skinWeights.begin(); it != skinWeights.end(); it++)
@@ -631,7 +628,7 @@ bool MeshX::ParseMesh(char* imgFrame, Block& block, BONE_ID frameId)
 		for (int i = 0; i < cnt; i++) {
 			int idx = it->vertexIndices[i];
 			float wgt = it->vertexWeight[i];
-			_storeWeight(skin[idx], it->frameId, wgt);
+			_storeWeight(vertices[idx], it->frameId, wgt);
 		}
 	}
 
@@ -659,18 +656,14 @@ void MeshX::_mergeBlocks(Block& d, const Block& s)
 		return;
 	}
 
-	d.Verify();
-	s.Verify();
 	int verticeBase = d.vertices.size();
 	int indicesBase = d.indices.size();
 	std::for_each(s.vertices.begin(), s.vertices.end(), [&](const MeshVertex& v) { d.vertices.push_back(v); });
-	std::for_each(s.skin.begin(), s.skin.end(), [&](const MeshSkin& s) { d.skin.push_back(s); });
 	std::for_each(s.indices.begin(), s.indices.end(), [&](unsigned i) { d.indices.push_back(i + verticeBase); });
 	std::for_each(s.materialMaps.begin(), s.materialMaps.end(), [&](MaterialMap m) {
 		m.faceStartIndex += indicesBase / 3;
 		d.materialMaps.push_back(m);
 	});
-	d.Verify();
 }
 
 void MeshX::_linkFrame(BONE_ID parentFrameId, BONE_ID childFrameId)
@@ -720,7 +713,7 @@ void MeshX::GetVertStatistics(std::vector<int>& cnts) const
 	for (auto& it : cnts) {
 		it = 0;
 	}
-	for (auto& it : m_block.skin)
+	for (auto& it : m_block.vertices)
 	{
 		assert(it.blendIndices.x >= 0 && it.blendIndices.x < m_frames.size());
 		assert(it.blendIndices.y >= 0 && it.blendIndices.y < m_frames.size());

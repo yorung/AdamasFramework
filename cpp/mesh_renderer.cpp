@@ -46,15 +46,11 @@ void MeshRenderer::Destroy()
 
 void MeshRenderer::Init(const Block& block)
 {
-	block.Verify();
-
 	if (block.vertices.empty() || block.indices.empty()) {
 		return;
 	}
 
 	int numVertices = block.vertices.size();
-	const MeshVertex* vertices = &block.vertices[0];
-	const MeshSkin* skin = &block.skin[0];
 	int numIndices = block.indices.size();
 	const AFIndex* indices = &block.indices[0];
 
@@ -63,27 +59,19 @@ void MeshRenderer::Init(const Block& block)
 	shaderId = shaderMan.Create("skin.400");
 	assert(shaderId);
 
-	int sizePos = numVertices * sizeof(MeshVertex);
-	int sizeSkin = numVertices * sizeof(MeshSkin);
-	int sizeAll = sizePos + sizeSkin;
-	int ofsPos = 0;
-	int ofsSkin = sizePos;
-	std::vector<uint8_t> uni;
-	uni.resize(sizeAll);
-	memcpy(&uni[ofsPos], &block.vertices[0], sizePos);
-	memcpy(&uni[ofsSkin], &block.skin[0], sizeSkin);
+	int sizeVertex = numVertices * sizeof(MeshVertex);
 
-	const InputElement elements[] = {
-		CInputElement(0, "POSITION", SF_R32G32B32_FLOAT, ofsPos + 0),
-		CInputElement(0, "NORMAL", SF_R32G32B32_FLOAT, ofsPos + 12),
-		CInputElement(0, "vColor", SF_R8G8B8A8_UNORM, ofsPos + 24),
-		CInputElement(0, "vTexcoord", SF_R32G32_FLOAT, ofsPos + 28),
-		CInputElement(1, "vBlendWeights", SF_R32G32B32_FLOAT, ofsSkin + 0),
-		CInputElement(1, "vBlendIndices", SF_R8G8B8A8_UINT, ofsSkin + 12),
-		CInputElement(2, "drawId", SF_R16_UINT, 0, true),
+	static const InputElement elements[] = {
+		CInputElement(0, "POSITION", SF_R32G32B32_FLOAT, 0),
+		CInputElement(0, "NORMAL", SF_R32G32B32_FLOAT, 12),
+		CInputElement(0, "vColor", SF_R8G8B8A8_UNORM, 24),
+		CInputElement(0, "vTexcoord", SF_R32G32_FLOAT, 28),
+		CInputElement(0, "vBlendWeights", SF_R32G32B32_FLOAT, 36),
+		CInputElement(0, "vBlendIndices", SF_R8G8B8A8_UINT, 48),
+		CInputElement(1, "drawId", SF_R16_UINT, 0, true),
 	};
 
-	vbo = afCreateVertexBuffer(sizeAll, &uni[0]);
+	vbo = afCreateVertexBuffer(sizeVertex, &block.vertices[0]);
 	perInstanceBuffer = afCreateVertexBuffer(sizeof(perInstanceBufferSource), perInstanceBufferSource);
 	pIndexBuffer = afCreateIndexBuffer(indices, numIndices);
 
@@ -110,8 +98,8 @@ void MeshRenderer::Init(const Block& block)
 
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
-	GLuint verts[] = { vbo, vbo, perInstanceBuffer };
-	GLsizei strides[] = { sizeof(MeshVertex), sizeof(MeshSkin), sizeof(perInstanceBufferSource[0]) };
+	GLuint verts[] = { vbo, perInstanceBuffer };
+	GLsizei strides[] = { sizeof(MeshVertex), sizeof(perInstanceBufferSource[0]) };
 	afSetVertexAttributes(shaderId, elements, dimof(elements), block.indices.size(), verts, strides);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, pIndexBuffer);
 	glBindVertexArray(0);

@@ -2,13 +2,7 @@
 
 DebugRenderer debugRenderer;
 
-static void InitSkin(MeshSkin& s, BONE_ID boneId)
-{
-	s.blendIndices.x = s.blendIndices.y = s.blendIndices.z = s.blendIndices.w = boneId;
-	s.blendWeights.x = s.blendWeights.y = s.blendWeights.z = 0;
-}
-
-static void InitVertex(MeshVertex& v, uint32_t color)
+static void InitVertex(MeshVertex& v, uint32_t color, BONE_ID boneId)
 {
 	v.normal.x = 1;
 	v.normal.y = 0;
@@ -16,6 +10,8 @@ static void InitVertex(MeshVertex& v, uint32_t color)
 	v.xyz.x = v.xyz.y = v.xyz.z = 0;
 	v.color = color;
 	v.uv.x = v.uv.y = 0;
+	v.blendIndices.x = v.blendIndices.y = v.blendIndices.z = v.blendIndices.w = boneId;
+	v.blendWeights.x = v.blendWeights.y = v.blendWeights.z = 0;
 }
 
 void CreateCone(Block& b, const Vec3& v1, const Vec3& v2, BONE_ID boneId, uint32_t color)
@@ -31,11 +27,9 @@ void CreateCone(Block& b, const Vec3& v1, const Vec3& v2, BONE_ID boneId, uint32
 	static const int div = 10;
 	for (int j = 0; j < div; j++) {
 		MeshVertex vert[3];
-		MeshSkin skin;
 		for (auto& it : vert) {
-			InitVertex(it, color);
+			InitVertex(it, color, boneId);
 		}
-		InitSkin(skin, boneId);
 		float rad = ((float)M_PI * 2) / div * (j + 1);
 		Vec3 vRot = v1 + vRot0 * cosf(rad) + vRot90 * sinf(rad);
 		vert[0].xyz = vRotLast;
@@ -45,7 +39,6 @@ void CreateCone(Block& b, const Vec3& v1, const Vec3& v2, BONE_ID boneId, uint32
 		for (int i = 0; i < 3; i++) {
 			vert[i].normal = normal;
 			b.vertices.push_back(vert[i]);
-			b.skin.push_back(skin);
 			b.indices.push_back(b.indices.size());
 		}
 		vRotLast = vRot;
