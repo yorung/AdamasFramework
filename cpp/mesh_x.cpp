@@ -487,7 +487,6 @@ bool MeshX::ParseMesh(char* imgFrame, Block& block, BONE_ID frameId)
 {
 	auto& vertices = block.vertices;
 	auto& skin = block.skin;
-	auto& color = block.color;
 	auto& indices = block.indices;
 	vertices.clear();
 	indices.clear();
@@ -606,16 +605,13 @@ bool MeshX::ParseMesh(char* imgFrame, Block& block, BONE_ID frameId)
 		v.normal.x = 1;
 		v.normal.y = 0;
 		v.normal.z = 0;
-		vertices.push_back(v);
-
-		MeshColor c;
-		c.uv = texCoords[i];
-		c.color = 0xffffffff;
+		v.uv = texCoords[i];
+		v.color = 0xffffffff;
 		if (i < nVertexColors) {
 			Vec4 f4 = vertexColors[i];
-			c.color = _convF4ToU32(f4);
+			v.color = _convF4ToU32(f4);
 		}
-		color.push_back(c);
+		vertices.push_back(v);
 
 		MeshSkin s;
 		s.blendWeights.x = 0;
@@ -669,7 +665,6 @@ void MeshX::_mergeBlocks(Block& d, const Block& s)
 	int indicesBase = d.indices.size();
 	std::for_each(s.vertices.begin(), s.vertices.end(), [&](const MeshVertex& v) { d.vertices.push_back(v); });
 	std::for_each(s.skin.begin(), s.skin.end(), [&](const MeshSkin& s) { d.skin.push_back(s); });
-	std::for_each(s.color.begin(), s.color.end(), [&](const MeshColor& s) { d.color.push_back(s); });
 	std::for_each(s.indices.begin(), s.indices.end(), [&](unsigned i) { d.indices.push_back(i + verticeBase); });
 	std::for_each(s.materialMaps.begin(), s.materialMaps.end(), [&](MaterialMap m) {
 		m.faceStartIndex += indicesBase / 3;
