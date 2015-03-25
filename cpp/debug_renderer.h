@@ -1,6 +1,6 @@
 class DebugRenderer
 {
-	MeshRenderer pivotsRenderer;
+	RenderMesh pivotsRenderer;
 	Block pivots;
 	void CreatePivotMesh();
 public:

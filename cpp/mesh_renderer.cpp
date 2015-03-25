@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+MeshRenderer meshRenderer;
+
 static const uint16_t perInstanceBufferSource[] = { 0, 1, 2 };
 
 struct DrawElementsIndirectCommand
@@ -11,18 +13,7 @@ struct DrawElementsIndirectCommand
 	GLuint baseInstance;
 };
 
-struct MeshConstantBuffer
-{
-	Mat matW;
-	Mat matV;
-	Mat matP;
-	Vec4 faceColor;
-	Vec4 emissive;
-	Vec3 camPos;
-	float padding1;
-};
-
-MeshRenderer::MeshRenderer()
+RenderMesh::RenderMesh()
 {
 	vbo = 0;
 	drawIndirectBuffer = 0;
@@ -30,12 +21,12 @@ MeshRenderer::MeshRenderer()
 	perInstanceBuffer = 0;
 }
 
-MeshRenderer::~MeshRenderer()
+RenderMesh::~RenderMesh()
 {
 	Destroy();
 }
 
-void MeshRenderer::Destroy()
+void RenderMesh::Destroy()
 {
 	afSafeDeleteBuffer(pIndexBuffer);
 	afSafeDeleteBuffer(vbo);
@@ -44,7 +35,7 @@ void MeshRenderer::Destroy()
 	afSafeDeleteVertexArray(vao);
 }
 
-void MeshRenderer::Init(const Block& block)
+void RenderMesh::Init(const Block& block)
 {
 	if (block.vertices.empty() || block.indices.empty()) {
 		return;
@@ -106,7 +97,7 @@ void MeshRenderer::Init(const Block& block)
 
 }
 
-void MeshRenderer::Draw(const Mat BoneMatrices[BONE_MAX], int nBones, const Block& block) const
+void RenderMesh::Draw(const Mat BoneMatrices[BONE_MAX], int nBones, const Block& block) const
 {
 	shaderMan.Apply(shaderId);
 
@@ -133,4 +124,42 @@ void MeshRenderer::Draw(const Mat BoneMatrices[BONE_MAX], int nBones, const Bloc
 	glBindVertexArray(0);
 	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);
 	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+MeshRenderer::MeshRenderer()
+{
+}
+
+MeshRenderer::~MeshRenderer()
+{
+	assert(renderMeshes.empty());
+}
+
+void MeshRenderer::Create()
+{
+	renderMeshes.push_back(nullptr);	// render mesh ID must not be 0
+}
+
+void MeshRenderer::Destroy()
+{
+	for (int i = 0; i < renderMeshes.size(); i++) {
+		RenderMesh* m = renderMeshes[i];
+		delete m;
+	}
+	renderMeshes.clear();
+}
+
+MeshRenderer::MRID MeshRenderer::CreateRenderMesh(const Block& block)
+{
+	RenderMesh* r = new RenderMesh;
+	r->Init(block);
+	renderMeshes.push_back(r);
+	return renderMeshes.size() - 1;
+}
+
+void MeshRenderer::DestroyRenderMesh(MRID id)
+{
+	if (id < renderMeshes.size()) {
+		SAFE_DELETE(renderMeshes[id]);
+	}
 }

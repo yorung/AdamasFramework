@@ -96,6 +96,7 @@ void App::Destroy()
 	shaderMan.Destroy();
 	waterSurface.Destroy();
 	fontMan.Destroy();
+	meshRenderer.Destroy();
 }
 
 void App::Update()

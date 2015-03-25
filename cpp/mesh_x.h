@@ -124,7 +124,7 @@ struct MeshXBvhBinding
 class MeshX : public Mesh
 {
 private:
-	MeshRenderer m_meshRenderer;
+	RenderMesh m_meshRenderer;
 
 private:
 	bool ParseMesh(char* imgFrame, Block& block, BONE_ID frameId);
@@ -156,7 +156,7 @@ private:
 	Block m_block;
 	int m_animTicksPerSecond;
 
-	MeshRenderer bonesRenderer;
+	RenderMesh bonesRenderer;
 	Block bones;
 public:
 	const Block& GetRawDatas() const { return m_block; }
