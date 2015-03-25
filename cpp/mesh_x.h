@@ -124,7 +124,7 @@ struct MeshXBvhBinding
 class MeshX : public Mesh
 {
 private:
-	RenderMesh m_meshRenderer;
+	MeshRenderer::MRID renderMeshId;
 
 private:
 	bool ParseMesh(char* imgFrame, Block& block, BONE_ID frameId);

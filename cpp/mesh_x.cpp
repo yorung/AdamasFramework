@@ -395,8 +395,7 @@ MeshX::MeshX(const char *fileName)
 	meshPath = strPath;
 	LoadSub();
 	
-	m_meshRenderer.Init(m_block);
-
+	renderMeshId = meshRenderer.CreateRenderMesh(m_block);
 	CreateBoneMesh();
 }
 
@@ -996,7 +995,7 @@ void MeshX::LoadSub()
 
 MeshX::~MeshX()
 {
-	m_meshRenderer.Destroy();
+	meshRenderer.SafeDestroyRenderMesh(renderMeshId);
 	bonesRenderer.Destroy();
 }
 
@@ -1098,7 +1097,7 @@ void MeshX::Draw(const MeshXAnimResult& animResult) const
 		}
 
 		if (g_type == "mesh") {
-			m_meshRenderer.Draw(vertexTransformMat, dimof(vertexTransformMat), m_block);
+			meshRenderer.DrawRenderMesh(renderMeshId, vertexTransformMat, dimof(vertexTransformMat), m_block);
 		}
 		if (g_type == "bone") {
 			bonesRenderer.Draw(vertexTransformMat, dimof(vertexTransformMat), bones);

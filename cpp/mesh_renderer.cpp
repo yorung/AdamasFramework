@@ -157,12 +157,15 @@ MeshRenderer::MRID MeshRenderer::CreateRenderMesh(const Block& block)
 	return renderMeshes.size() - 1;
 }
 
-void MeshRenderer::DestroyRenderMesh(MRID id)
+void MeshRenderer::SafeDestroyRenderMesh(MRID& id)
 {
 	if (id >= renderMeshes.size()) {
 		return;
 	}
-	SAFE_DELETE(renderMeshes[id]);
+	if (id != INVALID_MRID) {
+		SAFE_DELETE(renderMeshes[id]);
+		id = INVALID_MRID;
+	}
 }
 
 void MeshRenderer::DrawRenderMesh(MRID id, const Mat BoneMatrices[BONE_MAX], int nBones, const Block& block) const

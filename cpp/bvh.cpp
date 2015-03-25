@@ -540,7 +540,7 @@ void Bvh::LoadSub(const char *fileName)
 
 Bvh::~Bvh()
 {
-	meshRenderer.DestroyRenderMesh(renderMeshId);
+	meshRenderer.SafeDestroyRenderMesh(renderMeshId);
 }
 
 void Bvh::CalcFrameMatrices()

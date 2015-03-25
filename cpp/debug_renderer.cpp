@@ -54,7 +54,7 @@ void DebugRenderer::CreatePivotMesh()
 		CreateCone(pivots, Vec3(), Vec3(0, 0, len), i, 0xffff0000);
 	}
 
-	pivotsRenderer.Init(pivots);
+	pivotsRenderMeshId = meshRenderer.CreateRenderMesh(pivots);
 
 	Material mat;
 	mat.faceColor.x = 0.6f;
@@ -100,15 +100,15 @@ void DebugRenderer::DrawPivots(const Mat mat[BONE_MAX], int num)
 		mat2[i] = i < num ? mat[i] : Mat();
 	}
 
-	pivotsRenderer.Draw(mat2, BONE_MAX, pivots);
+	meshRenderer.DrawRenderMesh(pivotsRenderMeshId, mat2, BONE_MAX, pivots);
 
 	for (int i = 0; i < BONE_MAX; i++) {
 		mat2[i] = orthogonalize(mat2[i]);
 	}
-	pivotsRenderer.Draw(mat2, BONE_MAX, pivots);
+	meshRenderer.DrawRenderMesh(pivotsRenderMeshId, mat2, BONE_MAX, pivots);
 }
 
 void DebugRenderer::Destroy()
 {
-	pivotsRenderer.Destroy();
+	meshRenderer.SafeDestroyRenderMesh(pivotsRenderMeshId);
 }
