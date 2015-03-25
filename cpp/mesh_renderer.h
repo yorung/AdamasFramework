@@ -30,6 +30,7 @@ public:
 	void Destroy();
 	MRID CreateRenderMesh(const Block& block);
 	void DestroyRenderMesh(MRID id);
+	void DrawRenderMesh(MRID id, const Mat BoneMatrices[BONE_MAX], int nBones, const Block& block) const;
 };
 
 extern MeshRenderer meshRenderer;

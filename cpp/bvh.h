@@ -52,7 +52,7 @@ private:
 	float frameTime;
 	int channels;
 
-	RenderMesh m_meshRenderer;
+	MeshRenderer::MRID renderMeshId;
 	Block m_block;
 public:
 	const Block& GetRawDatas() const { return m_block; }

@@ -142,7 +142,7 @@ void MeshRenderer::Create()
 
 void MeshRenderer::Destroy()
 {
-	for (int i = 0; i < renderMeshes.size(); i++) {
+	for (int i = 0; i < (int)renderMeshes.size(); i++) {
 		RenderMesh* m = renderMeshes[i];
 		delete m;
 	}
@@ -159,7 +159,20 @@ MeshRenderer::MRID MeshRenderer::CreateRenderMesh(const Block& block)
 
 void MeshRenderer::DestroyRenderMesh(MRID id)
 {
-	if (id < renderMeshes.size()) {
-		SAFE_DELETE(renderMeshes[id]);
+	if (id >= renderMeshes.size()) {
+		return;
 	}
+	SAFE_DELETE(renderMeshes[id]);
+}
+
+void MeshRenderer::DrawRenderMesh(MRID id, const Mat BoneMatrices[BONE_MAX], int nBones, const Block& block) const
+{
+	if (id >= renderMeshes.size()) {
+		return;
+	}
+	RenderMesh* r = renderMeshes[id];
+	if (!r) {
+		return;
+	}
+	r->Draw(BoneMatrices, nBones, block);
 }
