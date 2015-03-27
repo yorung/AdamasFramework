@@ -168,14 +168,40 @@ void MeshRenderer::SafeDestroyRenderMesh(MRID& id)
 	}
 }
 
-void MeshRenderer::DrawRenderMesh(MRID id, const Mat BoneMatrices[BONE_MAX], int nBones, const Block& block) const
+RenderMesh* MeshRenderer::GetMeshByMRID(MRID id)
 {
 	if (id >= renderMeshes.size()) {
-		return;
+		return nullptr;
 	}
 	RenderMesh* r = renderMeshes[id];
 	if (!r) {
-		return;
+		return nullptr;
 	}
-	r->Draw(BoneMatrices, nBones, block);
+	return r;
+}
+
+void MeshRenderer::DrawRenderMesh(MRID id, const Mat BoneMatrices[BONE_MAX], int nBones, const Block& block) const
+{
+	assert(GetMeshByMRID(id));
+	RenderCommand c;
+	c.id = id;
+	c.boneStartIndex = renderBoneMatrices.size();
+	c.nBones = nBones;
+	renderCommands.push_back(c);
+
+	renderBoneMatrices.resize(c.boneStartIndex + nBones);
+	std::copy_n(BoneMatrices, nBones, renderBoneMatrices.begin() + c.boneStartIndex);
+}
+
+void MeshRenderer::Flush()
+{
+	for (int i = 0; i < renderCommands.size(); i++) {
+		RenderCommand c = renderCommands[i];
+		RenderMesh* r = GetMeshByMRID(c.id);
+		assert(r);
+		if (!r) {
+			continue;
+		}
+		r->Draw(&renderBoneMatrices[c.boneStartIndex], c.nBones, block);
+	}
 }
