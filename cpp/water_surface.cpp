@@ -268,21 +268,13 @@ void WaterSurface::Init()
 
 	glGenFramebuffers(1, &framebufferObject);
 
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
 	GLuint vertexBufferIds[] = { vbo };
 	GLsizei strides[] = { sizeof(WaterVert) };
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-	afSetVertexAttributes(shaderId, elements, dimof(elements), 1, vertexBufferIds, strides);
-	glBindVertexArray(0);
+	vao = afCreateVAO(shaderId, elements, dimof(elements), 1, vertexBufferIds, strides, ibo);
 
-	glGenVertexArrays(1, &vaoFullScr);
-	glBindVertexArray(vaoFullScr);
 	GLuint vertexBufferIdsFullScr[] = { vboFullScr };
 	GLsizei stridesFullScr[] = { sizeof(Vec2) };
-	afSetVertexAttributes(shaderIdFullScr, elementsFullScr, dimof(elementsFullScr), 1, vertexBufferIdsFullScr, stridesFullScr);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboFullScr);
-	glBindVertexArray(0);
+	vaoFullScr = afCreateVAO(shaderIdFullScr, elementsFullScr, dimof(elementsFullScr), 1, vertexBufferIdsFullScr, stridesFullScr, iboFullScr);
 }
 
 void WaterSurface::UpdateRipple()

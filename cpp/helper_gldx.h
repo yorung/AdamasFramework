@@ -51,7 +51,7 @@ public:
 };
 
 void afSetVertexAttributes(GLuint program, const InputElement elements[], int numElements, int numBuffers, GLuint const *vertexBufferIds, const GLsizei* strides);
-
+GLuint afCreateVAO(GLuint program, const InputElement elements[], int numElements, int numBuffers, GLuint const *vertexBufferIds, const GLsizei* strides, GLuint ibo);
 
 //#ifdef USE_FAKE_SAMPLER
 #define glGenSamplers(a,b)

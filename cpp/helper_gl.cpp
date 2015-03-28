@@ -111,3 +111,14 @@ void afSetVertexAttributes(GLuint program, const InputElement elements[], int nu
 	}
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
+
+GLuint afCreateVAO(GLuint program, const InputElement elements[], int numElements, int numBuffers, GLuint const *vertexBufferIds, const GLsizei* strides, GLuint ibo)
+{
+	GLuint vao;
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+	afSetVertexAttributes(program, elements, numElements, numBuffers, vertexBufferIds, strides);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+	glBindVertexArray(0);
+	return vao;
+}
