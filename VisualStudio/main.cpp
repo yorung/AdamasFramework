@@ -21,9 +21,12 @@ static void DumpInfo()
 	printf("GL_VENDOR = %s\n", (char*)glGetString(GL_VENDOR));
 	printf("GL_SHADING_LANGUAGE_VERSION = %s\n", (char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
 	puts("------ GL_EXTENSIONS");
-	const GLubyte* ext = glGetString(GL_EXTENSIONS);
-	for (; *ext; ext++) {
-		printf("%c", *ext == ' ' ? '\n' : *ext);
+
+	GLint num;
+	glGetIntegerv(GL_NUM_EXTENSIONS, &num);
+	for (int i = 0; i < num; i++) {
+		const GLubyte* ext = glGetStringi(GL_EXTENSIONS, i);
+		printf("%s\n", ext);
 	}
 }
 
