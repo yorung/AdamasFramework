@@ -25,7 +25,7 @@ void main() {
 
 
 	vec3 pos = POSITION.xyz;
-	pos.x += drawId * 2.1;
+	pos.x += drawId * 2.1f;
 
 	gl_Position = matP * matWV * comb * vec4(pos, 1);
 	texcoord = vTexcoord;
