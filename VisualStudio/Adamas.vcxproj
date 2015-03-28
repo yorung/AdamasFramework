@@ -19,6 +19,7 @@
     <ClCompile Include="..\cpp\font_man.cpp" />
     <ClCompile Include="..\cpp\fps.cpp" />
     <ClCompile Include="..\cpp\helper.cpp" />
+    <ClCompile Include="..\cpp\helper_gl.cpp" />
     <ClCompile Include="..\cpp\helper_gldx.cpp" />
     <ClCompile Include="..\cpp\hub.cpp" />
     <ClCompile Include="..\cpp\joint_db.cpp" />
