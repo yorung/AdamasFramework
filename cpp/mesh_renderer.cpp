@@ -190,7 +190,7 @@ void MeshRenderer::DrawRenderMesh(MRID id, const Mat BoneMatrices[BONE_MAX], int
 	renderCommands.push_back(c);
 
 	renderBoneMatrices.resize(c.boneStartIndex + nBones);
-	std::copy_n(&BoneMatrices[0], nBones, &renderBoneMatrices[0] + c.boneStartIndex);
+	memcpy(&renderBoneMatrices[0] + c.boneStartIndex, &BoneMatrices[0], sizeof(Mat) * nBones);
 }
 
 void MeshRenderer::Flush()
