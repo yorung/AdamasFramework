@@ -35,6 +35,7 @@ private:
 	std::vector<RenderMesh*> renderMeshes;
 	std::vector<RenderCommand> renderCommands;
 	std::vector<Mat> renderBoneMatrices;
+	GLuint ssboForBoneMatrices;
 	RenderMesh* GetMeshByMRID(MRID id);
 public:
 	MeshRenderer();

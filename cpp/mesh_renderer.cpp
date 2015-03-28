@@ -4,6 +4,10 @@ MeshRenderer meshRenderer;
 
 static const uint16_t perInstanceBufferSource[] = { 0, 1, 2 };
 
+static const int SSBO_SIZE = sizeof(Mat) * 1000;
+
+static const int SSBO_BINDING_POINT = 5;
+
 struct DrawElementsIndirectCommand
 {
 	GLuint count;
@@ -87,14 +91,9 @@ void RenderMesh::Init(const Block& block)
 	glBufferData(GL_DRAW_INDIRECT_BUFFER, cmds.size() * sizeof(DrawElementsIndirectCommand), &cmds[0], GL_STATIC_DRAW);
 	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);
 
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
 	GLuint verts[] = { vbo, perInstanceBuffer };
 	GLsizei strides[] = { sizeof(MeshVertex), sizeof(perInstanceBufferSource[0]) };
-	afSetVertexAttributes(shaderId, elements, dimof(elements), block.indices.size(), verts, strides);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, pIndexBuffer);
-	glBindVertexArray(0);
-
+	vao = afCreateVAO(shaderId, elements, dimof(elements), block.indices.size(), verts, strides, pIndexBuffer);
 }
 
 void RenderMesh::Draw(const Mat BoneMatrices[BONE_MAX], int nBones, MatMan::MMID materialId) const
@@ -136,6 +135,10 @@ MeshRenderer::~MeshRenderer()
 void MeshRenderer::Create()
 {
 	renderMeshes.push_back(nullptr);	// render mesh ID must not be 0
+	glGenBuffers(1, &ssboForBoneMatrices);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssboForBoneMatrices);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, SSBO_SIZE, nullptr, GL_DYNAMIC_COPY);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
 
 void MeshRenderer::Destroy()
@@ -145,6 +148,7 @@ void MeshRenderer::Destroy()
 		delete m;
 	}
 	renderMeshes.clear();
+	afSafeDeleteBuffer(ssboForBoneMatrices);
 }
 
 MeshRenderer::MRID MeshRenderer::CreateRenderMesh(const Block& block)
@@ -192,6 +196,23 @@ void MeshRenderer::DrawRenderMesh(MRID id, const Mat BoneMatrices[BONE_MAX], int
 	renderBoneMatrices.resize(c.boneStartIndex + nBones);
 	memcpy(&renderBoneMatrices[0] + c.boneStartIndex, &BoneMatrices[0], sizeof(Mat) * nBones);
 }
+
+#if 0
+void MeshRenderer::Flush()
+{
+	shaderMan.Apply(shaderId);
+
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssboForBoneMatrices);
+	GLvoid* buf = glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_WRITE_ONLY);
+	memcpy(buf, &renderBoneMatrices[0], sizeof(Mat) * renderBoneMatrices.size());
+	glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+
+
+
+
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+}
+#endif
 
 void MeshRenderer::Flush()
 {
