@@ -148,8 +148,8 @@ void WaterSurface::Destroy()
 		glDeleteRenderbuffers(1, &renderbufferObject);
 		renderbufferObject = 0;
 	}
-	afSafeDeleteVertexArray(vao);
-	afSafeDeleteVertexArray(vaoFullScr);
+	afSafeDeleteVAO(vao);
+	afSafeDeleteVAO(vaoFullScr);
 }
 
 static void HandleGLError(const char* func, int line, const char* command)

@@ -82,7 +82,7 @@ inline void afSafeDeleteTexture(GLuint& t)
 		t = 0;
 	}
 }
-inline void afSafeDeleteVertexArray(GLuint& vao)
+inline void afSafeDeleteVAO(GLuint& vao)
 {
 	if (vao != 0) {
 		glDeleteVertexArrays(1, &vao);

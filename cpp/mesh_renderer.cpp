@@ -32,7 +32,7 @@ void RenderMesh::Destroy()
 	afSafeDeleteBuffer(vbo);
 	afSafeDeleteBuffer(drawIndirectBuffer);
 	afSafeDeleteBuffer(perInstanceBuffer);
-	afSafeDeleteVertexArray(vao);
+	afSafeDeleteVAO(vao);
 }
 
 void RenderMesh::Init(const Block& block)
