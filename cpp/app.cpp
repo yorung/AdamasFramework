@@ -58,6 +58,7 @@ void App::Draw()
 	MeshXAnimResult r;
 	mesh->CalcAnimation(0, GetTime(), r);
 	mesh->Draw(r);
+	meshRenderer.Flush();
 }
 
 void App::Init()

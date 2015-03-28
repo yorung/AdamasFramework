@@ -376,7 +376,7 @@ void MeshX::CreateBoneMesh()
 	map.faces = bones.indices.size() / 3;
 	bones.materialMaps.push_back(map);
 
-	bonesRenderer.Init(bones);
+	boneRenderMeshId = meshRenderer.CreateRenderMesh(bones);
 }
 
 
@@ -996,7 +996,7 @@ void MeshX::LoadSub()
 MeshX::~MeshX()
 {
 	meshRenderer.SafeDestroyRenderMesh(renderMeshId);
-	bonesRenderer.Destroy();
+	meshRenderer.SafeDestroyRenderMesh(boneRenderMeshId);
 }
 
 void MeshX::CalcFrameMatrices(MeshXAnimResult& animResult, const Mat localMats[BONE_MAX]) const
@@ -1100,7 +1100,7 @@ void MeshX::Draw(const MeshXAnimResult& animResult) const
 			meshRenderer.DrawRenderMesh(renderMeshId, vertexTransformMat, dimof(vertexTransformMat), m_block);
 		}
 		if (g_type == "bone") {
-			bonesRenderer.Draw(vertexTransformMat, dimof(vertexTransformMat), bones);
+			meshRenderer.DrawRenderMesh(boneRenderMeshId, vertexTransformMat, dimof(vertexTransformMat), bones);
 		}
 	}
 }

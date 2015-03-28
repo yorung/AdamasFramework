@@ -16,32 +16,34 @@ public:
 	~RenderMesh();
 	void Destroy();
 	void Init(const Block& block);
-	void Draw(const Mat BoneMatrices[BONE_MAX], int nBones, const Block& block) const;
-};
-
-struct RenderCommand
-{
-	MeshRenderer::MRID id;
-	int boneStartIndex;
-	int nBones;
+	void Draw(const Mat BoneMatrices[BONE_MAX], int nBones, MatMan::MMID materialId) const;
 };
 
 class MeshRenderer
 {
+public:
+	typedef unsigned int MRID;
+	static const MRID INVALID_MRID = 0;
+private:
+	struct RenderCommand
+	{
+		MeshRenderer::MRID meshId;
+		MatMan::MMID materialId;
+		int boneStartIndex;
+		int nBones;
+	};
 	std::vector<RenderMesh*> renderMeshes;
 	std::vector<RenderCommand> renderCommands;
 	std::vector<Mat> renderBoneMatrices;
 	RenderMesh* GetMeshByMRID(MRID id);
 public:
-	typedef unsigned int MRID;
-	static const MRID INVALID_MRID = 0;
 	MeshRenderer();
 	~MeshRenderer();
 	void Create();
 	void Destroy();
 	MRID CreateRenderMesh(const Block& block);
 	void SafeDestroyRenderMesh(MRID& id);
-	void DrawRenderMesh(MRID id, const Mat BoneMatrices[BONE_MAX], int nBones, const Block& block) const;
+	void DrawRenderMesh(MRID id, const Mat BoneMatrices[BONE_MAX], int nBones, const Block& block);
 	void Flush();
 };
 

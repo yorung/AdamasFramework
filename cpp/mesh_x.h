@@ -156,7 +156,7 @@ private:
 	Block m_block;
 	int m_animTicksPerSecond;
 
-	RenderMesh bonesRenderer;
+	MeshRenderer::MRID boneRenderMeshId;
 	Block bones;
 public:
 	const Block& GetRawDatas() const { return m_block; }

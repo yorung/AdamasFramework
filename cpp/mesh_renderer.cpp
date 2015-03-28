@@ -97,7 +97,7 @@ void RenderMesh::Init(const Block& block)
 
 }
 
-void RenderMesh::Draw(const Mat BoneMatrices[BONE_MAX], int nBones, const Block& block) const
+void RenderMesh::Draw(const Mat BoneMatrices[BONE_MAX], int nBones, MatMan::MMID materialId) const
 {
 	shaderMan.Apply(shaderId);
 
@@ -114,13 +114,11 @@ void RenderMesh::Draw(const Mat BoneMatrices[BONE_MAX], int nBones, const Block&
 
 	glActiveTexture(GL_TEXTURE0);
 
-	assert(block.materialMaps.size() > 0);
-	const MaterialMap& matMap = block.materialMaps[0];
-	const Material* mat = matMan.Get(matMap.materialId);
+	const Material* mat = matMan.Get(materialId);
 	glBindTexture(GL_TEXTURE_2D, mat->tmid);
 	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, drawIndirectBuffer);
 	glBindVertexArray(vao);
-	glMultiDrawElementsIndirect(GL_TRIANGLES, AFIndexTypeToDevice, nullptr, block.materialMaps.size() * dimof(perInstanceBufferSource), 0);
+	glMultiDrawElementsIndirect(GL_TRIANGLES, AFIndexTypeToDevice, nullptr, dimof(perInstanceBufferSource), 0);
 	glBindVertexArray(0);
 	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -180,28 +178,30 @@ RenderMesh* MeshRenderer::GetMeshByMRID(MRID id)
 	return r;
 }
 
-void MeshRenderer::DrawRenderMesh(MRID id, const Mat BoneMatrices[BONE_MAX], int nBones, const Block& block) const
+void MeshRenderer::DrawRenderMesh(MRID id, const Mat BoneMatrices[BONE_MAX], int nBones, const Block& block)
 {
 	assert(GetMeshByMRID(id));
+	assert(!block.materialMaps.empty());
 	RenderCommand c;
-	c.id = id;
+	c.meshId = id;
+	c.materialId = block.materialMaps[0].materialId;
 	c.boneStartIndex = renderBoneMatrices.size();
 	c.nBones = nBones;
 	renderCommands.push_back(c);
 
 	renderBoneMatrices.resize(c.boneStartIndex + nBones);
-	std::copy_n(BoneMatrices, nBones, renderBoneMatrices.begin() + c.boneStartIndex);
+	std::copy_n(&BoneMatrices[0], nBones, &renderBoneMatrices[0] + c.boneStartIndex);
 }
 
 void MeshRenderer::Flush()
 {
-	for (int i = 0; i < renderCommands.size(); i++) {
+	for (int i = 0; i < (int)renderCommands.size(); i++) {
 		RenderCommand c = renderCommands[i];
-		RenderMesh* r = GetMeshByMRID(c.id);
+		RenderMesh* r = GetMeshByMRID(c.meshId);
 		assert(r);
 		if (!r) {
 			continue;
 		}
-		r->Draw(&renderBoneMatrices[c.boneStartIndex], c.nBones, block);
+		r->Draw(&renderBoneMatrices[c.boneStartIndex], c.nBones, c.materialId);
 	}
 }
