@@ -204,4 +204,6 @@ void MeshRenderer::Flush()
 		}
 		r->Draw(&renderBoneMatrices[c.boneStartIndex], c.nBones, c.materialId);
 	}
+	renderBoneMatrices.clear();
+	renderCommands.clear();
 }

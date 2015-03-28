@@ -69,6 +69,8 @@ void App::Init()
 	glClearColor(0.0f, 0.2f, 0.5f, 1.0f);
 	glEnable(GL_DEPTH_TEST);
 	glClearDepthf(0);
+
+	meshRenderer.Create();
 	waterSurface.Init();
 	fontMan.Init();
 	LoadMesh("jiji.x");
