@@ -32,6 +32,10 @@ static void DumpInfo()
 
 static void APIENTRY debugMessageHandler(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam)
 {
+	switch (type) {
+	case GL_DEBUG_TYPE_OTHER_ARB:
+		return;
+	}
 	puts(message);
 }
 #endif
