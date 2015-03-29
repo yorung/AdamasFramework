@@ -77,6 +77,20 @@
   <ItemGroup>
     <ResourceCompile Include="Resource.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\assets\shaders\font.fs" />
+    <None Include="..\assets\shaders\font.vs" />
+    <None Include="..\assets\shaders\letterbox.fs" />
+    <None Include="..\assets\shaders\letterbox.vs" />
+    <None Include="..\assets\shaders\skin.400.fs" />
+    <None Include="..\assets\shaders\skin.400.vs" />
+    <None Include="..\assets\shaders\skin.fs" />
+    <None Include="..\assets\shaders\skin.vs" />
+    <None Include="..\assets\shaders\vivid.fs" />
+    <None Include="..\assets\shaders\vivid.vs" />
+    <None Include="..\assets\shaders\water.fs" />
+    <None Include="..\assets\shaders\water.vs" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{D13F848D-7701-43BA-B781-1481A54FE77D}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>

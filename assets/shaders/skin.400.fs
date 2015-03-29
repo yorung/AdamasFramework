@@ -1,4 +1,4 @@
-#version 400
+#version 430
 in vec2 texcoord;
 in vec4 color;
 uniform sampler2D sampler;

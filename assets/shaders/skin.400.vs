@@ -1,4 +1,4 @@
-#version 400
+#version 430
 in vec3 POSITION;
 in vec3 NORMAL;
 in vec2 vTexcoord;
@@ -11,7 +11,11 @@ out vec4 color;
 uniform mat4 matW;
 uniform mat4 matV;
 uniform mat4 matP;
+uniform uint boneStartIndex;
 uniform mat4 bones[50];
+layout (std430) buffer boneSSBO {
+	mat4 bonesSSBO[];
+};
 
 
 void main() {

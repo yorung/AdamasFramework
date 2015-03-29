@@ -155,10 +155,51 @@
     <Filter Include="PlatformIndipendent">
       <UniqueIdentifier>{4a920d4b-d9c9-44e6-ab42-5e42e684f4a6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="shaders">
+      <UniqueIdentifier>{e8de3368-1a62-4c1b-a6da-7f288e0bc3a1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource.rc">
       <Filter>Windows</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\assets\shaders\font.fs">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\assets\shaders\font.vs">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\assets\shaders\letterbox.fs">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\assets\shaders\letterbox.vs">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\assets\shaders\skin.400.fs">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\assets\shaders\skin.400.vs">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\assets\shaders\skin.fs">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\assets\shaders\skin.vs">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\assets\shaders\vivid.fs">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\assets\shaders\vivid.vs">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\assets\shaders\water.fs">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\assets\shaders\water.vs">
+      <Filter>shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
