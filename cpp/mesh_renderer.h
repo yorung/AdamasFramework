@@ -10,7 +10,6 @@ class RenderMesh
 	GLuint perInstanceBuffer;
 	GLuint pIndexBuffer;
 	GLuint drawIndirectBuffer;
-	ShaderMan::SMID shaderId;
 public:
 	RenderMesh();
 	~RenderMesh();
@@ -25,6 +24,7 @@ public:
 	typedef unsigned int MRID;
 	static const MRID INVALID_MRID = 0;
 private:
+	ShaderMan::SMID shaderId;
 	struct RenderCommand
 	{
 		MeshRenderer::MRID meshId;
@@ -42,6 +42,7 @@ public:
 	~MeshRenderer();
 	void Create();
 	void Destroy();
+	ShaderMan::SMID GetShaderId() { return shaderId; }
 	MRID CreateRenderMesh(const Block& block);
 	void SafeDestroyRenderMesh(MRID& id);
 	void DrawRenderMesh(MRID id, const Mat BoneMatrices[BONE_MAX], int nBones, const Block& block);

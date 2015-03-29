@@ -51,9 +51,6 @@ void RenderMesh::Init(const Block& block)
 
 	Destroy();
 
-	shaderId = shaderMan.Create("skin.400");
-	assert(shaderId);
-
 	int sizeVertex = numVertices * sizeof(MeshVertex);
 
 	static const InputElement elements[] = {
@@ -93,18 +90,17 @@ void RenderMesh::Init(const Block& block)
 
 	GLuint verts[] = { vbo, perInstanceBuffer };
 	GLsizei strides[] = { sizeof(MeshVertex), sizeof(perInstanceBufferSource[0]) };
+	int shaderId = meshRenderer.GetShaderId();
 	vao = afCreateVAO(shaderId, elements, dimof(elements), block.indices.size(), verts, strides, pIndexBuffer);
 }
 
 void RenderMesh::Draw(const Mat BoneMatrices[BONE_MAX], int nBones, MatMan::MMID materialId) const
 {
-	shaderMan.Apply(shaderId);
-
 	Mat matW, matV, matP;
 	matrixMan.Get(MatrixMan::WORLD, matW);
 	matrixMan.Get(MatrixMan::VIEW, matV);
 	matrixMan.Get(MatrixMan::PROJ, matP);
-
+	int shaderId = meshRenderer.GetShaderId();
 	glUniformMatrix4fv(glGetUniformLocation(shaderId, "matW"), 1, GL_FALSE, &matW.m[0][0]);
 	glUniformMatrix4fv(glGetUniformLocation(shaderId, "matV"), 1, GL_FALSE, &matV.m[0][0]);
 	glUniformMatrix4fv(glGetUniformLocation(shaderId, "matP"), 1, GL_FALSE, &matP.m[0][0]);
@@ -139,6 +135,9 @@ void MeshRenderer::Create()
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssboForBoneMatrices);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, SSBO_SIZE, nullptr, GL_DYNAMIC_COPY);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+	shaderId = shaderMan.Create("skin.400");
+	assert(shaderId);
 }
 
 void MeshRenderer::Destroy()
@@ -216,6 +215,7 @@ void MeshRenderer::Flush()
 
 void MeshRenderer::Flush()
 {
+	shaderMan.Apply(shaderId);
 	for (int i = 0; i < (int)renderCommands.size(); i++) {
 		RenderCommand c = renderCommands[i];
 		RenderMesh* r = GetMeshByMRID(c.meshId);
