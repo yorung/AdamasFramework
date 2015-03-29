@@ -8,6 +8,7 @@ static const MRID INVALID_MRID = 0;
 
 struct RenderCommand
 {
+	Mat matWorld;
 	MRID meshId;
 	MMID materialId;
 	int boneStartIndex;
@@ -37,6 +38,7 @@ public:
 	std::vector<RenderCommand> renderCommands;
 	std::vector<Mat> renderBoneMatrices;
 	GLuint ssboForBoneMatrices;
+	GLuint ssboForPerInstanceData;
 	RenderMesh* GetMeshByMRID(MRID id);
 public:
 	MeshRenderer();

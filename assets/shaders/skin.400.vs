@@ -12,6 +12,16 @@ uniform mat4 matW;
 uniform mat4 matV;
 uniform mat4 matP;
 uniform uint boneStartIndex;
+struct RenderCommand {
+	mat4 matWorld;
+	int meshId;
+	int materialId;
+	int boneStartIndex;
+	int nBones;
+};
+layout (std430) buffer perInstanceSSBO {
+	RenderCommand renderCommands[];
+};
 layout (std430) buffer boneSSBO {
 	mat4 bonesSSBO[];
 };
