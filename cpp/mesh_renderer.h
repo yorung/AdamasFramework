@@ -22,12 +22,13 @@ class RenderMesh
 	GLuint perInstanceBuffer;
 	GLuint pIndexBuffer;
 	GLuint drawIndirectBuffer;
+	DrawElementsIndirectCommand indirectCommand;
 public:
 	RenderMesh();
 	~RenderMesh();
 	void Destroy();
 	void Init(const Block& block);
-	void Draw(const RenderCommand& c) const;
+	void Draw(const RenderCommand& c, int instanceCount) const;
 };
 
 class MeshRenderer

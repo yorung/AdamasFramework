@@ -72,10 +72,10 @@ void RenderMesh::Init(const Block& block)
 		int start = matMap.faceStartIndex * 3;
 		DrawElementsIndirectCommand cmd = { count, 1, start, 0, 0 };
 		cmds.push_back(cmd);
-		DrawElementsIndirectCommand cmd2 = { count, 1, start, 0, 1 };
-		cmds.push_back(cmd2);
-		DrawElementsIndirectCommand cmd3 = { count, 1, start, 0, 2 };
-		cmds.push_back(cmd3);
+
+		if (j == 0) {
+			indirectCommand = cmd;
+		}
 	}
 	assert(cmds.size());
 	glGenBuffers(1, &drawIndirectBuffer);
@@ -89,7 +89,7 @@ void RenderMesh::Init(const Block& block)
 	vao = afCreateVAO(shaderId, elements, dimof(elements), block.indices.size(), verts, strides, pIndexBuffer);
 }
 
-void RenderMesh::Draw(const RenderCommand& c) const
+void RenderMesh::Draw(const RenderCommand& c, int instanceCount) const
 {
 	int shaderId = meshRenderer.GetShaderId();
 	glUniform1i(glGetUniformLocation(shaderId, "boneStartIndex"), c.boneStartIndex);
@@ -101,6 +101,12 @@ void RenderMesh::Draw(const RenderCommand& c) const
 	glMultiDrawElementsIndirect(GL_TRIANGLES, AFIndexTypeToDevice, nullptr, dimof(perInstanceBufferSource), 0);
 	glBindVertexArray(0);
 	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);
+
+
+//	DrawElementsIndirectCommand cmd = indirectCommand;
+//	cmd.instanceCount = instanceCount;
+//	glDrawElementsIndirect(GL_TRIANGLES, AFIndexTypeToDevice, &cmd);
+
 }
 
 MeshRenderer::MeshRenderer()
@@ -197,6 +203,10 @@ void MeshRenderer::DrawRenderMesh(MRID id, const Mat& worldMat, const Mat BoneMa
 
 void MeshRenderer::Flush()
 {
+	if (renderCommands.empty()) {
+		return;
+	}
+
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssboForBoneMatrices);
 	GLvoid* buf = glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_WRITE_ONLY);
 	memcpy(buf, &renderBoneMatrices[0], sizeof(Mat) * renderBoneMatrices.size());
@@ -221,10 +231,25 @@ void MeshRenderer::Flush()
 
 	glActiveTexture(GL_TEXTURE0);
 
+#if 0
+	RenderCommand c = renderCommands[0];
+	const Material* mat = matMan.Get(c.materialId);
+	RenderMesh* r = GetMeshByMRID(c.meshId);
+	assert(r);
+	glBindTexture(GL_TEXTURE_2D, mat->tmid);
+	r->Draw(c, renderCommands.size());
+#endif
+#if 1
+
 	TexMan::TMID lastTex = ~0;
+
+
+
 	for (int i = 0; i < (int)renderCommands.size(); i++) {
 		RenderCommand c = renderCommands[i];
 		const Material* mat = matMan.Get(c.materialId);
+
+
 		if (lastTex != mat->tmid) {
 			glBindTexture(GL_TEXTURE_2D, mat->tmid);
 		}
@@ -234,8 +259,11 @@ void MeshRenderer::Flush()
 		if (!r) {
 			continue;
 		}
-		r->Draw(c);
+		r->Draw(c, 1);
 	}
+
+#endif
+
 	glBindTexture(GL_TEXTURE_2D, 0);
 	renderBoneMatrices.clear();
 	renderCommands.clear();
