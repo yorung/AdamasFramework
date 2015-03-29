@@ -2,7 +2,7 @@
 
 MeshRenderer meshRenderer;
 
-static const uint16_t perInstanceBufferSource[] = { 0, 1, 2 };
+static const uint16_t perInstanceBufferSource[] = { 0, 1, 2, 3, 4, 5 };
 
 static const int BONE_SSBO_SIZE = sizeof(Mat) * 1000;
 static const int PER_INSTANCE_SSBO_SIZE = sizeof(RenderCommand) * 100;
@@ -94,19 +94,24 @@ void RenderMesh::Draw(const RenderCommand& c, int instanceCount) const
 	int shaderId = meshRenderer.GetShaderId();
 	glUniform1i(glGetUniformLocation(shaderId, "boneStartIndex"), c.boneStartIndex);
 
-
-	const Material* mat = matMan.Get(c.materialId);
+/*
 	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, drawIndirectBuffer);
 	glBindVertexArray(vao);
 	glMultiDrawElementsIndirect(GL_TRIANGLES, AFIndexTypeToDevice, nullptr, dimof(perInstanceBufferSource), 0);
 	glBindVertexArray(0);
 	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);
-
-
-//	DrawElementsIndirectCommand cmd = indirectCommand;
-//	cmd.instanceCount = instanceCount;
+	*/
+	glBindVertexArray(vao);
+	DrawElementsIndirectCommand cmd = indirectCommand;
+	cmd.instanceCount = instanceCount;
 //	glDrawElementsIndirect(GL_TRIANGLES, AFIndexTypeToDevice, &cmd);
-
+	glDrawElementsInstancedBaseVertex(GL_TRIANGLES,
+		cmd.count,
+		AFIndexTypeToDevice,
+		(void*)cmd.firstIndex,
+		cmd.instanceCount,
+		cmd.baseVertex);
+	glBindVertexArray(0);
 }
 
 MeshRenderer::MeshRenderer()
@@ -231,7 +236,7 @@ void MeshRenderer::Flush()
 
 	glActiveTexture(GL_TEXTURE0);
 
-#if 0
+#if 1
 	RenderCommand c = renderCommands[0];
 	const Material* mat = matMan.Get(c.materialId);
 	RenderMesh* r = GetMeshByMRID(c.meshId);
@@ -239,7 +244,7 @@ void MeshRenderer::Flush()
 	glBindTexture(GL_TEXTURE_2D, mat->tmid);
 	r->Draw(c, renderCommands.size());
 #endif
-#if 1
+#if 0
 
 	TexMan::TMID lastTex = ~0;
 
