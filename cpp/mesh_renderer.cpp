@@ -12,15 +12,6 @@ enum SSBOBindingPoints {
 	SBP_PER_INSTANCE_DATAS = 7,
 };
 
-struct DrawElementsIndirectCommand
-{
-	GLuint count;
-	GLuint instanceCount;
-	GLuint firstIndex;
-	GLuint baseVertex;
-	GLuint baseInstance;
-};
-
 RenderMesh::RenderMesh()
 {
 	vbo = 0;

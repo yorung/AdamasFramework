@@ -50,6 +50,15 @@ public:
 	}
 };
 
+struct DrawElementsIndirectCommand
+{
+	GLuint count;
+	GLuint instanceCount;
+	GLuint firstIndex;
+	GLuint baseVertex;
+	GLuint baseInstance;
+};
+
 void afSetVertexAttributes(GLuint program, const InputElement elements[], int numElements, int numBuffers, GLuint const *vertexBufferIds, const GLsizei* strides);
 GLuint afCreateVAO(GLuint program, const InputElement elements[], int numElements, int numBuffers, GLuint const *vertexBufferIds, const GLsizei* strides, GLuint ibo);
 
