@@ -54,6 +54,12 @@ void afWriteSSBO(GLuint bufName, const void* buf, int size)
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
 
+void afBindSSBO(GLuint program, const GLchar* name, GLuint ssbo, GLuint storageBlockBinding)
+{
+	glShaderStorageBlockBinding(program, glGetProgramResourceIndex(program, GL_SHADER_STORAGE_BLOCK, name), storageBlockBinding);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, storageBlockBinding, ssbo);
+}
+
 GLuint afCreateDynamicTexture(int w, int h, AFDTFormat format)
 {
 	GLuint texture;

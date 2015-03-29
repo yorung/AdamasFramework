@@ -121,4 +121,5 @@ AFBufObj afCreateDynamicVertexBuffer(int size);
 AFBufObj afCreateSSBO(int size);
 void afWriteBuffer(AFBufObj bo, const void* buf, int size);
 void afWriteSSBO(GLuint bufName, const void* buf, int size);
+void afBindSSBO(GLuint program, const GLchar* name, GLuint ssbo, GLuint storageBlockBinding);
 void afDrawIndexedTriangleList(AFBufObj ibo, int count, int start = 0);

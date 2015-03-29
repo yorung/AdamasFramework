@@ -114,8 +114,8 @@ void MeshRenderer::Create()
 	shaderMan.Apply(shaderId);
 	glUniform1i(glGetUniformLocation(shaderId, "sampler"), 0);
 
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, SBP_BONES, ssboForBoneMatrices);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, SBP_PER_INSTANCE_DATAS, ssboForPerInstanceData);
+	afBindSSBO(shaderId, "boneSSBO", ssboForBoneMatrices, SBP_BONES);
+	afBindSSBO(shaderId, "perInstanceSSBO", ssboForPerInstanceData, SBP_PER_INSTANCE_DATAS);
 }
 
 void MeshRenderer::Destroy()
