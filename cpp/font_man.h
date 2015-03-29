@@ -30,6 +30,7 @@ class FontMan
 	ShaderMan::SMID shader;
 	AFBufObj ibo;
 	AFBufObj vbo;
+	GLuint vao;
 #ifndef GL_TRUE
 	ID3D11SamplerState* pSamplerState;
 	ID3D11DepthStencilState* pDSState;
