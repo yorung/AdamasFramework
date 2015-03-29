@@ -22,10 +22,10 @@ void main() {
 	mat4 matWV = matV * matW;
 
 	mat4 comb =
-		bones[vBlendIndices.x] * vBlendWeights.x +
-		bones[vBlendIndices.y] * vBlendWeights.y +
-		bones[vBlendIndices.z] * vBlendWeights.z +
-		bones[vBlendIndices.w] * (1.0 - vBlendWeights.x - vBlendWeights.y - vBlendWeights.z);
+		bonesSSBO[boneStartIndex + vBlendIndices.x] * vBlendWeights.x +
+		bonesSSBO[boneStartIndex + vBlendIndices.y] * vBlendWeights.y +
+		bonesSSBO[boneStartIndex + vBlendIndices.z] * vBlendWeights.z +
+		bonesSSBO[boneStartIndex + vBlendIndices.w] * (1.0 - vBlendWeights.x - vBlendWeights.y - vBlendWeights.z);
 
 
 	vec3 pos = POSITION.xyz;

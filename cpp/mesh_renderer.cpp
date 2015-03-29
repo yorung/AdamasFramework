@@ -139,6 +139,9 @@ void MeshRenderer::Create()
 
 	shaderId = shaderMan.Create("skin.400");
 	assert(shaderId);
+
+	glShaderStorageBlockBinding(shaderId, glGetProgramResourceIndex(shaderId, GL_SHADER_STORAGE_BLOCK, "boneSSBO"), SSBO_BINDING_POINT);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, SSBO_BINDING_POINT, ssboForBoneMatrices);
 }
 
 void MeshRenderer::Destroy()
@@ -203,6 +206,7 @@ void MeshRenderer::Flush()
 	GLvoid* buf = glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_WRITE_ONLY);
 	memcpy(buf, &renderBoneMatrices[0], sizeof(Mat) * renderBoneMatrices.size());
 	glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
 	shaderMan.Apply(shaderId);
 	for (int i = 0; i < (int)renderCommands.size(); i++) {
@@ -216,6 +220,4 @@ void MeshRenderer::Flush()
 	}
 	renderBoneMatrices.clear();
 	renderCommands.clear();
-
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
