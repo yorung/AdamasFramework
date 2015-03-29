@@ -19,9 +19,7 @@ class RenderMesh
 {
 	GLuint vao;
 	GLuint vbo;
-	GLuint perInstanceBuffer;
 	GLuint pIndexBuffer;
-	GLuint drawIndirectBuffer;
 	DrawElementsIndirectCommand indirectCommand;
 public:
 	RenderMesh();

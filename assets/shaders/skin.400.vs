@@ -5,13 +5,11 @@ in vec2 vTexcoord;
 in vec4 vColor;
 in vec3 vBlendWeights;
 in uvec4 vBlendIndices;
-in uint drawId;
 out vec2 texcoord;
 out vec4 color;
 uniform mat4 matW;
 uniform mat4 matV;
 uniform mat4 matP;
-uniform uint boneStartIndex;
 struct RenderCommand {
 	mat4 matWorld;
 	int meshId;
@@ -28,7 +26,8 @@ layout (std430) buffer boneSSBO {
 
 
 void main() {
-	mat4 matWV = matV * renderCommands[drawId].matWorld;
+	mat4 matWV = matV * renderCommands[gl_InstanceID].matWorld;
+	int boneStartIndex = renderCommands[gl_InstanceID].boneStartIndex;
 
 	mat4 comb =
 		bonesSSBO[boneStartIndex + vBlendIndices.x] * vBlendWeights.x +

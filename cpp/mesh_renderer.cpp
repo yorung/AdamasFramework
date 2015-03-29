@@ -2,8 +2,6 @@
 
 MeshRenderer meshRenderer;
 
-static const uint16_t perInstanceBufferSource[] = { 0, 1, 2, 3, 4, 5 };
-
 static const int BONE_SSBO_SIZE = sizeof(Mat) * 1000;
 static const int PER_INSTANCE_SSBO_SIZE = sizeof(RenderCommand) * 100;
 
@@ -15,9 +13,7 @@ enum SSBOBindingPoints {
 RenderMesh::RenderMesh()
 {
 	vbo = 0;
-	drawIndirectBuffer = 0;
 	pIndexBuffer = 0;
-	perInstanceBuffer = 0;
 }
 
 RenderMesh::~RenderMesh()
@@ -29,8 +25,6 @@ void RenderMesh::Destroy()
 {
 	afSafeDeleteBuffer(pIndexBuffer);
 	afSafeDeleteBuffer(vbo);
-	afSafeDeleteBuffer(drawIndirectBuffer);
-	afSafeDeleteBuffer(perInstanceBuffer);
 	afSafeDeleteVAO(vao);
 }
 
@@ -55,11 +49,9 @@ void RenderMesh::Init(const Block& block)
 		CInputElement(0, "vTexcoord", SF_R32G32_FLOAT, 28),
 		CInputElement(0, "vBlendWeights", SF_R32G32B32_FLOAT, 36),
 		CInputElement(0, "vBlendIndices", SF_R8G8B8A8_UINT, 48),
-		CInputElement(1, "drawId", SF_R16_UINT, 0, true),
 	};
 
 	vbo = afCreateVertexBuffer(sizeVertex, &block.vertices[0]);
-	perInstanceBuffer = afCreateVertexBuffer(sizeof(perInstanceBufferSource), perInstanceBufferSource);
 	pIndexBuffer = afCreateIndexBuffer(indices, numIndices);
 
 	std::vector<DrawElementsIndirectCommand> cmds;
@@ -78,13 +70,9 @@ void RenderMesh::Init(const Block& block)
 		}
 	}
 	assert(cmds.size());
-	glGenBuffers(1, &drawIndirectBuffer);
-	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, drawIndirectBuffer);
-	glBufferData(GL_DRAW_INDIRECT_BUFFER, cmds.size() * sizeof(DrawElementsIndirectCommand), &cmds[0], GL_STATIC_DRAW);
-	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);
 
-	GLuint verts[] = { vbo, perInstanceBuffer };
-	GLsizei strides[] = { sizeof(MeshVertex), sizeof(perInstanceBufferSource[0]) };
+	GLuint verts[] = { vbo };
+	GLsizei strides[] = { sizeof(MeshVertex) };
 	int shaderId = meshRenderer.GetShaderId();
 	vao = afCreateVAO(shaderId, elements, dimof(elements), block.indices.size(), verts, strides, pIndexBuffer);
 }
@@ -92,19 +80,10 @@ void RenderMesh::Init(const Block& block)
 void RenderMesh::Draw(const RenderCommand& c, int instanceCount) const
 {
 	int shaderId = meshRenderer.GetShaderId();
-	glUniform1i(glGetUniformLocation(shaderId, "boneStartIndex"), c.boneStartIndex);
 
-/*
-	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, drawIndirectBuffer);
-	glBindVertexArray(vao);
-	glMultiDrawElementsIndirect(GL_TRIANGLES, AFIndexTypeToDevice, nullptr, dimof(perInstanceBufferSource), 0);
-	glBindVertexArray(0);
-	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);
-	*/
 	glBindVertexArray(vao);
 	DrawElementsIndirectCommand cmd = indirectCommand;
 	cmd.instanceCount = instanceCount;
-//	glDrawElementsIndirect(GL_TRIANGLES, AFIndexTypeToDevice, &cmd);
 	glDrawElementsInstancedBaseVertex(GL_TRIANGLES,
 		cmd.count,
 		AFIndexTypeToDevice,
