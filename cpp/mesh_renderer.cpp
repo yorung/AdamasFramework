@@ -95,6 +95,7 @@ void RenderMesh::Draw(const RenderCommand& c, int instanceCount) const
 
 MeshRenderer::MeshRenderer()
 {
+	renderMeshes.push_back(nullptr);	// render mesh ID must not be 0
 }
 
 MeshRenderer::~MeshRenderer()
@@ -104,16 +105,8 @@ MeshRenderer::~MeshRenderer()
 
 void MeshRenderer::Create()
 {
-	renderMeshes.push_back(nullptr);	// render mesh ID must not be 0
-	glGenBuffers(1, &ssboForBoneMatrices);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssboForBoneMatrices);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, BONE_SSBO_SIZE, nullptr, GL_DYNAMIC_DRAW);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-
-	glGenBuffers(1, &ssboForPerInstanceData);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssboForPerInstanceData);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, PER_INSTANCE_SSBO_SIZE, nullptr, GL_DYNAMIC_DRAW);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+	ssboForBoneMatrices = afCreateSSBO(BONE_SSBO_SIZE);
+	ssboForPerInstanceData = afCreateSSBO(PER_INSTANCE_SSBO_SIZE);
 
 	shaderId = shaderMan.Create("skin.400");
 	assert(shaderId);
@@ -192,22 +185,6 @@ void MeshRenderer::DrawRenderMesh(MRID id, const Mat& worldMat, const Mat BoneMa
 	memcpy(&renderBoneMatrices[0] + c.boneStartIndex, &BoneMatrices[0], sizeof(Mat) * nBones);
 }
 
-void afWriteSSBO(GLuint bufName, const void* buf, int size)
-{
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, bufName);
-	glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, size, buf);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-}
-/*
-void afWriteSSBO(GLuint bufName, const void* buf, int size)
-{
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, bufName);
-	GLvoid* mapped = glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_WRITE_ONLY);
-	memcpy(mapped, buf, size);
-	glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-}
-*/
 void MeshRenderer::Flush()
 {
 	if (renderCommands.empty()) {

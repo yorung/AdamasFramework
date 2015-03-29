@@ -30,11 +30,28 @@ AFBufObj afCreateDynamicVertexBuffer(int size)
 	return vbo;
 }
 
+AFBufObj afCreateSSBO(int size)
+{
+	GLuint name;
+	glGenBuffers(1, &name);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, name);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, size, NULL, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+	return name;
+}
+
 void afWriteBuffer(GLuint bufName, const void* buf, int size)
 {
 	glBindBuffer(GL_ARRAY_BUFFER, bufName);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, size, buf);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void afWriteSSBO(GLuint bufName, const void* buf, int size)
+{
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, bufName);
+	glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, size, buf);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
 
 GLuint afCreateDynamicTexture(int w, int h, AFDTFormat format)

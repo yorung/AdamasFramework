@@ -118,5 +118,7 @@ AFBufObj afCreateIndexBuffer(const AFIndex* indi, int numIndi);
 AFBufObj afCreateQuadListIndexBuffer(int numQuads);
 AFBufObj afCreateVertexBuffer(int size, const void* buf);
 AFBufObj afCreateDynamicVertexBuffer(int size);
+AFBufObj afCreateSSBO(int size);
 void afWriteBuffer(AFBufObj bo, const void* buf, int size);
+void afWriteSSBO(GLuint bufName, const void* buf, int size);
 void afDrawIndexedTriangleList(AFBufObj ibo, int count, int start = 0);
