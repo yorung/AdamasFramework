@@ -173,12 +173,18 @@ void MeshRenderer::DrawRenderMesh(MRID id, const Mat& worldMat, const Mat BoneMa
 {
 	assert(GetMeshByMRID(id));
 	assert(!block.materialMaps.empty());
+
+	if (!renderCommands.empty() && id != renderCommands[0].meshId) {
+		Flush();
+	}
+
 	RenderCommand c;
 	c.matWorld = worldMat;
 	c.meshId = id;
 	c.materialId = block.materialMaps[0].materialId;
 	c.boneStartIndex = renderBoneMatrices.size();
 	c.nBones = nBones;
+
 	renderCommands.push_back(c);
 
 	renderBoneMatrices.resize(c.boneStartIndex + nBones);
@@ -215,39 +221,12 @@ void MeshRenderer::Flush()
 
 	glActiveTexture(GL_TEXTURE0);
 
-#if 1
 	RenderCommand c = renderCommands[0];
 	const Material* mat = matMan.Get(c.materialId);
 	RenderMesh* r = GetMeshByMRID(c.meshId);
 	assert(r);
 	glBindTexture(GL_TEXTURE_2D, mat->tmid);
 	r->Draw(c, renderCommands.size());
-#endif
-#if 0
-
-	TexMan::TMID lastTex = ~0;
-
-
-
-	for (int i = 0; i < (int)renderCommands.size(); i++) {
-		RenderCommand c = renderCommands[i];
-		const Material* mat = matMan.Get(c.materialId);
-
-
-		if (lastTex != mat->tmid) {
-			glBindTexture(GL_TEXTURE_2D, mat->tmid);
-		}
-
-		RenderMesh* r = GetMeshByMRID(c.meshId);
-		assert(r);
-		if (!r) {
-			continue;
-		}
-		r->Draw(c, 1);
-	}
-
-#endif
-
 	glBindTexture(GL_TEXTURE_2D, 0);
 	renderBoneMatrices.clear();
 	renderCommands.clear();
