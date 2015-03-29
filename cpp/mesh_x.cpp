@@ -257,7 +257,7 @@ static char* _searchChildTag(char* from, const char *tag, std::string* name = nu
 	return nullptr;
 }
 
-static MatMan::MMID _getMaterial(char*& p, const std::string path)
+static MMID _getMaterial(char*& p, const std::string path)
 {
 	Material mat;
 	mat.faceColor.x = _getF(p);
@@ -539,7 +539,7 @@ bool MeshX::ParseMesh(char* imgFrame, Block& block, BONE_ID frameId)
 		materialIndices.push_back(_getI(p));
 	}
 
-	std::vector<MatMan::MMID> materialIds;
+	std::vector<MMID> materialIds;
 	materialIds.resize(nMaterials);
 	for (int i = 0; i < nMaterials; i++) {
 		p = _searchChildTag(p, "Material");
@@ -579,7 +579,7 @@ bool MeshX::ParseMesh(char* imgFrame, Block& block, BONE_ID frameId)
 	map.faces = 0;
 
 	for (int i = 0, primitiveIdx = 0; i < nMaterialFaces; i++) {
-		MatMan::MMID id = materialIds[materialIndices[i]];
+		MMID id = materialIds[materialIndices[i]];
 		if (map.materialId != id) {
 			_pushMaterialMap(block, map);
 			map.materialId = id;

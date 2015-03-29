@@ -82,7 +82,7 @@ struct MeshVertex
 
 struct MaterialMap
 {
-	MatMan::MMID materialId;
+	MMID materialId;
 	int faceStartIndex;
 	int faces;
 };

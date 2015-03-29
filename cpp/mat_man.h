@@ -1,5 +1,6 @@
 struct Material
 {
+	Material() { memset(this, 0, sizeof(*this)); }
 	Vec4 faceColor;
 	float power;
 	Vec4 specular;
@@ -8,12 +9,14 @@ struct Material
 	bool operator==(const Material& r) const;
 };
 
+typedef int MMID;
+static int INVALID_MMID = 0;
+
 class MatMan
 {
-public:
-	typedef int MMID;
 	std::vector<Material> m_mats;
 public:
+	MatMan();
 	MMID Create(const Material& mat);
 	void Destroy();
 	const Material* Get(MMID id);

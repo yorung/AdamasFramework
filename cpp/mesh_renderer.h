@@ -9,7 +9,7 @@ static const MRID INVALID_MRID = 0;
 struct RenderCommand
 {
 	MRID meshId;
-	MatMan::MMID materialId;
+	MMID materialId;
 	int boneStartIndex;
 	int nBones;
 };

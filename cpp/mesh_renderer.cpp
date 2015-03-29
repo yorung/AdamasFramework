@@ -99,16 +99,13 @@ void RenderMesh::Draw(const RenderCommand& c) const
 	int shaderId = meshRenderer.GetShaderId();
 	glUniform1i(glGetUniformLocation(shaderId, "boneStartIndex"), c.boneStartIndex);
 
-	glActiveTexture(GL_TEXTURE0);
 
 	const Material* mat = matMan.Get(c.materialId);
-	glBindTexture(GL_TEXTURE_2D, mat->tmid);
 	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, drawIndirectBuffer);
 	glBindVertexArray(vao);
 	glMultiDrawElementsIndirect(GL_TRIANGLES, AFIndexTypeToDevice, nullptr, dimof(perInstanceBufferSource), 0);
 	glBindVertexArray(0);
 	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);
-	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 MeshRenderer::MeshRenderer()
@@ -211,8 +208,16 @@ void MeshRenderer::Flush()
 	glUniformMatrix4fv(glGetUniformLocation(shaderId, "matV"), 1, GL_FALSE, &matV.m[0][0]);
 	glUniformMatrix4fv(glGetUniformLocation(shaderId, "matP"), 1, GL_FALSE, &matP.m[0][0]);
 
+	glActiveTexture(GL_TEXTURE0);
+
+	TexMan::TMID lastTex = ~0;
 	for (int i = 0; i < (int)renderCommands.size(); i++) {
 		RenderCommand c = renderCommands[i];
+		const Material* mat = matMan.Get(c.materialId);
+		if (lastTex != mat->tmid) {
+			glBindTexture(GL_TEXTURE_2D, mat->tmid);
+		}
+
 		RenderMesh* r = GetMeshByMRID(c.meshId);
 		assert(r);
 		if (!r) {
@@ -220,6 +225,7 @@ void MeshRenderer::Flush()
 		}
 		r->Draw(c);
 	}
+	glBindTexture(GL_TEXTURE_2D, 0);
 	renderBoneMatrices.clear();
 	renderCommands.clear();
 }
