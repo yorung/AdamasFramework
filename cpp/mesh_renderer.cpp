@@ -114,10 +114,7 @@ void MeshRenderer::Create()
 	shaderMan.Apply(shaderId);
 	glUniform1i(glGetUniformLocation(shaderId, "sampler"), 0);
 
-	glShaderStorageBlockBinding(shaderId, glGetProgramResourceIndex(shaderId, GL_SHADER_STORAGE_BLOCK, "boneSSBO"), SBP_BONES);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, SBP_BONES, ssboForBoneMatrices);
-
-	glShaderStorageBlockBinding(shaderId, glGetProgramResourceIndex(shaderId, GL_SHADER_STORAGE_BLOCK, "perInstanceSSBO"), SBP_PER_INSTANCE_DATAS);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, SBP_PER_INSTANCE_DATAS, ssboForPerInstanceData);
 }
 

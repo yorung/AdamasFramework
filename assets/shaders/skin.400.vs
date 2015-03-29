@@ -17,10 +17,10 @@ struct RenderCommand {
 	int boneStartIndex;
 	int nBones;
 };
-layout (std430) buffer perInstanceSSBO {
+layout (std430, binding = 7) buffer perInstanceSSBO {
 	RenderCommand renderCommands[];
 };
-layout (std430) buffer boneSSBO {
+layout (std430, binding = 5) buffer boneSSBO {
 	mat4 bonesSSBO[];
 };
 
