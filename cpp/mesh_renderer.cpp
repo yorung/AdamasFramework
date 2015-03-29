@@ -94,7 +94,7 @@ void RenderMesh::Init(const Block& block)
 	vao = afCreateVAO(shaderId, elements, dimof(elements), block.indices.size(), verts, strides, pIndexBuffer);
 }
 
-void RenderMesh::Draw(const Mat BoneMatrices[BONE_MAX], int nBones, MatMan::MMID materialId) const
+void RenderMesh::Draw(const Mat BoneMatrices[BONE_MAX], const RenderCommand& c) const
 {
 	Mat matW, matV, matP;
 	matrixMan.Get(MatrixMan::WORLD, matW);
@@ -106,10 +106,11 @@ void RenderMesh::Draw(const Mat BoneMatrices[BONE_MAX], int nBones, MatMan::MMID
 	glUniformMatrix4fv(glGetUniformLocation(shaderId, "matP"), 1, GL_FALSE, &matP.m[0][0]);
 	glUniformMatrix4fv(glGetUniformLocation(shaderId, "bones"), BONE_MAX, GL_FALSE, &BoneMatrices[0].m[0][0]);
 	glUniform1i(glGetUniformLocation(shaderId, "sampler"), 0);
+	glUniform1i(glGetUniformLocation(shaderId, "boneStartIndex"), c.boneStartIndex);
 
 	glActiveTexture(GL_TEXTURE0);
 
-	const Material* mat = matMan.Get(materialId);
+	const Material* mat = matMan.Get(c.materialId);
 	glBindTexture(GL_TEXTURE_2D, mat->tmid);
 	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, drawIndirectBuffer);
 	glBindVertexArray(vao);
@@ -150,7 +151,7 @@ void MeshRenderer::Destroy()
 	afSafeDeleteBuffer(ssboForBoneMatrices);
 }
 
-MeshRenderer::MRID MeshRenderer::CreateRenderMesh(const Block& block)
+MRID MeshRenderer::CreateRenderMesh(const Block& block)
 {
 	RenderMesh* r = new RenderMesh;
 	r->Init(block);
@@ -196,25 +197,13 @@ void MeshRenderer::DrawRenderMesh(MRID id, const Mat BoneMatrices[BONE_MAX], int
 	memcpy(&renderBoneMatrices[0] + c.boneStartIndex, &BoneMatrices[0], sizeof(Mat) * nBones);
 }
 
-#if 0
 void MeshRenderer::Flush()
 {
-	shaderMan.Apply(shaderId);
-
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssboForBoneMatrices);
 	GLvoid* buf = glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_WRITE_ONLY);
 	memcpy(buf, &renderBoneMatrices[0], sizeof(Mat) * renderBoneMatrices.size());
 	glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
 
-
-
-
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-}
-#endif
-
-void MeshRenderer::Flush()
-{
 	shaderMan.Apply(shaderId);
 	for (int i = 0; i < (int)renderCommands.size(); i++) {
 		RenderCommand c = renderCommands[i];
@@ -223,8 +212,10 @@ void MeshRenderer::Flush()
 		if (!r) {
 			continue;
 		}
-		r->Draw(&renderBoneMatrices[c.boneStartIndex], c.nBones, c.materialId);
+		r->Draw(&renderBoneMatrices[c.boneStartIndex], c);
 	}
 	renderBoneMatrices.clear();
 	renderCommands.clear();
+
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }

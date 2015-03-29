@@ -3,6 +3,17 @@ struct MeshVertex;
 struct MeshColor;
 struct MeshSkin;
 
+typedef unsigned int MRID;
+static const MRID INVALID_MRID = 0;
+
+struct RenderCommand
+{
+	MRID meshId;
+	MatMan::MMID materialId;
+	int boneStartIndex;
+	int nBones;
+};
+
 class RenderMesh
 {
 	GLuint vao;
@@ -15,23 +26,13 @@ public:
 	~RenderMesh();
 	void Destroy();
 	void Init(const Block& block);
-	void Draw(const Mat BoneMatrices[BONE_MAX], int nBones, MatMan::MMID materialId) const;
+	void Draw(const Mat BoneMatrices[BONE_MAX], const RenderCommand& c) const;
 };
 
 class MeshRenderer
 {
 public:
-	typedef unsigned int MRID;
-	static const MRID INVALID_MRID = 0;
-private:
 	ShaderMan::SMID shaderId;
-	struct RenderCommand
-	{
-		MeshRenderer::MRID meshId;
-		MatMan::MMID materialId;
-		int boneStartIndex;
-		int nBones;
-	};
 	std::vector<RenderMesh*> renderMeshes;
 	std::vector<RenderCommand> renderCommands;
 	std::vector<Mat> renderBoneMatrices;

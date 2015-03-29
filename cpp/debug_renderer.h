@@ -1,6 +1,6 @@
 class DebugRenderer
 {
-	MeshRenderer::MRID pivotsRenderMeshId;
+	MRID pivotsRenderMeshId;
 	Block pivots;
 	void CreatePivotMesh();
 public:
