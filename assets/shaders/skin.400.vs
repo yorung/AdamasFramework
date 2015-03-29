@@ -12,7 +12,6 @@ uniform mat4 matW;
 uniform mat4 matV;
 uniform mat4 matP;
 uniform uint boneStartIndex;
-uniform mat4 bones[50];
 layout (std430) buffer boneSSBO {
 	mat4 bonesSSBO[];
 };

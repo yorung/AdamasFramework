@@ -26,7 +26,7 @@ public:
 	~RenderMesh();
 	void Destroy();
 	void Init(const Block& block);
-	void Draw(const Mat BoneMatrices[BONE_MAX], const RenderCommand& c) const;
+	void Draw(const RenderCommand& c) const;
 };
 
 class MeshRenderer

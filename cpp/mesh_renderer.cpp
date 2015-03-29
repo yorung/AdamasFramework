@@ -94,18 +94,9 @@ void RenderMesh::Init(const Block& block)
 	vao = afCreateVAO(shaderId, elements, dimof(elements), block.indices.size(), verts, strides, pIndexBuffer);
 }
 
-void RenderMesh::Draw(const Mat BoneMatrices[BONE_MAX], const RenderCommand& c) const
+void RenderMesh::Draw(const RenderCommand& c) const
 {
-	Mat matW, matV, matP;
-	matrixMan.Get(MatrixMan::WORLD, matW);
-	matrixMan.Get(MatrixMan::VIEW, matV);
-	matrixMan.Get(MatrixMan::PROJ, matP);
 	int shaderId = meshRenderer.GetShaderId();
-	glUniformMatrix4fv(glGetUniformLocation(shaderId, "matW"), 1, GL_FALSE, &matW.m[0][0]);
-	glUniformMatrix4fv(glGetUniformLocation(shaderId, "matV"), 1, GL_FALSE, &matV.m[0][0]);
-	glUniformMatrix4fv(glGetUniformLocation(shaderId, "matP"), 1, GL_FALSE, &matP.m[0][0]);
-	glUniformMatrix4fv(glGetUniformLocation(shaderId, "bones"), BONE_MAX, GL_FALSE, &BoneMatrices[0].m[0][0]);
-	glUniform1i(glGetUniformLocation(shaderId, "sampler"), 0);
 	glUniform1i(glGetUniformLocation(shaderId, "boneStartIndex"), c.boneStartIndex);
 
 	glActiveTexture(GL_TEXTURE0);
@@ -139,6 +130,8 @@ void MeshRenderer::Create()
 
 	shaderId = shaderMan.Create("skin.400");
 	assert(shaderId);
+
+	glUniform1i(glGetUniformLocation(shaderId, "sampler"), 0);
 
 	glShaderStorageBlockBinding(shaderId, glGetProgramResourceIndex(shaderId, GL_SHADER_STORAGE_BLOCK, "boneSSBO"), SSBO_BINDING_POINT);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, SSBO_BINDING_POINT, ssboForBoneMatrices);
@@ -209,6 +202,15 @@ void MeshRenderer::Flush()
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
 	shaderMan.Apply(shaderId);
+
+	Mat matW, matV, matP;
+	matrixMan.Get(MatrixMan::WORLD, matW);
+	matrixMan.Get(MatrixMan::VIEW, matV);
+	matrixMan.Get(MatrixMan::PROJ, matP);
+	glUniformMatrix4fv(glGetUniformLocation(shaderId, "matW"), 1, GL_FALSE, &matW.m[0][0]);
+	glUniformMatrix4fv(glGetUniformLocation(shaderId, "matV"), 1, GL_FALSE, &matV.m[0][0]);
+	glUniformMatrix4fv(glGetUniformLocation(shaderId, "matP"), 1, GL_FALSE, &matP.m[0][0]);
+
 	for (int i = 0; i < (int)renderCommands.size(); i++) {
 		RenderCommand c = renderCommands[i];
 		RenderMesh* r = GetMeshByMRID(c.meshId);
@@ -216,7 +218,7 @@ void MeshRenderer::Flush()
 		if (!r) {
 			continue;
 		}
-		r->Draw(&renderBoneMatrices[c.boneStartIndex], c);
+		r->Draw(c);
 	}
 	renderBoneMatrices.clear();
 	renderCommands.clear();
