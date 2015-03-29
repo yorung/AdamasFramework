@@ -28,7 +28,7 @@ layout (std430) buffer boneSSBO {
 
 
 void main() {
-	mat4 matWV = matV * matW;
+	mat4 matWV = matV * renderCommands[drawId].matWorld;
 
 	mat4 comb =
 		bonesSSBO[boneStartIndex + vBlendIndices.x] * vBlendWeights.x +
@@ -38,7 +38,6 @@ void main() {
 
 
 	vec3 pos = POSITION.xyz;
-	pos.x += drawId * 2.1f;
 
 	gl_Position = matP * matWV * comb * vec4(pos, 1);
 	texcoord = vTexcoord;

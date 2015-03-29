@@ -100,12 +100,12 @@ void DebugRenderer::DrawPivots(const Mat mat[BONE_MAX], int num)
 		mat2[i] = i < num ? mat[i] : Mat();
 	}
 
-	meshRenderer.DrawRenderMesh(pivotsRenderMeshId, mat2, BONE_MAX, pivots);
+	meshRenderer.DrawRenderMesh(pivotsRenderMeshId, Mat(), mat2, BONE_MAX, pivots);
 
 	for (int i = 0; i < BONE_MAX; i++) {
 		mat2[i] = orthogonalize(mat2[i]);
 	}
-	meshRenderer.DrawRenderMesh(pivotsRenderMeshId, mat2, BONE_MAX, pivots);
+	meshRenderer.DrawRenderMesh(pivotsRenderMeshId, Mat(), mat2, BONE_MAX, pivots);
 }
 
 void DebugRenderer::Destroy()

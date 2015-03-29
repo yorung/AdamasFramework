@@ -165,7 +165,7 @@ public:
 	~MeshX();
 	void CalcAnimation(int animId, double time, MeshXAnimResult& result) const;
 	void CalcAnimationFromBvh(class Bvh* bvh, const MeshXBvhBinding& bind, double time, MeshXAnimResult& animResult, float translationScale) const;
-	void Draw(const MeshXAnimResult& animResult) const;
+	void Draw(const MeshXAnimResult& animResult, const Mat& worldMat) const;
 	void SyncLocalAxisWithBvh(Bvh* bvh, MeshXBvhBinding& bind) const;
 };
 

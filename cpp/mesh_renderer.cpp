@@ -143,7 +143,7 @@ void MeshRenderer::Create()
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, SBP_BONES, ssboForBoneMatrices);
 
 	glShaderStorageBlockBinding(shaderId, glGetProgramResourceIndex(shaderId, GL_SHADER_STORAGE_BLOCK, "perInstanceSSBO"), SBP_PER_INSTANCE_DATAS);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, SBP_BONES, ssboForPerInstanceData);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, SBP_PER_INSTANCE_DATAS, ssboForPerInstanceData);
 }
 
 void MeshRenderer::Destroy()
@@ -188,11 +188,12 @@ RenderMesh* MeshRenderer::GetMeshByMRID(MRID id)
 	return r;
 }
 
-void MeshRenderer::DrawRenderMesh(MRID id, const Mat BoneMatrices[BONE_MAX], int nBones, const Block& block)
+void MeshRenderer::DrawRenderMesh(MRID id, const Mat& worldMat, const Mat BoneMatrices[BONE_MAX], int nBones, const Block& block)
 {
 	assert(GetMeshByMRID(id));
 	assert(!block.materialMaps.empty());
 	RenderCommand c;
+	c.matWorld = worldMat;
 	c.meshId = id;
 	c.materialId = block.materialMaps[0].materialId;
 	c.boneStartIndex = renderBoneMatrices.size();

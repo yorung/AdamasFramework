@@ -617,7 +617,7 @@ void Bvh::Draw(int animId, double time)
 			BvhFrame& f = m_frames[i];
 			BoneMatrices[i] = f.boneOffsetMatrix * f.result;
 		}
-		meshRenderer.DrawRenderMesh(renderMeshId, BoneMatrices, dimof(BoneMatrices), m_block);
+		meshRenderer.DrawRenderMesh(renderMeshId, Mat(), BoneMatrices, dimof(BoneMatrices), m_block);
 	}
 }
 

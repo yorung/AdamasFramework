@@ -1079,7 +1079,7 @@ void MeshX::CalcAnimation(int animId, double time, MeshXAnimResult& animResult) 
 	CalcFrameMatrices(animResult, localMats);
 }
 
-void MeshX::Draw(const MeshXAnimResult& animResult) const
+void MeshX::Draw(const MeshXAnimResult& animResult, const Mat& worldMat) const
 {
 	if (!m_block.indices.size()) {
 		return;
@@ -1097,10 +1097,10 @@ void MeshX::Draw(const MeshXAnimResult& animResult) const
 		}
 
 		if (g_type == "mesh") {
-			meshRenderer.DrawRenderMesh(renderMeshId, vertexTransformMat, dimof(vertexTransformMat), m_block);
+			meshRenderer.DrawRenderMesh(renderMeshId, worldMat, vertexTransformMat, dimof(vertexTransformMat), m_block);
 		}
 		if (g_type == "bone") {
-			meshRenderer.DrawRenderMesh(boneRenderMeshId, vertexTransformMat, dimof(vertexTransformMat), bones);
+			meshRenderer.DrawRenderMesh(boneRenderMeshId, worldMat, vertexTransformMat, dimof(vertexTransformMat), bones);
 		}
 	}
 }
