@@ -13,7 +13,7 @@ enum SSBOBindingPoints {
 RenderMesh::RenderMesh()
 {
 	vbo = 0;
-	pIndexBuffer = 0;
+	ibo = 0;
 }
 
 RenderMesh::~RenderMesh()
@@ -23,7 +23,7 @@ RenderMesh::~RenderMesh()
 
 void RenderMesh::Destroy()
 {
-	afSafeDeleteBuffer(pIndexBuffer);
+	afSafeDeleteBuffer(ibo);
 	afSafeDeleteBuffer(vbo);
 	afSafeDeleteVAO(vao);
 }
@@ -52,7 +52,7 @@ void RenderMesh::Init(const Block& block)
 	};
 
 	vbo = afCreateVertexBuffer(sizeVertex, &block.vertices[0]);
-	pIndexBuffer = afCreateIndexBuffer(indices, numIndices);
+	ibo = afCreateIndexBuffer(indices, numIndices);
 
 	std::vector<DrawElementsIndirectCommand> cmds;
 	for (int j = 0; (unsigned)j < block.materialMaps.size(); j++) {
@@ -74,7 +74,7 @@ void RenderMesh::Init(const Block& block)
 	GLuint verts[] = { vbo };
 	GLsizei strides[] = { sizeof(MeshVertex) };
 	int shaderId = meshRenderer.GetShaderId();
-	vao = afCreateVAO(shaderId, elements, dimof(elements), block.indices.size(), verts, strides, pIndexBuffer);
+	vao = afCreateVAO(shaderId, elements, dimof(elements), block.indices.size(), verts, strides, ibo);
 }
 
 void RenderMesh::Draw(const RenderCommand& c, int instanceCount) const
