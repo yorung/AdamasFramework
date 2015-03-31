@@ -124,4 +124,5 @@ void afWriteBuffer(AFBufObj bo, const void* buf, int size);
 void afWriteSSBO(GLuint bufName, const void* buf, int size);
 void afWriteUBO(GLuint bufName, const void* buf, int size);
 void afBindSSBO(GLuint program, const GLchar* name, GLuint ssbo, GLuint storageBlockBinding);
+void afBindUBO(GLuint program, const GLchar* name, GLuint ubo, GLuint uniformBlockBinding);
 void afDrawIndexedTriangleList(AFBufObj ibo, int count, int start = 0);

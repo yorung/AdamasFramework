@@ -3,11 +3,14 @@
 MeshRenderer meshRenderer;
 
 static const int BONE_SSBO_SIZE = sizeof(Mat) * 1000;
-static const int PER_INSTANCE_SSBO_SIZE = sizeof(RenderCommand) * 100;
+static const int PER_INSTANCE_UBO_SIZE = sizeof(RenderCommand) * 3;
 
 enum SSBOBindingPoints {
 	SBP_BONES = 5,
-	SBP_PER_INSTANCE_DATAS = 7,
+};
+
+enum UBOBindingPoints {
+	UBP_PER_INSTANCE_DATAS = 2,
 };
 
 RenderMesh::RenderMesh()
@@ -106,7 +109,7 @@ MeshRenderer::~MeshRenderer()
 void MeshRenderer::Create()
 {
 	ssboForBoneMatrices = afCreateSSBO(BONE_SSBO_SIZE);
-	ssboForPerInstanceData = afCreateSSBO(PER_INSTANCE_SSBO_SIZE);
+	uboForPerInstanceData = afCreateUBO(PER_INSTANCE_UBO_SIZE);
 
 	shaderId = shaderMan.Create("skin.400");
 	assert(shaderId);
@@ -115,7 +118,7 @@ void MeshRenderer::Create()
 	glUniform1i(glGetUniformLocation(shaderId, "sampler"), 0);
 
 	afBindSSBO(shaderId, "boneSSBO", ssboForBoneMatrices, SBP_BONES);
-	afBindSSBO(shaderId, "perInstanceSSBO", ssboForPerInstanceData, SBP_PER_INSTANCE_DATAS);
+	afBindUBO(shaderId, "perInstanceUBO", uboForPerInstanceData, UBP_PER_INSTANCE_DATAS);
 }
 
 void MeshRenderer::Destroy()
@@ -126,7 +129,7 @@ void MeshRenderer::Destroy()
 	}
 	renderMeshes.clear();
 	afSafeDeleteBuffer(ssboForBoneMatrices);
-	afSafeDeleteBuffer(ssboForPerInstanceData);
+	afSafeDeleteBuffer(uboForPerInstanceData);
 }
 
 MRID MeshRenderer::CreateRenderMesh(const Block& block)
@@ -189,7 +192,7 @@ void MeshRenderer::Flush()
 	}
 
 	afWriteSSBO(ssboForBoneMatrices, &renderBoneMatrices[0], sizeof(Mat) * renderBoneMatrices.size());
-	afWriteSSBO(ssboForPerInstanceData, &renderCommands[0], sizeof(renderCommands[0]) * renderCommands.size());
+	afWriteUBO(uboForPerInstanceData, &renderCommands[0], sizeof(renderCommands[0]) * renderCommands.size());
 
 	shaderMan.Apply(shaderId);
 

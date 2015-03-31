@@ -17,8 +17,8 @@ struct RenderCommand {
 	int boneStartIndex;
 	int nBones;
 };
-layout (std430) buffer perInstanceSSBO {
-	RenderCommand renderCommands[];
+layout (std140) uniform perInstanceUBO {
+	RenderCommand renderCommands[3];
 };
 layout (std430) buffer boneSSBO {
 	mat4 bonesSSBO[];
