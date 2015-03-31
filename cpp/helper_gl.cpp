@@ -40,6 +40,16 @@ AFBufObj afCreateSSBO(int size)
 	return name;
 }
 
+AFBufObj afCreateUBO(int size)
+{
+	GLuint name;
+	glGenBuffers(1, &name);
+	glBindBuffer(GL_UNIFORM_BUFFER, name);
+	glBufferData(GL_UNIFORM_BUFFER, size, NULL, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	return name;
+}
+
 void afWriteBuffer(GLuint bufName, const void* buf, int size)
 {
 	glBindBuffer(GL_ARRAY_BUFFER, bufName);
@@ -54,10 +64,23 @@ void afWriteSSBO(GLuint bufName, const void* buf, int size)
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
 
+void afWriteUBO(GLuint bufName, const void* buf, int size)
+{
+	glBindBuffer(GL_UNIFORM_BUFFER, bufName);
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, size, buf);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}
+
 void afBindSSBO(GLuint program, const GLchar* name, GLuint ssbo, GLuint storageBlockBinding)
 {
 	glShaderStorageBlockBinding(program, glGetProgramResourceIndex(program, GL_SHADER_STORAGE_BLOCK, name), storageBlockBinding);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, storageBlockBinding, ssbo);
+}
+
+void afBindUBO(GLuint program, const GLchar* name, GLuint ubo, GLuint uniformBlockBinding)
+{
+	glUniformBlockBinding(program, glGetUniformBlockIndex(program, name), uniformBlockBinding);
+	glBindBufferBase(GL_UNIFORM_BUFFER, uniformBlockBinding, ubo);
 }
 
 GLuint afCreateDynamicTexture(int w, int h, AFDTFormat format)
