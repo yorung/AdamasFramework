@@ -50,34 +50,41 @@ AFBufObj afCreateUBO(int size)
 	return name;
 }
 
-void afWriteBuffer(GLuint bufName, const void* buf, int size)
+void afWriteBuffer(VBOID bufName, const void* buf, int size)
 {
 	glBindBuffer(GL_ARRAY_BUFFER, bufName);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, size, buf);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void afWriteSSBO(GLuint bufName, const void* buf, int size)
+void afWriteBuffer(IBOID bufName, const void* buf, int size)
+{
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufName);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, size, buf);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
+
+void afWriteBuffer(SSBOID bufName, const void* buf, int size)
 {
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, bufName);
 	glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, size, buf);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
 
-void afWriteUBO(UBOID bufName, const void* buf, int size)
+void afWriteBuffer(UBOID bufName, const void* buf, int size)
 {
 	glBindBuffer(GL_UNIFORM_BUFFER, bufName);
 	glBufferSubData(GL_UNIFORM_BUFFER, 0, size, buf);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
-void afBindSSBO(GLuint program, const GLchar* name, GLuint ssbo, GLuint storageBlockBinding)
+void afBindBuffer(GLuint program, const GLchar* name, SSBOID ssbo, GLuint storageBlockBinding)
 {
 	glShaderStorageBlockBinding(program, glGetProgramResourceIndex(program, GL_SHADER_STORAGE_BLOCK, name), storageBlockBinding);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, storageBlockBinding, ssbo);
 }
 
-void afBindUBO(GLuint program, const GLchar* name, GLuint ubo, GLuint uniformBlockBinding)
+void afBindBuffer(GLuint program, const GLchar* name, UBOID ubo, GLuint uniformBlockBinding)
 {
 	glUniformBlockBinding(program, glGetUniformBlockIndex(program, name), uniformBlockBinding);
 	glBindBufferBase(GL_UNIFORM_BUFFER, uniformBlockBinding, ubo);

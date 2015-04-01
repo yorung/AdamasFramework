@@ -117,8 +117,8 @@ void MeshRenderer::Create()
 	shaderMan.Apply(shaderId);
 	glUniform1i(glGetUniformLocation(shaderId, "sampler"), 0);
 
-	afBindSSBO(shaderId, "boneSSBO", ssboForBoneMatrices, SBP_BONES);
-	afBindUBO(shaderId, "perInstanceUBO", uboForPerInstanceData, UBP_PER_INSTANCE_DATAS);
+	afBindBuffer(shaderId, "boneSSBO", ssboForBoneMatrices, SBP_BONES);
+	afBindBuffer(shaderId, "perInstanceUBO", uboForPerInstanceData, UBP_PER_INSTANCE_DATAS);
 }
 
 void MeshRenderer::Destroy()
@@ -191,8 +191,8 @@ void MeshRenderer::Flush()
 		return;
 	}
 
-	afWriteSSBO(ssboForBoneMatrices, &renderBoneMatrices[0], sizeof(Mat) * renderBoneMatrices.size());
-	afWriteUBO(uboForPerInstanceData, &renderCommands[0], sizeof(renderCommands[0]) * renderCommands.size());
+	afWriteBuffer(ssboForBoneMatrices, &renderBoneMatrices[0], sizeof(Mat) * renderBoneMatrices.size());
+	afWriteBuffer(uboForPerInstanceData, &renderCommands[0], sizeof(renderCommands[0]) * renderCommands.size());
 
 	shaderMan.Apply(shaderId);
 
