@@ -268,11 +268,11 @@ void WaterSurface::Init()
 
 	glGenFramebuffers(1, &framebufferObject);
 
-	GLuint vertexBufferIds[] = { vbo };
+	VBOID vertexBufferIds[] = { vbo };
 	GLsizei strides[] = { sizeof(WaterVert) };
 	vao = afCreateVAO(shaderId, elements, dimof(elements), 1, vertexBufferIds, strides, ibo);
 
-	GLuint vertexBufferIdsFullScr[] = { vboFullScr };
+	VBOID vertexBufferIdsFullScr[] = { vboFullScr };
 	GLsizei stridesFullScr[] = { sizeof(Vec2) };
 	vaoFullScr = afCreateVAO(shaderIdFullScr, elementsFullScr, dimof(elementsFullScr), 1, vertexBufferIdsFullScr, stridesFullScr, iboFullScr);
 }

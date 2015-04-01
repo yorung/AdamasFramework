@@ -27,8 +27,9 @@ class WaterSurface
 	double elapsedTime;
 	double lastTime;
 	double nextTime;
-	GLuint vbo, ibo, vao;
-	GLuint vboFullScr, iboFullScr, vaoFullScr;
+	VBOID vbo, vboFullScr;
+	IBOID ibo, iboFullScr;
+	GLuint vao, vaoFullScr;
 	int nIndi;
 	GLuint samplerClamp;
 	GLuint samplerRepeat;

@@ -59,8 +59,21 @@ struct DrawElementsIndirectCommand
 	GLuint baseInstance;
 };
 
-void afSetVertexAttributes(GLuint program, const InputElement elements[], int numElements, int numBuffers, GLuint const *vertexBufferIds, const GLsizei* strides);
-GLuint afCreateVAO(GLuint program, const InputElement elements[], int numElements, int numBuffers, GLuint const *vertexBufferIds, const GLsizei* strides, GLuint ibo);
+template <GLenum bufType_>
+struct TBufName {
+	static const GLenum bufType = bufType_;
+	GLuint x;
+	TBufName(GLuint r = 0) { x = r; }
+	TBufName operator=(GLuint r) { return x = r; }
+	operator GLuint() const { return x; }
+};
+typedef TBufName<GL_UNIFORM_BUFFER> UBOID;
+typedef TBufName<GL_ELEMENT_ARRAY_BUFFER> IBOID;
+typedef TBufName<GL_ARRAY_BUFFER> VBOID;
+typedef TBufName<GL_SHADER_STORAGE_BUFFER> SSBOID;
+
+void afSetVertexAttributes(GLuint program, const InputElement elements[], int numElements, int numBuffers, VBOID const *vertexBufferIds, const GLsizei* strides);
+GLuint afCreateVAO(GLuint program, const InputElement elements[], int numElements, int numBuffers, VBOID const *vertexBufferIds, const GLsizei* strides, IBOID ibo);
 
 //#ifdef USE_FAKE_SAMPLER
 #define glGenSamplers(a,b)
@@ -70,11 +83,12 @@ GLuint afCreateVAO(GLuint program, const InputElement elements[], int numElement
 //#endif
 
 #ifdef GL_TRUE
-inline void afSafeDeleteBuffer(GLuint& b)
+template <class BufName>
+inline void afSafeDeleteBuffer(BufName& b)
 {
-	if (b != 0) {
-		glDeleteBuffers(1, &b);
-		b = 0;
+	if (b.x != 0) {
+		glDeleteBuffers(1, &b.x);
+		b.x = 0;
 	}
 }
 inline void afSafeDeleteSampler(GLuint& s)
@@ -122,7 +136,7 @@ AFBufObj afCreateSSBO(int size);
 AFBufObj afCreateUBO(int size);
 void afWriteBuffer(AFBufObj bo, const void* buf, int size);
 void afWriteSSBO(GLuint bufName, const void* buf, int size);
-void afWriteUBO(GLuint bufName, const void* buf, int size);
+void afWriteUBO(UBOID bufName, const void* buf, int size);
 void afBindSSBO(GLuint program, const GLchar* name, GLuint ssbo, GLuint storageBlockBinding);
 void afBindUBO(GLuint program, const GLchar* name, GLuint ubo, GLuint uniformBlockBinding);
 void afDrawIndexedTriangleList(AFBufObj ibo, int count, int start = 0);

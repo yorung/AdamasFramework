@@ -18,8 +18,8 @@ struct RenderCommand
 class RenderMesh
 {
 	GLuint vao;
-	GLuint vbo;
-	GLuint ibo;
+	VBOID vbo;
+	IBOID ibo;
 	DrawElementsIndirectCommand indirectCommand;
 public:
 	RenderMesh();
@@ -36,8 +36,8 @@ public:
 	std::vector<RenderMesh*> renderMeshes;
 	std::vector<RenderCommand> renderCommands;
 	std::vector<Mat> renderBoneMatrices;
-	GLuint ssboForBoneMatrices;
-	GLuint uboForPerInstanceData;
+	SSBOID ssboForBoneMatrices;
+	UBOID uboForPerInstanceData;
 	RenderMesh* GetMeshByMRID(MRID id);
 public:
 	MeshRenderer();

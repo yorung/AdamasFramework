@@ -28,8 +28,8 @@ class FontMan
 	CharSprite charSprites[SPRITE_MAX];
 	int numSprites;
 	ShaderMan::SMID shader;
-	AFBufObj ibo;
-	AFBufObj vbo;
+	IBOID ibo;
+	VBOID vbo;
 	GLuint vao;
 #ifndef GL_TRUE
 	ID3D11SamplerState* pSamplerState;

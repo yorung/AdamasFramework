@@ -64,7 +64,7 @@ void afWriteSSBO(GLuint bufName, const void* buf, int size)
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
 
-void afWriteUBO(GLuint bufName, const void* buf, int size)
+void afWriteUBO(UBOID bufName, const void* buf, int size)
 {
 	glBindBuffer(GL_UNIFORM_BUFFER, bufName);
 	glBufferSubData(GL_UNIFORM_BUFFER, 0, size, buf);
@@ -113,7 +113,7 @@ void afDrawIndexedTriangleList(AFBufObj ibo, int count, int start)
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void afSetVertexAttributes(GLuint program, const InputElement elements[], int numElements, int numBuffers, GLuint const *vertexBufferIds, const GLsizei* strides)
+void afSetVertexAttributes(GLuint program, const InputElement elements[], int numElements, int numBuffers, VBOID const *vertexBufferIds, const GLsizei* strides)
 {
 	for (int i = 0; i < numElements; i++) {
 		const InputElement& d = elements[i];
@@ -158,7 +158,7 @@ void afSetVertexAttributes(GLuint program, const InputElement elements[], int nu
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-GLuint afCreateVAO(GLuint program, const InputElement elements[], int numElements, int numBuffers, GLuint const *vertexBufferIds, const GLsizei* strides, GLuint ibo)
+GLuint afCreateVAO(GLuint program, const InputElement elements[], int numElements, int numBuffers, VBOID const *vertexBufferIds, const GLsizei* strides, IBOID ibo)
 {
 	GLuint vao;
 	glGenVertexArrays(1, &vao);

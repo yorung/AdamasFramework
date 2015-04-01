@@ -74,7 +74,7 @@ void RenderMesh::Init(const Block& block)
 	}
 	assert(cmds.size());
 
-	GLuint verts[] = { vbo };
+	VBOID verts[] = { vbo };
 	GLsizei strides[] = { sizeof(MeshVertex) };
 	int shaderId = meshRenderer.GetShaderId();
 	vao = afCreateVAO(shaderId, elements, dimof(elements), block.indices.size(), verts, strides, ibo);
