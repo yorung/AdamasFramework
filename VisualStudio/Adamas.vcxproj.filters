@@ -165,40 +165,40 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\assets\shaders\font.fs">
+    <None Include="..\assets\shaders\font.frag">
       <Filter>shaders</Filter>
     </None>
-    <None Include="..\assets\shaders\font.vs">
+    <None Include="..\assets\shaders\font.vert">
       <Filter>shaders</Filter>
     </None>
-    <None Include="..\assets\shaders\letterbox.fs">
+    <None Include="..\assets\shaders\letterbox.frag">
       <Filter>shaders</Filter>
     </None>
-    <None Include="..\assets\shaders\letterbox.vs">
+    <None Include="..\assets\shaders\letterbox.vert">
       <Filter>shaders</Filter>
     </None>
-    <None Include="..\assets\shaders\skin.400.fs">
+    <None Include="..\assets\shaders\skin.400.frag">
       <Filter>shaders</Filter>
     </None>
-    <None Include="..\assets\shaders\skin.400.vs">
+    <None Include="..\assets\shaders\skin.400.vert">
       <Filter>shaders</Filter>
     </None>
-    <None Include="..\assets\shaders\skin.fs">
+    <None Include="..\assets\shaders\skin.frag">
       <Filter>shaders</Filter>
     </None>
-    <None Include="..\assets\shaders\skin.vs">
+    <None Include="..\assets\shaders\skin.vert">
       <Filter>shaders</Filter>
     </None>
-    <None Include="..\assets\shaders\vivid.fs">
+    <None Include="..\assets\shaders\vivid.frag">
       <Filter>shaders</Filter>
     </None>
-    <None Include="..\assets\shaders\vivid.vs">
+    <None Include="..\assets\shaders\vivid.vert">
       <Filter>shaders</Filter>
     </None>
-    <None Include="..\assets\shaders\water.fs">
+    <None Include="..\assets\shaders\water.frag">
       <Filter>shaders</Filter>
     </None>
-    <None Include="..\assets\shaders\water.vs">
+    <None Include="..\assets\shaders\water.vert">
       <Filter>shaders</Filter>
     </None>
   </ItemGroup>

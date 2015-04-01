@@ -34,12 +34,12 @@ static GLuint CompileShader(int type, const char *fileName)
 static GLuint CreateProgram(const char* name)
 {
 	char buf[256];
-	snprintf(buf, dimof(buf), "shaders/%s.vs", name);
+	snprintf(buf, dimof(buf), "shaders/%s.vert", name);
 	GLuint vertexShader = CompileShader(GL_VERTEX_SHADER, buf);
 	if (!vertexShader) {
 		return 0;
 	}
-	snprintf(buf, dimof(buf), "shaders/%s.fs", name);
+	snprintf(buf, dimof(buf), "shaders/%s.frag", name);
 	GLuint fragmentShader = CompileShader(GL_FRAGMENT_SHADER, buf);
 	if (!fragmentShader) {
 		return 0;
