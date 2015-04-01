@@ -84,6 +84,14 @@ GLuint afCreateVAO(GLuint program, const InputElement elements[], int numElement
 
 #ifdef GL_TRUE
 template <class BufName>
+void afWriteBuffer(BufName bufName, const void* buf, int size)
+{
+	glBindBuffer(BufName::bufType, bufName);
+	glBufferSubData(BufName::bufType, 0, size, buf);
+	glBindBuffer(BufName::bufType, 0);
+}
+
+template <class BufName>
 inline void afSafeDeleteBuffer(BufName& b)
 {
 	if (b.x != 0) {
@@ -134,10 +142,6 @@ AFBufObj afCreateVertexBuffer(int size, const void* buf);
 AFBufObj afCreateDynamicVertexBuffer(int size);
 AFBufObj afCreateSSBO(int size);
 AFBufObj afCreateUBO(int size);
-void afWriteBuffer(VBOID bo, const void* buf, int size);
-void afWriteBuffer(IBOID bo, const void* buf, int size);
-void afWriteBuffer(SSBOID bufName, const void* buf, int size);
-void afWriteBuffer(UBOID bufName, const void* buf, int size);
 void afBindBuffer(GLuint program, const GLchar* name, SSBOID ssbo, GLuint storageBlockBinding);
 void afBindBuffer(GLuint program, const GLchar* name, UBOID ubo, GLuint uniformBlockBinding);
 void afDrawIndexedTriangleList(AFBufObj ibo, int count, int start = 0);

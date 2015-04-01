@@ -50,34 +50,6 @@ AFBufObj afCreateUBO(int size)
 	return name;
 }
 
-void afWriteBuffer(VBOID bufName, const void* buf, int size)
-{
-	glBindBuffer(GL_ARRAY_BUFFER, bufName);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, size, buf);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-}
-
-void afWriteBuffer(IBOID bufName, const void* buf, int size)
-{
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufName);
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, size, buf);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-}
-
-void afWriteBuffer(SSBOID bufName, const void* buf, int size)
-{
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, bufName);
-	glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, size, buf);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-}
-
-void afWriteBuffer(UBOID bufName, const void* buf, int size)
-{
-	glBindBuffer(GL_UNIFORM_BUFFER, bufName);
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, size, buf);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-}
-
 void afBindBuffer(GLuint program, const GLchar* name, SSBOID ssbo, GLuint storageBlockBinding)
 {
 	glShaderStorageBlockBinding(program, glGetProgramResourceIndex(program, GL_SHADER_STORAGE_BLOCK, name), storageBlockBinding);
