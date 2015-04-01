@@ -28,6 +28,19 @@ static void DumpInfo()
 		const GLubyte* ext = glGetStringi(GL_EXTENSIONS, i);
 		printf("%s\n", ext);
 	}
+
+	puts("------ glGet");
+#define _(x) do { GLint i; glGetIntegerv(x, &i); printf(#x " = %d\n", i); } while(0)
+	_(GL_MAX_UNIFORM_BUFFER_BINDINGS);
+	_(GL_MAX_UNIFORM_BLOCK_SIZE);
+	_(GL_MAX_VERTEX_UNIFORM_BLOCKS);
+	_(GL_MAX_FRAGMENT_UNIFORM_BLOCKS);
+	_(GL_MAX_GEOMETRY_UNIFORM_BLOCKS);
+
+	_(GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS);
+	_(GL_MAX_SHADER_STORAGE_BLOCK_SIZE);
+	_(GL_MAX_VERTEX_SHADER_STORAGE_BLOCKS);
+#undef _
 }
 
 static void APIENTRY debugMessageHandler(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam)
