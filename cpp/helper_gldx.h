@@ -2,7 +2,6 @@ typedef unsigned short AFIndex;
 
 #ifdef GL_TRUE
 #define AFIndexTypeToDevice GL_UNSIGNED_SHORT
-typedef GLuint AFBufObj;
 #endif
 
 #ifdef __d3d11_h__
@@ -63,8 +62,8 @@ template <GLenum bufType_>
 struct TBufName {
 	static const GLenum bufType = bufType_;
 	GLuint x;
-	TBufName(GLuint r = 0) { x = r; }
-	TBufName operator=(GLuint r) { return x = r; }
+//	TBufName(GLuint r = 0) { x = r; }
+	TBufName operator=(GLuint r) { x = r; return *this; }
 	operator GLuint() const { return x; }
 };
 typedef TBufName<GL_UNIFORM_BUFFER> UBOID;
@@ -136,12 +135,12 @@ inline void afSafeDeleteBuffer(AFBufObj& b)
 }
 #endif
 
-AFBufObj afCreateIndexBuffer(const AFIndex* indi, int numIndi);
-AFBufObj afCreateQuadListIndexBuffer(int numQuads);
-AFBufObj afCreateVertexBuffer(int size, const void* buf);
-AFBufObj afCreateDynamicVertexBuffer(int size);
-AFBufObj afCreateSSBO(int size);
-AFBufObj afCreateUBO(int size);
+IBOID afCreateIndexBuffer(const AFIndex* indi, int numIndi);
+IBOID afCreateQuadListIndexBuffer(int numQuads);
+VBOID afCreateVertexBuffer(int size, const void* buf);
+VBOID afCreateDynamicVertexBuffer(int size);
+SSBOID afCreateSSBO(int size);
+UBOID afCreateUBO(int size);
 void afBindBuffer(GLuint program, const GLchar* name, SSBOID ssbo, GLuint storageBlockBinding);
 void afBindBuffer(GLuint program, const GLchar* name, UBOID ubo, GLuint uniformBlockBinding);
-void afDrawIndexedTriangleList(AFBufObj ibo, int count, int start = 0);
+void afDrawIndexedTriangleList(IBOID ibo, int count, int start = 0);

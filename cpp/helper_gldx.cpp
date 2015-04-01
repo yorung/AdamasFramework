@@ -33,7 +33,7 @@ void afWriteBuffer(ID3D11Buffer* p, const void* buf, int size)
 
 #endif
 
-AFBufObj afCreateQuadListIndexBuffer(int numQuads)
+IBOID afCreateQuadListIndexBuffer(int numQuads)
 {
 	std::vector<AFIndex> indi;
 	int numIndi = numQuads * 6;

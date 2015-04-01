@@ -1,49 +1,49 @@
 #include "stdafx.h"
 
-GLuint afCreateIndexBuffer(const AFIndex* indi, int numIndi)
+IBOID afCreateIndexBuffer(const AFIndex* indi, int numIndi)
 {
-	GLuint ibo;
-	glGenBuffers(1, &ibo);
+	IBOID ibo;
+	glGenBuffers(1, &ibo.x);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, numIndi * sizeof(AFIndex), &indi[0], GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	return ibo;
 }
 
-AFBufObj afCreateVertexBuffer(int size, const void* buf)
+VBOID afCreateVertexBuffer(int size, const void* buf)
 {
-	GLuint vbo;
-	glGenBuffers(1, &vbo);
+	VBOID vbo;
+	glGenBuffers(1, &vbo.x);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER, size, buf, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	return vbo;
 }
 
-AFBufObj afCreateDynamicVertexBuffer(int size)
+VBOID afCreateDynamicVertexBuffer(int size)
 {
-	GLuint vbo;
-	glGenBuffers(1, &vbo);
+	VBOID vbo;
+	glGenBuffers(1, &vbo.x);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER, size, NULL, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	return vbo;
 }
 
-AFBufObj afCreateSSBO(int size)
+SSBOID afCreateSSBO(int size)
 {
-	GLuint name;
-	glGenBuffers(1, &name);
+	SSBOID name;
+	glGenBuffers(1, &name.x);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, name);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, size, NULL, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 	return name;
 }
 
-AFBufObj afCreateUBO(int size)
+UBOID afCreateUBO(int size)
 {
-	GLuint name;
-	glGenBuffers(1, &name);
+	UBOID name;
+	glGenBuffers(1, &name.x);
 	glBindBuffer(GL_UNIFORM_BUFFER, name);
 	glBufferData(GL_UNIFORM_BUFFER, size, NULL, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
@@ -85,7 +85,7 @@ GLuint afCreateDynamicTexture(int w, int h, AFDTFormat format)
 	return texture;
 }
 
-void afDrawIndexedTriangleList(AFBufObj ibo, int count, int start)
+void afDrawIndexedTriangleList(IBOID ibo, int count, int start)
 {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 	glDrawElements(GL_TRIANGLES, count, AFIndexTypeToDevice, (void*)(start));
