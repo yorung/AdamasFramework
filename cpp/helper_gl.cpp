@@ -53,13 +53,19 @@ UBOID afCreateUBO(int size)
 void afBindBuffer(GLuint program, const GLchar* name, SSBOID ssbo, GLuint storageBlockBinding)
 {
 	glShaderStorageBlockBinding(program, glGetProgramResourceIndex(program, GL_SHADER_STORAGE_BLOCK, name), storageBlockBinding);
+	GLint prev;
+	glGetIntegerv(GL_SHADER_STORAGE_BUFFER_BINDING, &prev);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, storageBlockBinding, ssbo);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, prev);
 }
 
 void afBindBuffer(GLuint program, const GLchar* name, UBOID ubo, GLuint uniformBlockBinding)
 {
 	glUniformBlockBinding(program, glGetUniformBlockIndex(program, name), uniformBlockBinding);
+	GLint prev;
+	glGetIntegerv(GL_UNIFORM_BUFFER_BINDING, &prev);
 	glBindBufferBase(GL_UNIFORM_BUFFER, uniformBlockBinding, ubo);
+	glBindBuffer(GL_UNIFORM_BUFFER, prev);
 }
 
 GLuint afCreateDynamicTexture(int w, int h, AFDTFormat format)
