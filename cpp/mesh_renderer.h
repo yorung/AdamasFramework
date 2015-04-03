@@ -11,7 +11,7 @@ struct RenderCommand
 	Mat matWorld;
 	MRID meshId;
 	MMID materialId;
-	int boneStartIndex;
+	uint32_t boneStartIndex;
 	int nBones;
 };
 

@@ -1,4 +1,5 @@
-#version 430
+#version 310 es
+precision highp float;
 in vec3 POSITION;
 in vec3 NORMAL;
 in vec2 vTexcoord;
@@ -14,7 +15,7 @@ struct RenderCommand {
 	mat4 matWorld;
 	int meshId;
 	int materialId;
-	int boneStartIndex;
+	uint boneStartIndex;
 	int nBones;
 };
 layout (std140, binding = 2) uniform perInstanceUBO {
@@ -27,7 +28,7 @@ layout (std430, binding = 5) buffer boneSSBO {
 
 void main() {
 	mat4 matWV = matV * renderCommands[gl_InstanceID].matWorld;
-	int boneStartIndex = renderCommands[gl_InstanceID].boneStartIndex;
+	uint boneStartIndex = renderCommands[gl_InstanceID].boneStartIndex;
 
 	mat4 comb =
 		bonesSSBO[boneStartIndex + vBlendIndices.x] * vBlendWeights.x +

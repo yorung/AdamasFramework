@@ -1,4 +1,5 @@
-#version 430
+#version 310 es
+precision mediump float;
 in vec2 texcoord;
 in vec4 color;
 uniform sampler2D sampler;
