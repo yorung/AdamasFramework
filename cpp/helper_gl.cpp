@@ -50,26 +50,24 @@ UBOID afCreateUBO(int size)
 	return name;
 }
 
-#if 0 // for PC
-void afBindBuffer(GLuint program, const GLchar* name, SSBOID ssbo, GLuint storageBlockBinding)
+#if 0 // without "binding" Layout Qualifier
+void afLayoutSamplerBindingManually(GLuint program, const GLchar* name, GLuint samplerBinding)
+{
+	glUseProgram(program);
+	glUniform1i(glGetUniformLocation(program, name), samplerBinding);
+}
+
+void afLayoutSSBOBindingManually(GLuint program, const GLchar* name, GLuint storageBlockBinding)
 {
 	glShaderStorageBlockBinding(program, glGetProgramResourceIndex(program, GL_SHADER_STORAGE_BLOCK, name), storageBlockBinding);
-	GLint prev;
-	glGetIntegerv(GL_SHADER_STORAGE_BUFFER_BINDING, &prev);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, storageBlockBinding, ssbo);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, prev);
 }
 
-void afBindBuffer(GLuint program, const GLchar* name, UBOID ubo, GLuint uniformBlockBinding)
+void afLayoutUBOBindingManually(GLuint program, const GLchar* name, GLuint uniformBlockBinding)
 {
 	glUniformBlockBinding(program, glGetUniformBlockIndex(program, name), uniformBlockBinding);
-	GLint prev;
-	glGetIntegerv(GL_UNIFORM_BUFFER_BINDING, &prev);
-	glBindBufferBase(GL_UNIFORM_BUFFER, uniformBlockBinding, ubo);
-	glBindBuffer(GL_UNIFORM_BUFFER, prev);
 }
 #endif
-void afBindBuffer(SSBOID ssbo, GLuint storageBlockBinding)
+void afBindBufferToBindingPoint(SSBOID ssbo, GLuint storageBlockBinding)
 {
 	GLint prev;
 	glGetIntegerv(GL_SHADER_STORAGE_BUFFER_BINDING, &prev);
@@ -77,7 +75,7 @@ void afBindBuffer(SSBOID ssbo, GLuint storageBlockBinding)
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, prev);
 }
 
-void afBindBuffer(UBOID ubo, GLuint uniformBlockBinding)
+void afBindBufferToBindingPoint(UBOID ubo, GLuint uniformBlockBinding)
 {
 	GLint prev;
 	glGetIntegerv(GL_UNIFORM_BUFFER_BINDING, &prev);

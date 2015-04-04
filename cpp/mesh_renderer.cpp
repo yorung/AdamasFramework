@@ -13,6 +13,10 @@ enum UBOBindingPoints {
 	UBP_PER_INSTANCE_DATAS = 2,
 };
 
+enum SamplerBindingPoints {
+	SBP_DIFFUSE = 4,
+};
+
 RenderMesh::RenderMesh()
 {
 	vbo = 0;
@@ -114,10 +118,9 @@ void MeshRenderer::Create()
 	assert(shaderId);
 
 	shaderMan.Apply(shaderId);
-	glUniform1i(glGetUniformLocation(shaderId, "sampler"), 0);
 
-	afBindBuffer(ssboForBoneMatrices, SBP_BONES);
-	afBindBuffer(uboForPerInstanceData, UBP_PER_INSTANCE_DATAS);
+	afBindBufferToBindingPoint(ssboForBoneMatrices, SBP_BONES);
+	afBindBufferToBindingPoint(uboForPerInstanceData, UBP_PER_INSTANCE_DATAS);
 }
 
 void MeshRenderer::Destroy()
@@ -203,12 +206,12 @@ void MeshRenderer::Flush()
 	glUniformMatrix4fv(glGetUniformLocation(shaderId, "matV"), 1, GL_FALSE, &matV.m[0][0]);
 	glUniformMatrix4fv(glGetUniformLocation(shaderId, "matP"), 1, GL_FALSE, &matP.m[0][0]);
 
-	glActiveTexture(GL_TEXTURE0);
 
 	RenderCommand c = renderCommands[0];
 	const Material* mat = matMan.Get(c.materialId);
 	RenderMesh* r = GetMeshByMRID(c.meshId);
 	assert(r);
+	glActiveTexture(GL_TEXTURE0 + SBP_DIFFUSE);
 	glBindTexture(GL_TEXTURE_2D, mat->tmid);
 	r->Draw(c, renderCommands.size());
 	glBindTexture(GL_TEXTURE_2D, 0);

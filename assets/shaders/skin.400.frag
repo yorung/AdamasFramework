@@ -2,7 +2,7 @@
 precision mediump float;
 in vec2 texcoord;
 in vec4 color;
-uniform sampler2D sampler;
+layout (binding = 4) uniform sampler2D sampler;
 
 layout (location = 0) out vec4 flagColor;
 

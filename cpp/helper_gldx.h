@@ -141,10 +141,11 @@ VBOID afCreateVertexBuffer(int size, const void* buf);
 VBOID afCreateDynamicVertexBuffer(int size);
 SSBOID afCreateSSBO(int size);
 UBOID afCreateUBO(int size);
-#if 0 // for PC
-void afBindBuffer(GLuint program, const GLchar* name, SSBOID ssbo, GLuint storageBlockBinding);
-void afBindBuffer(GLuint program, const GLchar* name, UBOID ubo, GLuint uniformBlockBinding);
+#if 0 // without "binding" Layout Qualifier
+void afLayoutSamplerBindingManually(GLuint program, const GLchar* name, GLuint samplerBinding);
+void afLayoutSSBOBindingManually(GLuint program, const GLchar* name, GLuint storageBlockBinding);
+void afLayoutUBOBindingManually(GLuint program, const GLchar* name, GLuint uniformBlockBinding);
 #endif
-void afBindBuffer(SSBOID ssbo, GLuint storageBlockBinding);
-void afBindBuffer(UBOID ubo, GLuint uniformBlockBinding);
+void afBindBufferToBindingPoint(SSBOID ssbo, GLuint storageBlockBinding);
+void afBindBufferToBindingPoint(UBOID ubo, GLuint uniformBlockBinding);
 void afDrawIndexedTriangleList(IBOID ibo, int count, int start = 0);
