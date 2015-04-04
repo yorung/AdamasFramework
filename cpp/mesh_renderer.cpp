@@ -63,8 +63,8 @@ void RenderMesh::Init(const Block& block)
 		const Material* mat = matMan.Get(matMap.materialId);
 		assert(mat);
 
-		int count = matMap.faces * 3;
-		int start = matMap.faceStartIndex * 3;
+		GLuint count = matMap.faces * 3;
+		GLuint start = matMap.faceStartIndex * 3;
 		DrawElementsIndirectCommand cmd = { count, 1, start, 0, 0 };
 		cmds.push_back(cmd);
 
@@ -87,12 +87,11 @@ void RenderMesh::Draw(const RenderCommand& c, int instanceCount) const
 	glBindVertexArray(vao);
 	DrawElementsIndirectCommand cmd = indirectCommand;
 	cmd.instanceCount = instanceCount;
-	glDrawElementsInstancedBaseVertex(GL_TRIANGLES,
+	glDrawElementsInstanced/*BaseVertex*/(GL_TRIANGLES,
 		cmd.count,
 		AFIndexTypeToDevice,
 		(void*)cmd.firstIndex,
-		cmd.instanceCount,
-		cmd.baseVertex);
+		cmd.instanceCount/*, cmd.baseVertex*/);
 	glBindVertexArray(0);
 }
 

@@ -149,9 +149,10 @@ bool FontMan::Init()
 
 	ibo = afCreateQuadListIndexBuffer(SPRITE_MAX);
 	vbo = afCreateDynamicVertexBuffer(SPRITE_MAX * sizeof(FontVertex) * 4);
-	GLsizei stride = sizeof(FontVertex);
-	vao = afCreateVAO(shader, elements, dimof(elements), 1, &vbo, &stride, ibo);
-
+	{
+		GLsizei stride = sizeof(FontVertex);
+		vao = afCreateVAO(shader, elements, dimof(elements), 1, &vbo, &stride, ibo);
+	}
 
 #ifndef GL_TRUE
 	{

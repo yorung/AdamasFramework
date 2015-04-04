@@ -7,8 +7,7 @@
 #include <android/log.h>
 extern JNIEnv* jniEnv;
 extern const char* boundJavaClass;
-#include <gles2/gl2.h>
-#include <gles2/gl2ext.h>
+#include <gles3/gl31.h>
 #endif
 
 #include <vector>
