@@ -8,3 +8,4 @@ void _aflDumpStack(lua_State* L, const char* func, int line);
 #endif
 
 void aflBindClass(lua_State* L, const char* className, luaL_Reg methods[], lua_CFunction creator);
+bool aflDoFile(lua_State* L, const char* fileName);

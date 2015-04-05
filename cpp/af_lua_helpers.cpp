@@ -73,3 +73,15 @@ void aflBindClass(lua_State* L, const char* className, luaL_Reg methods[], lua_C
 	CreateClassMetatable(L, className, methods);
 	CreateClassInstanceCreator(L, className, creator);
 }
+
+bool aflDoFile(lua_State* L, const char* fileName)
+{
+	void* img = LoadFile(fileName);
+	if (!img) {
+		luaL_error(L, __FUNCTION__ ": could not load file %s", fileName);
+		return false;
+	}
+	bool ok = !luaL_dostring(L, (char*)img);
+	free(img);
+	return ok;
+}

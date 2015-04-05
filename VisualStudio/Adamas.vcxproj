@@ -24,6 +24,7 @@
     <ClCompile Include="..\cpp\helper_gldx.cpp" />
     <ClCompile Include="..\cpp\hub.cpp" />
     <ClCompile Include="..\cpp\joint_db.cpp" />
+    <ClCompile Include="..\cpp\lua_bind.cpp" />
     <ClCompile Include="..\cpp\matrix_man.cpp" />
     <ClCompile Include="..\cpp\mat_man.cpp" />
     <ClCompile Include="..\cpp\mesh_renderer.cpp" />

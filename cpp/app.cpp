@@ -65,7 +65,10 @@ void App::Draw()
 
 void App::Init()
 {
-    ivec2 scrSize = systemMetrics.GetScreenSize();
+	void LuaBindTest();
+	LuaBindTest();
+
+	ivec2 scrSize = systemMetrics.GetScreenSize();
     glViewport(0, 0, scrSize.x, scrSize.y);
 
 	glClearColor(0.0f, 0.2f, 0.5f, 1.0f);
