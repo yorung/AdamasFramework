@@ -130,6 +130,11 @@ void FontMan::ClearCache()
 	curX = curY = curLineMaxH = 0;
 }
 
+static InputElement elements[] = {
+	CInputElement(0, "POSITION", SF_R32G32_FLOAT, 0),
+	CInputElement(0, "TEXCOORD", SF_R32G32_FLOAT, 8),
+};
+
 bool FontMan::Init()
 {
 	Destroy();
@@ -139,15 +144,15 @@ bool FontMan::Init()
 	}
 	texture = texMan.CreateDynamicTexture("$FontMan", TEX_W, TEX_H);
 
-	static InputElement elements[] = {
-		CInputElement(0, "POSITION", SF_R32G32_FLOAT, 0),
-		CInputElement(0, "TEXCOORD", SF_R32G32_FLOAT, 8),
-	};
-	shader = shaderMan.Create("font", elements, dimof(elements));
+	shader = shaderMan.Create("font");
 	assert(shader);
 
 	ibo = afCreateQuadListIndexBuffer(SPRITE_MAX);
 	vbo = afCreateDynamicVertexBuffer(SPRITE_MAX * sizeof(FontVertex) * 4);
+	{
+		GLsizei stride = sizeof(FontVertex);
+		vao = afCreateVAO(shader, elements, dimof(elements), 1, &vbo, &stride, ibo);
+	}
 
 #ifndef GL_TRUE
 	{
@@ -186,6 +191,7 @@ void FontMan::Destroy()
 	texSrc.Destroy();
 	afSafeDeleteBuffer(ibo);
 	afSafeDeleteBuffer(vbo);
+	afSafeDeleteVAO(vao);
 #ifndef GL_TRUE
 	SAFE_RELEASE(pSamplerState);
 	SAFE_RELEASE(pDSState);
@@ -320,11 +326,6 @@ void FontMan::Render()
 	afWriteBuffer(vbo, verts, 4 * numSprites * sizeof(FontVertex));
 	shaderMan.Apply(shader);
 
-#ifdef GL_TRUE
-	GLsizei stride = sizeof(FontVertex);
-	shaderMan.SetVertexBuffers(shader, 1, &vbo, &stride);
-#endif
-
 #ifndef GL_TRUE
 	float factor[] = { 0, 0, 0, 0 };
 	deviceMan11.GetContext()->OMSetDepthStencilState(pDSState, 1);
@@ -343,7 +344,9 @@ void FontMan::Render()
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glBindVertexArray(vao);
 	afDrawIndexedTriangleList(ibo, numSprites * 6);
+	glBindVertexArray(0);
 	glDisable(GL_BLEND);
 #endif
 

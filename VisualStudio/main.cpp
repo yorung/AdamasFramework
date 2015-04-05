@@ -16,18 +16,39 @@ static void err(char *msg)
 #ifdef _DEBUG
 static void DumpInfo()
 {
-	puts((char*)glGetString(GL_VERSION));
-	puts((char*)glGetString(GL_RENDERER));
-	puts((char*)glGetString(GL_VENDOR));
-	puts((char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
-	const GLubyte* ext = glGetString(GL_EXTENSIONS);
-	do {
-		printf("%c", *ext == ' ' ? '\n' : *ext);
-	}while(*ext++);
+	printf("GL_VERSION = %s\n", (char*)glGetString(GL_VERSION));
+	printf("GL_RENDERER = %s\n", (char*)glGetString(GL_RENDERER));
+	printf("GL_VENDOR = %s\n", (char*)glGetString(GL_VENDOR));
+	printf("GL_SHADING_LANGUAGE_VERSION = %s\n", (char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
+	puts("------ GL_EXTENSIONS");
+
+	GLint num;
+	glGetIntegerv(GL_NUM_EXTENSIONS, &num);
+	for (int i = 0; i < num; i++) {
+		const GLubyte* ext = glGetStringi(GL_EXTENSIONS, i);
+		printf("%s\n", ext);
+	}
+
+	puts("------ glGet");
+#define _(x) do { GLint i; glGetIntegerv(x, &i); printf(#x " = %d\n", i); } while(0)
+	_(GL_MAX_UNIFORM_BUFFER_BINDINGS);
+	_(GL_MAX_UNIFORM_BLOCK_SIZE);
+	_(GL_MAX_VERTEX_UNIFORM_BLOCKS);
+	_(GL_MAX_FRAGMENT_UNIFORM_BLOCKS);
+	_(GL_MAX_GEOMETRY_UNIFORM_BLOCKS);
+
+	_(GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS);
+	_(GL_MAX_SHADER_STORAGE_BLOCK_SIZE);
+	_(GL_MAX_VERTEX_SHADER_STORAGE_BLOCKS);
+#undef _
 }
 
 static void APIENTRY debugMessageHandler(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam)
 {
+	switch (type) {
+	case GL_DEBUG_TYPE_OTHER_ARB:
+		return;
+	}
 	puts(message);
 }
 #endif
@@ -83,7 +104,7 @@ void CreateWGL(HWND hWnd)
 #endif
 	static const int attribList[] = {
 		WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
-		WGL_CONTEXT_MINOR_VERSION_ARB, 0,
+		WGL_CONTEXT_MINOR_VERSION_ARB, 1,
 		WGL_CONTEXT_FLAGS_ARB, flags,
 		WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_ES2_PROFILE_BIT_EXT,
 		0,
@@ -296,6 +317,7 @@ BOOL InitInstance(HINSTANCE hInstance)
    ShowWindow(hWnd, SW_SHOWNORMAL);
    UpdateWindow(hWnd);
 
+   DragAcceptFiles(hWnd, TRUE);
    return TRUE;
 }
 
@@ -344,6 +366,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		DestroyWGL(hWnd);
 		DestroyWindow(hWnd);
 		return 0;
+	case WM_DROPFILES:
+	{
+		HDROP hDrop = (HDROP)wParam;
+		char fileName[MAX_PATH];
+		DragQueryFileA(hDrop, 0, fileName, MAX_PATH);
+		DragFinish(hDrop);
+		app.LoadMesh(fileName);
+		break;
+	}
 	case WM_LBUTTONDOWN:
 		SetCapture(hWnd);
 		devCamera.LButtonDown(LOWORD(lParam) / (float)screenSize.x, HIWORD(lParam) / (float)screenSize.y);

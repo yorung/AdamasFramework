@@ -340,8 +340,7 @@ void Bvh::CreateBoneMesh()
 		CreateCone(m_block, v1, v2, pId, depthToColor[depth % dimof(depthToColor)]);
 	}
 
-	m_block.Verify();
-	m_meshRenderer.Init(m_block);
+	renderMeshId = meshRenderer.CreateRenderMesh(m_block);
 
 	Material mat;
 	mat.faceColor.x = 0.6f;
@@ -541,7 +540,7 @@ void Bvh::LoadSub(const char *fileName)
 
 Bvh::~Bvh()
 {
-	m_meshRenderer.Destroy();
+	meshRenderer.SafeDestroyRenderMesh(renderMeshId);
 }
 
 void Bvh::CalcFrameMatrices()
@@ -618,7 +617,7 @@ void Bvh::Draw(int animId, double time)
 			BvhFrame& f = m_frames[i];
 			BoneMatrices[i] = f.boneOffsetMatrix * f.result;
 		}
-		m_meshRenderer.Draw(BoneMatrices, dimof(BoneMatrices), m_block);
+		meshRenderer.DrawRenderMesh(renderMeshId, Mat(), BoneMatrices, dimof(BoneMatrices), m_block);
 	}
 }
 

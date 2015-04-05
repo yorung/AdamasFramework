@@ -20,11 +20,6 @@ App::App()
 	mesh = nullptr;
 }
 
-App::~App()
-{
-	SAFE_DELETE(mesh);
-}
-
 void App::Draw()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -61,7 +56,11 @@ void App::Draw()
 	matrixMan.Set(MatrixMan::PROJ, proj);
 
 	MeshXAnimResult r;
-	mesh->Draw(r);
+	mesh->CalcAnimation(0, GetTime(), r);
+	mesh->Draw(r, Mat());
+	mesh->Draw(r, translate(0, radius * 1.5f, 0) * q2m(Quat(Vec3(0, 0, 1.0f), (float)(GetTime() * M_PI))));
+	mesh->Draw(r, translate(radius * 2.0f, 0, 0) * q2m(Quat(Vec3(0, 1.0f, 0), (float)(GetTime() * M_PI))));
+	meshRenderer.Flush();
 }
 
 void App::Init()
@@ -72,11 +71,18 @@ void App::Init()
 	glClearColor(0.0f, 0.2f, 0.5f, 1.0f);
 	glEnable(GL_DEPTH_TEST);
 	glClearDepthf(0);
+
+	meshRenderer.Create();
 	waterSurface.Init();
 	fontMan.Init();
+	LoadMesh("jiji.x");
+}
 
-	mesh = new MeshX("jiji.x");
-	float radius = CalcRadius(mesh);
+void App::LoadMesh(const char* fileName)
+{
+	SAFE_DELETE(mesh);
+	mesh = new MeshX(fileName);
+	radius = CalcRadius(mesh);
 	float scale = std::max(0.00001f, radius);
 	devCamera.SetDistance(scale * 3);
 
@@ -90,10 +96,12 @@ void App::OnTap(float x, float y)
 
 void App::Destroy()
 {
+	SAFE_DELETE(mesh);
 	texMan.Destroy();
 	shaderMan.Destroy();
 	waterSurface.Destroy();
 	fontMan.Destroy();
+	meshRenderer.Destroy();
 }
 
 void App::Update()

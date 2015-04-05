@@ -2,12 +2,17 @@
 
 MatMan matMan;
 
+MatMan::MatMan()
+{
+	m_mats.push_back(Material());	// make id 0 invalid
+}
+
 bool Material::operator==(const Material& r) const
 {
 	return !memcmp(this, &r, sizeof(Material));
 }
 
-MatMan::MMID MatMan::Create(const Material& mat)
+MMID MatMan::Create(const Material& mat)
 {
 	auto it = std::find_if(m_mats.begin(), m_mats.end(), [&mat] (const Material& m) { return m == mat; });
 	if (it != m_mats.end()) {

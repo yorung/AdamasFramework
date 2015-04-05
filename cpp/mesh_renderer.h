@@ -3,20 +3,52 @@ struct MeshVertex;
 struct MeshColor;
 struct MeshSkin;
 
+typedef unsigned int MRID;
+static const MRID INVALID_MRID = 0;
+
+struct RenderCommand
+{
+	Mat matWorld;
+	MRID meshId;
+	MMID materialId;
+	uint32_t boneStartIndex;
+	int nBones;
+};
+
+class RenderMesh
+{
+	GLuint vao;
+	VBOID vbo;
+	IBOID ibo;
+	DrawElementsIndirectCommand indirectCommand;
+public:
+	RenderMesh();
+	~RenderMesh();
+	void Destroy();
+	void Init(const Block& block);
+	void Draw(const RenderCommand& c, int instanceCount) const;
+};
+
 class MeshRenderer
 {
-	GLuint posBuffer;
-	GLuint colorBuffer;
-	GLuint skinBuffer;
-	GLuint pIndexBuffer;
+public:
 	ShaderMan::SMID shaderId;
+	std::vector<RenderMesh*> renderMeshes;
+	std::vector<RenderCommand> renderCommands;
+	std::vector<Mat> renderBoneMatrices;
+	SSBOID ssboForBoneMatrices;
+	UBOID uboForPerInstanceData;
+	RenderMesh* GetMeshByMRID(MRID id);
 public:
 	MeshRenderer();
 	~MeshRenderer();
+	void Create();
 	void Destroy();
-	void Init(int numVertices, const MeshVertex* vertices, const MeshColor* color, const MeshSkin* skin, int numIndices, const AFIndex* indices);
-	void Init(const Block& block);
-	void Draw(const Mat BoneMatrices[BONE_MAX], int nBones, const Block& block) const;
+	ShaderMan::SMID GetShaderId() { return shaderId; }
+	MRID CreateRenderMesh(const Block& block);
+	void SafeDestroyRenderMesh(MRID& id);
+	void DrawRenderMesh(MRID id, const Mat& worldMat, const Mat BoneMatrices[BONE_MAX], int nBones, const Block& block);
+	void Flush();
 };
 
-typedef MeshRenderer MeshRenderer;
+extern MeshRenderer meshRenderer;

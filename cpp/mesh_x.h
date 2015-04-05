@@ -74,23 +74,15 @@ struct MeshVertex
 {
 	Vec3 xyz;
 	Vec3 normal;
-};
-
-struct MeshColor
-{
 	uint32_t color;
 	Vec2 uv;
-};
-
-struct MeshSkin
-{
 	Vec3 blendWeights;
 	ubyte4 blendIndices;
 };
 
 struct MaterialMap
 {
-	MatMan::MMID materialId;
+	MMID materialId;
 	int faceStartIndex;
 	int faces;
 };
@@ -108,22 +100,13 @@ struct Frame
 struct Block
 {
 	std::vector<MeshVertex> vertices;
-	std::vector<MeshColor> color;
-	std::vector<MeshSkin> skin;
 	std::vector<AFIndex> indices;
 	std::vector<MaterialMap> materialMaps;
 	void Clear()
 	{
 		vertices.clear();
-		color.clear();
-		skin.clear();
 		indices.clear();
 		materialMaps.clear();
-	}
-	void Verify() const
-	{
-		assert(vertices.size() == skin.size());
-		assert(vertices.size() == color.size());
 	}
 };
 
@@ -141,7 +124,7 @@ struct MeshXBvhBinding
 class MeshX : public Mesh
 {
 private:
-	MeshRenderer m_meshRenderer;
+	MRID renderMeshId;
 
 private:
 	bool ParseMesh(char* imgFrame, Block& block, BONE_ID frameId);
@@ -154,7 +137,7 @@ private:
 	BONE_ID GetOrCreateFrameIdByName(const char* name);
 	BONE_ID GetFrameIdByName(const char* name) const;
 	void _linkFrame(BONE_ID parentFrameId, BONE_ID childFrameId);
-	void _storeWeight(MeshSkin& v, int frameId, float weight);
+	void _storeWeight(MeshVertex& v, int frameId, float weight);
 	void CalcFrameMatrices(MeshXAnimResult& animResult, const Mat localMats[BONE_MAX]) const;
 	void DumpFrames() const;
 	void CreateBoneMesh();
@@ -173,7 +156,7 @@ private:
 	Block m_block;
 	int m_animTicksPerSecond;
 
-	MeshRenderer bonesRenderer;
+	MRID boneRenderMeshId;
 	Block bones;
 public:
 	const Block& GetRawDatas() const { return m_block; }
@@ -182,7 +165,7 @@ public:
 	~MeshX();
 	void CalcAnimation(int animId, double time, MeshXAnimResult& result) const;
 	void CalcAnimationFromBvh(class Bvh* bvh, const MeshXBvhBinding& bind, double time, MeshXAnimResult& animResult, float translationScale) const;
-	void Draw(const MeshXAnimResult& animResult) const;
+	void Draw(const MeshXAnimResult& animResult, const Mat& worldMat) const;
 	void SyncLocalAxisWithBvh(Bvh* bvh, MeshXBvhBinding& bind) const;
 };
 

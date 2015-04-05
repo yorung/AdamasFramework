@@ -19,6 +19,7 @@
     <ClCompile Include="..\cpp\font_man.cpp" />
     <ClCompile Include="..\cpp\fps.cpp" />
     <ClCompile Include="..\cpp\helper.cpp" />
+    <ClCompile Include="..\cpp\helper_gl.cpp" />
     <ClCompile Include="..\cpp\helper_gldx.cpp" />
     <ClCompile Include="..\cpp\hub.cpp" />
     <ClCompile Include="..\cpp\joint_db.cpp" />
@@ -75,6 +76,20 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\assets\shaders\font.frag" />
+    <None Include="..\assets\shaders\font.vert" />
+    <None Include="..\assets\shaders\letterbox.frag" />
+    <None Include="..\assets\shaders\letterbox.vert" />
+    <None Include="..\assets\shaders\skin.400.frag" />
+    <None Include="..\assets\shaders\skin.400.vert" />
+    <None Include="..\assets\shaders\skin.frag" />
+    <None Include="..\assets\shaders\skin.vert" />
+    <None Include="..\assets\shaders\vivid.frag" />
+    <None Include="..\assets\shaders\vivid.vert" />
+    <None Include="..\assets\shaders\water.frag" />
+    <None Include="..\assets\shaders\water.vert" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{D13F848D-7701-43BA-B781-1481A54FE77D}</ProjectGuid>

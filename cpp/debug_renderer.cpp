@@ -2,24 +2,16 @@
 
 DebugRenderer debugRenderer;
 
-static void InitSkin(MeshSkin& s, BONE_ID boneId)
-{
-	s.blendIndices.x = s.blendIndices.y = s.blendIndices.z = s.blendIndices.w = boneId;
-	s.blendWeights.x = s.blendWeights.y = s.blendWeights.z = 0;
-}
-
-static void InitVertex(MeshVertex& v)
+static void InitVertex(MeshVertex& v, uint32_t color, BONE_ID boneId)
 {
 	v.normal.x = 1;
 	v.normal.y = 0;
 	v.normal.z = 0;
 	v.xyz.x = v.xyz.y = v.xyz.z = 0;
-}
-
-static void InitVertexColor(MeshColor& c, uint32_t color)
-{
-	c.color = color;
-	c.uv.x = c.uv.y = 0;
+	v.color = color;
+	v.uv.x = v.uv.y = 0;
+	v.blendIndices.x = v.blendIndices.y = v.blendIndices.z = v.blendIndices.w = boneId;
+	v.blendWeights.x = v.blendWeights.y = v.blendWeights.z = 0;
 }
 
 void CreateCone(Block& b, const Vec3& v1, const Vec3& v2, BONE_ID boneId, uint32_t color)
@@ -35,13 +27,9 @@ void CreateCone(Block& b, const Vec3& v1, const Vec3& v2, BONE_ID boneId, uint32
 	static const int div = 10;
 	for (int j = 0; j < div; j++) {
 		MeshVertex vert[3];
-		MeshColor col;
-		MeshSkin skin;
-		InitVertexColor(col, color);
 		for (auto& it : vert) {
-			InitVertex(it);
+			InitVertex(it, color, boneId);
 		}
-		InitSkin(skin, boneId);
 		float rad = ((float)M_PI * 2) / div * (j + 1);
 		Vec3 vRot = v1 + vRot0 * cosf(rad) + vRot90 * sinf(rad);
 		vert[0].xyz = vRotLast;
@@ -51,8 +39,6 @@ void CreateCone(Block& b, const Vec3& v1, const Vec3& v2, BONE_ID boneId, uint32
 		for (int i = 0; i < 3; i++) {
 			vert[i].normal = normal;
 			b.vertices.push_back(vert[i]);
-			b.skin.push_back(skin);
-			b.color.push_back(col);
 			b.indices.push_back(b.indices.size());
 		}
 		vRotLast = vRot;
@@ -68,7 +54,7 @@ void DebugRenderer::CreatePivotMesh()
 		CreateCone(pivots, Vec3(), Vec3(0, 0, len), i, 0xffff0000);
 	}
 
-	pivotsRenderer.Init(pivots);
+	pivotsRenderMeshId = meshRenderer.CreateRenderMesh(pivots);
 
 	Material mat;
 	mat.faceColor.x = 0.6f;
@@ -114,15 +100,15 @@ void DebugRenderer::DrawPivots(const Mat mat[BONE_MAX], int num)
 		mat2[i] = i < num ? mat[i] : Mat();
 	}
 
-	pivotsRenderer.Draw(mat2, BONE_MAX, pivots);
+	meshRenderer.DrawRenderMesh(pivotsRenderMeshId, Mat(), mat2, BONE_MAX, pivots);
 
 	for (int i = 0; i < BONE_MAX; i++) {
 		mat2[i] = orthogonalize(mat2[i]);
 	}
-	pivotsRenderer.Draw(mat2, BONE_MAX, pivots);
+	meshRenderer.DrawRenderMesh(pivotsRenderMeshId, Mat(), mat2, BONE_MAX, pivots);
 }
 
 void DebugRenderer::Destroy()
 {
-	pivotsRenderer.Destroy();
+	meshRenderer.SafeDestroyRenderMesh(pivotsRenderMeshId);
 }

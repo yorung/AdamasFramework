@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 8
+    compileSdkVersion 21
     buildToolsVersion "21.1.2"
 
     sourceSets {
@@ -11,15 +11,15 @@ android {
 
     defaultConfig {
         applicationId "com.pinotnoir.adamas"
-        minSdkVersion 8
-        targetSdkVersion 21
+        minSdkVersion 21
+        targetSdkVersion 22
         versionCode 1
         versionName "1.0"
         ndk {
             moduleName 'AdamasNative'
             cFlags "-std=c++11"
             ldLibs "log"
-            ldLibs "GLESv2"
+            ldLibs "GLESv3"
             abiFilters "armeabi", "mips", "x86"
             stl "stlport_static"
         }

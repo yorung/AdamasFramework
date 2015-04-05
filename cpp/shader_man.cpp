@@ -34,12 +34,12 @@ static GLuint CompileShader(int type, const char *fileName)
 static GLuint CreateProgram(const char* name)
 {
 	char buf[256];
-	snprintf(buf, dimof(buf), "shaders/%s.vs", name);
+	snprintf(buf, dimof(buf), "shaders/%s.vert", name);
 	GLuint vertexShader = CompileShader(GL_VERTEX_SHADER, buf);
 	if (!vertexShader) {
 		return 0;
 	}
-	snprintf(buf, dimof(buf), "shaders/%s.fs", name);
+	snprintf(buf, dimof(buf), "shaders/%s.frag", name);
 	GLuint fragmentShader = CompileShader(GL_FRAGMENT_SHADER, buf);
 	if (!fragmentShader) {
 		return 0;
@@ -67,72 +67,26 @@ static GLuint CreateProgram(const char* name)
 	return program;
 }
 
-void ShaderMan::SetVertexBuffers(SMID id, int numBuffers, GLuint const *vertexBufferIds, const GLsizei* strides)
-{
-	const Effect& it = effects[id];
-	for (int i = 0; i < it.numElements; i++) {
-		const InputElement& d = it.elements[i];
-		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferIds[d.inputSlot]);
-		GLint h = glGetAttribLocation(it.program, d.name);
-		if (h == -1) {
-			continue;
-		}
-		glEnableVertexAttribArray(h);
-		switch (d.format) {
-		case SF_R32_FLOAT:
-		case SF_R32G32_FLOAT:
-		case SF_R32G32B32_FLOAT:
-		case SF_R32G32B32A32_FLOAT:
-			glVertexAttribPointer(h, d.format - SF_R32_FLOAT + 1, GL_FLOAT, GL_FALSE, strides[d.inputSlot], (void*)d.offset);
-			break;
-		case SF_R8_UNORM:
-		case SF_R8G8_UNORM:
-		case SF_R8G8B8_UNORM:
-		case SF_R8G8B8A8_UNORM:
-			glVertexAttribPointer(h, d.format - SF_R8_UNORM + 1, GL_UNSIGNED_BYTE, GL_TRUE, strides[d.inputSlot], (void*)d.offset);
-			break;
-		case SF_R8_UINT:
-		case SF_R8G8_UINT:
-		case SF_R8G8B8_UINT:
-		case SF_R8G8B8A8_UINT:
-			glVertexAttribPointer(h, d.format - SF_R8_UINT + 1, GL_UNSIGNED_BYTE, GL_FALSE, strides[d.inputSlot], (void*)d.offset);
-			break;
-		}
-	}
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-}
-
-ShaderMan::SMID ShaderMan::Create(const char *name, const InputElement elements[], int numElements)
+ShaderMan::SMID ShaderMan::Create(const char *name)
 {
 	NameToId::iterator it = nameToId.find(name);
 	if (it != nameToId.end())
 	{
 		return it->second;
 	}
-
-	Effect effect;
-	memset(&effect, 0, sizeof(effect));
-
-	effect.program = CreateProgram(name);
-	effect.elements = elements;
-	effect.numElements = numElements;
-
-	effects[effect.program] = effect;
-	return nameToId[name] = effect.program;
+	return nameToId[name] = CreateProgram(name);
 }
 
 void ShaderMan::Destroy()
 {
-	for (Effects::iterator it = effects.begin(); it != effects.end(); it++)
+	for (auto it = nameToId.begin(); it != nameToId.end(); it++)
 	{
-		glDeleteProgram(it->second.program);
+		glDeleteProgram(it->second);
 	}
-	effects.clear();
 	nameToId.clear();
 }
 
 void ShaderMan::Apply(SMID id)
 {
-	const Effect& it = effects[id];
-	glUseProgram(it.program);
+	glUseProgram(id);
 }

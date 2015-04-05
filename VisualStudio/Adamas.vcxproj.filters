@@ -70,6 +70,9 @@
     <ClCompile Include="..\cpp\dev_camera.cpp">
       <Filter>PlatformIndipendent</Filter>
     </ClCompile>
+    <ClCompile Include="..\cpp\helper_gl.cpp">
+      <Filter>PlatformIndipendent</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="wgl_grabber_gen.h">
@@ -152,10 +155,51 @@
     <Filter Include="PlatformIndipendent">
       <UniqueIdentifier>{4a920d4b-d9c9-44e6-ab42-5e42e684f4a6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="shaders">
+      <UniqueIdentifier>{e8de3368-1a62-4c1b-a6da-7f288e0bc3a1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource.rc">
       <Filter>Windows</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\assets\shaders\font.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\assets\shaders\font.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\assets\shaders\letterbox.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\assets\shaders\letterbox.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\assets\shaders\skin.400.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\assets\shaders\skin.400.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\assets\shaders\skin.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\assets\shaders\skin.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\assets\shaders\vivid.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\assets\shaders\vivid.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\assets\shaders\water.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\assets\shaders\water.vert">
+      <Filter>shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

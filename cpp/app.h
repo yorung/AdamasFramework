@@ -1,9 +1,10 @@
 class App {
 	MeshX* mesh;
+	float radius;
 public:
 	App();
-	~App();
 	void Init();
+	void LoadMesh(const char* fileName);
 	void Update();
 	void Draw();
 	void OnTap(float x, float y);

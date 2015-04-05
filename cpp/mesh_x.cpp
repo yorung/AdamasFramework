@@ -257,7 +257,7 @@ static char* _searchChildTag(char* from, const char *tag, std::string* name = nu
 	return nullptr;
 }
 
-static MatMan::MMID _getMaterial(char*& p, const std::string path)
+static MMID _getMaterial(char*& p, const std::string path)
 {
 	Material mat;
 	mat.faceColor.x = _getF(p);
@@ -354,8 +354,6 @@ void MeshX::CreateBoneMesh()
 		CreateCone(bones, v1, v2, pId, depthToColor[depth % dimof(depthToColor)]);
 	}
 
-	bonesRenderer.Init(bones);
-
 	Material mat;
 	mat.faceColor.x = 0.6f;
 	mat.faceColor.y = 0.6f;
@@ -377,6 +375,8 @@ void MeshX::CreateBoneMesh()
 	map.faceStartIndex = 0;
 	map.faces = bones.indices.size() / 3;
 	bones.materialMaps.push_back(map);
+
+	boneRenderMeshId = meshRenderer.CreateRenderMesh(bones);
 }
 
 
@@ -395,8 +395,7 @@ MeshX::MeshX(const char *fileName)
 	meshPath = strPath;
 	LoadSub();
 	
-	m_meshRenderer.Init(m_block);
-
+	renderMeshId = meshRenderer.CreateRenderMesh(m_block);
 	CreateBoneMesh();
 }
 
@@ -463,7 +462,7 @@ struct SkinWeights {
 	}
 };
 
-void MeshX::_storeWeight(MeshSkin& v, int frameId, float weight)
+void MeshX::_storeWeight(MeshVertex& v, int frameId, float weight)
 {
 	if (v.blendWeights.x == 0) {
 		v.blendWeights.x = weight;
@@ -486,8 +485,6 @@ void MeshX::_storeWeight(MeshSkin& v, int frameId, float weight)
 bool MeshX::ParseMesh(char* imgFrame, Block& block, BONE_ID frameId)
 {
 	auto& vertices = block.vertices;
-	auto& skin = block.skin;
-	auto& color = block.color;
 	auto& indices = block.indices;
 	vertices.clear();
 	indices.clear();
@@ -542,7 +539,7 @@ bool MeshX::ParseMesh(char* imgFrame, Block& block, BONE_ID frameId)
 		materialIndices.push_back(_getI(p));
 	}
 
-	std::vector<MatMan::MMID> materialIds;
+	std::vector<MMID> materialIds;
 	materialIds.resize(nMaterials);
 	for (int i = 0; i < nMaterials; i++) {
 		p = _searchChildTag(p, "Material");
@@ -582,7 +579,7 @@ bool MeshX::ParseMesh(char* imgFrame, Block& block, BONE_ID frameId)
 	map.faces = 0;
 
 	for (int i = 0, primitiveIdx = 0; i < nMaterialFaces; i++) {
-		MatMan::MMID id = materialIds[materialIndices[i]];
+		MMID id = materialIds[materialIndices[i]];
 		if (map.materialId != id) {
 			_pushMaterialMap(block, map);
 			map.materialId = id;
@@ -606,26 +603,21 @@ bool MeshX::ParseMesh(char* imgFrame, Block& block, BONE_ID frameId)
 		v.normal.x = 1;
 		v.normal.y = 0;
 		v.normal.z = 0;
-		vertices.push_back(v);
-
-		MeshColor c;
-		c.uv = texCoords[i];
-		c.color = 0xffffffff;
+		v.uv = texCoords[i];
+		v.color = 0xffffffff;
 		if (i < nVertexColors) {
 			Vec4 f4 = vertexColors[i];
-			c.color = _convF4ToU32(f4);
+			v.color = _convF4ToU32(f4);
 		}
-		color.push_back(c);
 
-		MeshSkin s;
-		s.blendWeights.x = 0;
-		s.blendWeights.y = 0;
-		s.blendWeights.z = 0;
-		s.blendIndices.x = 0;
-		s.blendIndices.y = 0;
-		s.blendIndices.z = 0;
-		s.blendIndices.w = frameId;
-		skin.push_back(s);
+		v.blendWeights.x = 0;
+		v.blendWeights.y = 0;
+		v.blendWeights.z = 0;
+		v.blendIndices.x = 0;
+		v.blendIndices.y = 0;
+		v.blendIndices.z = 0;
+		v.blendIndices.w = frameId;
+		vertices.push_back(v);
 	}
 
 	for (auto it = skinWeights.begin(); it != skinWeights.end(); it++)
@@ -635,7 +627,7 @@ bool MeshX::ParseMesh(char* imgFrame, Block& block, BONE_ID frameId)
 		for (int i = 0; i < cnt; i++) {
 			int idx = it->vertexIndices[i];
 			float wgt = it->vertexWeight[i];
-			_storeWeight(skin[idx], it->frameId, wgt);
+			_storeWeight(vertices[idx], it->frameId, wgt);
 		}
 	}
 
@@ -663,19 +655,14 @@ void MeshX::_mergeBlocks(Block& d, const Block& s)
 		return;
 	}
 
-	d.Verify();
-	s.Verify();
 	int verticeBase = d.vertices.size();
 	int indicesBase = d.indices.size();
 	std::for_each(s.vertices.begin(), s.vertices.end(), [&](const MeshVertex& v) { d.vertices.push_back(v); });
-	std::for_each(s.skin.begin(), s.skin.end(), [&](const MeshSkin& s) { d.skin.push_back(s); });
-	std::for_each(s.color.begin(), s.color.end(), [&](const MeshColor& s) { d.color.push_back(s); });
 	std::for_each(s.indices.begin(), s.indices.end(), [&](unsigned i) { d.indices.push_back(i + verticeBase); });
 	std::for_each(s.materialMaps.begin(), s.materialMaps.end(), [&](MaterialMap m) {
 		m.faceStartIndex += indicesBase / 3;
 		d.materialMaps.push_back(m);
 	});
-	d.Verify();
 }
 
 void MeshX::_linkFrame(BONE_ID parentFrameId, BONE_ID childFrameId)
@@ -725,7 +712,7 @@ void MeshX::GetVertStatistics(std::vector<int>& cnts) const
 	for (auto& it : cnts) {
 		it = 0;
 	}
-	for (auto& it : m_block.skin)
+	for (auto& it : m_block.vertices)
 	{
 		assert(it.blendIndices.x >= 0 && it.blendIndices.x < m_frames.size());
 		assert(it.blendIndices.y >= 0 && it.blendIndices.y < m_frames.size());
@@ -1008,8 +995,8 @@ void MeshX::LoadSub()
 
 MeshX::~MeshX()
 {
-	m_meshRenderer.Destroy();
-	bonesRenderer.Destroy();
+	meshRenderer.SafeDestroyRenderMesh(renderMeshId);
+	meshRenderer.SafeDestroyRenderMesh(boneRenderMeshId);
 }
 
 void MeshX::CalcFrameMatrices(MeshXAnimResult& animResult, const Mat localMats[BONE_MAX]) const
@@ -1092,7 +1079,7 @@ void MeshX::CalcAnimation(int animId, double time, MeshXAnimResult& animResult) 
 	CalcFrameMatrices(animResult, localMats);
 }
 
-void MeshX::Draw(const MeshXAnimResult& animResult) const
+void MeshX::Draw(const MeshXAnimResult& animResult, const Mat& worldMat) const
 {
 	if (!m_block.indices.size()) {
 		return;
@@ -1110,10 +1097,10 @@ void MeshX::Draw(const MeshXAnimResult& animResult) const
 		}
 
 		if (g_type == "mesh") {
-			m_meshRenderer.Draw(vertexTransformMat, dimof(vertexTransformMat), m_block);
+			meshRenderer.DrawRenderMesh(renderMeshId, worldMat, vertexTransformMat, dimof(vertexTransformMat), m_block);
 		}
 		if (g_type == "bone") {
-			bonesRenderer.Draw(vertexTransformMat, dimof(vertexTransformMat), bones);
+			meshRenderer.DrawRenderMesh(boneRenderMeshId, worldMat, vertexTransformMat, dimof(vertexTransformMat), bones);
 		}
 	}
 }

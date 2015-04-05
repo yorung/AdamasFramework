@@ -1,3 +1,5 @@
+#version 100
+
 precision mediump float;
 attribute vec3 vPosition;
 attribute vec3 vNormal;
