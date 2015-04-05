@@ -23,9 +23,12 @@ extern const char* boundJavaClass;
 #include <stdint.h>
 #include <ctype.h>
 
+#include <../submodules/lua/src/lua.hpp>
+
 static const int BONE_MAX = 50;
 
 #include "af_math.h"
+#include "af_lua_helpers.h"
 #include "system_metrics.h"
 #include "hub.h"
 #include "helper.h"

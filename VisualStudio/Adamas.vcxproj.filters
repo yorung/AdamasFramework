@@ -73,6 +73,9 @@
     <ClCompile Include="..\cpp\helper_gl.cpp">
       <Filter>PlatformIndipendent</Filter>
     </ClCompile>
+    <ClCompile Include="..\cpp\af_lua_helpers.cpp">
+      <Filter>PlatformIndipendent</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="wgl_grabber_gen.h">
@@ -145,6 +148,9 @@
       <Filter>PlatformIndipendent</Filter>
     </ClInclude>
     <ClInclude Include="..\cpp\dev_camera.h">
+      <Filter>PlatformIndipendent</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cpp\af_lua_helpers.h">
       <Filter>PlatformIndipendent</Filter>
     </ClInclude>
   </ItemGroup>
