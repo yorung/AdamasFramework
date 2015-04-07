@@ -1,7 +1,5 @@
 #include "stdafx.h"
 
-lua_State *L;
-
 #ifndef _MSC_VER
 typedef int LONG;
 struct RECT {
@@ -90,7 +88,7 @@ static int RECTNew(lua_State *L)
 	return 1;
 }
 
-static void BindMesBox()
+static void BindMesBox(lua_State *L)
 {
 	static luaL_Reg globalFuncs[] = {
 #ifdef _MSC_VER
@@ -107,7 +105,7 @@ static void BindMesBox()
 	aflDumpStack();
 }
 
-void BindWin()
+void BindWin(lua_State *L)
 {
 	aflDumpStack();
 	int r = luaL_newmetatable(L, myClassName);
@@ -128,16 +126,21 @@ void BindWin()
 	lua_register(L, myClassName, RECTNew);
 }
 
+void LuaBind(lua_State* L)
+{
+	luaL_openlibs(L);
+	BindWin(L);
+	BindMesBox(L);
+}
+
 void LuaBindTest()
 {
-	L = luaL_newstate();
-	luaL_openlibs(L);
-	BindWin();
-	BindMesBox();
+	lua_State* L = luaL_newstate();
+	LuaBind(L);
 	//	luaL_dostring(L, "Printer()");
 
-//	if (luaL_dofile(L, "lua/start.lua")) {	// fopen/fclose to read this file
-	if (!aflDoFile(L, "lua/start.lua")) {	// LoadFile to read this file
+//	if (luaL_dofile(L, "lua/test.lua")) {	// fopen/fclose to read this file
+	if (!aflDoFile(L, "lua/test.lua")) {	// LoadFile to read this file
 		printf("%s\n", lua_tostring(L, -1));
     	lua_pop(L, 1);
 	}

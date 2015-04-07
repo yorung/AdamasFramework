@@ -68,8 +68,8 @@ void App::Draw()
 
 void App::Init()
 {
-	void LuaBindTest();
-	LuaBindTest();
+//	void LuaBindTest();
+//	LuaBindTest();
 
 	ivec2 scrSize = systemMetrics.GetScreenSize();
     glViewport(0, 0, scrSize.x, scrSize.y);
@@ -81,6 +81,9 @@ void App::Init()
 	meshRenderer.Create();
 	waterSurface.Init();
 	fontMan.Init();
+	luaMan.Create();
+
+
 	LoadMesh("jiji.x");
 }
 
@@ -103,6 +106,7 @@ void App::OnTap(float x, float y)
 
 void App::Destroy()
 {
+	luaMan.Destroy();
 	texMan.Destroy();
 	shaderMan.Destroy();
 	waterSurface.Destroy();
@@ -113,7 +117,8 @@ void App::Destroy()
 
 void App::Update()
 {
+	luaMan.Update();
 	waterSurface.Update();
 	fps.Update();
-	fontMan.DrawString(Vec2(20, 20), 20, SPrintf("FPS: %f", fps.Get()));
+	fontMan.DrawString(Vec2(20, 40), 20, SPrintf("FPS: %f", fps.Get()));
 }
