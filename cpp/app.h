@@ -1,5 +1,5 @@
 class App {
-	MeshX* mesh;
+	MeshMan::MMID meshId;
 	float radius;
 public:
 	App();
