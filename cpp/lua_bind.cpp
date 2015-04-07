@@ -2,6 +2,16 @@
 
 lua_State *L;
 
+#ifndef _MSC_VER
+typedef int LONG;
+struct RECT {
+    int left;
+    int top;
+    int right;
+    int bottom;
+};
+#endif
+
 static const char* myClassName = "RECT";
 
 #define GET_RECT \
@@ -15,7 +25,7 @@ static int RECTToString(lua_State *L)
 {
 	GET_RECT
 	char buf[64];
-	sprintf_s(buf, sizeof(buf), "(%d, %d, %d, %d)", r->left, r->top, r->right, r->bottom);
+	snprintf(buf, sizeof(buf), "(%d, %d, %d, %d)", r->left, r->top, r->right, r->bottom);
 	lua_pushstring(L, buf);
 	return 1;
 }
@@ -83,7 +93,11 @@ static int RECTNew(lua_State *L)
 static void BindMesBox()
 {
 	static luaL_Reg globalFuncs[] = {
+#ifdef _MSC_VER
 		{ "MesBox", [](lua_State* L){ MessageBoxA(nullptr, lua_tostring(L, -1), "lambda box", MB_OK); return 0; } },
+#else
+		{ "MesBox", [](lua_State* L){ Toast(lua_tostring(L, -1)); return 0; } },
+#endif
 		{ nullptr, nullptr },
 	};
 	lua_pushglobaltable(L);
@@ -122,10 +136,10 @@ void LuaBindTest()
 	BindMesBox();
 	//	luaL_dostring(L, "Printer()");
 
-	if (luaL_dofile(L, "lua/start.lua")) {	// fopen/fclose to read this file
-//	if (!aflDoFile(L, "lua/start.lua")) {	// LoadFile to read this file
+//	if (luaL_dofile(L, "lua/start.lua")) {	// fopen/fclose to read this file
+	if (!aflDoFile(L, "lua/start.lua")) {	// LoadFile to read this file
 		printf("%s\n", lua_tostring(L, -1));
-		lua_pop(L, 1);
+    	lua_pop(L, 1);
 	}
 	int top = lua_gettop(L);
 	if (top > 0) {

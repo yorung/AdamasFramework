@@ -78,7 +78,7 @@ bool aflDoFile(lua_State* L, const char* fileName)
 {
 	void* img = LoadFile(fileName);
 	if (!img) {
-		luaL_error(L, __FUNCTION__ ": could not load file %s", fileName);
+		luaL_error(L, "aflDoFile: could not load file %s", fileName);
 		return false;
 	}
 	bool ok = !luaL_dostring(L, (char*)img);

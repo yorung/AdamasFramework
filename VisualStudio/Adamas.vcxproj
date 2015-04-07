@@ -27,6 +27,7 @@
     <ClCompile Include="..\cpp\lua_bind.cpp" />
     <ClCompile Include="..\cpp\matrix_man.cpp" />
     <ClCompile Include="..\cpp\mat_man.cpp" />
+    <ClCompile Include="..\cpp\mesh_man.cpp" />
     <ClCompile Include="..\cpp\mesh_renderer.cpp" />
     <ClCompile Include="..\cpp\mesh_x.cpp" />
     <ClCompile Include="..\cpp\shader_man.cpp" />
@@ -67,6 +68,7 @@
     <ClInclude Include="..\cpp\joint_db.h" />
     <ClInclude Include="..\cpp\matrix_man.h" />
     <ClInclude Include="..\cpp\mat_man.h" />
+    <ClInclude Include="..\cpp\mesh_man.h" />
     <ClInclude Include="..\cpp\mesh_renderer.h" />
     <ClInclude Include="..\cpp\mesh_x.h" />
     <ClInclude Include="..\cpp\shader_man.h" />
