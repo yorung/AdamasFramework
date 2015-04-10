@@ -4,7 +4,7 @@ MeshMan meshMan;
 
 MeshMan::MeshMan()
 {
-	m_meshes.push_back(nullptr);	// make 0 invalid ID
+	Destroy();
 }
 
 MeshMan::MMID MeshMan::Create(const char *name)
@@ -26,6 +26,7 @@ void MeshMan::Destroy()
 {
 	std::for_each(m_meshes.begin(), m_meshes.end(), [] (Mesh* p) { delete p; });
 	m_meshes.clear();
+	m_meshes.push_back(nullptr);	// make 0 invalid ID
 }
 
 Mesh* MeshMan::Get(MMID id)
