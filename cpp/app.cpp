@@ -59,7 +59,7 @@ void App::Draw()
 	MeshX* mesh = (MeshX*)meshMan.Get(meshId);
 	if (mesh) {
 		mesh->CalcAnimation(0, GetTime(), r);
-		mesh->Draw(r, Mat());
+//		mesh->Draw(r, Mat());
 		mesh->Draw(r, translate(0, radius * 1.5f, 0) * q2m(Quat(Vec3(0, 0, 1.0f), (float)(GetTime() * M_PI))));
 		mesh->Draw(r, translate(radius * 2.0f, 0, 0) * q2m(Quat(Vec3(0, 1.0f, 0), (float)(GetTime() * M_PI))));
 	}

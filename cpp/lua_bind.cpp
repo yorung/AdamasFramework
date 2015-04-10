@@ -105,6 +105,23 @@ static void BindMesBox(lua_State *L)
 	aflDumpStack();
 }
 
+static void BindMeshMan(lua_State* L)
+{
+	static luaL_Reg inNamespaceFuncs[] = {
+		{ "Create", [](lua_State* L) { lua_pushinteger(L, meshMan.Create(lua_tostring(L, -1))); return 1; } },
+		{ "Draw", [](lua_State* L) {
+			MeshX* mesh = (MeshX*)meshMan.Get((MMID)lua_tointeger(L, -1));
+			if (mesh) {
+				MeshXAnimResult r;
+				mesh->CalcAnimation(0, GetTime(), r);
+				mesh->Draw(r, Mat());
+			}
+			return 0; } },
+		{ nullptr, nullptr },
+	};
+	aflBindNamespace(L, "meshMan", inNamespaceFuncs);
+}
+
 void BindWin(lua_State *L)
 {
 	aflDumpStack();
@@ -131,6 +148,7 @@ void LuaBind(lua_State* L)
 	luaL_openlibs(L);
 	BindWin(L);
 	BindMesBox(L);
+	BindMeshMan(L);
 }
 
 void LuaBindTest()
