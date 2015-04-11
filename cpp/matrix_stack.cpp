@@ -9,7 +9,8 @@ MatrixStack::MatrixStack()
 
 void MatrixStack::Reset()
 {
-	std::swap(stack, std::stack<Mat>());
+	std::stack<Mat> e;
+	std::swap(stack, e);
 	matrixMan.Set(MatrixMan::WORLD, Mat());
 }
 
