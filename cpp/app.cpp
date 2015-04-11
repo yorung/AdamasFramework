@@ -42,17 +42,7 @@ void App::Draw()
 	float f = dist * 1000;
 	float n = dist / 1000;
 	float aspect = (float)scrSize.x / scrSize.y;
-#ifdef GL_TRUE
-	Mat proj = Mat((float)1 / tanf(45 * (float)M_PI / 180 * 0.5f) / aspect, 0, 0, 0,
-		0, (float)1 / tanf(45 * (float)M_PI / 180 * 0.5f), 0, 0,
-		0, 0, -(f + n) / (f - n), 1,
-		0, 0, (n * f) * 2 / (f - n), 0);
-#else
-	Mat proj = Mat((float)1 / tanf(45 * (float)M_PI / 180 * 0.5f) / aspect, 0, 0, 0,
-		0, (float)1 / tanf(45 * (float)M_PI / 180 * 0.5f), 0, 0,
-		0, 0, f / (f - n), 1,
-		0, 0, -(n * f) / (f - n), 0);
-#endif
+	Mat proj = perspective(45, aspect, n, f);
 	matrixMan.Set(MatrixMan::PROJ, proj);
 
 	MeshXAnimResult r;

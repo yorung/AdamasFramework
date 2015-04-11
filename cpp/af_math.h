@@ -452,6 +452,22 @@ inline Mat fastInv(const Mat& mtx)
 	return r;
 }
 
+inline Mat perspective(affloat fov, affloat aspect, affloat n, affloat f)
+{
+#ifdef GL_TRUE
+	Mat proj = Mat((float)1 / tanf(fov * (float)M_PI / 180 * 0.5f) / aspect, 0, 0, 0,
+		0, (float)1 / tanf(fov * (float)M_PI / 180 * 0.5f), 0, 0,
+		0, 0, -(f + n) / (f - n), 1,
+		0, 0, (n * f) * 2 / (f - n), 0);
+#else
+	Mat proj = Mat((float)1 / tanf(fov * (float)M_PI / 180 * 0.5f) / aspect, 0, 0, 0,
+		0, (float)1 / tanf(fov * (float)M_PI / 180 * 0.5f), 0, 0,
+		0, 0, f / (f - n), 1,
+		0, 0, -(n * f) / (f - n), 0);
+#endif
+	return proj;
+}
+
 inline ivec4 uint32ToIvec4(uint32_t col) {
 	return ivec4(col >> 24, (col & 0x00ff0000) >> 16, (col & 0xff00) >> 8, col & 0xff);
 }
