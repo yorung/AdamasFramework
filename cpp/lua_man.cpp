@@ -38,6 +38,7 @@ void LuaMan::Destroy()
 
 void LuaMan::Update()
 {
+	matrixStack.Reset();
 	lua_getglobal(L, "Update");
 //	aflDumpStack();
 	lua_call(L, 0, 0);
@@ -46,4 +47,5 @@ void LuaMan::Update()
 	if (top > 0) {
 		aflog("error! stack is not empty\n");
 	}
+	matrixStack.Reset();
 }

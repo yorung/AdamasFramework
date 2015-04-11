@@ -15,6 +15,7 @@ extern const char* boundJavaClass;
 #include <string>
 #include <map>
 #include <deque>
+#include <stack>
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -35,6 +36,7 @@ static const int BONE_MAX = 50;
 #include "helper_gldx.h"
 #include "helper_text.h"
 #include "matrix_man.h"
+#include "matrix_stack.h"
 #include "tex_man.h"
 #include "shader_man.h"
 #include "dib.h"
