@@ -18,7 +18,7 @@ struct RenderCommand {
 	int nBones;
 };
 layout (std140, binding = 2) uniform perInstanceUBO {
-	RenderCommand renderCommands[3];
+	RenderCommand renderCommands[10];
 };
 layout (std430, binding = 5) buffer boneSSBO {
 	mat4 bonesSSBO[];

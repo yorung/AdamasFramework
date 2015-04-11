@@ -2,8 +2,10 @@
 
 MeshRenderer meshRenderer;
 
+static int MAX_INSTANCES = 10;
+
 static const int BONE_SSBO_SIZE = sizeof(Mat) * 1000;
-static const int PER_INSTANCE_UBO_SIZE = sizeof(RenderCommand) * 3;
+static const int PER_INSTANCE_UBO_SIZE = sizeof(RenderCommand) * MAX_INSTANCES;
 
 enum SSBOBindingPoints {
 	SBP_BONES = 5,
@@ -171,6 +173,9 @@ void MeshRenderer::DrawRenderMesh(MRID id, const Mat& worldMat, const Mat BoneMa
 	assert(!block.materialMaps.empty());
 
 	if (!renderCommands.empty() && id != renderCommands[0].meshId) {
+		Flush();
+	}
+	if (renderCommands.size() == MAX_INSTANCES) {
 		Flush();
 	}
 
