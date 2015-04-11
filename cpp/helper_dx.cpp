@@ -31,7 +31,6 @@ void afWriteBuffer(ID3D11Buffer* p, const void* buf, int size)
 	deviceMan11.GetContext()->Unmap(p, 0);
 }
 
-#endif
 
 IBOID afCreateQuadListIndexBuffer(int numQuads)
 {
@@ -48,7 +47,6 @@ IBOID afCreateQuadListIndexBuffer(int numQuads)
 	return afCreateIndexBuffer(&indi[0], numIndi);
 }
 
-#ifdef __d3d11_h__
 void afDrawIndexedTriangleList(AFBufObj ibo, int count, int start)
 {
 	deviceMan11.GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);

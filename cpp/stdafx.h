@@ -33,7 +33,7 @@ static const int BONE_MAX = 50;
 #include "system_metrics.h"
 #include "hub.h"
 #include "helper.h"
-#include "helper_gldx.h"
+#include "helper_gl.h"
 #include "helper_text.h"
 #include "matrix_man.h"
 #include "matrix_stack.h"

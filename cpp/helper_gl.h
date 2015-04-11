@@ -1,15 +1,7 @@
 typedef unsigned short AFIndex;
 
-#ifdef GL_TRUE
 #define AFIndexTypeToDevice GL_UNSIGNED_SHORT
-#endif
 
-#ifdef __d3d11_h__
-#define AFIndexTypeToDevice DXGI_FORMAT_R16_UINT
-typedef ID3D11Buffer* AFBufObj;
-#endif
-
-#ifdef GL_TRUE
 enum ShaderFormat {
 	SF_R32_FLOAT,
 	SF_R32G32_FLOAT,
@@ -28,7 +20,6 @@ enum ShaderFormat {
 	SF_R16G16B16_UINT,
 	SF_R16G16B16A16_UINT,
 };
-#endif
 
 struct InputElement {
 	int inputSlot;
@@ -81,7 +72,6 @@ GLuint afCreateVAO(GLuint program, const InputElement elements[], int numElement
 #define glDeleteSamplers(a,b)
 //#endif
 
-#ifdef GL_TRUE
 template <class BufName>
 void afWriteBuffer(BufName bufName, const void* buf, int size)
 {
@@ -126,14 +116,6 @@ enum AFDTFormat
 	AFDT_R5G6B5_UINT,
 };
 GLuint afCreateDynamicTexture(int w, int h, AFDTFormat format);
-#endif
-
-#ifdef __d3d11_h__
-inline void afSafeDeleteBuffer(AFBufObj& b)
-{
-	SAFE_RELEASE(b);
-}
-#endif
 
 IBOID afCreateIndexBuffer(const AFIndex* indi, int numIndi);
 IBOID afCreateQuadListIndexBuffer(int numQuads);

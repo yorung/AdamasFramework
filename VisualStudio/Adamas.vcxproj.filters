@@ -13,9 +13,6 @@
     <ClCompile Include="..\cpp\helper.cpp">
       <Filter>PlatformIndipendent</Filter>
     </ClCompile>
-    <ClCompile Include="..\cpp\helper_gldx.cpp">
-      <Filter>PlatformIndipendent</Filter>
-    </ClCompile>
     <ClCompile Include="..\cpp\hub.cpp">
       <Filter>PlatformIndipendent</Filter>
     </ClCompile>
@@ -88,6 +85,9 @@
     <ClCompile Include="..\cpp\matrix_stack.cpp">
       <Filter>PlatformIndipendent</Filter>
     </ClCompile>
+    <ClCompile Include="..\cpp\helper_dx.cpp">
+      <Filter>PlatformIndipendent</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="wgl_grabber_gen.h">
@@ -97,9 +97,6 @@
       <Filter>Windows</Filter>
     </ClInclude>
     <ClInclude Include="..\cpp\helper.h">
-      <Filter>PlatformIndipendent</Filter>
-    </ClInclude>
-    <ClInclude Include="..\cpp\helper_gldx.h">
       <Filter>PlatformIndipendent</Filter>
     </ClInclude>
     <ClInclude Include="..\cpp\helper_text.h">
@@ -172,6 +169,12 @@
       <Filter>PlatformIndipendent</Filter>
     </ClInclude>
     <ClInclude Include="..\cpp\matrix_stack.h">
+      <Filter>PlatformIndipendent</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cpp\helper_dx.h">
+      <Filter>PlatformIndipendent</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cpp\helper_gl.h">
       <Filter>PlatformIndipendent</Filter>
     </ClInclude>
   </ItemGroup>
