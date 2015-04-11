@@ -113,6 +113,7 @@ void App::Destroy()
 	fontMan.Destroy();
 	meshRenderer.Destroy();
 	meshMan.Destroy();
+	meshId = MeshMan::INVALID_MMID;
 }
 
 void App::Update()

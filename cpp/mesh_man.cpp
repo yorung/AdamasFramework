@@ -27,6 +27,7 @@ void MeshMan::Destroy()
 	std::for_each(m_meshes.begin(), m_meshes.end(), [] (Mesh* p) { delete p; });
 	m_meshes.clear();
 	m_meshes.push_back(nullptr);	// make 0 invalid ID
+	m_nameToId.clear();
 }
 
 Mesh* MeshMan::Get(MMID id)
