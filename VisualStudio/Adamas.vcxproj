@@ -100,6 +100,9 @@
     <None Include="..\assets\shaders\water.frag" />
     <None Include="..\assets\shaders\water.vert" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon.ico" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{D13F848D-7701-43BA-B781-1481A54FE77D}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>

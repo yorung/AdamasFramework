@@ -150,6 +150,7 @@ HWND hWnd;
 HINSTANCE hInst;								// current instance
 TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
 TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
+HACCEL hAccelTable;
 
 // WindowMessage
 static BOOL ProcessWindowMessage(){
@@ -159,9 +160,10 @@ static BOOL ProcessWindowMessage(){
 			if (msg.message == WM_QUIT){
 				return FALSE;
 			}
-
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
+			if (!TranslateAccelerator(hWnd, hAccelTable, &msg)) {
+				TranslateMessage(&msg);
+				DispatchMessage(&msg);
+			}
 		}
 
 		BOOL active = !IsIconic(hWnd) && GetForegroundWindow() == hWnd;
@@ -214,9 +216,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE,
 
 {
 	HINSTANCE hInstance = GetModuleHandle(nullptr);
-	
-	// TODO: Place code here.
-	HACCEL hAccelTable;
 
 	// Initialize global strings
 	LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
@@ -351,6 +350,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			break;
 		case IDM_EXIT:
 			SendMessage(hWnd, WM_CLOSE, 0, 0);
+			break;
+		case IDM_RELOAD:
+			hub.Destroy();
+			hub.Init();
 			break;
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
