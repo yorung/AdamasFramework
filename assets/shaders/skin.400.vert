@@ -8,7 +8,6 @@ in vec3 vBlendWeights;
 in uvec4 vBlendIndices;
 out vec2 texcoord;
 out vec4 color;
-uniform mat4 matW;
 uniform mat4 matV;
 uniform mat4 matP;
 struct RenderCommand {

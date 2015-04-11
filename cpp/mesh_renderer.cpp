@@ -198,11 +198,9 @@ void MeshRenderer::Flush()
 
 	shaderMan.Apply(shaderId);
 
-	Mat matW, matV, matP;
-	matrixMan.Get(MatrixMan::WORLD, matW);
+	Mat matV, matP;
 	matrixMan.Get(MatrixMan::VIEW, matV);
 	matrixMan.Get(MatrixMan::PROJ, matP);
-	glUniformMatrix4fv(glGetUniformLocation(shaderId, "matW"), 1, GL_FALSE, &matW.m[0][0]);
 	glUniformMatrix4fv(glGetUniformLocation(shaderId, "matV"), 1, GL_FALSE, &matV.m[0][0]);
 	glUniformMatrix4fv(glGetUniformLocation(shaderId, "matP"), 1, GL_FALSE, &matP.m[0][0]);
 
