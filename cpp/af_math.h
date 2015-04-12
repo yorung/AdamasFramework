@@ -468,10 +468,16 @@ inline Mat perspective(affloat fov, affloat aspect, affloat n, affloat f)
 	return proj;
 }
 
-inline ivec4 uint32ToIvec4(uint32_t col) {
+inline ivec4 UnormToIvec4(uint32_t col) {
 	return ivec4(col >> 24, (col & 0x00ff0000) >> 16, (col & 0xff00) >> 8, col & 0xff);
 }
 
-inline uint32_t ivec4ToUint32(const ivec4& v) {
+inline uint32_t ivec4ToUnorm(const ivec4& v) {
 	return (uint32_t(0xff && v.x) << 24) | (uint32_t(0xff & v.y) << 16) | (uint32_t(0xff & v.z) << 8) | (uint32_t(v.w) & 0xff);
+}
+
+inline uint32_t Vec4ToUnorm(const Vec4& f)
+{
+	auto cnv = [&](affloat f, int bit) { return uint32_t(f * 255) << bit; };
+	return cnv(f.x, 24) | cnv(f.y, 16) | cnv(f.z, 8) | cnv(f.w, 0);
 }
