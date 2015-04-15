@@ -16,6 +16,32 @@ ID3D11Buffer* afCreateDynamicVertexBuffer(int size)
 	return vbo;
 }
 
+UBOID afCreateUBO(int size)
+{
+	ID3D11Buffer* ubo;
+	deviceMan11.GetDevice()->CreateBuffer(&CD3D11_BUFFER_DESC(size, D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE), nullptr, &ubo);
+	return ubo;
+}
+
+void afBindBufferToBindingPoint(UBOID ubo, UINT uniformBlockBinding)
+{
+	deviceMan11.GetContext()->VSSetConstantBuffers(uniformBlockBinding, 1, &ubo);
+	deviceMan11.GetContext()->PSSetConstantBuffers(uniformBlockBinding, 1, &ubo);
+}
+
+void afBindTextureToBindingPoint(TexMan::TMID tex, UINT textureBindingPoint)
+{
+	ID3D11ShaderResourceView* tx = texMan.Get(tex);
+	deviceMan11.GetContext()->VSSetShaderResources(textureBindingPoint, 1, &tx);
+	deviceMan11.GetContext()->PSSetShaderResources(textureBindingPoint, 1, &tx);
+}
+
+void afBindSamplerToBindingPoint(ID3D11SamplerState* sampler, UINT textureBindingPoint)
+{
+	deviceMan11.GetContext()->VSSetSamplers(textureBindingPoint, 1, &sampler);
+	deviceMan11.GetContext()->PSSetSamplers(textureBindingPoint, 1, &sampler);
+}
+
 void afWriteBuffer(ID3D11Buffer* p, const void* buf, int size)
 {
 #ifdef _DEBUG
@@ -47,10 +73,56 @@ IBOID afCreateQuadListIndexBuffer(int numQuads)
 	return afCreateIndexBuffer(&indi[0], numIndi);
 }
 
-void afDrawIndexedTriangleList(AFBufObj ibo, int count, int start)
+void afDrawIndexedTriangleList(IBOID ibo, int count, int start)
 {
 	deviceMan11.GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	deviceMan11.GetContext()->IASetIndexBuffer(ibo, AFIndexTypeToDevice, 0);
 	deviceMan11.GetContext()->DrawIndexed(count, start, 0);
 }
+
+void afEnableBackFaceCulling(bool cullBack)
+{
+	ID3D11RasterizerState* rs;
+	CD3D11_RASTERIZER_DESC rasterDesc(D3D11_DEFAULT);
+	rasterDesc.CullMode = cullBack ? D3D11_CULL_BACK : D3D11_CULL_NONE;
+	rasterDesc.FrontCounterClockwise = TRUE;
+	deviceMan11.GetDevice()->CreateRasterizerState(&rasterDesc, &rs);
+	deviceMan11.GetContext()->RSSetState(rs);
+	SAFE_RELEASE(rs);
+}
+
+void afBlendMode(BlendMode mode)
+{
+	if (mode == BM_NONE) {
+		deviceMan11.GetContext()->OMSetBlendState(nullptr, nullptr, 0xffffffff);
+		return;
+	}
+
+	CD3D11_BLEND_DESC bdesc(D3D11_DEFAULT);
+	bdesc.RenderTarget[0].BlendEnable = TRUE;
+	bdesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	bdesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	bdesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	bdesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	bdesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	bdesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	bdesc.RenderTarget[0].RenderTargetWriteMask = D3D10_COLOR_WRITE_ENABLE_ALL;
+	ID3D11BlendState* bs;
+	deviceMan11.GetDevice()->CreateBlendState(&bdesc, &bs);
+	FLOAT factor[] = {0, 0, 0, 0};
+	deviceMan11.GetContext()->OMSetBlendState(bs, factor, 0xffffffff);
+	SAFE_RELEASE(bs);
+}
+
+void afDepthStencilMode(bool depth)
+{
+	ID3D11DepthStencilState* ds;
+	D3D11_DEPTH_STENCIL_DESC dsDesc = CD3D11_DEPTH_STENCIL_DESC(CD3D11_DEFAULT());
+	dsDesc.DepthEnable = depth;
+	dsDesc.StencilEnable = FALSE;
+	deviceMan11.GetDevice()->CreateDepthStencilState(&dsDesc, &ds);
+	deviceMan11.GetContext()->OMSetDepthStencilState(ds, 1);
+	SAFE_RELEASE(ds);
+}
+
 #endif

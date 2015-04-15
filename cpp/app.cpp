@@ -24,13 +24,11 @@ void App::Draw()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glDepthMask(GL_FALSE);
-	glDepthFunc(GL_ALWAYS);
 	waterSurface.Draw();
-	glDepthMask(GL_TRUE);
-	glDepthFunc(GL_GEQUAL);
-
 	fontMan.Render();
+
+	afDepthStencilMode(true);
+	afBlendMode(BM_NONE);
 
 	matrixMan.Set(MatrixMan::WORLD, Mat());
 	matrixMan.Set(MatrixMan::VIEW, devCamera.CalcViewMatrix());
@@ -65,8 +63,7 @@ void App::Init()
     glViewport(0, 0, scrSize.x, scrSize.y);
 
 	glClearColor(0.0f, 0.2f, 0.5f, 1.0f);
-	glEnable(GL_DEPTH_TEST);
-	glClearDepthf(0);
+	afDepthStencilMode(true);
 
 	meshRenderer.Create();
 	waterSurface.Init();

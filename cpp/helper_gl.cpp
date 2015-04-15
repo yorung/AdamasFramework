@@ -184,3 +184,30 @@ IBOID afCreateQuadListIndexBuffer(int numQuads)
 	}
 	return afCreateIndexBuffer(&indi[0], numIndi);
 }
+
+void afBlendMode(BlendMode mode)
+{
+	switch(mode) {
+	case BM_ALPHA:
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		break;
+	case BM_NONE:
+		glDisable(GL_BLEND);
+		break;
+	}
+}
+
+void afDepthStencilMode(bool depth)
+{
+	if (depth) {
+		glEnable(GL_DEPTH_TEST);
+		glDepthMask(GL_TRUE);
+		glDepthFunc(GL_GEQUAL);
+		glClearDepthf(0);
+	} else {
+		glDisable(GL_DEPTH_TEST);
+		glDepthMask(GL_FALSE);
+		glDepthFunc(GL_ALWAYS);
+	}
+}

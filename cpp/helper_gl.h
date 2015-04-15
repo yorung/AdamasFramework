@@ -131,3 +131,11 @@ void afLayoutUBOBindingManually(GLuint program, const GLchar* name, GLuint unifo
 void afBindBufferToBindingPoint(SSBOID ssbo, GLuint storageBlockBinding);
 void afBindBufferToBindingPoint(UBOID ubo, GLuint uniformBlockBinding);
 void afDrawIndexedTriangleList(IBOID ibo, int count, int start = 0);
+void afEnableBackFaceCulling(bool cullBack);
+
+enum BlendMode {
+	BM_NONE,
+	BM_ALPHA,
+};
+void afBlendMode(BlendMode mode);
+void afDepthStencilMode(bool depth);

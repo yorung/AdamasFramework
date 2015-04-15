@@ -344,6 +344,9 @@ void WaterSurface::Update()
 
 void WaterSurface::Draw()
 {
+	afDepthStencilMode(false);
+	afBlendMode(BM_NONE);
+
 	V(glBindBuffer(GL_ARRAY_BUFFER, vbo));
 
 	UpdateRipple();

@@ -299,6 +299,8 @@ void FontMan::FlushToTexture()
 
 void FontMan::Render()
 {
+	afDepthStencilMode(false);
+	afBlendMode(BM_ALPHA);
 	if (!numSprites) {
 		return;
 	}
@@ -326,10 +328,8 @@ void FontMan::Render()
 	afWriteBuffer(vbo, verts, 4 * numSprites * sizeof(FontVertex));
 	shaderMan.Apply(shader);
 
+
 #ifndef GL_TRUE
-	float factor[] = { 0, 0, 0, 0 };
-	deviceMan11.GetContext()->OMSetDepthStencilState(pDSState, 1);
-	deviceMan11.GetContext()->OMSetBlendState(blendState, factor, 0xffffffff);
 	deviceMan11.GetContext()->PSSetSamplers(0, 1, &pSamplerState);
 
 	UINT stride = sizeof(FontVertex);
@@ -342,18 +342,22 @@ void FontMan::Render()
 
 #ifdef GL_TRUE
 	glBindTexture(GL_TEXTURE_2D, texture);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glBindVertexArray(vao);
+#endif
+
+	afBlendMode(BM_ALPHA);
 	afDrawIndexedTriangleList(ibo, numSprites * 6);
+	afDepthStencilMode(true);
+	afBlendMode(BM_NONE);
+
+
+#ifdef GL_TRUE
 	glBindVertexArray(0);
-	glDisable(GL_BLEND);
 #endif
 
 #ifndef GL_TRUE
 	tx = nullptr;
 	deviceMan11.GetContext()->PSSetShaderResources(0, 1, &tx);
-	deviceMan11.GetContext()->OMSetBlendState(nullptr, nullptr, 0xffffffff);
 #endif
 
 	numSprites = 0;
