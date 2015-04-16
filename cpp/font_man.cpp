@@ -335,17 +335,13 @@ void FontMan::Render()
 	UINT stride = sizeof(FontVertex);
 	UINT offset = 0;
 	deviceMan11.GetContext()->IASetVertexBuffers(0, 1, &vbo, &stride, &offset);
-	ID3D11ShaderResourceView* tx = texMan.Get(texture);
-	deviceMan11.GetContext()->PSSetShaderResources(0, 1, &tx);
-	afDrawIndexedTriangleList(ibo, numSprites * 6);
 #endif
 
 #ifdef GL_TRUE
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texture);
 	glBindVertexArray(vao);
 #endif
 
+	afBindTextureToBindingPoint(texture, 0);
 	afBlendMode(BM_ALPHA);
 	afDrawIndexedTriangleList(ibo, numSprites * 6);
 	afDepthStencilMode(true);
@@ -353,11 +349,6 @@ void FontMan::Render()
 
 #ifdef GL_TRUE
 	glBindVertexArray(0);
-#endif
-
-#ifndef GL_TRUE
-	tx = nullptr;
-	deviceMan11.GetContext()->PSSetShaderResources(0, 1, &tx);
 #endif
 
 	numSprites = 0;

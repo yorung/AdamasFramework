@@ -130,6 +130,8 @@ void afLayoutUBOBindingManually(GLuint program, const GLchar* name, GLuint unifo
 #endif
 void afBindBufferToBindingPoint(SSBOID ssbo, GLuint storageBlockBinding);
 void afBindBufferToBindingPoint(UBOID ubo, GLuint uniformBlockBinding);
+void afBindTextureToBindingPoint(GLuint tex, UINT textureBindingPoint);
+
 void afDrawIndexedTriangleList(IBOID ibo, int count, int start = 0);
 void afEnableBackFaceCulling(bool cullBack);
 

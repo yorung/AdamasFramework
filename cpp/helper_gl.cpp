@@ -83,6 +83,11 @@ void afBindBufferToBindingPoint(UBOID ubo, GLuint uniformBlockBinding)
 	glBindBuffer(GL_UNIFORM_BUFFER, prev);
 }
 
+void afBindTextureToBindingPoint(GLuint tex, UINT textureBindingPoint)
+{
+	glActiveTexture(GL_TEXTURE0 + textureBindingPoint);
+	glBindTexture(GL_TEXTURE_2D, tex);
+}
 
 GLuint afCreateDynamicTexture(int w, int h, AFDTFormat format)
 {
