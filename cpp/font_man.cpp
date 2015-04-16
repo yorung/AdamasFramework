@@ -341,6 +341,7 @@ void FontMan::Render()
 #endif
 
 #ifdef GL_TRUE
+	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glBindVertexArray(vao);
 #endif
@@ -349,7 +350,6 @@ void FontMan::Render()
 	afDrawIndexedTriangleList(ibo, numSprites * 6);
 	afDepthStencilMode(true);
 	afBlendMode(BM_NONE);
-
 
 #ifdef GL_TRUE
 	glBindVertexArray(0);
