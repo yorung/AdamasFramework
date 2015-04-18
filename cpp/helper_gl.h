@@ -116,6 +116,7 @@ enum AFDTFormat
 	AFDT_R5G6B5_UINT,
 };
 GLuint afCreateDynamicTexture(int w, int h, AFDTFormat format);
+GLuint afCreateWhiteTexture();
 
 IBOID afCreateIndexBuffer(const AFIndex* indi, int numIndi);
 IBOID afCreateQuadListIndexBuffer(int numQuads);

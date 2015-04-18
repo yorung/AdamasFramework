@@ -184,22 +184,6 @@ static GLuint LoadTexture(const char* name)
 	}
 }
 
-static GLuint CreateWhiteTexture()
-{
-	uint32_t col = 0xffffffff;
-	GLuint texture;
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, &col);
-	glBindTexture(GL_TEXTURE_2D, 0);
-	return texture;
-}
-
 TexMan::TMID TexMan::CreateDynamicTexture(const char* name, int w, int h)
 {
 	auto it = nameToId.find(name);
@@ -228,7 +212,7 @@ TexMan::TMID TexMan::CreateWhiteTexture()
 	{
 		return it->second;
 	}
-	return nameToId[name] = ::CreateWhiteTexture();
+	return nameToId[name] = afCreateWhiteTexture();
 }
 
 void TexMan::Destroy()
