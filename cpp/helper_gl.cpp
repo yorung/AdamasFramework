@@ -232,3 +232,14 @@ void afDepthStencilMode(bool depth)
 		glDepthFunc(GL_ALWAYS);
 	}
 }
+
+SAMPLERID afCreateSampler()
+{
+	SAMPLERID id;
+	glGenSamplers(1, &id);
+	glSamplerParameteri(id, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glSamplerParameteri(id, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glSamplerParameteri(id, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glSamplerParameteri(id, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	return id;
+}

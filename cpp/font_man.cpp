@@ -287,12 +287,7 @@ void FontMan::FlushToTexture()
 		return;
 	}
 	dirty = false;
-#ifdef GL_TRUE
-	texMan.Write(texture, texSrc.ReferPixels(), texSrc.getW(), texSrc.getH());
-#endif
-#ifndef GL_TRUE
 	texMan.Write(texture, texSrc.ReferPixels());
-#endif
 }
 
 void FontMan::Render()

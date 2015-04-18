@@ -91,7 +91,7 @@ static void bitScanForward(uint32_t* result, uint32_t mask)
 	*result = 0;
 }
 
-static GLuint CreateTextureFromRowDDS(const void* img, int size)
+static GLuint CreateTextureFromRowDDS(const void* img, int size, ivec2& texSize)
 {
 	const DDSHeader* hdr = (DDSHeader*)img;
 	int w = (int)hdr->w;
@@ -125,10 +125,12 @@ static GLuint CreateTextureFromRowDDS(const void* img, int size)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, &col[0]);
 	glGenerateMipmap(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, 0);
+	texSize.x = hdr->w;
+	texSize.y = hdr->h;
 	return texture;
 }
 
-static GLuint LoadDDSTexture(const char* name)
+static GLuint LoadDDSTexture(const char* name, ivec2& texSize)
 {
 	int size;
 	GLuint texture = 0;
@@ -153,7 +155,7 @@ static GLuint LoadDDSTexture(const char* name)
 		//		format = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
 		//		break;
 	default:
-		texture = CreateTextureFromRowDDS(img, size);
+		texture = CreateTextureFromRowDDS(img, size, texSize);
 		goto END;
 	}
 
@@ -168,17 +170,19 @@ static GLuint LoadDDSTexture(const char* name)
 		glCompressedTexImage2D(GL_TEXTURE_2D, 0, format, hdr->w, hdr->h, 0, texSize, (char*)img + 128);
 	}
 	glBindTexture(GL_TEXTURE_2D, 0);
-
+	texSize.x = hdr->w;
+	texSize.y = hdr->h;
 END:
 	free(img);
 	return texture;
 }
 
-static GLuint LoadTexture(const char* name)
+static GLuint LoadTexture(const char* name, ivec2& size)
 {
+	size = ivec2();
 	int len = strlen(name);
 	if (len > 4 && !stricmp(name + len - 4, ".dds")) {
-		return LoadDDSTexture(name);
+		return LoadDDSTexture(name, size);
 	} else {
 		return LoadTextureViaOS(name);
 	}
@@ -191,7 +195,10 @@ TexMan::TMID TexMan::CreateDynamicTexture(const char* name, int w, int h)
 	{
 		return it->second;
 	}
-	return nameToId[name] = afCreateDynamicTexture(w, h, AFDT_R8G8B8A8_UINT);
+	TMID id = nameToId[name] = afCreateDynamicTexture(w, h, AFDT_R8G8B8A8_UINT);
+	ivec2 size(w, h);
+	StoreTexState(id, size);
+	return id;
 }
 
 TexMan::TMID TexMan::Create(const char *name)
@@ -201,7 +208,10 @@ TexMan::TMID TexMan::Create(const char *name)
 	{
 		return it->second;
 	}
-	return nameToId[name] = LoadTexture(name);
+	ivec2 size;
+	TMID id = nameToId[name] = LoadTexture(name, size);
+	StoreTexState(id, size);
+	return id;
 }
 
 TexMan::TMID TexMan::CreateWhiteTexture()
@@ -212,7 +222,10 @@ TexMan::TMID TexMan::CreateWhiteTexture()
 	{
 		return it->second;
 	}
-	return nameToId[name] = afCreateWhiteTexture();
+	TMID id = nameToId[name] = afCreateWhiteTexture();
+	ivec2 size(1, 1);
+	StoreTexState(id, size);
+	return id;
 }
 
 void TexMan::Destroy()
@@ -225,19 +238,26 @@ void TexMan::Destroy()
 	nameToId.clear();
 }
 
-void TexMan::Write(TMID id, const void* buf, int w, int h)
+void TexMan::StoreTexState(TMID id, const ivec2& v2)
 {
+	if (id >= texStates.size() ) {
+		texStates.resize(id + 1);
+	}
+	texStates[id] = v2;
+}
+
+ivec2 TexMan::GetSize(TMID id)
+{
+	if (id >= texStates.size()) {
+		return ivec2();
+	}
+	return texStates[id];
+}
+
+void TexMan::Write(TMID id, const void* buf)
+{
+	ivec2 v = GetSize(id);
 	glBindTexture(GL_TEXTURE_2D, id);
-	glTexSubImage2D(
-		GL_TEXTURE_2D,
-		0,
-		0,
-		0,
-		w,
-		h,
-		GL_RGBA,
-		GL_UNSIGNED_BYTE,
-		buf
-		);
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, v.x, v.y, GL_RGBA, GL_UNSIGNED_BYTE, buf);
 	glBindTexture(GL_TEXTURE_2D, 0);
 }

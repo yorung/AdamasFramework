@@ -88,6 +88,9 @@
     <ClCompile Include="..\cpp\helper_dx.cpp">
       <Filter>PlatformIndipendent</Filter>
     </ClCompile>
+    <ClCompile Include="..\cpp\sprite_renderer.cpp">
+      <Filter>PlatformIndipendent</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="wgl_grabber_gen.h">
@@ -175,6 +178,9 @@
       <Filter>PlatformIndipendent</Filter>
     </ClInclude>
     <ClInclude Include="..\cpp\helper_gl.h">
+      <Filter>PlatformIndipendent</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cpp\sprite_renderer.h">
       <Filter>PlatformIndipendent</Filter>
     </ClInclude>
   </ItemGroup>

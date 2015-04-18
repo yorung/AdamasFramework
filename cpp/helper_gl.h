@@ -61,16 +61,18 @@ typedef TBufName<GL_UNIFORM_BUFFER> UBOID;
 typedef TBufName<GL_ELEMENT_ARRAY_BUFFER> IBOID;
 typedef TBufName<GL_ARRAY_BUFFER> VBOID;
 typedef TBufName<GL_SHADER_STORAGE_BUFFER> SSBOID;
+typedef GLuint VAOID;
+typedef GLuint SAMPLERID;
 
 void afSetVertexAttributes(GLuint program, const InputElement elements[], int numElements, int numBuffers, VBOID const *vertexBufferIds, const GLsizei* strides);
-GLuint afCreateVAO(GLuint program, const InputElement elements[], int numElements, int numBuffers, VBOID const *vertexBufferIds, const GLsizei* strides, IBOID ibo);
+VAOID afCreateVAO(GLuint program, const InputElement elements[], int numElements, int numBuffers, VBOID const *vertexBufferIds, const GLsizei* strides, IBOID ibo);
 
-//#ifdef USE_FAKE_SAMPLER
+#ifdef USE_FAKE_SAMPLER
 #define glGenSamplers(a,b)
 #define glSamplerParameteri(a,b,c)
 #define glBindSampler(a,b)
 #define glDeleteSamplers(a,b)
-//#endif
+#endif
 
 template <class BufName>
 void afWriteBuffer(BufName bufName, const void* buf, int size)
@@ -124,6 +126,7 @@ VBOID afCreateVertexBuffer(int size, const void* buf);
 VBOID afCreateDynamicVertexBuffer(int size);
 SSBOID afCreateSSBO(int size);
 UBOID afCreateUBO(int size);
+SAMPLERID afCreateSampler();
 #if 0 // without "binding" Layout Qualifier
 void afLayoutSamplerBindingManually(GLuint program, const GLchar* name, GLuint samplerBinding);
 void afLayoutSSBOBindingManually(GLuint program, const GLchar* name, GLuint storageBlockBinding);
@@ -142,3 +145,5 @@ enum BlendMode {
 };
 void afBlendMode(BlendMode mode);
 void afDepthStencilMode(bool depth);
+#define afBindVAO glBindVertexArray
+#define afBindSamplerToBindingPoint(samp,pnt) glBindSampler(pnt, samp)
