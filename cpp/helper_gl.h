@@ -126,7 +126,7 @@ VBOID afCreateVertexBuffer(int size, const void* buf);
 VBOID afCreateDynamicVertexBuffer(int size);
 SSBOID afCreateSSBO(int size);
 UBOID afCreateUBO(int size);
-SAMPLERID afCreateSampler();
+SAMPLERID afCreateSampler(bool mipmap = false);
 #if 0 // without "binding" Layout Qualifier
 void afLayoutSamplerBindingManually(GLuint program, const GLchar* name, GLuint samplerBinding);
 void afLayoutSSBOBindingManually(GLuint program, const GLchar* name, GLuint storageBlockBinding);

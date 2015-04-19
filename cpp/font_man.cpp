@@ -144,29 +144,14 @@ bool FontMan::Init()
 	}
 	texture = texMan.CreateDynamicTexture("$FontMan", TEX_W, TEX_H);
 
-#ifdef GL_TRUE
 	shader = shaderMan.Create("font");
-#endif
-#ifndef GL_TRUE
-	shader = shaderMan.Create("font", elements, dimof(elements));
-#endif
 	assert(shader);
 
 	ibo = afCreateQuadListIndexBuffer(SPRITE_MAX);
 	vbo = afCreateDynamicVertexBuffer(SPRITE_MAX * sizeof(FontVertex) * 4);
-#ifdef GL_TRUE
-	{
-		GLsizei stride = sizeof(FontVertex);
-		vao = afCreateVAO(shader, elements, dimof(elements), 1, &vbo, &stride, ibo);
-	}
-#endif
-#ifndef GL_TRUE
-	{
-		CD3D11_SAMPLER_DESC descSamp(D3D11_DEFAULT);
-		descSamp.AddressU = descSamp.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-		deviceMan11.GetDevice()->CreateSamplerState(&descSamp, &pSamplerState);
-	}
-#endif
+	int stride = sizeof(FontVertex);
+	vao = afCreateVAO(shader, elements, dimof(elements), 1, &vbo, &stride, ibo);
+	sampler = afCreateSampler();
 	result = true;
 DONE:
 	return result;
@@ -184,12 +169,8 @@ void FontMan::Destroy()
 	texSrc.Destroy();
 	afSafeDeleteBuffer(ibo);
 	afSafeDeleteBuffer(vbo);
-#ifdef GL_TRUE
 	afSafeDeleteVAO(vao);
-#endif
-#ifndef GL_TRUE
-	SAFE_RELEASE(pSamplerState);
-#endif
+	afSafeDeleteSampler(sampler);
 	ClearCache();
 }
 
@@ -319,26 +300,14 @@ void FontMan::Render()
 	afWriteBuffer(vbo, verts, 4 * numSprites * sizeof(FontVertex));
 	shaderMan.Apply(shader);
 
-
-#ifndef GL_TRUE
-	deviceMan11.GetContext()->PSSetSamplers(0, 1, &pSamplerState);
-
-	UINT stride = sizeof(FontVertex);
-	UINT offset = 0;
-	deviceMan11.GetContext()->IASetVertexBuffers(0, 1, &vbo, &stride, &offset);
-#endif
-
-#ifdef GL_TRUE
-	glBindVertexArray(vao);
-#endif
-
+	afBindVAO(vao);
+	afBindSamplerToBindingPoint(sampler, 0);
 	afBindTextureToBindingPoint(texture, 0);
 	afBlendMode(BM_ALPHA);
 	afDepthStencilMode(false);
 	afDrawIndexedTriangleList(ibo, numSprites * 6);
 	afDepthStencilMode(true);
 	afBlendMode(BM_NONE);
-
 
 #ifdef GL_TRUE
 	glBindVertexArray(0);
