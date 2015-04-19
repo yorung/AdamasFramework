@@ -83,7 +83,7 @@ void afBindBufferToBindingPoint(UBOID ubo, GLuint uniformBlockBinding)
 	glBindBuffer(GL_UNIFORM_BUFFER, prev);
 }
 
-void afBindTextureToBindingPoint(GLuint tex, UINT textureBindingPoint)
+void afBindTextureToBindingPoint(GLuint tex, GLuint textureBindingPoint)
 {
 	glActiveTexture(GL_TEXTURE0 + textureBindingPoint);
 	glBindTexture(GL_TEXTURE_2D, tex);
@@ -278,7 +278,7 @@ void afDumpCaps()
 	_(GL_MAX_UNIFORM_BLOCK_SIZE);
 	_(GL_MAX_VERTEX_UNIFORM_BLOCKS);
 	_(GL_MAX_FRAGMENT_UNIFORM_BLOCKS);
-	_(GL_MAX_GEOMETRY_UNIFORM_BLOCKS);
+//	_(GL_MAX_GEOMETRY_UNIFORM_BLOCKS);
 
 	_(GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS);
 	_(GL_MAX_SHADER_STORAGE_BLOCK_SIZE);

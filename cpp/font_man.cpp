@@ -138,23 +138,18 @@ static InputElement elements[] = {
 bool FontMan::Init()
 {
 	Destroy();
-	bool result = false;
 	if (!texSrc.Create(TEX_W, TEX_H)) {
-		goto DONE;
+		return false;
 	}
 	texture = texMan.CreateDynamicTexture("$FontMan", TEX_W, TEX_H);
-
 	shader = shaderMan.Create("font");
 	assert(shader);
-
 	ibo = afCreateQuadListIndexBuffer(SPRITE_MAX);
 	vbo = afCreateDynamicVertexBuffer(SPRITE_MAX * sizeof(FontVertex) * 4);
 	int stride = sizeof(FontVertex);
 	vao = afCreateVAO(shader, elements, dimof(elements), 1, &vbo, &stride, ibo);
 	sampler = afCreateSampler();
-	result = true;
-DONE:
-	return result;
+	return true;
 }
 
 void FontMan::Destroy()
