@@ -20,6 +20,33 @@ App::App()
 	meshId = MeshMan::INVALID_MMID;
 }
 
+static void DrawSprites()
+{
+	matrixStack.Reset();
+	SpriteCommands cmds;
+	SpriteCommand cmd;
+	cmd.color = 0xffffffff;
+	cmd.quad = Vec4(0, 0, 256, 256);
+	cmd.tex = texMan.Create("jiji.dds");
+	matrixStack.Mul(translate(64, 64, 0));
+	for (int x = 0; x < 3; x++) {
+		matrixStack.Push();
+		for (int y = 0; y < 3; y++) {
+			matrixStack.Push();
+			matrixStack.Mul(q2m(Quat(Vec3(0, 0, 1), (x + y) * (float)M_PI / 3)));
+			matrixStack.Mul(scale(0.5));
+			matrixStack.Mul(translate(-128, -128, 0));
+			matrixMan.Get(MatrixMan::WORLD, cmd.matW);
+			matrixStack.Pop();
+			matrixStack.Mul(translate(0, 128, 0));
+			cmds.push_back(cmd);
+		}
+		matrixStack.Pop();
+		matrixStack.Mul(translate(128, 0, 0));
+	}
+	spriteRenderer.Draw(cmds);
+}
+
 void App::Draw()
 {
 	afDepthStencilMode(true);
@@ -52,15 +79,7 @@ void App::Draw()
 		mesh->Draw(r, translate(radius * 2.0f, 0, 0) * q2m(Quat(Vec3(0, 1.0f, 0), (float)(GetTime() * M_PI))));
 	}
 	meshRenderer.Flush();
-
-	SpriteCommands cmds;
-	SpriteCommand cmd;
-	cmd.color = 0xffffffff;
-	cmd.quad = Vec4(0, 0, 256, 256);
-	cmd.tex = texMan.Create("jiji.dds");
-	cmds.push_back(cmd);
-	spriteRenderer.Draw(cmds);
-
+	DrawSprites();
 	fontMan.Render();
 }
 
