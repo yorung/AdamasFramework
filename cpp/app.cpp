@@ -22,6 +22,7 @@ App::App()
 
 void App::Draw()
 {
+	afDepthStencilMode(true);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	waterSurface.Draw();
@@ -51,8 +52,15 @@ void App::Draw()
 		mesh->Draw(r, translate(radius * 2.0f, 0, 0) * q2m(Quat(Vec3(0, 1.0f, 0), (float)(GetTime() * M_PI))));
 	}
 	meshRenderer.Flush();
-
 	fontMan.Render();
+
+	SpriteCommands cmds;
+	SpriteCommand cmd;
+	cmd.color = 0xffffffff;
+	cmd.quad = Vec4(0, 0, 256, 256);
+	cmd.tex = texMan.Create("jiji.dds");
+	cmds.push_back(cmd);
+	spriteRenderer.Draw(cmds);
 }
 
 void App::Init()
@@ -69,6 +77,7 @@ void App::Init()
 	meshRenderer.Create();
 	waterSurface.Init();
 	fontMan.Init();
+	spriteRenderer.Init();
 	luaMan.Create();
 
 
@@ -95,6 +104,7 @@ void App::OnTap(float x, float y)
 void App::Destroy()
 {
 	luaMan.Destroy();
+	spriteRenderer.Destroy();
 	texMan.Destroy();
 	shaderMan.Destroy();
 	waterSurface.Destroy();
