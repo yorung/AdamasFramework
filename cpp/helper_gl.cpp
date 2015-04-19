@@ -233,6 +233,19 @@ void afDepthStencilMode(bool depth)
 	}
 }
 
+void afEnableBackFaceCulling(bool cullBack)
+{
+	if (cullBack) {
+		glEnable(GL_CULL_FACE);
+		glCullFace(GL_BACK);
+		glFrontFace(GL_CW);
+//		glCullFace(GL_FRONT);
+//		glFrontFace(GL_CCW);
+	} else {
+		glDisable(GL_CULL_FACE);
+	}
+}
+
 SAMPLERID afCreateSampler()
 {
 	SAMPLERID id;

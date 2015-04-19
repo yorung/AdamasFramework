@@ -214,6 +214,7 @@ void MeshRenderer::Flush()
 	const Material* mat = matMan.Get(c.materialId);
 	RenderMesh* r = GetMeshByMRID(c.meshId);
 	assert(r);
+	afEnableBackFaceCulling(true);
 	glActiveTexture(GL_TEXTURE0 + SBP_DIFFUSE);
 	glBindTexture(GL_TEXTURE_2D, mat->tmid);
 	r->Draw(c, renderCommands.size());
