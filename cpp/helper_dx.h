@@ -23,8 +23,12 @@ typedef unsigned short AFIndex;
 typedef ID3D11Buffer* IBOID;
 typedef ID3D11Buffer* VBOID;
 typedef ID3D11Buffer* UBOID;
+typedef FakeVAO* VAOID;
+typedef ID3D11SamplerState* SAMPLERID;
 
 #define afSafeDeleteBuffer SAFE_RELEASE
+#define afSafeDeleteSampler SAFE_RELEASE
+#define afSafeDeleteVAO SAFE_DELETE
 #define afSafeDeleteSampler SAFE_RELEASE
 
 void afWriteBuffer(ID3D11Buffer* p, const void* buf, int size);
@@ -34,6 +38,7 @@ IBOID afCreateQuadListIndexBuffer(int numQuads);
 VBOID afCreateVertexBuffer(int size, const void* buf);
 VBOID afCreateDynamicVertexBuffer(int size);
 UBOID afCreateUBO(int size);
+SAMPLERID afCreateSampler();
 void afBindBufferToBindingPoint(UBOID ubo, UINT uniformBlockBinding);
 void afBindTextureToBindingPoint(TexMan::TMID tex, UINT textureBindingPoint);
 void afBindSamplerToBindingPoint(ID3D11SamplerState*, UINT textureBindingPoint);
@@ -48,12 +53,5 @@ enum BlendMode {
 void afBlendMode(BlendMode mode);
 void afDepthStencilMode(bool depth);
 
-/*
-struct VAOID {
-	ShaderMan::SMID shaderId;
-	IBOID ibo;
-	std::vector<VBOID> vertexBufferIds;
-	std::vector<size_t> strides;
-};
-GLuint afCreateVAO(GLuint program, const InputElement elements[], int numElements, int numBuffers, VBOID const *vertexBufferIds, const GLsizei* strides, IBOID ibo);
-*/
+VAOID afCreateVAO(ShaderMan::SMID program, const InputElement elements[], int numElements, int numBuffers, VBOID const *vertexBufferIds, const int* strides, IBOID ibo);
+inline void afBindVAO(VAOID vao) { vao->Apply(); }

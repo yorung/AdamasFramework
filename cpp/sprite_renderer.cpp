@@ -42,7 +42,7 @@ void SpriteRenderer::Init()
 		CInputElement(0, "COLOR", SF_R8G8B8A8_UNORM, 12),
 		CInputElement(0, "TEXCOORD", SF_R32G32_FLOAT, 16),
 	};
-	shaderId = shaderMan.Create("sprite.31es");
+	shaderId = shaderMan.Create("sprite");
 
 	sampler = afCreateSampler();	
 	vbo = afCreateDynamicVertexBuffer(sizeof(SpriteVertex) * MAX_SPRITES_IN_ONE_DRAW_CALL * 6);

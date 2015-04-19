@@ -9,6 +9,14 @@ ID3D11Buffer* afCreateIndexBuffer(const AFIndex* indi, int numIndi)
 	return indexBuffer;
 }
 
+ID3D11Buffer* afCreateVertexBuffer(int size, const void* data)
+{
+	ID3D11Buffer* vbo;
+	D3D11_SUBRESOURCE_DATA subresData = { data, 0, 0 };
+	deviceMan11.GetDevice()->CreateBuffer(&CD3D11_BUFFER_DESC(size, D3D11_BIND_VERTEX_BUFFER), &subresData, &vbo);
+	return vbo;
+}
+
 ID3D11Buffer* afCreateDynamicVertexBuffer(int size)
 {
 	ID3D11Buffer* vbo;
@@ -21,6 +29,22 @@ UBOID afCreateUBO(int size)
 	ID3D11Buffer* ubo;
 	deviceMan11.GetDevice()->CreateBuffer(&CD3D11_BUFFER_DESC(size, D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE), nullptr, &ubo);
 	return ubo;
+}
+
+SAMPLERID afCreateSampler()
+{
+	D3D11_SAMPLER_DESC  desc;
+	ZeroMemory(&desc, sizeof(desc));
+	desc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+	desc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+	desc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+	desc.MaxAnisotropy = 1;
+	desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	desc.MaxLOD = D3D11_FLOAT32_MAX;
+	ID3D11SamplerState* sampler;
+	deviceMan11.GetDevice()->CreateSamplerState(&desc, &sampler);
+	return sampler;
 }
 
 void afBindBufferToBindingPoint(UBOID ubo, UINT uniformBlockBinding)
@@ -123,6 +147,11 @@ void afDepthStencilMode(bool depth)
 	deviceMan11.GetDevice()->CreateDepthStencilState(&dsDesc, &ds);
 	deviceMan11.GetContext()->OMSetDepthStencilState(ds, 1);
 	SAFE_RELEASE(ds);
+}
+
+VAOID afCreateVAO(ShaderMan::SMID program, const InputElement elements[], int numElements, int numBuffers, VBOID const* vertexBufferIds, const int* strides, IBOID ibo)
+{
+	return new FakeVAO(program, elements, numElements, numBuffers, vertexBufferIds, strides, nullptr, ibo);
 }
 
 #endif
