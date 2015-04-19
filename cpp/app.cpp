@@ -17,20 +17,18 @@ static float CalcRadius(const Mesh* m)
 
 App::App()
 {
-	mesh = nullptr;
+	meshId = MeshMan::INVALID_MMID;
 }
 
 void App::Draw()
 {
+	afDepthStencilMode(true);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glDepthMask(GL_FALSE);
-	glDepthFunc(GL_ALWAYS);
 	waterSurface.Draw();
-	glDepthMask(GL_TRUE);
-	glDepthFunc(GL_GEQUAL);
 
-	fontMan.Render();
+	afDepthStencilMode(true);
+	afBlendMode(BM_NONE);
 
 	matrixMan.Set(MatrixMan::WORLD, Mat());
 	matrixMan.Set(MatrixMan::VIEW, devCamera.CalcViewMatrix());
@@ -42,50 +40,60 @@ void App::Draw()
 	float f = dist * 1000;
 	float n = dist / 1000;
 	float aspect = (float)scrSize.x / scrSize.y;
-#ifdef GL_TRUE
-	Mat proj = Mat((float)1 / tanf(45 * (float)M_PI / 180 * 0.5f) / aspect, 0, 0, 0,
-		0, (float)1 / tanf(45 * (float)M_PI / 180 * 0.5f), 0, 0,
-		0, 0, -(f + n) / (f - n), 1,
-		0, 0, (n * f) * 2 / (f - n), 0);
-#else
-	Mat proj = Mat((float)1 / tanf(45 * (float)M_PI / 180 * 0.5f) / aspect, 0, 0, 0,
-		0, (float)1 / tanf(45 * (float)M_PI / 180 * 0.5f), 0, 0,
-		0, 0, f / (f - n), 1,
-		0, 0, -(n * f) / (f - n), 0);
-#endif
+	Mat proj = perspective(45, aspect, n, f);
 	matrixMan.Set(MatrixMan::PROJ, proj);
 
 	MeshXAnimResult r;
-	mesh->CalcAnimation(0, GetTime(), r);
-	mesh->Draw(r, Mat());
-	mesh->Draw(r, translate(0, radius * 1.5f, 0) * q2m(Quat(Vec3(0, 0, 1.0f), (float)(GetTime() * M_PI))));
-	mesh->Draw(r, translate(radius * 2.0f, 0, 0) * q2m(Quat(Vec3(0, 1.0f, 0), (float)(GetTime() * M_PI))));
+	MeshX* mesh = (MeshX*)meshMan.Get(meshId);
+	if (mesh) {
+		mesh->CalcAnimation(0, GetTime(), r);
+//		mesh->Draw(r, Mat());
+		mesh->Draw(r, translate(0, radius * 1.5f, 0) * q2m(Quat(Vec3(0, 0, 1.0f), (float)(GetTime() * M_PI))));
+		mesh->Draw(r, translate(radius * 2.0f, 0, 0) * q2m(Quat(Vec3(0, 1.0f, 0), (float)(GetTime() * M_PI))));
+	}
 	meshRenderer.Flush();
+
+	SpriteCommands cmds;
+	SpriteCommand cmd;
+	cmd.color = 0xffffffff;
+	cmd.quad = Vec4(0, 0, 256, 256);
+	cmd.tex = texMan.Create("jiji.dds");
+	cmds.push_back(cmd);
+	spriteRenderer.Draw(cmds);
+
+	fontMan.Render();
 }
 
 void App::Init()
 {
-    ivec2 scrSize = systemMetrics.GetScreenSize();
+//	void LuaBindTest();
+//	LuaBindTest();
+
+	ivec2 scrSize = systemMetrics.GetScreenSize();
     glViewport(0, 0, scrSize.x, scrSize.y);
 
 	glClearColor(0.0f, 0.2f, 0.5f, 1.0f);
-	glEnable(GL_DEPTH_TEST);
-	glClearDepthf(0);
+	afDepthStencilMode(true);
 
 	meshRenderer.Create();
 	waterSurface.Init();
 	fontMan.Init();
+	spriteRenderer.Init();
+	luaMan.Create();
+
+
 	LoadMesh("jiji.x");
 }
 
 void App::LoadMesh(const char* fileName)
 {
-	SAFE_DELETE(mesh);
-	mesh = new MeshX(fileName);
-	radius = CalcRadius(mesh);
-	float scale = std::max(0.00001f, radius);
-	devCamera.SetDistance(scale * 3);
-
+	meshId = meshMan.Create(fileName);
+	MeshX* mesh = (MeshX*)meshMan.Get(meshId);
+	if (mesh) {
+		radius = CalcRadius(mesh);
+		float scale = std::max(0.00001f, radius);
+		devCamera.SetDistance(scale * 3);
+	}
 	g_type = "mesh";
 }
 
@@ -96,17 +104,21 @@ void App::OnTap(float x, float y)
 
 void App::Destroy()
 {
-	SAFE_DELETE(mesh);
+	luaMan.Destroy();
+	spriteRenderer.Destroy();
 	texMan.Destroy();
 	shaderMan.Destroy();
 	waterSurface.Destroy();
 	fontMan.Destroy();
 	meshRenderer.Destroy();
+	meshMan.Destroy();
+	meshId = MeshMan::INVALID_MMID;
 }
 
 void App::Update()
 {
+	luaMan.Update();
 	waterSurface.Update();
 	fps.Update();
-	fontMan.DrawString(Vec2(20, 20), 20, SPrintf("FPS: %f", fps.Get()));
+	fontMan.DrawString(Vec2(20, 40), 20, SPrintf("FPS: %f", fps.Get()));
 }

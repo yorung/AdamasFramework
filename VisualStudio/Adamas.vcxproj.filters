@@ -13,9 +13,6 @@
     <ClCompile Include="..\cpp\helper.cpp">
       <Filter>PlatformIndipendent</Filter>
     </ClCompile>
-    <ClCompile Include="..\cpp\helper_gldx.cpp">
-      <Filter>PlatformIndipendent</Filter>
-    </ClCompile>
     <ClCompile Include="..\cpp\hub.cpp">
       <Filter>PlatformIndipendent</Filter>
     </ClCompile>
@@ -73,6 +70,27 @@
     <ClCompile Include="..\cpp\helper_gl.cpp">
       <Filter>PlatformIndipendent</Filter>
     </ClCompile>
+    <ClCompile Include="..\cpp\af_lua_helpers.cpp">
+      <Filter>PlatformIndipendent</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cpp\lua_bind.cpp">
+      <Filter>PlatformIndipendent</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cpp\mesh_man.cpp">
+      <Filter>PlatformIndipendent</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cpp\lua_man.cpp">
+      <Filter>PlatformIndipendent</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cpp\matrix_stack.cpp">
+      <Filter>PlatformIndipendent</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cpp\helper_dx.cpp">
+      <Filter>PlatformIndipendent</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cpp\sprite_renderer.cpp">
+      <Filter>PlatformIndipendent</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="wgl_grabber_gen.h">
@@ -82,9 +100,6 @@
       <Filter>Windows</Filter>
     </ClInclude>
     <ClInclude Include="..\cpp\helper.h">
-      <Filter>PlatformIndipendent</Filter>
-    </ClInclude>
-    <ClInclude Include="..\cpp\helper_gldx.h">
       <Filter>PlatformIndipendent</Filter>
     </ClInclude>
     <ClInclude Include="..\cpp\helper_text.h">
@@ -147,6 +162,27 @@
     <ClInclude Include="..\cpp\dev_camera.h">
       <Filter>PlatformIndipendent</Filter>
     </ClInclude>
+    <ClInclude Include="..\cpp\af_lua_helpers.h">
+      <Filter>PlatformIndipendent</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cpp\mesh_man.h">
+      <Filter>PlatformIndipendent</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cpp\lua_man.h">
+      <Filter>PlatformIndipendent</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cpp\matrix_stack.h">
+      <Filter>PlatformIndipendent</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cpp\helper_dx.h">
+      <Filter>PlatformIndipendent</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cpp\helper_gl.h">
+      <Filter>PlatformIndipendent</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cpp\sprite_renderer.h">
+      <Filter>PlatformIndipendent</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Windows">
@@ -201,5 +237,8 @@
     <None Include="..\assets\shaders\water.vert">
       <Filter>shaders</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon.ico" />
   </ItemGroup>
 </Project>

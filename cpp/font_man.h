@@ -30,12 +30,8 @@ class FontMan
 	ShaderMan::SMID shader;
 	IBOID ibo;
 	VBOID vbo;
-	GLuint vao;
-#ifndef GL_TRUE
-	ID3D11SamplerState* pSamplerState;
-	ID3D11DepthStencilState* pDSState;
-	ID3D11BlendState* blendState;
-#endif
+	VAOID vao;
+	SAMPLERID sampler;
 	bool dirty;
 	bool Build(const CharSignature& signature);
 	bool Cache(const CharSignature& code);

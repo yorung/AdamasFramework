@@ -8,7 +8,6 @@ in vec3 vBlendWeights;
 in uvec4 vBlendIndices;
 out vec2 texcoord;
 out vec4 color;
-uniform mat4 matW;
 uniform mat4 matV;
 uniform mat4 matP;
 struct RenderCommand {
@@ -19,7 +18,7 @@ struct RenderCommand {
 	int nBones;
 };
 layout (std140, binding = 2) uniform perInstanceUBO {
-	RenderCommand renderCommands[3];
+	RenderCommand renderCommands[10];
 };
 layout (std430, binding = 5) buffer boneSSBO {
 	mat4 bonesSSBO[];

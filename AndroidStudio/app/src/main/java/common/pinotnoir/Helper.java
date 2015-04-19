@@ -1,5 +1,6 @@
 package common.pinotnoir;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
@@ -10,9 +11,11 @@ import android.graphics.Rect;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
 
 import javax.microedition.khronos.opengles.GL10;
@@ -20,7 +23,23 @@ import javax.microedition.khronos.opengles.GL10;
 public class Helper {
     private final static String TAG = "Helper";
     private static Context context;
-    public static void setContext(Context c) { context = c; }
+    private static WeakReference<Activity> activity;
+    public static void setContext(Context c, Activity a) {
+        context = c;
+        activity = new WeakReference<Activity>(a);
+    }
+
+    public static void toast(final String text) {
+        Activity a = activity.get();
+        if (a == null) {
+            return;
+        }
+        a.runOnUiThread( new Runnable() {
+            public void run() {
+                Toast.makeText(context, text, Toast.LENGTH_LONG).show();
+            }
+        } );
+    }
 
     public static byte[] loadIntoBytes(String fileName) {
         AssetManager assetManager = context.getAssets();

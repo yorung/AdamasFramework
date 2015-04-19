@@ -15,6 +15,7 @@ extern const char* boundJavaClass;
 #include <string>
 #include <map>
 #include <deque>
+#include <stack>
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -23,15 +24,19 @@ extern const char* boundJavaClass;
 #include <stdint.h>
 #include <ctype.h>
 
+#include <../submodules/lua/src/lua.hpp>
+
 static const int BONE_MAX = 50;
 
 #include "af_math.h"
+#include "af_lua_helpers.h"
 #include "system_metrics.h"
 #include "hub.h"
 #include "helper.h"
-#include "helper_gldx.h"
+#include "helper_gl.h"
 #include "helper_text.h"
 #include "matrix_man.h"
+#include "matrix_stack.h"
 #include "tex_man.h"
 #include "shader_man.h"
 #include "dib.h"
@@ -45,4 +50,8 @@ static const int BONE_MAX = 50;
 #include "mesh_x.h"
 #include "debug_renderer.h"
 #include "bvh.h"
+#include "mesh_man.h"
+#include "sprite_renderer.h"
+#include "lua_man.h"
+#include "lua_bind.h"
 #include "app.h"

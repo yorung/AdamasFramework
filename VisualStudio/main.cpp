@@ -14,35 +14,6 @@ static void err(char *msg)
 }
 
 #ifdef _DEBUG
-static void DumpInfo()
-{
-	printf("GL_VERSION = %s\n", (char*)glGetString(GL_VERSION));
-	printf("GL_RENDERER = %s\n", (char*)glGetString(GL_RENDERER));
-	printf("GL_VENDOR = %s\n", (char*)glGetString(GL_VENDOR));
-	printf("GL_SHADING_LANGUAGE_VERSION = %s\n", (char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
-	puts("------ GL_EXTENSIONS");
-
-	GLint num;
-	glGetIntegerv(GL_NUM_EXTENSIONS, &num);
-	for (int i = 0; i < num; i++) {
-		const GLubyte* ext = glGetStringi(GL_EXTENSIONS, i);
-		printf("%s\n", ext);
-	}
-
-	puts("------ glGet");
-#define _(x) do { GLint i; glGetIntegerv(x, &i); printf(#x " = %d\n", i); } while(0)
-	_(GL_MAX_UNIFORM_BUFFER_BINDINGS);
-	_(GL_MAX_UNIFORM_BLOCK_SIZE);
-	_(GL_MAX_VERTEX_UNIFORM_BLOCKS);
-	_(GL_MAX_FRAGMENT_UNIFORM_BLOCKS);
-	_(GL_MAX_GEOMETRY_UNIFORM_BLOCKS);
-
-	_(GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS);
-	_(GL_MAX_SHADER_STORAGE_BLOCK_SIZE);
-	_(GL_MAX_VERTEX_SHADER_STORAGE_BLOCKS);
-#undef _
-}
-
 static void APIENTRY debugMessageHandler(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam)
 {
 	switch (type) {
@@ -121,7 +92,8 @@ void CreateWGL(HWND hWnd)
 		goto END;
 	}
 #ifdef _DEBUG
-	DumpInfo();
+	afDumpCaps();
+	afDumpIsEnabled();
 	glDebugMessageCallbackARB(debugMessageHandler, nullptr);
 	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
 #endif
@@ -150,6 +122,7 @@ HWND hWnd;
 HINSTANCE hInst;								// current instance
 TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
 TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
+HACCEL hAccelTable;
 
 // WindowMessage
 static BOOL ProcessWindowMessage(){
@@ -159,9 +132,10 @@ static BOOL ProcessWindowMessage(){
 			if (msg.message == WM_QUIT){
 				return FALSE;
 			}
-
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
+			if (!TranslateAccelerator(hWnd, hAccelTable, &msg)) {
+				TranslateMessage(&msg);
+				DispatchMessage(&msg);
+			}
 		}
 
 		BOOL active = !IsIconic(hWnd) && GetForegroundWindow() == hWnd;
@@ -214,9 +188,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE,
 
 {
 	HINSTANCE hInstance = GetModuleHandle(nullptr);
-	
-	// TODO: Place code here.
-	HACCEL hAccelTable;
 
 	// Initialize global strings
 	LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
@@ -351,6 +322,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			break;
 		case IDM_EXIT:
 			SendMessage(hWnd, WM_CLOSE, 0, 0);
+			break;
+		case IDM_RELOAD:
+			hub.Destroy();
+			hub.Init();
 			break;
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);

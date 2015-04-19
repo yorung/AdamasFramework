@@ -31,3 +31,14 @@ double GetTime()
 	clock_gettime(CLOCK_MONOTONIC, &t);
 	return (double)t.tv_sec + (double)t.tv_nsec / 1000000000;
 }
+
+void Toast(const char *text)
+{
+	jclass helper = jniEnv->FindClass(boundJavaClass);
+	jmethodID method = jniEnv->GetStaticMethodID(helper, "toast", "(Ljava/lang/String;)V");
+	if (method == 0) {
+		return;
+	}
+//	aflog("jclass=%d method=%d", helper, method);
+	jniEnv->CallStaticVoidMethod(helper, method, jniEnv->NewStringUTF(text));
+}

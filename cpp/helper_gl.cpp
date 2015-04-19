@@ -83,6 +83,11 @@ void afBindBufferToBindingPoint(UBOID ubo, GLuint uniformBlockBinding)
 	glBindBuffer(GL_UNIFORM_BUFFER, prev);
 }
 
+void afBindTextureToBindingPoint(GLuint tex, GLuint textureBindingPoint)
+{
+	glActiveTexture(GL_TEXTURE0 + textureBindingPoint);
+	glBindTexture(GL_TEXTURE_2D, tex);
+}
 
 GLuint afCreateDynamicTexture(int w, int h, AFDTFormat format)
 {
@@ -103,6 +108,22 @@ GLuint afCreateDynamicTexture(int w, int h, AFDTFormat format)
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 512, 512, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, nullptr);
 		break;
 	}
+	glBindTexture(GL_TEXTURE_2D, 0);
+	return texture;
+}
+
+GLuint afCreateWhiteTexture()
+{
+	uint32_t col = 0xffffffff;
+	GLuint texture;
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, &col);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	return texture;
 }
@@ -168,4 +189,108 @@ GLuint afCreateVAO(GLuint program, const InputElement elements[], int numElement
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 	glBindVertexArray(0);
 	return vao;
+}
+
+IBOID afCreateQuadListIndexBuffer(int numQuads)
+{
+	std::vector<AFIndex> indi;
+	int numIndi = numQuads * 6;
+	indi.resize(numIndi);
+	for (int i = 0; i < numIndi; i++)
+	{
+		static int tbl[] = { 0, 1, 2, 1, 3, 2 };
+		int rectIdx = i / 6;
+		int vertIdx = i % 6;
+		indi[i] = rectIdx * 4 + tbl[vertIdx];
+	}
+	return afCreateIndexBuffer(&indi[0], numIndi);
+}
+
+void afBlendMode(BlendMode mode)
+{
+	switch(mode) {
+	case BM_ALPHA:
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		break;
+	case BM_NONE:
+		glDisable(GL_BLEND);
+		break;
+	}
+}
+
+void afDepthStencilMode(bool depth)
+{
+	if (depth) {
+		glEnable(GL_DEPTH_TEST);
+		glDepthMask(GL_TRUE);
+		glDepthFunc(GL_GEQUAL);
+		glClearDepthf(0);
+	} else {
+		glDisable(GL_DEPTH_TEST);
+		glDepthMask(GL_FALSE);
+		glDepthFunc(GL_ALWAYS);
+	}
+}
+
+void afEnableBackFaceCulling(bool cullBack)
+{
+	if (cullBack) {
+		glEnable(GL_CULL_FACE);
+		glCullFace(GL_BACK);
+		glFrontFace(GL_CW);
+//		glCullFace(GL_FRONT);
+//		glFrontFace(GL_CCW);
+	} else {
+		glDisable(GL_CULL_FACE);
+	}
+}
+
+SAMPLERID afCreateSampler(bool mipmap)
+{
+	SAMPLERID id;
+	glGenSamplers(1, &id);
+	glSamplerParameteri(id, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glSamplerParameteri(id, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glSamplerParameteri(id, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glSamplerParameteri(id, GL_TEXTURE_MIN_FILTER, mipmap ? GL_LINEAR_MIPMAP_LINEAR :  GL_LINEAR);
+	return id;
+}
+
+void afDumpCaps()
+{
+	printf("GL_VERSION = %s\n", (char*)glGetString(GL_VERSION));
+	printf("GL_RENDERER = %s\n", (char*)glGetString(GL_RENDERER));
+	printf("GL_VENDOR = %s\n", (char*)glGetString(GL_VENDOR));
+	printf("GL_SHADING_LANGUAGE_VERSION = %s\n", (char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
+	puts("------ GL_EXTENSIONS");
+
+	GLint num;
+	glGetIntegerv(GL_NUM_EXTENSIONS, &num);
+	for (int i = 0; i < num; i++) {
+		const GLubyte* ext = glGetStringi(GL_EXTENSIONS, i);
+		printf("%s\n", ext);
+	}
+
+	puts("------ glGet");
+#define _(x) do { GLint i; glGetIntegerv(x, &i); printf(#x " = %d\n", i); } while(0)
+	_(GL_MAX_UNIFORM_BUFFER_BINDINGS);
+	_(GL_MAX_UNIFORM_BLOCK_SIZE);
+	_(GL_MAX_VERTEX_UNIFORM_BLOCKS);
+	_(GL_MAX_FRAGMENT_UNIFORM_BLOCKS);
+//	_(GL_MAX_GEOMETRY_UNIFORM_BLOCKS);
+
+	_(GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS);
+	_(GL_MAX_SHADER_STORAGE_BLOCK_SIZE);
+	_(GL_MAX_VERTEX_SHADER_STORAGE_BLOCKS);
+#undef _
+}
+
+void afDumpIsEnabled()
+{
+#define _(x) do { printf(#x " = %s\n", (glIsEnabled(x) ? "true" : "false")); } while(0)
+	_(GL_CULL_FACE);
+	_(GL_DEPTH_TEST);
+	_(GL_STENCIL_TEST);
+#undef _
 }

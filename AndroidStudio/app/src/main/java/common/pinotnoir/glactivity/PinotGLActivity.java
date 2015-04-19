@@ -5,6 +5,7 @@ import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.widget.Toast;
 
 import common.pinotnoir.Helper;
 
@@ -13,7 +14,8 @@ public class PinotGLActivity extends Activity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Helper.setContext(getApplicationContext());
+        Helper.setContext(getApplicationContext(), this);
+
         super.onCreate(savedInstanceState);
 
         view = new PinotGLSurfaceView(this);

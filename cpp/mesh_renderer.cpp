@@ -2,8 +2,10 @@
 
 MeshRenderer meshRenderer;
 
+static int MAX_INSTANCES = 10;
+
 static const int BONE_SSBO_SIZE = sizeof(Mat) * 1000;
-static const int PER_INSTANCE_UBO_SIZE = sizeof(RenderCommand) * 3;
+static const int PER_INSTANCE_UBO_SIZE = sizeof(RenderCommand) * MAX_INSTANCES;
 
 enum SSBOBindingPoints {
 	SBP_BONES = 5,
@@ -173,6 +175,9 @@ void MeshRenderer::DrawRenderMesh(MRID id, const Mat& worldMat, const Mat BoneMa
 	if (!renderCommands.empty() && id != renderCommands[0].meshId) {
 		Flush();
 	}
+	if (renderCommands.size() == MAX_INSTANCES) {
+		Flush();
+	}
 
 	RenderCommand c;
 	c.matWorld = worldMat;
@@ -198,11 +203,9 @@ void MeshRenderer::Flush()
 
 	shaderMan.Apply(shaderId);
 
-	Mat matW, matV, matP;
-	matrixMan.Get(MatrixMan::WORLD, matW);
+	Mat matV, matP;
 	matrixMan.Get(MatrixMan::VIEW, matV);
 	matrixMan.Get(MatrixMan::PROJ, matP);
-	glUniformMatrix4fv(glGetUniformLocation(shaderId, "matW"), 1, GL_FALSE, &matW.m[0][0]);
 	glUniformMatrix4fv(glGetUniformLocation(shaderId, "matV"), 1, GL_FALSE, &matV.m[0][0]);
 	glUniformMatrix4fv(glGetUniformLocation(shaderId, "matP"), 1, GL_FALSE, &matP.m[0][0]);
 
@@ -211,6 +214,7 @@ void MeshRenderer::Flush()
 	const Material* mat = matMan.Get(c.materialId);
 	RenderMesh* r = GetMeshByMRID(c.meshId);
 	assert(r);
+	afEnableBackFaceCulling(true);
 	glActiveTexture(GL_TEXTURE0 + SBP_DIFFUSE);
 	glBindTexture(GL_TEXTURE_2D, mat->tmid);
 	r->Draw(c, renderCommands.size());

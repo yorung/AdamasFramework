@@ -2,6 +2,7 @@
 /VisualStudio/ipch
 /VisualStudio/Release
 /VisualStudio/Debug
+/VisualStudio/Tmp
 /VisualStudio/glheaders/*.h
 *.suo
 *.sdf

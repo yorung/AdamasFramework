@@ -5,6 +5,7 @@ bool SaveFile(const char *fileName, const uint8_t* buf, int size);
 double GetTime();
 float Random();
 void GoMyDir();
+void Toast(const char *text);
 
 template <class T> inline void SAFE_DELETE(T& p)
 {
