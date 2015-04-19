@@ -147,3 +147,5 @@ void afBlendMode(BlendMode mode);
 void afDepthStencilMode(bool depth);
 #define afBindVAO glBindVertexArray
 #define afBindSamplerToBindingPoint(samp,pnt) glBindSampler(pnt, samp)
+void afDumpCaps();
+void afDumpIsEnabled();

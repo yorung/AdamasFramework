@@ -243,3 +243,41 @@ SAMPLERID afCreateSampler()
 	glSamplerParameteri(id, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	return id;
 }
+
+void afDumpCaps()
+{
+	printf("GL_VERSION = %s\n", (char*)glGetString(GL_VERSION));
+	printf("GL_RENDERER = %s\n", (char*)glGetString(GL_RENDERER));
+	printf("GL_VENDOR = %s\n", (char*)glGetString(GL_VENDOR));
+	printf("GL_SHADING_LANGUAGE_VERSION = %s\n", (char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
+	puts("------ GL_EXTENSIONS");
+
+	GLint num;
+	glGetIntegerv(GL_NUM_EXTENSIONS, &num);
+	for (int i = 0; i < num; i++) {
+		const GLubyte* ext = glGetStringi(GL_EXTENSIONS, i);
+		printf("%s\n", ext);
+	}
+
+	puts("------ glGet");
+#define _(x) do { GLint i; glGetIntegerv(x, &i); printf(#x " = %d\n", i); } while(0)
+	_(GL_MAX_UNIFORM_BUFFER_BINDINGS);
+	_(GL_MAX_UNIFORM_BLOCK_SIZE);
+	_(GL_MAX_VERTEX_UNIFORM_BLOCKS);
+	_(GL_MAX_FRAGMENT_UNIFORM_BLOCKS);
+	_(GL_MAX_GEOMETRY_UNIFORM_BLOCKS);
+
+	_(GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS);
+	_(GL_MAX_SHADER_STORAGE_BLOCK_SIZE);
+	_(GL_MAX_VERTEX_SHADER_STORAGE_BLOCKS);
+#undef _
+}
+
+void afDumpIsEnabled()
+{
+#define _(x) do { printf(#x " = %s\n", (glIsEnabled(x) ? "true" : "false")); } while(0)
+	_(GL_CULL_FACE);
+	_(GL_DEPTH_TEST);
+	_(GL_STENCIL_TEST);
+#undef _
+}
