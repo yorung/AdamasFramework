@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+MatrixStack luaMatrixStack;
+
 #ifndef _MSC_VER
 typedef int LONG;
 struct RECT {
@@ -108,13 +110,13 @@ static void BindMesBox(lua_State *L)
 static void BindMatrixStack(lua_State *L)
 {
 	static luaL_Reg inNamespaceFuncs[] = {
-		{ "Push", [](lua_State* L) { matrixStack.Push(); return 0; } },
-		{ "Pop", [](lua_State* L) { matrixStack.Pop(); return 0; } },
-		{ "RotateX", [](lua_State* L) { matrixStack.Mul(q2m(Quat(Vec3(1, 0, 0), (float)lua_tonumber(L, -1) * (float)M_PI / 180))); return 0; } },
-		{ "RotateY", [](lua_State* L) { matrixStack.Mul(q2m(Quat(Vec3(0, 1, 0), (float)lua_tonumber(L, -1) * (float)M_PI / 180))); return 0; } },
-		{ "RotateZ", [](lua_State* L) { matrixStack.Mul(q2m(Quat(Vec3(0, 0, 1), (float)lua_tonumber(L, -1) * (float)M_PI / 180))); return 0; } },
-		{ "Scale", [](lua_State* L) { matrixStack.Mul(scale((float)lua_tonumber(L, -3), (float)lua_tonumber(L, -2), (float)lua_tonumber(L, -1))); return 0; } },
-		{ "Translate", [](lua_State* L) { matrixStack.Mul(translate((float)lua_tonumber(L, -3), (float)lua_tonumber(L, -2), (float)lua_tonumber(L, -1))); return 0; } },
+		{ "Push", [](lua_State* L) { luaMatrixStack.Push(); return 0; } },
+		{ "Pop", [](lua_State* L) { luaMatrixStack.Pop(); return 0; } },
+		{ "RotateX", [](lua_State* L) { luaMatrixStack.Mul(q2m(Quat(Vec3(1, 0, 0), (float)lua_tonumber(L, -1) * (float)M_PI / 180))); return 0; } },
+		{ "RotateY", [](lua_State* L) { luaMatrixStack.Mul(q2m(Quat(Vec3(0, 1, 0), (float)lua_tonumber(L, -1) * (float)M_PI / 180))); return 0; } },
+		{ "RotateZ", [](lua_State* L) { luaMatrixStack.Mul(q2m(Quat(Vec3(0, 0, 1), (float)lua_tonumber(L, -1) * (float)M_PI / 180))); return 0; } },
+		{ "Scale", [](lua_State* L) { luaMatrixStack.Mul(scale((float)lua_tonumber(L, -3), (float)lua_tonumber(L, -2), (float)lua_tonumber(L, -1))); return 0; } },
+		{ "Translate", [](lua_State* L) { luaMatrixStack.Mul(translate((float)lua_tonumber(L, -3), (float)lua_tonumber(L, -2), (float)lua_tonumber(L, -1))); return 0; } },
 		{ nullptr, nullptr },
 	};
 	aflBindNamespace(L, "matrixStack", inNamespaceFuncs);
@@ -127,11 +129,9 @@ static void BindMeshMan(lua_State* L)
 		{ "Draw", [](lua_State* L) {
 			MeshX* mesh = (MeshX*)meshMan.Get((MMID)lua_tointeger(L, -1));
 			if (mesh) {
-				Mat m;
-				matrixMan.Get(MatrixMan::WORLD, m);
 				MeshXAnimResult r;
 				mesh->CalcAnimation(0, GetTime(), r);
-				mesh->Draw(r, m);
+				mesh->Draw(r, luaMatrixStack.Get());
 			}
 			return 0; } },
 		{ nullptr, nullptr },

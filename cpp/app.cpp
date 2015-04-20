@@ -22,27 +22,27 @@ App::App()
 
 static void DrawSprites()
 {
-	matrixStack.Reset();
 	SpriteCommands cmds;
 	SpriteCommand cmd;
 	cmd.color = 0xffffffff;
 	cmd.quad = Vec4(0, 0, 256, 256);
 	cmd.tex = texMan.Create("jiji.dds");
-	matrixStack.Mul(translate(64, 64, 0));
+	MatrixStack m;
+	m.Mul(translate(64, 64, 0));
 	for (int x = 0; x < 3; x++) {
-		matrixStack.Push();
+		m.Push();
 		for (int y = 0; y < 3; y++) {
-			matrixStack.Push();
-			matrixStack.Mul(q2m(Quat(Vec3(0, 0, 1), (x + y) * (float)M_PI / 3)));
-			matrixStack.Mul(scale(0.5));
-			matrixStack.Mul(translate(-128, -128, 0));
-			matrixMan.Get(MatrixMan::WORLD, cmd.matW);
-			matrixStack.Pop();
-			matrixStack.Mul(translate(0, 128, 0));
+			m.Push();
+			m.Mul(q2m(Quat(Vec3(0, 0, 1), (x + y) * (float)M_PI / 3)));
+			m.Mul(scale(0.5));
+			m.Mul(translate(-128, -128, 0));
+			cmd.matW = m.Get();
+			m.Pop();
+			m.Mul(translate(0, 128, 0));
 			cmds.push_back(cmd);
 		}
-		matrixStack.Pop();
-		matrixStack.Mul(translate(128, 0, 0));
+		m.Pop();
+		m.Mul(translate(128, 0, 0));
 	}
 	spriteRenderer.Draw(cmds);
 }
@@ -57,7 +57,6 @@ void App::Draw()
 	afDepthStencilMode(true);
 	afBlendMode(BM_NONE);
 
-	matrixMan.Set(MatrixMan::WORLD, Mat());
 	matrixMan.Set(MatrixMan::VIEW, devCamera.CalcViewMatrix());
 
 	ivec2 scrSize = systemMetrics.GetScreenSize();

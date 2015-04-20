@@ -1,7 +1,5 @@
 #include "stdafx.h"
 
-MatrixStack matrixStack;
-
 MatrixStack::MatrixStack()
 {
 	Reset();
@@ -10,30 +8,24 @@ MatrixStack::MatrixStack()
 void MatrixStack::Reset()
 {
 	std::stack<Mat> e;
+	e.push(Mat());
 	std::swap(stack, e);
-	matrixMan.Set(MatrixMan::WORLD, Mat());
 }
 
 void MatrixStack::Push()
 {
-	Mat m;
-	matrixMan.Get(MatrixMan::WORLD, m);
-	stack.push(m);
+	stack.push(stack.top());
 }
 
 void MatrixStack::Pop()
 {
-	assert(!stack.empty());
-	if (stack.empty()) {
-		return;
+	assert(stack.size() > 1);
+	if (stack.size() > 1) {
+		stack.pop();
 	}
-	matrixMan.Set(MatrixMan::WORLD, stack.top());
-	stack.pop();
 }
 
 void MatrixStack::Mul(const Mat& m)
 {
-	Mat w;
-	matrixMan.Get(MatrixMan::WORLD, w);
-	matrixMan.Set(MatrixMan::WORLD, m * w);
+	stack.top() = m * stack.top();
 }
