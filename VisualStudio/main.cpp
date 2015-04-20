@@ -359,6 +359,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		devCamera.LButtonUp(LOWORD(lParam) / (float)screenSize.x, HIWORD(lParam) / (float)screenSize.y);
 		break;
 	case WM_MOUSEMOVE:
+		systemMetrics.SetMousePos(ivec2(MAKEPOINTS(lParam).x, MAKEPOINTS(lParam).y));
 		devCamera.MouseMove(MAKEPOINTS(lParam).x / (float)screenSize.x, MAKEPOINTS(lParam).y / (float)screenSize.y);
 		break;
 	case WM_MOUSEWHEEL:

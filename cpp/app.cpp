@@ -24,9 +24,15 @@ static void DrawSprites()
 {
 	SpriteCommands cmds;
 	SpriteCommand cmd;
-	cmd.color = 0xffffffff;
 	cmd.quad = Vec4(0, 0, 256, 256);
 	cmd.tex = texMan.Create("jiji.dds");
+
+	Vec2 mouse = systemMetrics.GetMousePos();
+	auto isHit = [&](const Mat& m) {
+		Vec3 v = transform(Vec3(mouse.x, mouse.y, 0), inv(m));
+		return v.x >= cmd.quad.x && v.y >= cmd.quad.y && v.x < cmd.quad.z && v.y < cmd.quad.w;
+	};
+
 	MatrixStack m;
 	m.Mul(translate(64, 64, 0));
 	for (int x = 0; x < 3; x++) {
@@ -37,6 +43,7 @@ static void DrawSprites()
 			m.Mul(scale(0.5));
 			m.Mul(translate(-128, -128, 0));
 			cmd.matW = m.Get();
+			cmd.color = isHit(m.Get()) ? 0xff0000ff : 0xffffffff;
 			m.Pop();
 			m.Mul(translate(0, 128, 0));
 			cmds.push_back(cmd);
@@ -86,9 +93,6 @@ void App::Draw()
 
 void App::Init()
 {
-//	void LuaBindTest();
-//	LuaBindTest();
-
 	ivec2 scrSize = systemMetrics.GetScreenSize();
     glViewport(0, 0, scrSize.x, scrSize.y);
 
