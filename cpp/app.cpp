@@ -20,40 +20,6 @@ App::App()
 	meshId = MeshMan::INVALID_MMID;
 }
 
-static void DrawSprites()
-{
-	SpriteCommands cmds;
-	SpriteCommand cmd;
-	cmd.tex = texMan.Create("jiji.dds");
-
-	const float pitch = 0.25f;
-	const float sprW = 64;
-
-	Vec2 mouse = systemMetrics.GetMousePos();
-	auto isHit = [&](const Mat& m) {
-		Vec3 v = transform(Vec3(mouse.x, mouse.y, 0), inv(m));
-		return v.x >= 0 && v.y >= 0 && v.x < sprW && v.y < sprW;
-	};
-	Vec2 scrSize = systemMetrics.GetScreenSize();
-	MatrixStack m;
-	float mini = std::min(scrSize.x, scrSize.y);
-	m.Mul(translate((scrSize.x - mini) / 2, (scrSize.y - mini) / 2, 0));
-	m.Mul(scale(mini));
-	for (int x = 0; x < 4; x++) {
-		for (int y = 0; y < 4; y++) {
-			cmd.quad = Vec4(x * sprW, y * sprW, x * sprW + sprW, y * sprW + sprW);
-			m.Push();
-			m.Mul(translate(pitch * x, pitch * y, 0));
-			m.Mul(scale(0.25f / sprW));
-			cmd.matW = m.Get();
-			cmd.color = isHit(m.Get()) ? 0xff0000ff : 0xffffffff;
-			m.Pop();
-			cmds.push_back(cmd);
-		}
-	}
-	spriteRenderer.Draw(cmds);
-}
-
 void App::Draw()
 {
 	afDepthStencilMode(true);
@@ -75,7 +41,7 @@ void App::Draw()
 	float aspect = (float)scrSize.x / scrSize.y;
 	Mat proj = perspective(45, aspect, n, f);
 	matrixMan.Set(MatrixMan::PROJ, proj);
-
+/*
 	MeshXAnimResult r;
 	MeshX* mesh = (MeshX*)meshMan.Get(meshId);
 	if (mesh) {
@@ -86,8 +52,9 @@ void App::Draw()
 		mesh->Draw(r, translate(0, radius * 1.5f, 0) * q2m(Quat(Vec3(0, 0, 1.0f), normToRad(wrappedTime))));
 		mesh->Draw(r, translate(radius * 2.0f, 0, 0) * q2m(Quat(Vec3(0, 1.0f, 0), normToRad(wrappedTime))));
 	}
+*/
 	meshRenderer.Flush();
-	DrawSprites();
+	puzzle.Draw();
 	fontMan.Render();
 }
 
@@ -142,6 +109,7 @@ void App::Destroy()
 void App::Update()
 {
 	luaMan.Update();
+	puzzle.Update();
 	waterSurface.Update();
 	fps.Update();
 	fontMan.DrawString(Vec2(20, 40), 20, SPrintf("FPS: %f", fps.Get()));

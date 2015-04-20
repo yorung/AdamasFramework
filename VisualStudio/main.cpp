@@ -353,10 +353,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_LBUTTONDOWN:
 		SetCapture(hWnd);
 		devCamera.LButtonDown(LOWORD(lParam) / (float)screenSize.x, HIWORD(lParam) / (float)screenSize.y);
+		systemMetrics.mouseDown = true;
 		break;
 	case WM_LBUTTONUP:
 		ReleaseCapture();
 		devCamera.LButtonUp(LOWORD(lParam) / (float)screenSize.x, HIWORD(lParam) / (float)screenSize.y);
+		systemMetrics.mouseDown = false;
 		break;
 	case WM_MOUSEMOVE:
 		systemMetrics.SetMousePos(ivec2(MAKEPOINTS(lParam).x, MAKEPOINTS(lParam).y));

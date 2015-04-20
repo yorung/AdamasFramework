@@ -3,6 +3,7 @@ local meshId = meshMan.Create("jiji.x")
 local deg = 0
 function Update()
 --	MesBox("main.lua Update called")
+--[[
 	meshMan.Draw(meshId)
 
 	matrixStack.Push()
@@ -20,7 +21,8 @@ function Update()
 	matrixStack.Pop()
 
 	deg = deg + 3
+]]
 end
 
 
-MesBox("main.lua loaded!")
+--MesBox("main.lua loaded!")
