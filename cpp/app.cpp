@@ -24,32 +24,32 @@ static void DrawSprites()
 {
 	SpriteCommands cmds;
 	SpriteCommand cmd;
-	cmd.quad = Vec4(0, 0, 256, 256);
 	cmd.tex = texMan.Create("jiji.dds");
+
+	const float pitch = 0.25f;
+	const float sprW = 64;
 
 	Vec2 mouse = systemMetrics.GetMousePos();
 	auto isHit = [&](const Mat& m) {
 		Vec3 v = transform(Vec3(mouse.x, mouse.y, 0), inv(m));
-		return v.x >= cmd.quad.x && v.y >= cmd.quad.y && v.x < cmd.quad.z && v.y < cmd.quad.w;
+		return v.x >= 0 && v.y >= 0 && v.x < sprW && v.y < sprW;
 	};
-
+	Vec2 scrSize = systemMetrics.GetScreenSize();
 	MatrixStack m;
-	m.Mul(translate(64, 64, 0));
-	for (int x = 0; x < 3; x++) {
-		m.Push();
-		for (int y = 0; y < 3; y++) {
+	float mini = std::min(scrSize.x, scrSize.y);
+	m.Mul(translate((scrSize.x - mini) / 2, (scrSize.y - mini) / 2, 0));
+	m.Mul(scale(mini));
+	for (int x = 0; x < 4; x++) {
+		for (int y = 0; y < 4; y++) {
+			cmd.quad = Vec4(x * sprW, y * sprW, x * sprW + sprW, y * sprW + sprW);
 			m.Push();
-			m.Mul(q2m(Quat(Vec3(0, 0, 1), (x + y) * (float)M_PI / 3)));
-			m.Mul(scale(0.5));
-			m.Mul(translate(-128, -128, 0));
+			m.Mul(translate(pitch * x, pitch * y, 0));
+			m.Mul(scale(0.25f / sprW));
 			cmd.matW = m.Get();
 			cmd.color = isHit(m.Get()) ? 0xff0000ff : 0xffffffff;
 			m.Pop();
-			m.Mul(translate(0, 128, 0));
 			cmds.push_back(cmd);
 		}
-		m.Pop();
-		m.Mul(translate(128, 0, 0));
 	}
 	spriteRenderer.Draw(cmds);
 }
