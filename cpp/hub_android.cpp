@@ -51,6 +51,10 @@ JNIEXPORT void JNICALL FUNC(update)(JNIEnv* env, jobject obj, jfloat inputX, jfl
     lastInputState.y = inputY;
     lastInputState.pressed = pressed;
 
+	systemMetrics.SetMousePos(ivec2(inputX, inputY));
+	systemMetrics.mouseDown = pressed;
+
+
 	hub.Update();
 	jniEnv = nullptr;
 }
