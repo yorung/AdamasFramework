@@ -11,21 +11,20 @@ Puzzle::Puzzle()
 	std::random_shuffle(puzzle, puzzle + 16);
 }
 
-void Puzzle::TryMove(int i)
+void Puzzle::TryMove(int x, int y)
 {
-	auto TryOne = [&](int idx) {
-		if (idx < 0 || idx >= 16) {
+	auto TryOne = [&](int xx, int yy) {
+		if (xx < 0 || xx >= 4 || yy < 0 || yy >= 4) {
 			return;
 		}
-		if (puzzle[idx] >= 0) {
-			return;
+		if (puzzle[xx + yy * 4] < 0) {
+			std::swap(puzzle[x + y * 4], puzzle[xx + yy * 4]);
 		}
-		std::swap(puzzle[idx], puzzle[i]);
 	};
-	TryOne(i - 4);
-	TryOne(i + 4);
-	TryOne(i - 1);
-	TryOne(i + 1);
+	TryOne(x, y - 1);
+	TryOne(x, y + 1);
+	TryOne(x - 1, y);
+	TryOne(x + 1, y);
 }
 
 void Puzzle::Update()
@@ -63,7 +62,7 @@ void Puzzle::Update()
 			if (isHit(m.Get())) {
 				cmd.color = 0xff0000ff;
 				if (systemMetrics.mouseDown) {
-					TryMove(x + y * 4);
+					TryMove(x, y);
 				}
 			} else {
 				cmd.color = 0xffffffff;

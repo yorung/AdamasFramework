@@ -6,7 +6,7 @@ public:
 	Puzzle();
 	void Update();
 	void Draw();
-	void TryMove(int i);
+	void TryMove(int x, int y);
 };
 
 extern Puzzle puzzle;
