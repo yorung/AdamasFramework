@@ -2,11 +2,11 @@ class Puzzle
 {
 	int puzzle[16];
 	SpriteCommands cmds;
+	void TryMove(int x, int y);
 public:
 	Puzzle();
 	void Update();
 	void Draw();
-	void TryMove(int x, int y);
 };
 
 extern Puzzle puzzle;

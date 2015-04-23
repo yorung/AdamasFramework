@@ -8,7 +8,10 @@ Puzzle::Puzzle()
 		puzzle[i] = i;
 	}
 	puzzle[0] = -1;
-	std::random_shuffle(puzzle, puzzle + 16);
+	srand((unsigned int)time(0));
+	for (int i = 0; i < 10000; i++) {
+		TryMove(rand() % 4, rand() % 4);
+	}
 }
 
 void Puzzle::TryMove(int x, int y)
