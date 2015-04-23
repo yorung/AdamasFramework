@@ -78,7 +78,6 @@
     <ClInclude Include="..\cpp\mesh_man.h" />
     <ClInclude Include="..\cpp\mesh_renderer.h" />
     <ClInclude Include="..\cpp\mesh_x.h" />
-    <ClInclude Include="..\cpp\puzzle.h" />
     <ClInclude Include="..\cpp\shader_man.h" />
     <ClInclude Include="..\cpp\sprite_renderer.h" />
     <ClInclude Include="..\cpp\stdafx.h" />

@@ -186,9 +186,6 @@
     <ClInclude Include="..\cpp\sprite_renderer.h">
       <Filter>PlatformIndipendent</Filter>
     </ClInclude>
-    <ClInclude Include="..\cpp\puzzle.h">
-      <Filter>PlatformIndipendent</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Windows">

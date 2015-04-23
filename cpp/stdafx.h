@@ -54,5 +54,4 @@ static const int BONE_MAX = 50;
 #include "sprite_renderer.h"
 #include "lua_man.h"
 #include "lua_bind.h"
-#include "puzzle.h"
 #include "app.h"

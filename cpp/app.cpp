@@ -54,7 +54,7 @@ void App::Draw()
 	}
 */
 	meshRenderer.Flush();
-	puzzle.Draw();
+	luaMan.DrawSprites();
 	fontMan.Render();
 }
 
@@ -109,7 +109,6 @@ void App::Destroy()
 void App::Update()
 {
 	luaMan.Update();
-	puzzle.Update();
 	waterSurface.Update();
 	fps.Update();
 	fontMan.DrawString(Vec2(20, 40), 20, SPrintf("FPS: %f", fps.Get()));

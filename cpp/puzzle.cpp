@@ -1,17 +1,37 @@
 #include "stdafx.h"
 
-Puzzle puzzle;
+class Puzzle
+{
+	int panels[16];
+	SpriteCommands cmds;
+	void TryMove(int x, int y);
+public:
+	Puzzle();
+	void Update();
+	void Draw();
+};
+
+static Puzzle puzzle;
 
 Puzzle::Puzzle()
 {
-	for (int i = 0; i < dimof(puzzle); i++) {
-		puzzle[i] = i;
+	for (int i = 0; i < dimof(panels); i++) {
+		panels[i] = i;
 	}
-	puzzle[0] = -1;
+	panels[0] = -1;
 	srand((unsigned int)time(0));
 	for (int i = 0; i < 10000; i++) {
 		TryMove(rand() % 4, rand() % 4);
 	}
+
+	GetLuaBindFuncContainer().push_back([](lua_State* L) {
+		static luaL_Reg inNamespaceFuncs[] = {
+			{ "Update", [](lua_State* L) { puzzle.Update(); return 0; } },
+			{ "Draw", [](lua_State* L) { puzzle.Draw(); return 0; } },
+			{ nullptr, nullptr },
+		};
+		aflBindNamespace(L, "puzzle", inNamespaceFuncs);
+	});
 }
 
 void Puzzle::TryMove(int x, int y)
@@ -20,8 +40,8 @@ void Puzzle::TryMove(int x, int y)
 		if (xx < 0 || xx >= 4 || yy < 0 || yy >= 4) {
 			return;
 		}
-		if (puzzle[xx + yy * 4] < 0) {
-			std::swap(puzzle[x + y * 4], puzzle[xx + yy * 4]);
+		if (panels[xx + yy * 4] < 0) {
+			std::swap(panels[x + y * 4], panels[xx + yy * 4]);
 		}
 	};
 	TryOne(x, y - 1);
@@ -51,7 +71,7 @@ void Puzzle::Update()
 	m.Mul(scale(mini));
 	for (int x = 0; x < 4; x++) {
 		for (int y = 0; y < 4; y++) {
-			int spr = puzzle[x + y * 4];
+			int spr = panels[x + y * 4];
 			if (spr < 0) {
 				continue;
 			}
