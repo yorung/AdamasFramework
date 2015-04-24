@@ -42,3 +42,13 @@ void Toast(const char *text)
 //	aflog("jclass=%d method=%d", helper, method);
 	jniEnv->CallStaticVoidMethod(helper, method, jniEnv->NewStringUTF(text));
 }
+
+void PlayBgm(const char *fileName)
+{
+	jclass helper = jniEnv->FindClass(boundJavaClass);
+	jmethodID method = jniEnv->GetStaticMethodID(helper, "playBgm", "(Ljava/lang/String;)V");
+	if (method == 0) {
+		return;
+	}
+	jniEnv->CallStaticVoidMethod(helper, method, jniEnv->NewStringUTF(fileName));
+}

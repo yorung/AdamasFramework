@@ -131,4 +131,8 @@ public class Helper {
         img.recycle();
         return tex[0];
     }
+
+    public static void playBgm(String fileName) {
+        Bgm.playBgm(context, fileName);
+    }
 }

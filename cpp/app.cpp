@@ -74,6 +74,7 @@ void App::Init()
 
 
 	LoadMesh("jiji.x");
+	PlayBgm("sound/background.mp3");
 }
 
 void App::LoadMesh(const char* fileName)

@@ -6,6 +6,7 @@ double GetTime();
 float Random();
 void GoMyDir();
 void Toast(const char *text);
+void PlayBgm(const char *fileName);
 
 template <class T> inline void SAFE_DELETE(T& p)
 {

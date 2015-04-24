@@ -88,3 +88,11 @@ double GetTime()
 	QueryPerformanceFrequency(&f);
 	return (double)t.QuadPart / f.QuadPart;
 }
+
+#pragma comment(lib, "winmm.lib")
+void PlayBgm(const char* fileName)
+{
+//	PlaySoundA(fileName, NULL, SND_ASYNC | SND_LOOP);
+	mciSendStringA(SPrintf("open \"%s\" type mpegvideo", fileName), NULL, 0, 0);
+	mciSendStringA(SPrintf("play \"%s\" repeat", fileName), NULL, 0, 0);
+}

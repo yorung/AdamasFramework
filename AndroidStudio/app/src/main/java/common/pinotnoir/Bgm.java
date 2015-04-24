@@ -8,13 +8,15 @@ import android.util.Log;
 import java.io.IOException;
 
 public class Bgm {
-
+    static String fileName = null;
     static private MediaPlayer mp = new MediaPlayer();
-
-    static public void onResume(Context context) {
+    static private void play(Context context) {
+        if (fileName == null) {
+            return;
+        }
         try {
             mp.reset();
-            AssetFileDescriptor f = context.getAssets().openFd("sound/background.mp3");
+            AssetFileDescriptor f = context.getAssets().openFd(fileName);
             mp.setLooping(true);
             mp.setDataSource(f.getFileDescriptor(), f.getStartOffset(), f.getLength());
             mp.prepare();
@@ -27,7 +29,13 @@ public class Bgm {
             Log.v("sound IOException", e.getMessage());
         }
     }
-
+    static public void playBgm(Context context, String fileName_) {
+        fileName = fileName_;
+        play(context);
+    }
+    static public void onResume(Context context) {
+        play(context);
+    }
     static public void onPause() {
         mp.reset();
     }
