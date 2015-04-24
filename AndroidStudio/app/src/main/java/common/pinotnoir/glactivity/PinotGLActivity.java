@@ -19,13 +19,18 @@ public class PinotGLActivity extends Activity {
 
     private void playSound() {
         try {
+            mp = new MediaPlayer();
             AssetFileDescriptor f = getApplicationContext().getAssets().openFd("sound/background.mp3");
             mp.setLooping(true);
             mp.setDataSource(f.getFileDescriptor(), f.getStartOffset(), f.getLength());
             mp.prepare();
             mp.start();
-        } catch(Exception e) {
-            Log.v("sound", e.getMessage());
+        } catch(IllegalStateException e) {
+            Log.v("sound IllegalStateException", e.getMessage());
+        } catch(IllegalArgumentException e) {
+            Log.v("sound IllegalArgumentException", e.getMessage());
+        } catch(IOException e) {
+            Log.v("sound IOException", e.getMessage());
         }
     }
 
@@ -53,10 +58,9 @@ public class PinotGLActivity extends Activity {
         try {
             if (mp.isPlaying()) {
                 mp.stop();
-                mp.release();
             }
         } catch(Exception e) {}
-        mp = null;
+        mp.release();
         mp = new MediaPlayer();
     }
 
