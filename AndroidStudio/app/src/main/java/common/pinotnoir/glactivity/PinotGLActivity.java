@@ -11,28 +11,11 @@ import android.widget.Toast;
 
 import java.io.IOException;
 
+import common.pinotnoir.Bgm;
 import common.pinotnoir.Helper;
 
 public class PinotGLActivity extends Activity {
     private GLSurfaceView view;
-    private MediaPlayer mp = new MediaPlayer();
-
-    private void playSound() {
-        try {
-            mp = new MediaPlayer();
-            AssetFileDescriptor f = getApplicationContext().getAssets().openFd("sound/background.mp3");
-            mp.setLooping(true);
-            mp.setDataSource(f.getFileDescriptor(), f.getStartOffset(), f.getLength());
-            mp.prepare();
-            mp.start();
-        } catch(IllegalStateException e) {
-            Log.v("sound IllegalStateException", e.getMessage());
-        } catch(IllegalArgumentException e) {
-            Log.v("sound IllegalArgumentException", e.getMessage());
-        } catch(IOException e) {
-            Log.v("sound IOException", e.getMessage());
-        }
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -48,20 +31,14 @@ public class PinotGLActivity extends Activity {
     public void onResume() {
         super.onResume();
         view.onResume();
-        playSound();
+        Bgm.onResume(getApplicationContext());
     }
 
     @Override
     public void onPause() {
         super.onPause();
         view.onPause();
-        try {
-            if (mp.isPlaying()) {
-                mp.stop();
-            }
-        } catch(Exception e) {}
-        mp.release();
-        mp = new MediaPlayer();
+        Bgm.onPause();
     }
 
     @Override
