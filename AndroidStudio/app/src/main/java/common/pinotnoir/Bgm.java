@@ -13,7 +13,7 @@ public class Bgm {
 
     static public void onResume(Context context) {
         try {
-            mp = new MediaPlayer();
+            mp.reset();
             AssetFileDescriptor f = context.getAssets().openFd("sound/background.mp3");
             mp.setLooping(true);
             mp.setDataSource(f.getFileDescriptor(), f.getStartOffset(), f.getLength());
@@ -29,12 +29,6 @@ public class Bgm {
     }
 
     static public void onPause() {
-        try {
-            if (mp.isPlaying()) {
-                mp.stop();
-            }
-        } catch(Exception e) {}
-        mp.release();
-        mp = new MediaPlayer();
+        mp.reset();
     }
 }
