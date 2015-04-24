@@ -1,16 +1,33 @@
 package common.pinotnoir.glactivity;
 
 import android.app.Activity;
+import android.content.res.AssetFileDescriptor;
+import android.media.MediaPlayer;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.Toast;
 
+import java.io.IOException;
+
 import common.pinotnoir.Helper;
 
 public class PinotGLActivity extends Activity {
     private GLSurfaceView view;
+    private MediaPlayer mp = new MediaPlayer();
+
+    private void playSound() {
+        try {
+            AssetFileDescriptor f = getApplicationContext().getAssets().openFd("sound/background.mp3");
+            mp.setLooping(true);
+            mp.setDataSource(f.getFileDescriptor(), f.getStartOffset(), f.getLength());
+            mp.prepare();
+            mp.start();
+        } catch(Exception e) {
+            Log.v("sound", e.getMessage());
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -26,12 +43,21 @@ public class PinotGLActivity extends Activity {
     public void onResume() {
         super.onResume();
         view.onResume();
+        playSound();
     }
 
     @Override
     public void onPause() {
         super.onPause();
         view.onPause();
+        try {
+            if (mp.isPlaying()) {
+                mp.stop();
+                mp.release();
+            }
+        } catch(Exception e) {}
+        mp = null;
+        mp = new MediaPlayer();
     }
 
     @Override
