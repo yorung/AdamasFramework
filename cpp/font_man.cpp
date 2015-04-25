@@ -188,6 +188,7 @@ void FontMan::MakeFontBitmap(const char* fontName, const CharSignature& sig, DIB
 	HFONT oldFont = (HFONT)SelectObject(hdc, font);
 	const MAT2 mat = { {0,1}, {0,0}, {0,0}, {0,1} };
 	GLYPHMETRICS met;
+	memset(&met, 0, sizeof(met));
 	DWORD sizeReq = GetGlyphOutlineW(hdc, (UINT)sig.code, GGO_GRAY8_BITMAP, &met, 0, nullptr, &mat);
 	if (sizeReq) {
 		DIB dib3;
@@ -198,11 +199,13 @@ void FontMan::MakeFontBitmap(const char* fontName, const CharSignature& sig, DIB
 			aflog("FontMan::Build() buf size mismatch! code=%d req=%d dib=%d\n", sig.code, sizeReq, sizeBuf);
 			afVerify(false);
 		}
+		memset(&met, 0, sizeof(met));
 		GetGlyphOutlineW(hdc, (UINT)sig.code, GGO_GRAY8_BITMAP, &met, sizeReq, dib3.ReferPixels(), &mat);
 	//	SetTextColor(hdc, RGB(255, 255, 255));
 	//	SetBkColor(hdc, RGB(0, 0, 0));
 	//	TextOutW(hdc, 0, 0, buf, wcslen(buf));
 		dib3.Blt(dib.getDC(), 0, 0, dib3.getW(), dib3.getH());
+	//	dib.Save(SPrintf("../ScreenShot/%04x.bmp", sig.code));
 		dib.DibToDXFont();
 	}
 	SelectObject(hdc, (HGDIOBJ)oldFont);
@@ -244,7 +247,7 @@ bool FontMan::Build(const CharSignature& signature)
 	}
 
 	char codestr[128];
-	sprintf_s(codestr, "%04x %c", signature.code, signature.code < 0x80 ? signature.code : 0x20);
+	snprintf(codestr, dimof(codestr), "%04x %c", signature.code, signature.code < 0x80 ? signature.code : 0x20);
 	aflog("FontMan::Build() curX=%d curY=%d dib.getW()=%d dib.getH()=%d code=%s\n", curX, curY, dib.getW(), dib.getH(), codestr);
 
 	curX += (int)ceil(cache.srcWidth.x);
@@ -311,10 +314,6 @@ void FontMan::Render()
 	afDrawIndexedTriangleList(ibo, numSprites * 6);
 	afDepthStencilMode(true);
 	afBlendMode(BM_NONE);
-
-#ifdef GL_TRUE
-	glBindVertexArray(0);
-#endif
 	numSprites = 0;
 }
 
