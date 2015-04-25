@@ -117,6 +117,10 @@ FontMan::FontMan()
 	texture = TexMan::INVALID_TMID;
 	shader = ShaderMan::INVALID_SMID;
 	dirty = false;
+	ibo = 0;
+	vbo = 0;
+	vao = 0;
+	sampler = 0;
 }
 
 FontMan::~FontMan()
@@ -238,7 +242,10 @@ bool FontMan::Build(const CharSignature& signature)
 		dib.Blt(texSrc, curX, curY);
 		dirty = true;
 	}
-	aflog("FontMan::Build() curX=%d curY=%d dib.getW()=%d dib.getH()=%d\n", curX, curY, dib.getW(), dib.getH());
+
+	char codestr[128];
+	sprintf_s(codestr, "%04x %c", signature.code, signature.code < 0x80 ? signature.code : 0x20);
+	aflog("FontMan::Build() curX=%d curY=%d dib.getW()=%d dib.getH()=%d code=%s\n", curX, curY, dib.getW(), dib.getH(), codestr);
 
 	curX += (int)ceil(cache.srcWidth.x);
 	caches[signature] = cache;
@@ -262,6 +269,7 @@ void FontMan::FlushToTexture()
 	if (!dirty) {
 		return;
 	}
+	aflog("FontMan::FlushToTexture flushed");
 	dirty = false;
 	texMan.Write(texture, texSrc.ReferPixels());
 }
