@@ -74,13 +74,13 @@ bool DIB::Create(int w, int h, int bits, int level)
 	struct BMI256 : BITMAPINFO {
 		RGBQUAD bmiAdditionalColors[255];
 	}bmi;
+	memset(&bmi, 0, sizeof(bmi));
 	BITMAPINFOHEADER *bh = &bmi.bmiHeader;
 	bh->biSize = sizeof(BITMAPINFOHEADER);
 	bh->biWidth = w;
 	bh->biHeight = -h;	// top down
 	bh->biPlanes = 1;
 	bh->biBitCount = bits;
-	bh->biCompression = BI_RGB;
 
 	if (bits == 8) {
 		for (int i = 0; i < 256; i++) {
