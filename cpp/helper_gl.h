@@ -57,22 +57,12 @@ struct TBufName {
 	TBufName operator=(GLuint r) { x = r; return *this; }
 	operator GLuint() const { return x; }
 };
-typedef TBufName<GL_UNIFORM_BUFFER> UBOID;
 typedef TBufName<GL_ELEMENT_ARRAY_BUFFER> IBOID;
 typedef TBufName<GL_ARRAY_BUFFER> VBOID;
-typedef TBufName<GL_SHADER_STORAGE_BUFFER> SSBOID;
-typedef GLuint VAOID;
 typedef GLuint SAMPLERID;
 
 void afSetVertexAttributes(GLuint program, const InputElement elements[], int numElements, int numBuffers, VBOID const *vertexBufferIds, const GLsizei* strides);
-VAOID afCreateVAO(GLuint program, const InputElement elements[], int numElements, int numBuffers, VBOID const *vertexBufferIds, const GLsizei* strides, IBOID ibo);
 
-#ifdef USE_FAKE_SAMPLER
-#define glGenSamplers(a,b)
-#define glSamplerParameteri(a,b,c)
-#define glBindSampler(a,b)
-#define glDeleteSamplers(a,b)
-#endif
 
 template <class BufName>
 void afWriteBuffer(BufName bufName, const void* buf, int size)
@@ -90,25 +80,11 @@ inline void afSafeDeleteBuffer(BufName& b)
 		b.x = 0;
 	}
 }
-inline void afSafeDeleteSampler(GLuint& s)
-{
-	if (s != 0) {
-		glDeleteSamplers(1, &s);
-		s = 0;
-	}
-}
 inline void afSafeDeleteTexture(GLuint& t)
 {
 	if (t != 0) {
 		glDeleteTextures(1, &t);
 		t = 0;
-	}
-}
-inline void afSafeDeleteVAO(GLuint& vao)
-{
-	if (vao != 0) {
-		glDeleteVertexArrays(1, &vao);
-		vao = 0;
 	}
 }
 
@@ -124,19 +100,19 @@ IBOID afCreateIndexBuffer(const AFIndex* indi, int numIndi);
 IBOID afCreateQuadListIndexBuffer(int numQuads);
 VBOID afCreateVertexBuffer(int size, const void* buf);
 VBOID afCreateDynamicVertexBuffer(int size);
-SSBOID afCreateSSBO(int size);
-UBOID afCreateUBO(int size);
+
 SAMPLERID afCreateSampler(bool mipmap = false);
-#if 0 // without "binding" Layout Qualifier
+
+ // without "binding" Layout Qualifier
 void afLayoutSamplerBindingManually(GLuint program, const GLchar* name, GLuint samplerBinding);
+#if 0
 void afLayoutSSBOBindingManually(GLuint program, const GLchar* name, GLuint storageBlockBinding);
 void afLayoutUBOBindingManually(GLuint program, const GLchar* name, GLuint uniformBlockBinding);
 #endif
-void afBindBufferToBindingPoint(SSBOID ssbo, GLuint storageBlockBinding);
-void afBindBufferToBindingPoint(UBOID ubo, GLuint uniformBlockBinding);
 void afBindTextureToBindingPoint(GLuint tex, GLuint textureBindingPoint);
 
-void afDrawIndexedTriangleList(IBOID ibo, int count, int start = 0);
+void afDrawIndexedTriangleList(int numIndices, int start = 0);
+void afDrawIndexedTriangleStrip(int numIndices, int start = 0);
 void afEnableBackFaceCulling(bool cullBack);
 
 enum BlendMode {
@@ -149,3 +125,28 @@ void afDepthStencilMode(bool depth);
 #define afBindSamplerToBindingPoint(samp,pnt) glBindSampler(pnt, samp)
 void afDumpCaps();
 void afDumpIsEnabled();
+
+#ifndef GL_ES_VERSION_2_0
+typedef TBufName<GL_SHADER_STORAGE_BUFFER> SSBOID;
+typedef TBufName<GL_UNIFORM_BUFFER> UBOID;
+typedef GLuint VAOID;
+SSBOID afCreateSSBO(int size);
+UBOID afCreateUBO(int size);
+void afBindBufferToBindingPoint(SSBOID ssbo, GLuint storageBlockBinding);
+void afBindBufferToBindingPoint(UBOID ubo, GLuint uniformBlockBinding);
+VAOID afCreateVAO(GLuint program, const InputElement elements[], int numElements, int numBuffers, VBOID const *vertexBufferIds, const GLsizei* strides, IBOID ibo);
+inline void afSafeDeleteVAO(GLuint& vao)
+{
+	if (vao != 0) {
+		glDeleteVertexArrays(1, &vao);
+		vao = 0;
+	}
+}
+inline void afSafeDeleteSampler(GLuint& s)
+{
+	if (s != 0) {
+		glDeleteSamplers(1, &s);
+		s = 0;
+	}
+}
+#endif

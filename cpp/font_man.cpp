@@ -311,7 +311,7 @@ void FontMan::Render()
 	afBindTextureToBindingPoint(texture, 0);
 	afBlendMode(BM_ALPHA);
 	afDepthStencilMode(false);
-	afDrawIndexedTriangleList(ibo, numSprites * 6);
+	afDrawIndexedTriangleList(numSprites * 6);
 	afDepthStencilMode(true);
 	afBlendMode(BM_NONE);
 	numSprites = 0;

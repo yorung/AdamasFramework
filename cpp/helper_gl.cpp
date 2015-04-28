@@ -30,6 +30,7 @@ VBOID afCreateDynamicVertexBuffer(int size)
 	return vbo;
 }
 
+#ifndef GL_ES_VERSION_2_0
 SSBOID afCreateSSBO(int size)
 {
 	SSBOID name;
@@ -49,14 +50,15 @@ UBOID afCreateUBO(int size)
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	return name;
 }
+#endif
 
-#if 0 // without "binding" Layout Qualifier
+// without "binding" Layout Qualifier
 void afLayoutSamplerBindingManually(GLuint program, const GLchar* name, GLuint samplerBinding)
 {
 	glUseProgram(program);
 	glUniform1i(glGetUniformLocation(program, name), samplerBinding);
 }
-
+#if 0
 void afLayoutSSBOBindingManually(GLuint program, const GLchar* name, GLuint storageBlockBinding)
 {
 	glShaderStorageBlockBinding(program, glGetProgramResourceIndex(program, GL_SHADER_STORAGE_BLOCK, name), storageBlockBinding);
@@ -67,6 +69,8 @@ void afLayoutUBOBindingManually(GLuint program, const GLchar* name, GLuint unifo
 	glUniformBlockBinding(program, glGetUniformBlockIndex(program, name), uniformBlockBinding);
 }
 #endif
+
+#ifndef GL_ES_VERSION_2_0
 void afBindBufferToBindingPoint(SSBOID ssbo, GLuint storageBlockBinding)
 {
 	GLint prev;
@@ -82,6 +86,7 @@ void afBindBufferToBindingPoint(UBOID ubo, GLuint uniformBlockBinding)
 	glBindBufferBase(GL_UNIFORM_BUFFER, uniformBlockBinding, ubo);
 	glBindBuffer(GL_UNIFORM_BUFFER, prev);
 }
+#endif
 
 void afBindTextureToBindingPoint(GLuint tex, GLuint textureBindingPoint)
 {
@@ -128,11 +133,14 @@ GLuint afCreateWhiteTexture()
 	return texture;
 }
 
-void afDrawIndexedTriangleList(IBOID ibo, int count, int start)
+void afDrawIndexedTriangleList(int numIndices, int start)
 {
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-	glDrawElements(GL_TRIANGLES, count, AFIndexTypeToDevice, (void*)(start));
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glDrawElements(GL_TRIANGLES, numIndices, AFIndexTypeToDevice, (void*)(start));
+}
+
+void afDrawIndexedTriangleStrip(int numIndices, int start)
+{
+	glDrawElements(GL_TRIANGLE_STRIP, numIndices, AFIndexTypeToDevice, (void*)(start));
 }
 
 void afSetVertexAttributes(GLuint program, const InputElement elements[], int numElements, int numBuffers, VBOID const *vertexBufferIds, const GLsizei* strides)
@@ -180,6 +188,7 @@ void afSetVertexAttributes(GLuint program, const InputElement elements[], int nu
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
+#ifndef GL_ES_VERSION_2_0
 GLuint afCreateVAO(GLuint program, const InputElement elements[], int numElements, int numBuffers, VBOID const *vertexBufferIds, const GLsizei* strides, IBOID ibo)
 {
 	GLuint vao;
@@ -190,6 +199,7 @@ GLuint afCreateVAO(GLuint program, const InputElement elements[], int numElement
 	glBindVertexArray(0);
 	return vao;
 }
+#endif
 
 IBOID afCreateQuadListIndexBuffer(int numQuads)
 {
@@ -248,7 +258,7 @@ void afEnableBackFaceCulling(bool cullBack)
 
 SAMPLERID afCreateSampler(bool mipmap)
 {
-	SAMPLERID id;
+	SAMPLERID id = 0;
 	glGenSamplers(1, &id);
 	glSamplerParameteri(id, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glSamplerParameteri(id, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -263,6 +273,7 @@ void afDumpCaps()
 	printf("GL_RENDERER = %s\n", (char*)glGetString(GL_RENDERER));
 	printf("GL_VENDOR = %s\n", (char*)glGetString(GL_VENDOR));
 	printf("GL_SHADING_LANGUAGE_VERSION = %s\n", (char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
+#ifndef GL_ES_VERSION_2_0
 	puts("------ GL_EXTENSIONS");
 
 	GLint num;
@@ -284,6 +295,7 @@ void afDumpCaps()
 	_(GL_MAX_SHADER_STORAGE_BLOCK_SIZE);
 	_(GL_MAX_VERTEX_SHADER_STORAGE_BLOCKS);
 #undef _
+#endif
 }
 
 void afDumpIsEnabled()
