@@ -6,29 +6,31 @@ WaterSurface waterSurface;
 
 class AFRenderTarget
 {
-	GLuint texRenderTarget;
+	GLuint texColor, texDepth;
 	GLuint framebufferObject;
 	GLuint renderbufferObject;
 public:
 	AFRenderTarget();
-	void Init();
+	void Init(ivec2 size);
 	void Destroy();
 	void Apply();
-	GLuint GetTexture() { return texRenderTarget; }
+	GLuint GetTexture() { return texColor; }
 };
 
 static AFRenderTarget rt;
 
 AFRenderTarget::AFRenderTarget()
 {
-	texRenderTarget = 0;
+	texColor = 0;
+	texDepth = 0;
 	framebufferObject = 0;
 	renderbufferObject = 0;
 }
 
 void AFRenderTarget::Destroy()
 {
-	afSafeDeleteTexture(texRenderTarget);
+	afSafeDeleteTexture(texColor);
+	afSafeDeleteTexture(texDepth);
 	if (framebufferObject) {
 		glDeleteFramebuffers(1, &framebufferObject);
 		framebufferObject = 0;
@@ -39,20 +41,22 @@ void AFRenderTarget::Destroy()
 	}
 }
 
-void AFRenderTarget::Init()
+void AFRenderTarget::Init(ivec2 size)
 {
-	ivec2 scrSize = systemMetrics.GetScreenSize();
-	texRenderTarget = afCreateDynamicTexture(scrSize.x, scrSize.y, AFDT_R5G6B5_UINT);
+	texColor = afCreateDynamicTexture(size.x, size.y, AFDT_R5G6B5_UINT);
+	texDepth = afCreateDynamicTexture(size.x, size.y, AFDT_DEPTH_STENCIL);
 
-	glGenRenderbuffers(1, &renderbufferObject);
-	glBindRenderbuffer(GL_RENDERBUFFER, renderbufferObject);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, scrSize.x, scrSize.y);
-	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+//	glGenRenderbuffers(1, &renderbufferObject);
+//	glBindRenderbuffer(GL_RENDERBUFFER, renderbufferObject);
+//	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, size.x, size.y);
+//	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
 	glGenFramebuffers(1, &framebufferObject);
 	V(glBindFramebuffer(GL_FRAMEBUFFER, framebufferObject));
-	V(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texRenderTarget, 0));
-	V(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderbufferObject));
+	V(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texColor, 0));
+//	V(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, texDepth, 0));
+	V(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, texDepth, 0));
+//	V(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderbufferObject));
 	V(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 }
 
@@ -212,7 +216,7 @@ static const InputElement elementsFullScr[] = {
 void WaterSurface::Init()
 {
 	Destroy();
-	rt.Init();
+	rt.Init(systemMetrics.GetScreenSize());
 
 	lastTime = GetTime();
 

@@ -92,6 +92,8 @@ enum AFDTFormat
 {
 	AFDT_R8G8B8A8_UINT,
 	AFDT_R5G6B5_UINT,
+	AFDT_DEPTH,
+	AFDT_DEPTH_STENCIL,
 };
 GLuint afCreateDynamicTexture(int w, int h, AFDTFormat format);
 GLuint afCreateWhiteTexture();

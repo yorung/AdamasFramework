@@ -105,12 +105,16 @@ GLuint afCreateDynamicTexture(int w, int h, AFDTFormat format)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	switch (format) {
 	case AFDT_R8G8B8A8_UINT:
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 		break;
 	case AFDT_R5G6B5_UINT:
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 2);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, nullptr);
+		break;
+	case AFDT_DEPTH:
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, w, h, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, nullptr);
+		break;
+	case AFDT_DEPTH_STENCIL:
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, w, h, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, nullptr);
 		break;
 	}
 	glBindTexture(GL_TEXTURE_2D, 0);
