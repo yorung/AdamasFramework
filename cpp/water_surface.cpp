@@ -139,15 +139,6 @@ void WaterSurface::Destroy()
 	afSafeDeleteSampler(samplerRepeat);
 	afSafeDeleteSampler(samplerClamp);
 	afSafeDeleteSampler(samplerNoMipmap);
-	afSafeDeleteTexture(texRenderTarget);
-	if (framebufferObject) {
-		glDeleteFramebuffers(1, &framebufferObject);
-		framebufferObject = 0;
-	}
-	if (renderbufferObject) {
-		glDeleteRenderbuffers(1, &renderbufferObject);
-		renderbufferObject = 0;
-	}
 	afSafeDeleteVAO(vao);
 	afSafeDeleteVAO(vaoFullScr);
 }
@@ -259,19 +250,6 @@ void WaterSurface::Init()
 	glSamplerParameteri(samplerNoMipmap, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glSamplerParameteri(samplerNoMipmap, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-	ivec2 scrSize = systemMetrics.GetScreenSize();
-	texRenderTarget = afCreateDynamicTexture(scrSize.x, scrSize.y, AFDT_R5G6B5_UINT);
-
-	glGenRenderbuffers(1, &renderbufferObject);
-	glBindRenderbuffer(GL_RENDERBUFFER, renderbufferObject);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, scrSize.x, scrSize.y);
-	glBindRenderbuffer(GL_RENDERBUFFER, 0);
-
-	glGenFramebuffers(1, &framebufferObject);
-	V(glBindFramebuffer(GL_FRAMEBUFFER, framebufferObject));
-	V(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texRenderTarget, 0));
-	V(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderbufferObject));
-	V(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 
 	VBOID vertexBufferIds[] = { vbo };
 	GLsizei strides[] = { sizeof(WaterVert) };
@@ -322,8 +300,30 @@ void WaterSurface::Update()
 	}
 }
 
+class AFRenderTarget
+{
+};
+
+
 void WaterSurface::Draw()
 {
+	{
+		ivec2 scrSize = systemMetrics.GetScreenSize();
+		texRenderTarget = afCreateDynamicTexture(scrSize.x, scrSize.y, AFDT_R5G6B5_UINT);
+
+		glGenRenderbuffers(1, &renderbufferObject);
+		glBindRenderbuffer(GL_RENDERBUFFER, renderbufferObject);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, scrSize.x, scrSize.y);
+		glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+		glGenFramebuffers(1, &framebufferObject);
+		V(glBindFramebuffer(GL_FRAMEBUFFER, framebufferObject));
+		V(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texRenderTarget, 0));
+		V(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderbufferObject));
+		V(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+	}
+
+
 	afDepthStencilMode(false);
 	afBlendMode(BM_NONE);
 
@@ -356,14 +356,12 @@ void WaterSurface::Draw()
 	V(glBindFramebuffer(GL_FRAMEBUFFER, framebufferObject));
 	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	if (status == GL_FRAMEBUFFER_COMPLETE) {
-		glClearColor(0, 0, 1, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glBindVertexArray(vao);
 		glDrawElements(GL_TRIANGLE_STRIP, nIndi, GL_UNSIGNED_SHORT, 0);
 		glBindVertexArray(0);
 
 		V(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		shaderMan.Apply(shaderIdFullScr);
@@ -376,5 +374,16 @@ void WaterSurface::Draw()
 		glBindVertexArray(vaoFullScr);
 		V(glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, 0));
 		glBindVertexArray(0);
+	}
+	{
+		afSafeDeleteTexture(texRenderTarget);
+		if (framebufferObject) {
+			glDeleteFramebuffers(1, &framebufferObject);
+			framebufferObject = 0;
+		}
+		if (renderbufferObject) {
+			glDeleteRenderbuffers(1, &renderbufferObject);
+			renderbufferObject = 0;
+		}
 	}
 }

@@ -23,10 +23,16 @@ App::App()
 void App::Draw()
 {
 	afDepthStencilMode(true);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+//	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	waterSurface.Draw();
-
+/*
+	AFRenderTarget rt;
+	afSetRenderTarget(rt);
+	waterSurface.Draw();
+	afSetRenderTarget(nullptr);
+	afDrawFullScrenEffect("letterBox", rc);
+*/
 	afDepthStencilMode(true);
 	afBlendMode(BM_NONE);
 
