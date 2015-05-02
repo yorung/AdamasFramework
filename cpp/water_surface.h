@@ -34,9 +34,6 @@ class WaterSurface
 	GLuint samplerClamp;
 	GLuint samplerRepeat;
 	GLuint samplerNoMipmap;
-	GLuint texRenderTarget;
-	GLuint framebufferObject;
-	GLuint renderbufferObject;
 	int storedW, storedH;
 public:
 	WaterSurface();

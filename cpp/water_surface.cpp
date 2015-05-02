@@ -4,6 +4,63 @@
 
 WaterSurface waterSurface;
 
+class AFRenderTarget
+{
+	GLuint texRenderTarget;
+	GLuint framebufferObject;
+	GLuint renderbufferObject;
+public:
+	AFRenderTarget();
+	void Init();
+	void Destroy();
+	void Apply();
+	GLuint GetTexture() { return texRenderTarget; }
+};
+
+static AFRenderTarget rt;
+
+AFRenderTarget::AFRenderTarget()
+{
+	texRenderTarget = 0;
+	framebufferObject = 0;
+	renderbufferObject = 0;
+}
+
+void AFRenderTarget::Destroy()
+{
+	afSafeDeleteTexture(texRenderTarget);
+	if (framebufferObject) {
+		glDeleteFramebuffers(1, &framebufferObject);
+		framebufferObject = 0;
+	}
+	if (renderbufferObject) {
+		glDeleteRenderbuffers(1, &renderbufferObject);
+		renderbufferObject = 0;
+	}
+}
+
+void AFRenderTarget::Init()
+{
+	ivec2 scrSize = systemMetrics.GetScreenSize();
+	texRenderTarget = afCreateDynamicTexture(scrSize.x, scrSize.y, AFDT_R5G6B5_UINT);
+
+	glGenRenderbuffers(1, &renderbufferObject);
+	glBindRenderbuffer(GL_RENDERBUFFER, renderbufferObject);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, scrSize.x, scrSize.y);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+	glGenFramebuffers(1, &framebufferObject);
+	V(glBindFramebuffer(GL_FRAMEBUFFER, framebufferObject));
+	V(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texRenderTarget, 0));
+	V(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderbufferObject));
+	V(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+}
+
+void AFRenderTarget::Apply()
+{
+	V(glBindFramebuffer(GL_FRAMEBUFFER, framebufferObject));
+}
+
 struct TexFiles
 {
 	const char *name;
@@ -120,9 +177,6 @@ WaterSurface::WaterSurface()
 	samplerRepeat = 0;
 	samplerNoMipmap = 0;
 	ripplesNext = 0;
-	texRenderTarget = 0;
-	framebufferObject = 0;
-	renderbufferObject = 0;
 	storedW = 0;
 	storedH = 0;
 }
@@ -143,6 +197,7 @@ void WaterSurface::Destroy()
 	afSafeDeleteSampler(samplerNoMipmap);
 	afSafeDeleteVAO(vao);
 	afSafeDeleteVAO(vaoFullScr);
+	rt.Destroy();
 }
 
 static const InputElement elements[] = {
@@ -157,6 +212,7 @@ static const InputElement elementsFullScr[] = {
 void WaterSurface::Init()
 {
 	Destroy();
+	rt.Init();
 
 	lastTime = GetTime();
 
@@ -280,30 +336,8 @@ void WaterSurface::Update()
 	}
 }
 
-class AFRenderTarget
-{
-};
-
-
 void WaterSurface::Draw()
 {
-	{
-		ivec2 scrSize = systemMetrics.GetScreenSize();
-		texRenderTarget = afCreateDynamicTexture(scrSize.x, scrSize.y, AFDT_R5G6B5_UINT);
-
-		glGenRenderbuffers(1, &renderbufferObject);
-		glBindRenderbuffer(GL_RENDERBUFFER, renderbufferObject);
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, scrSize.x, scrSize.y);
-		glBindRenderbuffer(GL_RENDERBUFFER, 0);
-
-		glGenFramebuffers(1, &framebufferObject);
-		V(glBindFramebuffer(GL_FRAMEBUFFER, framebufferObject));
-		V(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texRenderTarget, 0));
-		V(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderbufferObject));
-		V(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-	}
-
-
 	afDepthStencilMode(false);
 	afBlendMode(BM_NONE);
 
@@ -333,7 +367,7 @@ void WaterSurface::Draw()
 	glUniformMatrix4fv(glGetUniformLocation(shaderId, "matV"), 1, GL_FALSE, &matView.m[0][0]);
 	glUniformMatrix4fv(glGetUniformLocation(shaderId, "matP"), 1, GL_FALSE, &matProj.m[0][0]);
 
-	V(glBindFramebuffer(GL_FRAMEBUFFER, framebufferObject));
+	rt.Apply();
 	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	if (status == GL_FRAMEBUFFER_COMPLETE) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -348,22 +382,11 @@ void WaterSurface::Draw()
 		glUniform1i(glGetUniformLocation(shaderIdFullScr, "sampler"), 0);
 
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texRenderTarget);
+		glBindTexture(GL_TEXTURE_2D, rt.GetTexture());
 		glBindSampler(0, samplerNoMipmap);
 
 		glBindVertexArray(vaoFullScr);
 		V(glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, 0));
 		glBindVertexArray(0);
-	}
-	{
-		afSafeDeleteTexture(texRenderTarget);
-		if (framebufferObject) {
-			glDeleteFramebuffers(1, &framebufferObject);
-			framebufferObject = 0;
-		}
-		if (renderbufferObject) {
-			glDeleteRenderbuffers(1, &renderbufferObject);
-			renderbufferObject = 0;
-		}
 	}
 }
