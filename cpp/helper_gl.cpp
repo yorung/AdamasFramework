@@ -267,6 +267,26 @@ SAMPLERID afCreateSampler(bool mipmap)
 	return id;
 }
 
+void _afHandleGLError(const char* func, int line, const char* command)
+{
+	GLenum r = glGetError();
+	if (r != GL_NO_ERROR) {
+		const char *err = nullptr;
+		switch (r) {
+#define E(er) case er: err = #er; break
+		E(GL_INVALID_ENUM);
+		E(GL_INVALID_VALUE);
+		E(GL_INVALID_OPERATION);
+		E(GL_INVALID_FRAMEBUFFER_OPERATION);
+#undef E
+		default:
+			printf("%s(%d): err=%d %s\n", func, line, r, command);
+			return;
+		}
+		printf("%s(%d): %s %s\n", func, line, err, command);
+	}
+}
+
 void afDumpCaps()
 {
 	printf("GL_VERSION = %s\n", (char*)glGetString(GL_VERSION));

@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#define V afHandleGLError
+
 WaterSurface waterSurface;
 
 struct TexFiles
@@ -142,28 +144,6 @@ void WaterSurface::Destroy()
 	afSafeDeleteVAO(vao);
 	afSafeDeleteVAO(vaoFullScr);
 }
-
-static void HandleGLError(const char* func, int line, const char* command)
-{
-	GLenum r = glGetError();
-	if (r != GL_NO_ERROR) {
-		const char *err = nullptr;
-		switch (r) {
-#define E(er) case er: err = #er; break;
-		E(GL_INVALID_ENUM)
-		E(GL_INVALID_VALUE)
-		E(GL_INVALID_OPERATION)
-		E(GL_INVALID_FRAMEBUFFER_OPERATION)
-#undef E
-		default:
-			printf("%s(%d): err=%d %s\n", func, line, r, command);
-			return;
-		}
-		printf("%s(%d): %s %s\n", func, line, err, command);
-	}
-}
-
-#define V(command) do{ command; HandleGLError(__FUNCTION__, __LINE__, #command); } while(0)
 
 static const InputElement elements[] = {
 	{ 0, "vPosition", SF_R32G32B32_FLOAT, 0 },

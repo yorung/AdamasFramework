@@ -123,6 +123,9 @@ void afBlendMode(BlendMode mode);
 void afDepthStencilMode(bool depth);
 #define afBindVAO glBindVertexArray
 #define afBindSamplerToBindingPoint(samp,pnt) glBindSampler(pnt, samp)
+void _afHandleGLError(const char* func, int line, const char* command);
+#define afHandleGLError(command) do{ command; _afHandleGLError(__FUNCTION__, __LINE__, #command); } while(0)
+
 void afDumpCaps();
 void afDumpIsEnabled();
 
