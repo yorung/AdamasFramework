@@ -268,6 +268,10 @@ void WaterSurface::Init()
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
 	glGenFramebuffers(1, &framebufferObject);
+	V(glBindFramebuffer(GL_FRAMEBUFFER, framebufferObject));
+	V(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texRenderTarget, 0));
+	V(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderbufferObject));
+	V(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 
 	VBOID vertexBufferIds[] = { vbo };
 	GLsizei strides[] = { sizeof(WaterVert) };
@@ -350,9 +354,6 @@ void WaterSurface::Draw()
 	glUniformMatrix4fv(glGetUniformLocation(shaderId, "matP"), 1, GL_FALSE, &matProj.m[0][0]);
 
 	V(glBindFramebuffer(GL_FRAMEBUFFER, framebufferObject));
-	V(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texRenderTarget, 0));
-	V(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderbufferObject));
-	V(glBindRenderbuffer(GL_RENDERBUFFER, renderbufferObject));
 	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	if (status == GL_FRAMEBUFFER_COMPLETE) {
 		glClearColor(0, 0, 1, 1);
@@ -360,22 +361,16 @@ void WaterSurface::Draw()
 		glBindVertexArray(vao);
 		glDrawElements(GL_TRIANGLE_STRIP, nIndi, GL_UNSIGNED_SHORT, 0);
 		glBindVertexArray(0);
-		V(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0));
-		V(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, 0));
 
 		V(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-	//	V(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0));
-//		glDrawElements(GL_TRIANGLE_STRIP, nIndi, GL_UNSIGNED_SHORT, 0);
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		shaderMan.Apply(shaderIdFullScr);
 		glUniform1i(glGetUniformLocation(shaderIdFullScr, "sampler"), 0);
 
-
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texRenderTarget);
-//		glBindTexture(GL_TEXTURE_2D, texId[1]);
 		glBindSampler(0, samplerNoMipmap);
 
 		glBindVertexArray(vaoFullScr);
