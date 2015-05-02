@@ -52,6 +52,7 @@ static const int BONE_MAX = 50;
 #include "bvh.h"
 #include "mesh_man.h"
 #include "sprite_renderer.h"
+#include "stock_objects.h"
 #include "lua_man.h"
 #include "lua_bind.h"
 #include "app.h"

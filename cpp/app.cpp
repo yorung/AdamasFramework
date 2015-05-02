@@ -76,6 +76,7 @@ void App::Init()
 	waterSurface.Init();
 	fontMan.Init();
 	spriteRenderer.Init();
+	stockObjects.Init();
 	luaMan.Create();
 
 
@@ -103,6 +104,7 @@ void App::OnTap(float x, float y)
 void App::Destroy()
 {
 	luaMan.Destroy();
+	stockObjects.Destroy();
 	spriteRenderer.Destroy();
 	texMan.Destroy();
 	shaderMan.Destroy();

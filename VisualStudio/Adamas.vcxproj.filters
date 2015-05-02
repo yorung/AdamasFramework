@@ -94,6 +94,7 @@
     <ClCompile Include="..\cpp\puzzle.cpp">
       <Filter>PlatformIndipendent</Filter>
     </ClCompile>
+    <ClCompile Include="..\cpp\stock_objects.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="wgl_grabber_gen.h">
@@ -186,6 +187,7 @@
     <ClInclude Include="..\cpp\sprite_renderer.h">
       <Filter>PlatformIndipendent</Filter>
     </ClInclude>
+    <ClInclude Include="..\cpp\stock_objects.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Windows">
