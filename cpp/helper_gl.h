@@ -149,4 +149,7 @@ inline void afSafeDeleteSampler(GLuint& s)
 		s = 0;
 	}
 }
+ivec2 afGetTextureSize(GLuint tex);
+ivec2 afGetRenderbufferSize(GLuint renderbuffer);
+
 #endif

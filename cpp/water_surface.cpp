@@ -259,11 +259,12 @@ void WaterSurface::Init()
 	glSamplerParameteri(samplerNoMipmap, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glSamplerParameteri(samplerNoMipmap, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-	texRenderTarget = afCreateDynamicTexture(512, 512, AFDT_R5G6B5_UINT);
+	ivec2 scrSize = systemMetrics.GetScreenSize();
+	texRenderTarget = afCreateDynamicTexture(scrSize.x, scrSize.y, AFDT_R5G6B5_UINT);
 
 	glGenRenderbuffers(1, &renderbufferObject);
 	glBindRenderbuffer(GL_RENDERBUFFER, renderbufferObject);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, 512, 512);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, scrSize.x, scrSize.y);
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
 	glGenFramebuffers(1, &framebufferObject);
@@ -315,31 +316,6 @@ void WaterSurface::Update()
 			0, 0, 1, 0,
 			0, 0, 0, 1);
 	}
-
-#if 0	// if glGetTextureLevelParameteriv available
-	int storedW, storedH;
-	glBindTexture(GL_TEXTURE_2D, texRenderTarget);
-	glGetTextureLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &storedW);
-	glGetTextureLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &storedH);
-	if (w != storedW || h != storedH) {
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, nullptr);
-	}
-	glBindRenderbuffer(GL_RENDERBUFFER, renderbufferObject);
-	glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &storedW);
-	glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &storedH);
-	if (w != storedW || h != storedH) {
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, w, h);
-	}
-#else
-	if (scrSize.x != storedW || scrSize.y != storedH) {
-		storedW = scrSize.x;
-		storedH = scrSize.y;
-		glBindTexture(GL_TEXTURE_2D, texRenderTarget);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, storedW, storedH, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, nullptr);
-		glBindRenderbuffer(GL_RENDERBUFFER, renderbufferObject);
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, storedW, storedH);
-	}
-#endif
 }
 
 void WaterSurface::Draw()

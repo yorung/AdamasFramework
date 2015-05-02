@@ -306,3 +306,25 @@ void afDumpIsEnabled()
 	_(GL_STENCIL_TEST);
 #undef _
 }
+
+#ifndef GL_ES_VERSION_2_0
+ivec2 afGetTextureSize(GLuint tex)
+{
+	GLint w, h;
+	glBindTexture(GL_TEXTURE_2D, tex);
+	glGetTextureLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &w);
+	glGetTextureLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &h);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	return ivec2(w, h);
+}
+
+ivec2 afGetRenderbufferSize(GLuint renderbuffer)
+{
+	GLint w, h;
+	glBindRenderbuffer(GL_RENDERBUFFER, renderbuffer);
+	glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &w);
+	glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &h);
+	return ivec2(w, h);
+}
+
+#endif
