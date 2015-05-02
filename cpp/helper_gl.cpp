@@ -110,7 +110,7 @@ GLuint afCreateDynamicTexture(int w, int h, AFDTFormat format)
 		break;
 	case AFDT_R5G6B5_UINT:
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 2);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 512, 512, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, nullptr);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, nullptr);
 		break;
 	}
 	glBindTexture(GL_TEXTURE_2D, 0);
