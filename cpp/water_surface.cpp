@@ -18,6 +18,7 @@ public:
 };
 
 static AFRenderTarget rt;
+static AFRenderTarget heightMap;
 
 AFRenderTarget::AFRenderTarget()
 {
@@ -175,13 +176,16 @@ WaterSurface::WaterSurface()
 	ibo = 0;
 	vbo = 0;
 	vao = 0;
-	vaoFullScr = 0;
+	vaoEmpty = 0;
 	samplerClamp = 0;
 	samplerRepeat = 0;
 	samplerNoMipmap = 0;
 	ripplesNext = 0;
 	storedW = 0;
 	storedH = 0;
+	shaderId = 0;
+	shaderIdFullScr = 0;
+	heightMapGenShaderId = 0;
 }
 
 WaterSurface::~WaterSurface()
@@ -197,8 +201,9 @@ void WaterSurface::Destroy()
 	afSafeDeleteSampler(samplerClamp);
 	afSafeDeleteSampler(samplerNoMipmap);
 	afSafeDeleteVAO(vao);
-	afSafeDeleteVAO(vaoFullScr);
+	afSafeDeleteVAO(vaoEmpty);
 	rt.Destroy();
+	heightMap.Destroy();
 }
 
 static const InputElement elements[] = {
@@ -210,6 +215,12 @@ void WaterSurface::Init()
 {
 	Destroy();
 	rt.Init(systemMetrics.GetScreenSize());
+	heightMap.Init(systemMetrics.GetScreenSize());
+
+
+	heightMap.Apply();
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	V(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 
 	lastTime = GetTime();
 
@@ -241,12 +252,11 @@ void WaterSurface::Init()
 	vbo = afCreateDynamicVertexBuffer(vert.size() * sizeof(WaterVert));
 	ibo = afCreateIndexBuffer(&indi[0], indi.size());
 
-	shaderId = shaderMan.Create("water");
-
-
 //	const char* shaderName = "vivid";
 	const char* shaderName = "letterbox";
 	shaderIdFullScr = shaderMan.Create(shaderName);
+	shaderId = shaderMan.Create("water");
+	heightMapGenShaderId = shaderMan.Create("water_heightmap");
 
 	glActiveTexture(GL_TEXTURE0);
 	for (int i = 0; i < dimof(texFiles); i++) {
@@ -284,7 +294,7 @@ void WaterSurface::Init()
 
 	IBOID noIBO;
 	noIBO.x = 0;
-	vaoFullScr = afCreateVAO(shaderIdFullScr, nullptr, 0, 0, nullptr, nullptr, noIBO);
+	vaoEmpty = afCreateVAO(shaderIdFullScr, nullptr, 0, 0, nullptr, nullptr, noIBO);
 }
 
 void WaterSurface::UpdateRipple()
@@ -332,6 +342,17 @@ void WaterSurface::Draw()
 	afDepthStencilMode(false);
 	afBlendMode(BM_NONE);
 
+
+	heightMap.Apply();
+	shaderMan.Apply(heightMapGenShaderId);
+	struct HeightMapUniformBuffer {
+		float elapsedTime;
+		float padding[3];
+	};
+	HeightMapUniformBuffer hmub;
+	hmub.elapsedTime = (float)elapsedTime;
+	afDrawTriangleStrip(4);
+
 	V(glBindBuffer(GL_ARRAY_BUFFER, vbo));
 
 	UpdateRipple();
@@ -344,12 +365,15 @@ void WaterSurface::Draw()
 		glBindSampler(i, texFiles[i].clamp ? samplerClamp : samplerRepeat);
 	}
 
-	glUniform1i(glGetUniformLocation(shaderId, "sampler0"), 0);
-	glUniform1i(glGetUniformLocation(shaderId, "sampler1"), 1);
-	glUniform1i(glGetUniformLocation(shaderId, "sampler2"), 2);
-	glUniform1i(glGetUniformLocation(shaderId, "sampler3"), 3);
-	glUniform1i(glGetUniformLocation(shaderId, "sampler4"), 4);
-	glUniform1i(glGetUniformLocation(shaderId, "sampler5"), 5);
+	afLayoutSamplerBindingManually(shaderId, "sampler0", 0);
+	afLayoutSamplerBindingManually(shaderId, "sampler1", 1);
+	afLayoutSamplerBindingManually(shaderId, "sampler2", 2);
+	afLayoutSamplerBindingManually(shaderId, "sampler3", 3);
+	afLayoutSamplerBindingManually(shaderId, "sampler4", 4);
+	afLayoutSamplerBindingManually(shaderId, "sampler5", 5);
+	afLayoutSamplerBindingManually(shaderId, "waterHeightmap", 6);
+	afBindTextureToBindingPoint(heightMap.GetTexture(), 6);
+
 	double dummy;
 	glUniform1f(glGetUniformLocation(shaderId, "time"), (float)modf(elapsedTime * (1.0f / loopTime), &dummy) * loopTime);
 
@@ -376,7 +400,7 @@ void WaterSurface::Draw()
 		glBindTexture(GL_TEXTURE_2D, rt.GetTexture());
 		glBindSampler(0, samplerNoMipmap);
 
-		glBindVertexArray(vaoFullScr);
+		glBindVertexArray(vaoEmpty);
 		afDrawTriangleStrip(4);
 		glBindVertexArray(0);
 	}

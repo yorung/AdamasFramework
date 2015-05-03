@@ -105,6 +105,8 @@
     <None Include="..\assets\shaders\vivid.vert" />
     <None Include="..\assets\shaders\water.frag" />
     <None Include="..\assets\shaders\water.vert" />
+    <None Include="..\assets\shaders\water_heightmap.frag" />
+    <None Include="..\assets\shaders\water_heightmap.vert" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="icon.ico" />

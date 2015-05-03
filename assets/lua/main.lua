@@ -2,7 +2,7 @@ local meshId = meshMan.Create("jiji.x")
 
 local deg = 0
 function Update()
-	puzzle.Update();
+--	puzzle.Update();
 --	MesBox("main.lua Update called")
 --[[
 	meshMan.Draw(meshId)
@@ -26,7 +26,7 @@ function Update()
 end
 
 function DrawSprites()
-	puzzle.Draw();
+--	puzzle.Draw();
 end
 
 --MesBox("main.lua loaded!")

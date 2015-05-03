@@ -19,6 +19,7 @@ class WaterSurface
 	Mat matProj, matView;
 	ShaderMan::SMID shaderId;
 	ShaderMan::SMID shaderIdFullScr;
+	ShaderMan::SMID heightMapGenShaderId;
 	int lines;
 	void UpdateVert(std::vector<WaterVert>& vert);
 	void UpdateRipple();
@@ -29,7 +30,7 @@ class WaterSurface
 	double nextTime;
 	VBOID vbo;
 	IBOID ibo;
-	VAOID vao, vaoFullScr;
+	VAOID vao, vaoEmpty;
 	int nIndi;
 	GLuint samplerClamp;
 	GLuint samplerRepeat;

@@ -11,6 +11,7 @@ uniform sampler2D sampler2;
 uniform sampler2D sampler3;
 uniform sampler2D sampler4;
 uniform sampler2D sampler5;
+uniform sampler2D waterHeightmap;
 uniform float time;
 
 const float loopTime = 20.0;
@@ -31,10 +32,12 @@ void main() {
 	vec4 timeline = texture2D(sampler3, vec2((time - delaymap) / loopTime, 0));
 	vec4 bg = c1 * timeline.x + c2 * timeline.y + c3 * timeline.z;
 
+	vec4 height = texture2D(waterHeightmap, texcoord);
+
 //	vec3 normalForSample = cross(normal, vec3(1, 0, 0));
 	vec3 normalForSample = normal;
 	vec4 skyColor = texture2D(sampler5, normalForSample.xy * vec2(0.5, -0.5) + vec2(0.5, 0.5));
 //	gl_FragColor = mix(bg, skyColor * 3.0, color.w);
-	gl_FragColor = mix(bg, skyColor * 1.5 + color, color.w);
+	gl_FragColor = mix(bg, skyColor * 1.5 + color, color.w) * height;
 //	gl_FragColor = skyColor;
 }
