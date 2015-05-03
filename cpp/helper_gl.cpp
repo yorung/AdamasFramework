@@ -147,6 +147,11 @@ void afDrawIndexedTriangleStrip(int numIndices, int start)
 	glDrawElements(GL_TRIANGLE_STRIP, numIndices, AFIndexTypeToDevice, (void*)(start));
 }
 
+void afDrawTriangleStrip(int numVertices, int start)
+{
+	glDrawArrays(GL_TRIANGLE_STRIP, start, numVertices);
+}
+
 void afSetVertexAttributes(GLuint program, const InputElement elements[], int numElements, int numBuffers, VBOID const *vertexBufferIds, const GLsizei* strides)
 {
 	for (int i = 0; i < numElements; i++) {

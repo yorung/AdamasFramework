@@ -115,6 +115,7 @@ void afBindTextureToBindingPoint(GLuint tex, GLuint textureBindingPoint);
 
 void afDrawIndexedTriangleList(int numIndices, int start = 0);
 void afDrawIndexedTriangleStrip(int numIndices, int start = 0);
+void afDrawTriangleStrip(int numVertices, int start = 0);
 void afEnableBackFaceCulling(bool cullBack);
 
 enum BlendMode {

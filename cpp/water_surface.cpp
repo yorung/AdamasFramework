@@ -175,7 +175,6 @@ WaterSurface::WaterSurface()
 	vbo = 0;
 	vao = 0;
 	vboFullScr = 0;
-	iboFullScr = 0;
 	vaoFullScr = 0;
 	samplerClamp = 0;
 	samplerRepeat = 0;
@@ -195,7 +194,6 @@ void WaterSurface::Destroy()
 	afSafeDeleteBuffer(vbo);
 	afSafeDeleteBuffer(ibo);
 	afSafeDeleteBuffer(vboFullScr);
-	afSafeDeleteBuffer(iboFullScr);
 	afSafeDeleteSampler(samplerRepeat);
 	afSafeDeleteSampler(samplerClamp);
 	afSafeDeleteSampler(samplerNoMipmap);
@@ -248,11 +246,9 @@ void WaterSurface::Init()
 	vbo = afCreateDynamicVertexBuffer(vert.size() * sizeof(WaterVert));
 	ibo = afCreateIndexBuffer(&indi[0], indi.size());
 
-	AFIndex iboFullScrSrc[] = {0, 1, 2, 3};
 	Vec2 vboFullScrSrc[] = {{-1, -1}, {-1, 1}, {1, -1}, {1, 1}};
 
 	vboFullScr = afCreateVertexBuffer(sizeof(vboFullScrSrc), &vboFullScrSrc[0]);
-	iboFullScr = afCreateIndexBuffer(&iboFullScrSrc[0], dimof(iboFullScrSrc));
 
 	shaderId = shaderMan.Create("water");
 
@@ -297,7 +293,10 @@ void WaterSurface::Init()
 
 	VBOID vertexBufferIdsFullScr[] = { vboFullScr };
 	GLsizei stridesFullScr[] = { sizeof(Vec2) };
-	vaoFullScr = afCreateVAO(shaderIdFullScr, elementsFullScr, dimof(elementsFullScr), 1, vertexBufferIdsFullScr, stridesFullScr, iboFullScr);
+
+	IBOID noIBO;
+	noIBO.x = 0;
+	vaoFullScr = afCreateVAO(shaderIdFullScr, elementsFullScr, dimof(elementsFullScr), 1, vertexBufferIdsFullScr, stridesFullScr, noIBO);
 }
 
 void WaterSurface::UpdateRipple()
@@ -390,7 +389,7 @@ void WaterSurface::Draw()
 		glBindSampler(0, samplerNoMipmap);
 
 		glBindVertexArray(vaoFullScr);
-		V(glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, 0));
+		afDrawTriangleStrip(4);
 		glBindVertexArray(0);
 	}
 }
