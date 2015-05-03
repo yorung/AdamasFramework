@@ -27,7 +27,7 @@ class WaterSurface
 	double elapsedTime;
 	double lastTime;
 	double nextTime;
-	VBOID vbo, vboFullScr;
+	VBOID vbo;
 	IBOID ibo;
 	VAOID vao, vaoFullScr;
 	int nIndi;
