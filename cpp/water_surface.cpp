@@ -351,6 +351,7 @@ void WaterSurface::Draw()
 	};
 	HeightMapUniformBuffer hmub;
 	hmub.elapsedTime = (float)elapsedTime;
+
 	afDrawTriangleStrip(4);
 
 	V(glBindBuffer(GL_ARRAY_BUFFER, vbo));
@@ -377,10 +378,14 @@ void WaterSurface::Draw()
 	double dummy;
 	glUniform1f(glGetUniformLocation(shaderId, "time"), (float)modf(elapsedTime * (1.0f / loopTime), &dummy) * loopTime);
 
-	Mat matW = q2m(Quat(Vec3(1,0,0), (float)M_PI / 180 * -90));
-	glUniformMatrix4fv(glGetUniformLocation(shaderId, "matW"), 1, GL_FALSE, &matW.m[0][0]);
-	glUniformMatrix4fv(glGetUniformLocation(shaderId, "matV"), 1, GL_FALSE, &matView.m[0][0]);
-	glUniformMatrix4fv(glGetUniformLocation(shaderId, "matP"), 1, GL_FALSE, &matProj.m[0][0]);
+	struct UniformBuffer
+	{
+		Mat matW, matV, matP;
+	}buf;
+	buf.matW = q2m(Quat(Vec3(1,0,0), (float)M_PI / 180 * -90));
+	buf.matV = matView;
+	buf.matP = matProj;
+	glUniform4fv(glGetUniformLocation(shaderId, "fakeUBO"), sizeof(buf) / (sizeof(GLfloat) * 4), (GLfloat*)&buf);
 
 	rt.Apply();
 	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
