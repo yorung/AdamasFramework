@@ -346,11 +346,14 @@ void WaterSurface::Draw()
 	heightMap.Apply();
 	shaderMan.Apply(heightMapGenShaderId);
 	struct HeightMapUniformBuffer {
+		Vec2 mousePos;
 		float elapsedTime;
-		float padding[3];
+		float padding[1];
 	};
 	HeightMapUniformBuffer hmub;
+	hmub.mousePos = (Vec2)systemMetrics.GetMousePos() / (Vec2)systemMetrics.GetScreenSize() * 2 - Vec2(1, 1);
 	hmub.elapsedTime = (float)elapsedTime;
+	glUniform4fv(0, sizeof(hmub) / (sizeof(GLfloat) * 4), (GLfloat*)&hmub);
 
 	afDrawTriangleStrip(4);
 
