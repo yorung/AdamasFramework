@@ -197,7 +197,15 @@ void FontMan::MakeFontBitmap(const char* fontName, const CharSignature& sig, DIB
 		int sizeBuf = dib3.GetByteSize();
 		if (sizeReq != sizeBuf) {
 			aflog("FontMan::Build() buf size mismatch! code=%d req=%d dib=%d\n", sig.code, sizeReq, sizeBuf);
-			afVerify(false);
+			int fakeBlackBoxY = met.gmBlackBoxY + 1;
+			afVerify(dib3.Create(met.gmBlackBoxX, fakeBlackBoxY, 8, 64));
+			afVerify(dib.Create(met.gmBlackBoxX, fakeBlackBoxY));
+			int sizeBuf = dib3.GetByteSize();
+			if (sizeReq != sizeBuf) {
+				afVerify(false);
+			} else {
+				aflog("FontMan::Build() buf size matched by increasing Y, but it is an awful workaround. code=%d req=%d dib=%d\n", sig.code, sizeReq, sizeBuf);
+			}
 		}
 		memset(&met, 0, sizeof(met));
 		GetGlyphOutlineW(hdc, (UINT)sig.code, GGO_GRAY8_BITMAP, &met, sizeReq, dib3.ReferPixels(), &mat);

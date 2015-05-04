@@ -215,7 +215,7 @@ void WaterSurface::Init()
 {
 	Destroy();
 	rt.Init(systemMetrics.GetScreenSize());
-	heightMap.Init(systemMetrics.GetScreenSize());
+	heightMap.Init(ivec2(512, 512));
 
 
 	heightMap.Apply();
@@ -319,18 +319,19 @@ void WaterSurface::Update()
 {
 	ivec2 scrSize = systemMetrics.GetScreenSize();
 	float offset = 0.5f;
-	float aspect = (float)scrSize.y / scrSize.x;
-	if (aspect < 1) {
-		matView = fastInv(translate(0, 0.5f * (1 - aspect), 0));
+	float aspect = (float)scrSize.x / scrSize.y;
+	if (aspect > 1) {
+//		matView = fastInv(translate(0, 0.5f * (1 - aspect), 0));
+		matView = fastInv(translate(0, 0, 0));
 		matProj = Mat(
 			1, 0, 0, 0,
-			0, 1 / aspect, 0, 0,
+			0, 1, 0, 0,
 			0, 0, 1, 0,
 			0, 0, 0, 1);
 	} else {
 		matView = fastInv(translate(offset * (1 - 1 / aspect), 0, 0));
 		matProj = Mat(
-			aspect, 0, 0, 0,
+			1 / aspect, 0, 0, 0,
 			0, 1, 0, 0,
 			0, 0, 1, 0,
 			0, 0, 0, 1);
@@ -347,13 +348,15 @@ void WaterSurface::Draw()
 	shaderMan.Apply(heightMapGenShaderId);
 	struct HeightMapUniformBuffer {
 		Vec2 mousePos;
+		float mouseDown;
 		float elapsedTime;
-		float padding[1];
 	};
 	HeightMapUniformBuffer hmub;
 	hmub.mousePos = (Vec2)systemMetrics.GetMousePos() / (Vec2)systemMetrics.GetScreenSize() * 2 - Vec2(1, 1);
+	hmub.mouseDown = (float)systemMetrics.mouseDown;
 	hmub.elapsedTime = (float)elapsedTime;
 	glUniform4fv(0, sizeof(hmub) / (sizeof(GLfloat) * 4), (GLfloat*)&hmub);
+	fontMan.DrawString(Vec2(300, 20), 10, SPrintf("%f, %f", hmub.mousePos.x, hmub.mousePos.y));
 
 	afDrawTriangleStrip(4);
 
@@ -405,7 +408,7 @@ void WaterSurface::Draw()
 		glUniform1i(glGetUniformLocation(shaderIdFullScr, "sampler"), 0);
 
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, rt.GetTexture());
+		glBindTexture(GL_TEXTURE_2D, heightMap.GetTexture());
 		glBindSampler(0, samplerNoMipmap);
 
 		glBindVertexArray(vaoEmpty);

@@ -18,9 +18,8 @@ void main() {
 	mat4 matW = mat4(fakeUBO[0], fakeUBO[1], fakeUBO[2], fakeUBO[3]);
 	mat4 matV = mat4(fakeUBO[4], fakeUBO[5], fakeUBO[6], fakeUBO[7]);
 	mat4 matP = mat4(fakeUBO[8], fakeUBO[9], fakeUBO[10], fakeUBO[11]);
-
-	mat4 matWV = matV * matW;
-	gl_Position = matWV * vec4(vPosition.xyz, 1) * matP;
+	mat4 matWVP = matP * matV * matW;
+	gl_Position = matWVP * vec4(vPosition.xyz, 1);
 	normal = normalize(vNormal) * mat3(matW);
 
 	vec3 rayDir = refract(camDir, normal, airToWater);
