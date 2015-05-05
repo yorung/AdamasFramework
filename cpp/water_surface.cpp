@@ -354,7 +354,7 @@ void WaterSurface::Draw()
 		float elapsedTime;
 	};
 	HeightMapUniformBuffer hmub;
-	hmub.mousePos = (Vec2)systemMetrics.GetMousePos() / (Vec2)systemMetrics.GetScreenSize() * 2 - Vec2(1, 1);
+	hmub.mousePos = (Vec2)systemMetrics.GetMousePos() / (Vec2)systemMetrics.GetScreenSize() * Vec2(2, -2) + Vec2(-1, 1);
 	hmub.mouseDown = (float)systemMetrics.mouseDown;
 	hmub.elapsedTime = (float)elapsedTime;
 	glUniform4fv(0, sizeof(hmub) / (sizeof(GLfloat) * 4), (GLfloat*)&hmub);
@@ -404,7 +404,8 @@ void WaterSurface::Draw()
 	if (status == GL_FRAMEBUFFER_COMPLETE) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glBindVertexArray(vao);
-		glDrawElements(GL_TRIANGLE_STRIP, nIndi, GL_UNSIGNED_SHORT, 0);
+//		glDrawElements(GL_TRIANGLE_STRIP, nIndi, GL_UNSIGNED_SHORT, 0);
+		afDrawTriangleStrip(4);
 		glBindVertexArray(0);
 
 		V(glBindFramebuffer(GL_FRAMEBUFFER, 0));

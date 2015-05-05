@@ -2,9 +2,6 @@
 
 precision mediump float;
 in vec2 position;
-in vec3 normal_;
-in vec2 texcoord_;
-in vec4 color;
 uniform sampler2D sampler0;
 uniform sampler2D sampler1;
 uniform sampler2D sampler2;
@@ -33,6 +30,8 @@ void main() {
 	vec3 bottom = rayDir * waterDepth / rayDir.z;
 	vec2 texcoord = (position.xy + bottom.xy) * vec2(0.5, -0.5) + vec2(0.5, 0.5);
 	vec3 normal = normalFromHightMap;
+	float mask = dot(normal, vec3(0, 0, 1));
+	vec4 color = vec4(1, 1, 1, mask);
 
 
 	float dist1 = length(position + vec2(0.5, 0.5));
@@ -54,8 +53,7 @@ void main() {
 //	vec3 normalForSample = cross(normal, vec3(1, 0, 0));
 	vec3 normalForSample = normal;
 	vec4 skyColor = texture(sampler5, normalForSample.xy * vec2(0.5, -0.5) + vec2(0.5, 0.5));
-//	fragColor = mix(bg, skyColor * 3.0, color.w);
 	fragColor = mix(bg, skyColor * 1.5 + color, color.w);
-//	fragColor = skyColor;
-	fragColor.xyz = height.zzz;
+//	fragColor.xyz = height.zzz;
+	fragColor.xyz = height;
 }
