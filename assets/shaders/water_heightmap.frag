@@ -10,10 +10,11 @@ layout (binding = 0) uniform sampler2D lastHeightMap;
 
 vec2 mousePos = fakeUBO[0].xy;
 float mouseDown = fakeUBO[0].z;
-float elapsedTime = fakeUBO[0].w;
+float elapsedTime = fakeUBO[1].x;
 
 const float texW = 256.0;
 const float texH = 256.0;
+const float heightLimit = 0.4f;
 
 void main() {
 	vec4 center = texture(lastHeightMap, vec2(texcoord.x, texcoord.y));
@@ -36,8 +37,12 @@ void main() {
 		vel += velUser;
 	}
 
+	float dist = length(position - mousePos);
+	center.x += max(0.0f, 1.0f - dist * 9.0) * 0.015f * mouseDown;
+	center.x = min(heightLimit, max(-heightLimit, center.x));
+
 	center.y += vel;
-	center.y *= 0.995;
+	center.y *= 0.99;
 	center.x += center.y;
 
 	fragColor = center;

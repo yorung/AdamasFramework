@@ -240,15 +240,20 @@ void WaterSurface::Draw()
 	afBindTextureToBindingPoint(heightR.GetTexture(), 0);
 	heightW.Apply();
 	shaderMan.Apply(heightMapGenShaderId);
-	struct HeightMapUniformBuffer {
+	struct UniformBuffer {
 		Vec2 mousePos;
 		float mouseDown;
+		float padding;
 		float elapsedTime;
+		float wrappedTime;
+		float paddingB[3];
 	};
-	HeightMapUniformBuffer hmub;
+	UniformBuffer hmub;
 	hmub.mousePos = (Vec2)systemMetrics.GetMousePos() / (Vec2)systemMetrics.GetScreenSize() * Vec2(2, -2) + Vec2(-1, 1);
 	hmub.mouseDown = (float)systemMetrics.mouseDown;
 	hmub.elapsedTime = (float)elapsedTime;
+	double dummy;
+	hmub.wrappedTime = (float)modf(elapsedTime * (1.0f / loopTime), &dummy) * loopTime;
 	glUniform4fv(0, sizeof(hmub) / (sizeof(GLfloat) * 4), (GLfloat*)&hmub);
 	fontMan.DrawString(Vec2(300, 20), 10, SPrintf("%f, %f", hmub.mousePos.x, hmub.mousePos.y));
 
@@ -267,16 +272,7 @@ void WaterSurface::Draw()
 
 	afBindTextureToBindingPoint(heightW.GetTexture(), 6);
 
-	double dummy;
-	glUniform1f(glGetUniformLocation(shaderId, "time"), (float)modf(elapsedTime * (1.0f / loopTime), &dummy) * loopTime);
-
-	struct UniformBuffer
-	{
-		Mat matV, matP;
-	}buf;
-	buf.matV = matView;
-	buf.matP = matProj;
-	glUniform4fv(glGetUniformLocation(shaderId, "fakeUBO"), sizeof(buf) / (sizeof(GLfloat) * 4), (GLfloat*)&buf);
+	glUniform4fv(0, sizeof(hmub) / (sizeof(GLfloat) * 4), (GLfloat*)&hmub);
 
 	rt.Apply();
 	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
@@ -289,7 +285,11 @@ void WaterSurface::Draw()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	shaderMan.Apply(shaderIdFullScr);
 	glUniform1i(glGetUniformLocation(shaderIdFullScr, "sampler"), 0);
-	afBindTextureToBindingPoint(rt.GetTexture(), 0);
+	if (GetKeyState(VK_TAB) & 0x01) {
+		afBindTextureToBindingPoint(rt.GetTexture(), 0);
+	} else {
+		afBindTextureToBindingPoint(heightW.GetTexture(), 0);
+	}
 	glBindSampler(0, samplerNoMipmap);
 	afDrawTriangleStrip(4);
 

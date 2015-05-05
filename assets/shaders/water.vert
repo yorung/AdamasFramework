@@ -5,8 +5,6 @@ in vec3 vPosition;
 in vec3 vNormal;
 out vec2 position;
 
-uniform vec4 fakeUBO[12];
-
 in int gl_VertexID;
 
 void main() {

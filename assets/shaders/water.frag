@@ -9,7 +9,10 @@ uniform sampler2D sampler3;
 uniform sampler2D sampler4;
 uniform sampler2D sampler5;
 uniform sampler2D waterHeightmap;
-uniform float time;
+
+layout (location = 0) uniform vec4 fakeUBO[2];
+
+float wrappedTime = fakeUBO[1].y;
 
 const float loopTime = 20.0;
 const float PI2 = 3.1415926 * 2.0;
@@ -49,7 +52,7 @@ void main() {
 	float dist1 = length(position + vec2(0.5, 0.5));
 	float dist2 = length(position - vec2(0.5, 0.5));
 
-	float radTimeUnit = time / loopTime * PI2;
+	float radTimeUnit = wrappedTime / loopTime * PI2;
 //	vec2 coord = vec2(texcoord.x, texcoord.y + sin(dist1 * 8.7 + radTimeUnit * 25.0) / 800.0 + sin(dist2 * 10.0 + radTimeUnit * 48.0) / 800.0);
 	vec2 coord = texcoord;
 
@@ -57,7 +60,7 @@ void main() {
 	vec4 c2 = texture(sampler1, coord);
 	vec4 c3 = texture(sampler2, coord);
 	float delaymap = texture(sampler4, texcoord).x;
-	vec4 timeline = texture(sampler3, vec2((time - delaymap) / loopTime, 0));
+	vec4 timeline = texture(sampler3, vec2((wrappedTime - delaymap) / loopTime, 0));
 	vec4 bg = c1 * timeline.x + c2 * timeline.y + c3 * timeline.z;
 
 
