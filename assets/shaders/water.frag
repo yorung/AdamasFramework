@@ -16,15 +16,27 @@ const float PI2 = 3.1415926 * 2.0;
 
 const float airToWater = 1.0 / 1.33333;
 const vec3 camDir = vec3(0, 0, -1);
-const float waterDepth = 0.2;
-
+const float waterDepth = 1.2;
 
 layout (location = 0) out vec4 fragColor;
 
+
+
+vec4 FetchWaterTex(vec2 position)
+{
+	vec2 coord = position * 0.5 + 0.5;
+	return texture(waterHeightmap, coord);
+}
+
+vec3 MakeWater3DPos(vec2 position)
+{
+	return vec3(position, FetchWaterTex(position).x);
+}
+
 void main() {
-	vec3 heightU = vec3(position + vec2(0, 1.0 / 256.0), texture(waterHeightmap, position * 0.5 + 0.5 + vec2(0, 1.0 / 512.0)).x);
-	vec3 heightL = vec3(position - vec2(1.0 / 256.0, 0), texture(waterHeightmap, position * 0.5 + 0.5 - vec2(1.0 / 512.0, 0)).x);
-	vec3 height = vec3(position, texture(waterHeightmap, position * 0.5 + 0.5).x);
+	vec3 heightU = MakeWater3DPos(position + vec2(0, 1.0 / 128.0));
+	vec3 heightL = MakeWater3DPos(position - vec2(1.0 / 128.0, 0));
+	vec3 height = MakeWater3DPos(position);
 	vec3 normalFromHeightMap = cross(heightU - height, heightL - height);
 	vec3 rayDir = refract(camDir, normalFromHeightMap, airToWater);
 	vec3 bottom = rayDir * waterDepth / rayDir.z;
@@ -49,8 +61,6 @@ void main() {
 	vec4 bg = c1 * timeline.x + c2 * timeline.y + c3 * timeline.z;
 
 
-
-//	vec3 normalForSample = cross(normal, vec3(1, 0, 0));
 	vec3 normalForSample = normal;
 	vec4 skyColor = texture(sampler5, normalForSample.xy * vec2(0.5, -0.5) + vec2(0.5, 0.5));
 	fragColor = mix(bg, skyColor * 1.5 + color, color.w);

@@ -12,8 +12,8 @@ vec2 mousePos = fakeUBO[0].xy;
 float mouseDown = fakeUBO[0].z;
 float elapsedTime = fakeUBO[0].w;
 
-const float texW = 512.0;
-const float texH = 512.0;
+const float texW = 256.0;
+const float texH = 256.0;
 
 void main() {
 	vec4 center = texture(lastHeightMap, vec2(texcoord.x, texcoord.y));
@@ -32,12 +32,12 @@ void main() {
 
 	if (mouseDown != 0.0) {
 		float velUser = length(position - mousePos) < 0.05 ? 0.5 : 0.0;
-		velUser *= 100.0;
+		velUser *= 1.0;
 		vel += velUser;
 	}
 
 	center.y += vel;
-	center.y *= 0.99;
+	center.y *= 0.995;
 	center.x += center.y;
 
 	fragColor = center;

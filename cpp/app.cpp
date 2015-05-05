@@ -96,7 +96,6 @@ void App::LoadMesh(const char* fileName)
 
 void App::OnTap(float x, float y)
 {
-	waterSurface.CreateRipple(Vec2(x, y));
 }
 
 void App::Destroy()

@@ -21,21 +21,16 @@ class WaterSurface
 	ShaderMan::SMID shaderIdFullScr;
 	ShaderMan::SMID heightMapGenShaderId;
 	int lines;
-	void UpdateVert(std::vector<WaterVert>& vert);
-	void UpdateRipple();
-	WaterRipple ripples[2];
-	int ripplesNext;
 	double elapsedTime;
 	double lastTime;
 	double nextTime;
-	VBOID vbo;
-	IBOID ibo;
-	VAOID vao, vaoEmpty;
+	VAOID vaoEmpty;
 	int nIndi;
 	GLuint samplerClamp;
 	GLuint samplerRepeat;
 	GLuint samplerNoMipmap;
 	int storedW, storedH;
+	void UpdateTime();
 public:
 	WaterSurface();
 	~WaterSurface();
@@ -43,7 +38,6 @@ public:
 	void Init();
 	void Update();
 	void Draw();
-	void CreateRipple(Vec2 pos);
 };
 
 extern WaterSurface waterSurface;
