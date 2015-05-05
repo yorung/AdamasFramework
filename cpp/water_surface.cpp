@@ -256,7 +256,9 @@ void WaterSurface::Init()
 	const char* shaderName = "letterbox";
 	shaderIdFullScr = shaderMan.Create(shaderName);
 	shaderId = shaderMan.Create("water");
+	assert(shaderId);
 	heightMapGenShaderId = shaderMan.Create("water_heightmap");
+	assert(heightMapGenShaderId);
 
 	glActiveTexture(GL_TEXTURE0);
 	for (int i = 0; i < dimof(texFiles); i++) {
