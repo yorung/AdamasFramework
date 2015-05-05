@@ -352,9 +352,9 @@ void WaterSurface::Draw()
 	auto& heightW = heightMap[heightCurrentWriteTarget];
 	heightCurrentWriteTarget ^= 1;
 	auto& heightR = heightMap[heightCurrentWriteTarget];
-	heightW.Apply();
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, heightR.GetTexture());
+	heightW.Apply();
 	shaderMan.Apply(heightMapGenShaderId);
 	struct HeightMapUniformBuffer {
 		Vec2 mousePos;
@@ -415,6 +415,7 @@ void WaterSurface::Draw()
 //		glDrawElements(GL_TRIANGLE_STRIP, nIndi, GL_UNSIGNED_SHORT, 0);
 		afDrawTriangleStrip(4);
 		glBindVertexArray(0);
+		afBindTextureToBindingPoint(0, 6);
 
 		V(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
