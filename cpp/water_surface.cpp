@@ -95,8 +95,8 @@ const float heightUnit = 0.02f;
 const float rippleSpeed = 0.7f;
 const float loopTime = 20.0;
 
-const int WATER_TEX_W = 256;
-const int WATER_TEX_H = 256;
+const int HEIGHT_MAP_W = 128;
+const int HEIGHT_MAP_H = 128;
 
 
 WaterSurface::WaterSurface()
@@ -134,7 +134,7 @@ void WaterSurface::Init()
 	Destroy();
 	rt.Init(systemMetrics.GetScreenSize());
 	for (auto& it : heightMap) {
-		it.Init(ivec2(WATER_TEX_W, WATER_TEX_H));
+		it.Init(ivec2(HEIGHT_MAP_W, HEIGHT_MAP_H));
 		it.Apply();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
@@ -246,18 +246,20 @@ void WaterSurface::Draw()
 		float padding;
 		float elapsedTime;
 		float wrappedTime;
-		float paddingB[3];
+		Vec2 heightMapSize;
 	};
 	UniformBuffer hmub;
 	hmub.mousePos = (Vec2)systemMetrics.GetMousePos() / (Vec2)systemMetrics.GetScreenSize() * Vec2(2, -2) + Vec2(-1, 1);
 	hmub.mouseDown = (float)systemMetrics.mouseDown;
 	hmub.elapsedTime = (float)elapsedTime;
+	hmub.heightMapSize.x = HEIGHT_MAP_W;
+	hmub.heightMapSize.y = HEIGHT_MAP_H;
 	double dummy;
 	hmub.wrappedTime = (float)modf(elapsedTime * (1.0f / loopTime), &dummy) * loopTime;
 	glUniform4fv(0, sizeof(hmub) / (sizeof(GLfloat) * 4), (GLfloat*)&hmub);
 	fontMan.DrawString(Vec2(300, 20), 10, SPrintf("%f, %f", hmub.mousePos.x, hmub.mousePos.y));
 
-	glViewport(0, 0, WATER_TEX_W, WATER_TEX_H);
+	glViewport(0, 0, HEIGHT_MAP_W, HEIGHT_MAP_H);
 	afDrawTriangleStrip(4);
 
 	ivec2 scrSize = systemMetrics.GetScreenSize();

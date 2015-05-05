@@ -11,18 +11,17 @@ layout (binding = 0) uniform sampler2D lastHeightMap;
 vec2 mousePos = fakeUBO[0].xy;
 float mouseDown = fakeUBO[0].z;
 float elapsedTime = fakeUBO[1].x;
+vec2 heightMapSize = fakeUBO[1].zw;
 
-const float texW = 256.0;
-const float texH = 256.0;
 const float heightLimit = 0.4f;
 
 void main() {
 	vec4 center = texture(lastHeightMap, vec2(texcoord.x, texcoord.y));
 	vec2 ofs[] = {
-		vec2(texcoord.x, texcoord.y) + vec2(-1.0 / texW, 0),
-		vec2(texcoord.x, texcoord.y) + vec2(0, 1.0 / texH),
-		vec2(texcoord.x, texcoord.y) + vec2(1.0 / texW, 0),
-		vec2(texcoord.x, texcoord.y) + vec2(0, -1.0 / texH)
+		vec2(texcoord.x, texcoord.y) + vec2(-1.0 / heightMapSize.x, 0),
+		vec2(texcoord.x, texcoord.y) + vec2(0, 1.0 / heightMapSize.y),
+		vec2(texcoord.x, texcoord.y) + vec2(1.0 / heightMapSize.x, 0),
+		vec2(texcoord.x, texcoord.y) + vec2(0, -1.0 / heightMapSize.y)
 	};
 	float ave = 0.0;
 	for (int i = 0; i < 4; i++) {

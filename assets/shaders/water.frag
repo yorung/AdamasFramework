@@ -13,6 +13,7 @@ uniform sampler2D waterHeightmap;
 layout (location = 0) uniform vec4 fakeUBO[2];
 
 float wrappedTime = fakeUBO[1].y;
+vec2 heightMapSize = fakeUBO[1].zw;
 
 const float loopTime = 20.0;
 const float PI2 = 3.1415926 * 2.0;
@@ -37,8 +38,8 @@ vec3 MakeWater3DPos(vec2 position)
 }
 
 void main() {
-	vec3 heightU = MakeWater3DPos(position + vec2(0, 1.0 / 128.0));
-	vec3 heightL = MakeWater3DPos(position - vec2(1.0 / 128.0, 0));
+	vec3 heightU = MakeWater3DPos(position + vec2(0, 1.0 / (heightMapSize.y * 0.5)));
+	vec3 heightL = MakeWater3DPos(position - vec2(1.0 / (heightMapSize.x * 0.5), 0));
 	vec3 height = MakeWater3DPos(position);
 	vec3 normalFromHeightMap = cross(heightU - height, heightL - height);
 	vec3 rayDir = refract(camDir, normalFromHeightMap, airToWater);
