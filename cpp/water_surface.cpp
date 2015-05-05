@@ -358,7 +358,11 @@ void WaterSurface::Draw()
 	glUniform4fv(0, sizeof(hmub) / (sizeof(GLfloat) * 4), (GLfloat*)&hmub);
 	fontMan.DrawString(Vec2(300, 20), 10, SPrintf("%f, %f", hmub.mousePos.x, hmub.mousePos.y));
 
+	glViewport(0, 0, 512, 512);
 	afDrawTriangleStrip(4);
+
+	ivec2 scrSize = systemMetrics.GetScreenSize();
+	glViewport(0, 0, scrSize.x, scrSize.y);
 
 	V(glBindBuffer(GL_ARRAY_BUFFER, vbo));
 
@@ -408,7 +412,7 @@ void WaterSurface::Draw()
 		glUniform1i(glGetUniformLocation(shaderIdFullScr, "sampler"), 0);
 
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, heightMap.GetTexture());
+		glBindTexture(GL_TEXTURE_2D, rt.GetTexture());
 		glBindSampler(0, samplerNoMipmap);
 
 		glBindVertexArray(vaoEmpty);
