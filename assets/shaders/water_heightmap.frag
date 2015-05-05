@@ -13,5 +13,6 @@ float elapsedTime = fakeUBO[0].w;
 void main() {
 	vec2 coord = vec2(texcoord.x, texcoord.y);
 	float brightness = sin(log(length(position - mousePos)) * 10.0 - elapsedTime * 3.0) * 2.0 + 2.0 + mouseDown;
+	brightness *= 100.0;
 	fragColor = vec4(brightness, brightness, brightness, 1.0);
 }

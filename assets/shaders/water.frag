@@ -25,11 +25,11 @@ void main() {
 	vec3 heightU = vec3(position + vec2(0, 1.0 / 256.0), texture(waterHeightmap, position * 0.5 + 0.5 + vec2(0, 1.0 / 512.0)).x);
 	vec3 heightL = vec3(position - vec2(1.0 / 256.0, 0), texture(waterHeightmap, position * 0.5 + 0.5 - vec2(1.0 / 512.0, 0)).x);
 	vec3 height = vec3(position, texture(waterHeightmap, position * 0.5 + 0.5).x);
-	vec3 normalFromHightMap = cross(heightU - height, heightL - height);
-	vec3 rayDir = refract(camDir, normalFromHightMap, airToWater);
+	vec3 normalFromHeightMap = cross(heightU - height, heightL - height);
+	vec3 rayDir = refract(camDir, normalFromHeightMap, airToWater);
 	vec3 bottom = rayDir * waterDepth / rayDir.z;
 	vec2 texcoord = (position.xy + bottom.xy) * vec2(0.5, -0.5) + vec2(0.5, 0.5);
-	vec3 normal = normalFromHightMap;
+	vec3 normal = normalFromHeightMap;
 	float mask = dot(normal, vec3(0, 0, 1));
 	vec4 color = vec4(1, 1, 1, mask);
 
@@ -55,5 +55,5 @@ void main() {
 	vec4 skyColor = texture(sampler5, normalForSample.xy * vec2(0.5, -0.5) + vec2(0.5, 0.5));
 	fragColor = mix(bg, skyColor * 1.5 + color, color.w);
 //	fragColor.xyz = height.zzz;
-	fragColor.xyz = height;
+//	fragColor.xyz = 0.5 + normalFromHeightMap;
 }
