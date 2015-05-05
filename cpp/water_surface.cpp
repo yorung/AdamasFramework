@@ -129,11 +129,6 @@ void WaterSurface::Destroy()
 	}
 }
 
-static const InputElement elements[] = {
-	{ 0, "vPosition", SF_R32G32B32_FLOAT, 0 },
-	{ 0, "vNormal", SF_R32G32B32_FLOAT, 12 },
-};
-
 void WaterSurface::Init()
 {
 	Destroy();
@@ -277,32 +272,26 @@ void WaterSurface::Draw()
 
 	struct UniformBuffer
 	{
-		Mat matW, matV, matP;
+		Mat matV, matP;
 	}buf;
-	buf.matW = q2m(Quat(Vec3(1,0,0), (float)M_PI / 180 * -90));
 	buf.matV = matView;
 	buf.matP = matProj;
 	glUniform4fv(glGetUniformLocation(shaderId, "fakeUBO"), sizeof(buf) / (sizeof(GLfloat) * 4), (GLfloat*)&buf);
 
 	rt.Apply();
 	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-	if (status == GL_FRAMEBUFFER_COMPLETE) {
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//		glDrawElements(GL_TRIANGLE_STRIP, nIndi, GL_UNSIGNED_SHORT, 0);
-		afDrawTriangleStrip(4);
-		afBindTextureToBindingPoint(0, 6);
+	assert(status == GL_FRAMEBUFFER_COMPLETE);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	afDrawTriangleStrip(4);
+	afBindTextureToBindingPoint(0, 6);
 
-		V(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	V(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	shaderMan.Apply(shaderIdFullScr);
+	glUniform1i(glGetUniformLocation(shaderIdFullScr, "sampler"), 0);
+	afBindTextureToBindingPoint(rt.GetTexture(), 0);
+	glBindSampler(0, samplerNoMipmap);
+	afDrawTriangleStrip(4);
 
-		shaderMan.Apply(shaderIdFullScr);
-		glUniform1i(glGetUniformLocation(shaderIdFullScr, "sampler"), 0);
-
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, rt.GetTexture());
-		glBindSampler(0, samplerNoMipmap);
-
-		afDrawTriangleStrip(4);
-	}
 	glBindVertexArray(0);
 }
