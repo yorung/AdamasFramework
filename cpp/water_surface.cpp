@@ -18,7 +18,8 @@ public:
 };
 
 static AFRenderTarget rt;
-static AFRenderTarget heightMap;
+static AFRenderTarget heightMap[2];
+static int heightCurrentWriteTarget;
 
 AFRenderTarget::AFRenderTarget()
 {
@@ -203,7 +204,9 @@ void WaterSurface::Destroy()
 	afSafeDeleteVAO(vao);
 	afSafeDeleteVAO(vaoEmpty);
 	rt.Destroy();
-	heightMap.Destroy();
+	for (auto& it : heightMap) {
+		it.Destroy();
+	}
 }
 
 static const InputElement elements[] = {
@@ -215,11 +218,12 @@ void WaterSurface::Init()
 {
 	Destroy();
 	rt.Init(systemMetrics.GetScreenSize());
-	heightMap.Init(ivec2(512, 512));
+	for (auto& it : heightMap) {
+		it.Init(ivec2(512, 512));
+		it.Apply();
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	}
 
-
-	heightMap.Apply();
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	V(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 
 	lastTime = GetTime();
@@ -345,8 +349,12 @@ void WaterSurface::Draw()
 	afDepthStencilMode(false);
 	afBlendMode(BM_NONE);
 
-
-	heightMap.Apply();
+	auto& heightW = heightMap[heightCurrentWriteTarget];
+	heightCurrentWriteTarget ^= 1;
+	auto& heightR = heightMap[heightCurrentWriteTarget];
+	heightW.Apply();
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, heightR.GetTexture());
 	shaderMan.Apply(heightMapGenShaderId);
 	struct HeightMapUniformBuffer {
 		Vec2 mousePos;
@@ -385,7 +393,7 @@ void WaterSurface::Draw()
 	afLayoutSamplerBindingManually(shaderId, "sampler4", 4);
 	afLayoutSamplerBindingManually(shaderId, "sampler5", 5);
 	afLayoutSamplerBindingManually(shaderId, "waterHeightmap", 6);
-	afBindTextureToBindingPoint(heightMap.GetTexture(), 6);
+	afBindTextureToBindingPoint(heightW.GetTexture(), 6);
 
 	double dummy;
 	glUniform1f(glGetUniformLocation(shaderId, "time"), (float)modf(elapsedTime * (1.0f / loopTime), &dummy) * loopTime);
