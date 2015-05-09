@@ -165,23 +165,9 @@ void WaterSurface::Init()
         }
 	}
 
-	glGenSamplers(1, &samplerRepeat);
-	glSamplerParameteri(samplerRepeat, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glSamplerParameteri(samplerRepeat, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glSamplerParameteri(samplerRepeat, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glSamplerParameteri(samplerRepeat, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-
-	glGenSamplers(1, &samplerClamp);
-	glSamplerParameteri(samplerClamp, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glSamplerParameteri(samplerClamp, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glSamplerParameteri(samplerClamp, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glSamplerParameteri(samplerClamp, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-
-	glGenSamplers(1, &samplerNoMipmap);
-	glSamplerParameteri(samplerNoMipmap, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glSamplerParameteri(samplerNoMipmap, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glSamplerParameteri(samplerNoMipmap, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glSamplerParameteri(samplerNoMipmap, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	samplerRepeat = afCreateSampler(SF_MIPMAP, SW_REPEAT);
+	samplerClamp = afCreateSampler(SF_MIPMAP, SW_CLAMP);
+	samplerNoMipmap = afCreateSampler(SF_LINEAR, SW_CLAMP);
 
 	IBOID noIBO;
 	noIBO.x = 0;

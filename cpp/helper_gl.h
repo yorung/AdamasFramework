@@ -104,7 +104,17 @@ IBOID afCreateQuadListIndexBuffer(int numQuads);
 VBOID afCreateVertexBuffer(int size, const void* buf);
 VBOID afCreateDynamicVertexBuffer(int size);
 
-SAMPLERID afCreateSampler(bool mipmap = false);
+enum SamplerWrap {
+	SW_REPEAT = GL_REPEAT,
+	SW_CLAMP = GL_CLAMP_TO_EDGE,
+};
+
+enum SamplerFilter {
+	SF_POINT,
+	SF_LINEAR,
+	SF_MIPMAP,
+};
+SAMPLERID afCreateSampler(SamplerFilter samplerFilter, SamplerWrap wrap);
 
  // without "binding" Layout Qualifier
 void afLayoutSamplerBindingManually(GLuint program, const GLchar* name, GLuint samplerBinding);
