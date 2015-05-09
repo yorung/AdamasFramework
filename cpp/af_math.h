@@ -81,6 +81,8 @@ struct ivec2
 	int x, y;
 	ivec2() : x(0), y(0) {}
 	ivec2(int X, int Y) : x(X), y(Y) {}
+	ivec2 operator+(const ivec2& r) const { return ivec2(x + r.x, y + r.y); }
+	ivec2 operator-(const ivec2& r) const { return ivec2(x - r.x, y - r.y); }
 	operator Vec2() const { return Vec2((float)x, (float)y); }
 };
 
