@@ -1,8 +1,8 @@
 #version 310 es
 
 precision mediump float;
-in vec2 position;
-in vec3 normal;
+in vec2 vfPosition;
+in vec3 vfNormal;
 uniform sampler2D sampler0;
 uniform sampler2D sampler1;
 uniform sampler2D sampler2;
@@ -21,16 +21,18 @@ const float PI2 = 3.1415926 * 2.0;
 
 const float airToWater = 1.0 / 1.33333;
 const vec3 camDir = vec3(0, 0, -1);
-const float waterDepth = 1.2;
+const float waterDepth = 0.2;
 
 layout (location = 0) out vec4 fragColor;
 
 void main() {
+	vec2 position = vfPosition;
+	vec3 normal = normalize(vfNormal);
 	vec3 rayDir = refract(camDir, normal, airToWater);
 	vec3 bottom = rayDir * waterDepth / rayDir.z;
 	vec2 texcoord = (position.xy + bottom.xy) * vec2(0.5, -0.5) + vec2(0.5, 0.5);
 	float mask = dot(normal, vec3(0, 0, 1));
-	vec4 color = vec4(1, 1, 1, mask);
+	vec4 color = vec4(1, 1, 1, 1.0 - mask);
 
 
 	float dist1 = length(position + vec2(0.5, 0.5));
@@ -53,4 +55,5 @@ void main() {
 	fragColor = mix(bg, skyColor * 1.5 + color, color.w);
 //	fragColor.xyz = height.zzz;
 //	fragColor.xyz = 0.5 + normalFromHeightMap;
+//	fragColor.xyz = normal;
 }
