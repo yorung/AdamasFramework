@@ -105,11 +105,13 @@ WaterSurface::WaterSurface()
 	samplerClamp = 0;
 	samplerRepeat = 0;
 	samplerNoMipmap = 0;
-	storedW = 0;
-	storedH = 0;
 	shaderId = 0;
 	shaderIdFullScr = 0;
 	heightMapGenShaderId = 0;
+
+	iboTiledPlane = 0;
+	vboTiledPlane = 0;
+	vaoWater = 0;
 }
 
 WaterSurface::~WaterSurface()
@@ -119,6 +121,10 @@ WaterSurface::~WaterSurface()
 
 void WaterSurface::Destroy()
 {
+	afSafeDeleteBuffer(vboTiledPlane);
+	afSafeDeleteBuffer(iboTiledPlane);
+	afSafeDeleteVAO(vaoWater);
+
 	afSafeDeleteSampler(samplerRepeat);
 	afSafeDeleteSampler(samplerClamp);
 	afSafeDeleteSampler(samplerNoMipmap);
@@ -127,6 +133,19 @@ void WaterSurface::Destroy()
 	for (auto& it : heightMap) {
 		it.Destroy();
 	}
+}
+
+void WaterSurface::InitBuffers()
+{
+	iboTiledPlane = afCreateTiledPlaneIBO(tileMax, &numIndi);
+	vboTiledPlane = afCreateTiledPlaneVBO(tileMax);
+
+	static const InputElement elements[] = {
+		CInputElement(0, "vCoord", SF_R32G32_FLOAT, 0),
+	};
+	VBOID vbos[] = { vboTiledPlane };
+	const int strides[] = { sizeof(Vec2) };
+	vaoWater = afCreateVAO(shaderId, elements, dimof(elements), dimof(vbos), vbos, strides, iboTiledPlane);
 }
 
 void WaterSurface::Init()
@@ -143,9 +162,6 @@ void WaterSurface::Init()
 
 	lastTime = GetTime();
 
-	storedW = 0;
-	storedH = 0;
-
 //	const char* shaderName = "vivid";
 	const char* shaderName = "letterbox";
 	shaderIdFullScr = shaderMan.Create(shaderName);
@@ -153,6 +169,8 @@ void WaterSurface::Init()
 	assert(shaderId);
 	heightMapGenShaderId = shaderMan.Create("water_heightmap");
 	assert(heightMapGenShaderId);
+
+	InitBuffers();
 
 	glActiveTexture(GL_TEXTURE0);
 	for (int i = 0; i < dimof(texFiles); i++) {
@@ -215,9 +233,9 @@ void WaterSurface::Update()
 void WaterSurface::Draw()
 {
 	UpdateTime();
-	glBindVertexArray(vaoEmpty);
 
 	afDepthStencilMode(false);
+	afEnableBackFaceCulling(false);
 	afBlendMode(BM_NONE);
 
 	auto& heightW = heightMap[heightCurrentWriteTarget];
@@ -246,7 +264,11 @@ void WaterSurface::Draw()
 	fontMan.DrawString(Vec2(300, 20), 10, SPrintf("%f, %f", hmub.mousePos.x, hmub.mousePos.y));
 
 	glViewport(0, 0, HEIGHT_MAP_W, HEIGHT_MAP_H);
-	afDrawTriangleStrip(4);
+	afBindVAO(vaoWater);
+//	afDrawTriangleStrip(4);
+	afDrawIndexedTriangleStrip(numIndi);
+
+	afBindVAO(vaoEmpty);
 
 	ivec2 scrSize = systemMetrics.GetScreenSize();
 	glViewport(0, 0, scrSize.x, scrSize.y);

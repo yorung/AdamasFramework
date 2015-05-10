@@ -11,7 +11,11 @@ class WaterSurface
 	GLuint samplerClamp;
 	GLuint samplerRepeat;
 	GLuint samplerNoMipmap;
-	int storedW, storedH;
+	VBOID vboTiledPlane;
+	IBOID iboTiledPlane;
+	VAOID vaoWater;
+	int numIndi;
+	void InitBuffers();
 	void UpdateTime();
 public:
 	WaterSurface();
