@@ -70,5 +70,4 @@ void main() {
 	fragColor = mix(bg, skyColor * 1.5 + color, color.w);
 //	fragColor.xyz = height.zzz;
 //	fragColor.xyz = 0.5 + normalFromHeightMap;
-fragColor = vec4(1.0, 1.0, 1.0, 1.0);
 }

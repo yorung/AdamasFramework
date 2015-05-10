@@ -3,21 +3,10 @@
 precision mediump float;
 out vec2 position;
 
-
+layout (location = 2) in vec2 vCoord;
 in int gl_VertexID;
+
 void main() {
-	vec2 vPosition = vec2((gl_VertexID & 1) != 0 ? 1 : -1, (gl_VertexID & 2) != 0 ? -1 : 1);
-
-	gl_Position = vec4(vPosition.xy, 0, 1);
-	position = vPosition;
+	gl_Position = vec4(vCoord, 0, 1);
+	position = vCoord;
 }
-/*
-
-in vec2 vCoord;
-void main() {
-	vec2 vPosition = vCoord;
-
-	gl_Position = vec4(vPosition.xy, 0, 1);
-	position = vPosition;
-}
-*/

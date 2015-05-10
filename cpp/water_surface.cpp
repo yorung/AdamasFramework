@@ -86,7 +86,7 @@ TexFiles texFiles[] = {
 TexMan::TMID texId[dimof(texFiles)];
 
 
-const int tileMax = 50;
+const int tileMax = 128;
 const int vertMax = tileMax + 1;
 const float pitch = 2.0f / tileMax;
 const float repeat = 2;
@@ -264,11 +264,8 @@ void WaterSurface::Draw()
 	fontMan.DrawString(Vec2(300, 20), 10, SPrintf("%f, %f", hmub.mousePos.x, hmub.mousePos.y));
 
 	glViewport(0, 0, HEIGHT_MAP_W, HEIGHT_MAP_H);
-	afBindVAO(vaoWater);
-//	afDrawTriangleStrip(4);
-	afDrawIndexedTriangleStrip(numIndi);
-
 	afBindVAO(vaoEmpty);
+	afDrawTriangleStrip(4);
 
 	ivec2 scrSize = systemMetrics.GetScreenSize();
 	glViewport(0, 0, scrSize.x, scrSize.y);
@@ -288,7 +285,9 @@ void WaterSurface::Draw()
 	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	assert(status == GL_FRAMEBUFFER_COMPLETE);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	afDrawTriangleStrip(4);
+
+	afBindVAO(vaoWater);
+	afDrawIndexedTriangleStrip(numIndi);
 	afBindTextureToBindingPoint(0, 6);
 
 	V(glBindFramebuffer(GL_FRAMEBUFFER, 0));

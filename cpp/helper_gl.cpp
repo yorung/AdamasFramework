@@ -110,6 +110,7 @@ GLuint afCreateDynamicTexture(int w, int h, AFDTFormat format)
 	case AFDT_R5G6B5_UINT:
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, nullptr);
 		break;
+#ifndef GL_ES_VERSION_2_0
 	case AFDT_R16G16B16A16_FLOAT:
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, w, h, 0, GL_RGBA, GL_HALF_FLOAT, nullptr);
 		break;
@@ -119,6 +120,7 @@ GLuint afCreateDynamicTexture(int w, int h, AFDTFormat format)
 	case AFDT_DEPTH_STENCIL:
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, w, h, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, nullptr);
 		break;
+#endif
 	}
 	glBindTexture(GL_TEXTURE_2D, 0);
 	return texture;

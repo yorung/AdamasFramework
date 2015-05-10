@@ -6,8 +6,7 @@ out vec2 position;
 in int gl_VertexID;
 
 void main() {
-	vec2 vPosition = vec2((gl_VertexID & 1) != 0 ? 1 : -1, (gl_VertexID & 2) != 0 ? -1 : 1);
-
+	vec2 vPosition = vec2((gl_VertexID & 1) != 0 ? 1.0 : -1.0, (gl_VertexID & 2) != 0 ? -1.0 : 1.0);
 	gl_Position = vec4(vPosition.xy, 0, 1);
 	texcoord = vPosition * 0.5 + 0.5;
 	position = vPosition;
