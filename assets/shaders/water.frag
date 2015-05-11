@@ -25,9 +25,27 @@ const float waterDepth = 0.2;
 
 layout (location = 0) out vec4 fragColor;
 
+vec4 FetchWaterTex(vec2 position)
+{
+	vec2 coord = position * 0.5 + 0.5;
+	return texture(waterHeightmap, coord);
+}
+
+vec3 MakeWater3DPos(vec2 position)
+{
+	return vec3(position, FetchWaterTex(position).x);
+}
+
 void main() {
 	vec2 position = vfPosition;
-	vec3 normal = normalize(vfNormal);
+	vec3 heightU = MakeWater3DPos(position + vec2(0, 1.0 / (heightMapSize.y * 0.5)));
+	vec3 heightL = MakeWater3DPos(position - vec2(1.0 / (heightMapSize.x * 0.5), 0));
+	vec3 height = MakeWater3DPos(position);
+	vec3 normalFromHeightMap = cross(heightU - height, heightL - height);
+
+	vec3 normal = normalize(normalFromHeightMap);
+//	vec3 normal = normalize(vfNormal);
+
 	vec3 rayDir = refract(camDir, normal, airToWater);
 	vec3 bottom = rayDir * waterDepth / rayDir.z;
 	vec2 texcoord = (position.xy + bottom.xy) * vec2(0.5, -0.5) + vec2(0.5, 0.5);
