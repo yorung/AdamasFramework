@@ -357,8 +357,8 @@ ivec2 afGetTextureSize(GLuint tex)
 {
 	GLint w, h;
 	glBindTexture(GL_TEXTURE_2D, tex);
-	glGetTextureLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &w);
-	glGetTextureLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &h);
+	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &w);
+	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &h);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	return ivec2(w, h);
 }
