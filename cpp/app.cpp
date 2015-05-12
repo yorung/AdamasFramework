@@ -114,6 +114,7 @@ void App::Destroy()
 
 void App::Update()
 {
+	inputMan.Update();
 	luaMan.Update();
 	waterSurface.Update();
 	fps.Update();

@@ -294,10 +294,12 @@ void WaterSurface::Draw()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	shaderMan.Apply(shaderIdFullScr);
 	glUniform1i(glGetUniformLocation(shaderIdFullScr, "sampler"), 0);
-	if (GetKeyState(VK_TAB) & 0x01) {
-		afBindTextureToBindingPoint(rt.GetTexture(), 0);
-	} else {
+	static bool toggledTab;
+	toggledTab ^= inputMan.GetInputCount('\t') == 1;
+	if (toggledTab) {
 		afBindTextureToBindingPoint(heightW.GetTexture(), 0);
+	} else {
+		afBindTextureToBindingPoint(rt.GetTexture(), 0);
 	}
 	glBindSampler(0, samplerNoMipmap);
 	afDrawTriangleStrip(4);
