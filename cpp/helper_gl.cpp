@@ -30,7 +30,7 @@ VBOID afCreateDynamicVertexBuffer(int size)
 	return vbo;
 }
 
-#ifndef GL_ES_VERSION_2_0
+#ifdef AF_GLES31
 SSBOID afCreateSSBO(int size)
 {
 	SSBOID name;
@@ -70,7 +70,7 @@ void afLayoutUBOBindingManually(GLuint program, const GLchar* name, GLuint unifo
 }
 #endif
 
-#ifndef GL_ES_VERSION_2_0
+#ifdef AF_GLES31
 void afBindBufferToBindingPoint(SSBOID ssbo, GLuint storageBlockBinding)
 {
 	GLint prev;
@@ -110,7 +110,7 @@ GLuint afCreateDynamicTexture(int w, int h, AFDTFormat format)
 	case AFDT_R5G6B5_UINT:
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, nullptr);
 		break;
-#ifndef GL_ES_VERSION_2_0
+#ifdef AF_GLES31
 	case AFDT_R16G16B16A16_FLOAT:
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, w, h, 0, GL_RGBA, GL_HALF_FLOAT, nullptr);
 		break;
@@ -202,7 +202,7 @@ void afSetVertexAttributes(GLuint program, const InputElement elements[], int nu
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-#ifndef GL_ES_VERSION_2_0
+#ifdef AF_GLES31
 GLuint afCreateVAO(GLuint program, const InputElement elements[], int numElements, int numBuffers, VBOID const *vertexBufferIds, const GLsizei* strides, IBOID ibo)
 {
 	GLuint vao;
@@ -318,7 +318,7 @@ void afDumpCaps()
 	printf("GL_RENDERER = %s\n", (char*)glGetString(GL_RENDERER));
 	printf("GL_VENDOR = %s\n", (char*)glGetString(GL_VENDOR));
 	printf("GL_SHADING_LANGUAGE_VERSION = %s\n", (char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
-#ifndef GL_ES_VERSION_2_0
+#ifdef AF_GLES31
 	puts("------ GL_EXTENSIONS");
 
 	GLint num;
@@ -352,7 +352,7 @@ void afDumpIsEnabled()
 #undef _
 }
 
-#ifndef GL_ES_VERSION_2_0
+#ifdef AF_GLES31
 ivec2 afGetTextureSize(GLuint tex)
 {
 	GLint w, h;

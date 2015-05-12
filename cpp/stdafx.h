@@ -28,6 +28,8 @@ extern const char* boundJavaClass;
 
 static const int BONE_MAX = 50;
 
+#define AF_GLES31
+
 #include "af_math.h"
 #include "af_lua_helpers.h"
 #include "system_metrics.h"

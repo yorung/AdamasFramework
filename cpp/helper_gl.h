@@ -143,7 +143,7 @@ void _afHandleGLError(const char* func, int line, const char* command);
 void afDumpCaps();
 void afDumpIsEnabled();
 
-#ifndef GL_ES_VERSION_2_0
+#ifdef AF_GLES31
 typedef TBufName<GL_SHADER_STORAGE_BUFFER> SSBOID;
 typedef TBufName<GL_UNIFORM_BUFFER> UBOID;
 typedef GLuint VAOID;
