@@ -16,16 +16,18 @@ vec2 heightMapSize = fakeUBO[1].zw;
 const float heightLimit = 0.4f;
 
 void main() {
-	vec4 center = texture(lastHeightMap, vec2(texcoord.x, texcoord.y));
+	vec4 center = texture(lastHeightMap, texcoord);
 	vec2 ofs[] = {
-		vec2(texcoord.x, texcoord.y) + vec2(-1.0 / heightMapSize.x, 0),
-		vec2(texcoord.x, texcoord.y) + vec2(0, 1.0 / heightMapSize.y),
-		vec2(texcoord.x, texcoord.y) + vec2(1.0 / heightMapSize.x, 0),
-		vec2(texcoord.x, texcoord.y) + vec2(0, -1.0 / heightMapSize.y)
+		texcoord + vec2(-1.0 / heightMapSize.x, 0),
+		texcoord + vec2(0, 1.0 / heightMapSize.y),
+		texcoord + vec2(1.0 / heightMapSize.x, 0),
+		texcoord + vec2(0, -1.0 / heightMapSize.y)
 	};
 	float ave = 0.0;
 	for (int i = 0; i < 4; i++) {
-		ave += texture(lastHeightMap, ofs[i]).x;
+		vec2 o = ofs[i];
+		float isCoordIn0To1 = mod(floor(o.x) + floor(o.y) + 1.0, 2.0);
+		ave += texture(lastHeightMap, ofs[i]) * isCoordIn0To1;
 	}
 	ave /= 4.0;
 	float vel = ave - center.x;
