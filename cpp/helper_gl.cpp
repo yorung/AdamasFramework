@@ -111,6 +111,9 @@ GLuint afCreateDynamicTexture(int w, int h, AFDTFormat format)
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, nullptr);
 		break;
 #ifdef AF_GLES31
+	case AFDT_R32G32B32A32_FLOAT:
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, w, h, 0, GL_RGBA, GL_FLOAT, nullptr);
+		break;
 	case AFDT_R16G16B16A16_FLOAT:
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, w, h, 0, GL_RGBA, GL_HALF_FLOAT, nullptr);
 		break;

@@ -38,7 +38,7 @@ void main() {
 
 	float dist = length(position - mousePos);
 	center.x += max(0.0f, 1.0f - dist * 9.0) * 0.015f * mouseDown;
-	center.x = min(heightLimit, max(-heightLimit, center.x));
+	center.x = clamp(center.x, -heightLimit, heightLimit);
 
 	center.y += vel;
 	center.y *= 0.99;

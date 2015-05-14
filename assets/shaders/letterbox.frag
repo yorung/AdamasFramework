@@ -9,7 +9,6 @@ layout (location = 0) out vec4 fragColor;
 
 void main() {
 	vec2 coord = vec2(texcoord.x, texcoord.y);
-	float brightnessR = position.y < -0.8 || position.y > 0.8 ? 0.1 : 1.0;
-	float brightnessGB = coord.y < 0.15 || coord.y > 0.85 ? 0.1 : 1.0;
-	fragColor = vec4(texture(sampler, coord).xyz * vec3(brightnessR, brightnessGB, brightnessGB), 1.0);
+	float brightness = position.y < -0.8 || position.y > 0.8 ? 0.1 : 1.0;
+	fragColor = vec4(texture(sampler, coord).xyz * vec3(brightness, brightness, brightness), 1.0);
 }

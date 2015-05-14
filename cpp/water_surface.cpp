@@ -45,7 +45,7 @@ void AFRenderTarget::Destroy()
 
 void AFRenderTarget::Init(ivec2 size)
 {
-	texColor = afCreateDynamicTexture(size.x, size.y, AFDT_R16G16B16A16_FLOAT);
+	texColor = afCreateDynamicTexture(size.x, size.y, AFDT_R32G32B32A32_FLOAT);
 //	texColor = afCreateDynamicTexture(size.x, size.y, AFDT_R5G6B5_UINT);
 	texDepth = afCreateDynamicTexture(size.x, size.y, AFDT_DEPTH_STENCIL);
 
