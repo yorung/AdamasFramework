@@ -36,6 +36,11 @@ vec3 MakeWater3DPos(vec2 position)
 	return vec3(position, FetchWaterTex(position).x);
 }
 
+void main_() {
+	fragColor = vec4(1, 1, 0, 1);
+}
+
+
 void main() {
 	vec2 position = vfPosition;
 	vec3 heightU = MakeWater3DPos(position + vec2(0, 1.0 / (heightMapSize.y * 0.5)));
@@ -66,6 +71,7 @@ void main() {
 	float delaymap = texture(sampler4, texcoord).x;
 	vec4 timeline = texture(sampler3, vec2((wrappedTime - delaymap) / loopTime, 0));
 	vec4 bg = c1 * timeline.x + c2 * timeline.y + c3 * timeline.z;
+//	vec4 bg = vec4(normal, 1.0);
 
 
 	vec3 normalForSample = normal;

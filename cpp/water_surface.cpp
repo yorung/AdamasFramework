@@ -19,7 +19,7 @@ public:
 	AFRenderTarget();
 	void Init(ivec2 size);
 	void Destroy();
-	void Apply();
+	void BeginRenderToThis();
 	GLuint GetTexture() { return texColor; }
 };
 
@@ -69,9 +69,12 @@ void AFRenderTarget::Init(ivec2 size)
 	V(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 }
 
-void AFRenderTarget::Apply()
+void AFRenderTarget::BeginRenderToThis()
 {
 	V(glBindFramebuffer(GL_FRAMEBUFFER, framebufferObject));
+	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	assert(status == GL_FRAMEBUFFER_COMPLETE);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 struct TexFiles
@@ -147,8 +150,7 @@ void WaterSurface::Init()
 	rt.Init(systemMetrics.GetScreenSize());
 	for (auto& it : heightMap) {
 		it.Init(ivec2(HEIGHT_MAP_W, HEIGHT_MAP_H));
-		it.Apply();
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		it.BeginRenderToThis();
 	}
 
 	V(glBindFramebuffer(GL_FRAMEBUFFER, 0));
@@ -235,7 +237,8 @@ void WaterSurface::Draw()
 	heightCurrentWriteTarget ^= 1;
 	auto& heightR = heightMap[heightCurrentWriteTarget];
 	afBindTextureToBindingPoint(heightR.GetTexture(), 0);
-	heightW.Apply();
+	heightW.BeginRenderToThis();
+
 	shaderMan.Apply(heightMapGenShaderId);
 	struct UniformBuffer {
 		Vec2 mousePos;
@@ -274,10 +277,7 @@ void WaterSurface::Draw()
 
 	glUniform4fv(0, sizeof(hmub) / (sizeof(GLfloat) * 4), (GLfloat*)&hmub);
 
-	rt.Apply();
-	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-	assert(status == GL_FRAMEBUFFER_COMPLETE);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	rt.BeginRenderToThis();
 
 	afBindVAO(vaoWater);
 	afDrawIndexedTriangleStrip(numIndi);
