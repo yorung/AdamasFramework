@@ -32,14 +32,8 @@ void main() {
 	ave /= 4.0;
 	float vel = ave - center.x;
 
-	if (mouseDown != 0.0) {
-		float velUser = length(position - mousePos) < 0.05 ? 0.5 : 0.0;
-		velUser *= 1.0;
-		vel += velUser;
-	}
-
 	float dist = length(position - mousePos);
-	center.x += max(0.0f, 1.0f - dist * 9.0) * 0.015f * mouseDown;
+	center.x += max(0.0f, 1.0f - dist * 9.0) * 0.215f * mouseDown;
 	center.x = clamp(center.x, -heightLimit, heightLimit);
 
 	center.y += vel;

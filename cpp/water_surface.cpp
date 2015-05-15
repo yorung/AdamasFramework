@@ -1,5 +1,11 @@
 #include "stdafx.h"
 
+const int tileMax = 256;
+const int HEIGHT_MAP_W = tileMax;
+const int HEIGHT_MAP_H = tileMax;
+
+const float loopTime = 20.0;
+
 #define V afHandleGLError
 
 WaterSurface waterSurface;
@@ -84,19 +90,6 @@ TexFiles texFiles[] = {
 };
 
 TexMan::TMID texId[dimof(texFiles)];
-
-
-const int tileMax = 128;
-const int vertMax = tileMax + 1;
-const float pitch = 2.0f / tileMax;
-const float repeat = 2;
-const float halflife = 1.5f;
-const float heightUnit = 0.02f;
-const float rippleSpeed = 0.7f;
-const float loopTime = 20.0;
-
-const int HEIGHT_MAP_W = 128;
-const int HEIGHT_MAP_H = 128;
 
 
 WaterSurface::WaterSurface()
