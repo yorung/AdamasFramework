@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-const int tileMax = 256;
+const int tileMax = 512;
 const int HEIGHT_MAP_W = tileMax;
 const int HEIGHT_MAP_H = tileMax;
 
@@ -74,7 +74,7 @@ void AFRenderTarget::BeginRenderToThis()
 	V(glBindFramebuffer(GL_FRAMEBUFFER, framebufferObject));
 	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	assert(status == GL_FRAMEBUFFER_COMPLETE);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
 
 struct TexFiles
@@ -104,10 +104,6 @@ WaterSurface::WaterSurface()
 	shaderId = 0;
 	shaderIdFullScr = 0;
 	heightMapGenShaderId = 0;
-
-	iboTiledPlane = 0;
-	vboTiledPlane = 0;
-	vaoWater = 0;
 }
 
 WaterSurface::~WaterSurface()
@@ -117,10 +113,6 @@ WaterSurface::~WaterSurface()
 
 void WaterSurface::Destroy()
 {
-	afSafeDeleteBuffer(vboTiledPlane);
-	afSafeDeleteBuffer(iboTiledPlane);
-	afSafeDeleteVAO(vaoWater);
-
 	afSafeDeleteSampler(samplerRepeat);
 	afSafeDeleteSampler(samplerClamp);
 	afSafeDeleteSampler(samplerNoMipmap);
@@ -129,19 +121,6 @@ void WaterSurface::Destroy()
 	for (auto& it : heightMap) {
 		it.Destroy();
 	}
-}
-
-void WaterSurface::InitBuffers()
-{
-	iboTiledPlane = afCreateTiledPlaneIBO(tileMax, &numIndi);
-	vboTiledPlane = afCreateTiledPlaneVBO(tileMax);
-
-	static const InputElement elements[] = {
-		CInputElement(0, "vCoord", SF_R32G32_FLOAT, 0),
-	};
-	VBOID vbos[] = { vboTiledPlane };
-	const int strides[] = { sizeof(Vec2) };
-	vaoWater = afCreateVAO(shaderId, elements, dimof(elements), dimof(vbos), vbos, strides, iboTiledPlane);
 }
 
 void WaterSurface::Init()
@@ -164,8 +143,6 @@ void WaterSurface::Init()
 	assert(shaderId);
 	heightMapGenShaderId = shaderMan.Create("water_heightmap");
 	assert(heightMapGenShaderId);
-
-	InitBuffers();
 
 	glActiveTexture(GL_TEXTURE0);
 	for (int i = 0; i < dimof(texFiles); i++) {
@@ -279,8 +256,8 @@ void WaterSurface::Draw()
 
 	rt.BeginRenderToThis();
 
-	afBindVAO(vaoWater);
-	afDrawIndexedTriangleStrip(numIndi);
+	afBindVAO(vaoEmpty);
+	afDrawTriangleStrip(4);
 	afBindTextureToBindingPoint(0, 6);
 
 	V(glBindFramebuffer(GL_FRAMEBUFFER, 0));

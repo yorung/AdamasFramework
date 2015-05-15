@@ -2,7 +2,6 @@
 
 precision mediump float;
 in vec2 vfPosition;
-in vec3 vfNormal;
 uniform sampler2D sampler0;
 uniform sampler2D sampler1;
 uniform sampler2D sampler2;
