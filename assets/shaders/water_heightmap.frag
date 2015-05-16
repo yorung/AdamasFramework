@@ -17,12 +17,12 @@ const float heightLimit = 0.4f;
 
 void main() {
 	vec4 center = texture(lastHeightMap, texcoord);
-	vec2 ofs[] = {
+	vec2 ofs[] = vec2[](
 		texcoord + vec2(-1.0 / heightMapSize.x, 0),
 		texcoord + vec2(0, 1.0 / heightMapSize.y),
 		texcoord + vec2(1.0 / heightMapSize.x, 0),
 		texcoord + vec2(0, -1.0 / heightMapSize.y)
-	};
+	);
 	float ave = 0.0;
 	for (int i = 0; i < 4; i++) {
 		vec2 o = ofs[i];
