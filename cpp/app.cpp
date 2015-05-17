@@ -25,7 +25,8 @@ void App::Draw()
 	afDepthStencilMode(true);
 //	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	waterSurface.Draw();
+//	waterSurface.Draw();
+	waterSurfaceClassic.Draw();
 /*
 	AFRenderTarget rt;
 	afSetRenderTarget(rt);
@@ -72,6 +73,7 @@ void App::Init()
 
 	meshRenderer.Create();
 	waterSurface.Init();
+	waterSurfaceClassic.Init();
 	fontMan.Init();
 	spriteRenderer.Init();
 	stockObjects.Init();
@@ -96,6 +98,7 @@ void App::LoadMesh(const char* fileName)
 
 void App::OnTap(float x, float y)
 {
+	waterSurfaceClassic.CreateRipple(Vec2(x, y));
 }
 
 void App::Destroy()
@@ -106,6 +109,7 @@ void App::Destroy()
 	texMan.Destroy();
 	shaderMan.Destroy();
 	waterSurface.Destroy();
+	waterSurfaceClassic.Destroy();
 	fontMan.Destroy();
 	meshRenderer.Destroy();
 	meshMan.Destroy();
@@ -117,6 +121,7 @@ void App::Update()
 	inputMan.Update();
 	luaMan.Update();
 	waterSurface.Update();
+	waterSurfaceClassic.Update();
 	fps.Update();
 	fontMan.DrawString(Vec2(20, 40), 20, SPrintf("FPS: %f", fps.Get()));
 }

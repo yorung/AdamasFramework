@@ -83,7 +83,7 @@ struct TexFiles
 	bool clamp;
 };
 
-TexFiles texFiles[] = {
+static TexFiles texFiles[] = {
 	{ "rose.jpg", true },
 	{ "autumn.jpg", true },
 	{ "pangyo.jpg", true },
@@ -92,7 +92,7 @@ TexFiles texFiles[] = {
 	{ "sphere.jpg", true },
 };
 
-TexMan::TMID texId[dimof(texFiles)];
+static TexMan::TMID texId[dimof(texFiles)];
 
 
 WaterSurface::WaterSurface()
