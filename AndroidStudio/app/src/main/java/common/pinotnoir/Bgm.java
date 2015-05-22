@@ -8,6 +8,7 @@ import android.util.Log;
 import java.io.IOException;
 
 public class Bgm {
+    static final String TAG = "Bgm";
     static String fileName = null;
     static private MediaPlayer mp = new MediaPlayer();
     static private void play(Context context) {
@@ -22,11 +23,11 @@ public class Bgm {
             mp.prepare();
             mp.start();
         } catch (IllegalStateException e) {
-            Log.v("sound IllegalStateException", e.getMessage());
+            Log.v(TAG, e.getMessage());
         } catch (IllegalArgumentException e) {
-            Log.v("sound IllegalArgumentException", e.getMessage());
+            Log.v(TAG, e.getMessage());
         } catch (IOException e) {
-            Log.v("sound IOException", e.getMessage());
+            Log.v(TAG, e.getMessage());
         }
     }
     static public void playBgm(Context context, String fileName_) {
