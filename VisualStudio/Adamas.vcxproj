@@ -101,6 +101,8 @@
     <None Include="..\assets\shaders\font.vert" />
     <None Include="..\assets\shaders\letterbox.frag" />
     <None Include="..\assets\shaders\letterbox.vert" />
+    <None Include="..\assets\shaders\letterbox_classic.frag" />
+    <None Include="..\assets\shaders\letterbox_classic.vert" />
     <None Include="..\assets\shaders\skin.400.frag" />
     <None Include="..\assets\shaders\skin.400.vert" />
     <None Include="..\assets\shaders\skin.frag" />
@@ -109,6 +111,8 @@
     <None Include="..\assets\shaders\vivid.vert" />
     <None Include="..\assets\shaders\water.frag" />
     <None Include="..\assets\shaders\water.vert" />
+    <None Include="..\assets\shaders\water_classic.frag" />
+    <None Include="..\assets\shaders\water_classic.vert" />
     <None Include="..\assets\shaders\water_heightmap.frag" />
     <None Include="..\assets\shaders\water_heightmap.vert" />
   </ItemGroup>

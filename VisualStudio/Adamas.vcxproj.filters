@@ -260,6 +260,18 @@
     <None Include="..\assets\shaders\water_heightmap.vert">
       <Filter>shaders</Filter>
     </None>
+    <None Include="..\assets\shaders\letterbox_classic.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\assets\shaders\letterbox_classic.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\assets\shaders\water_classic.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\assets\shaders\water_classic.vert">
+      <Filter>shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="icon.ico" />

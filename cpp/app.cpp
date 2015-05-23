@@ -23,7 +23,7 @@ App::App()
 void App::Draw()
 {
 	afDepthStencilMode(true);
-//	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 //	waterSurface.Draw();
 	waterSurfaceClassic.Draw();
@@ -49,7 +49,7 @@ void App::Draw()
 	float aspect = (float)scrSize.x / scrSize.y;
 	Mat proj = perspective(45, aspect, n, f);
 	matrixMan.Set(MatrixMan::PROJ, proj);
-/*
+
 	MeshXAnimResult r;
 	MeshX* mesh = (MeshX*)meshMan.Get(meshId);
 	if (mesh) {
@@ -60,7 +60,7 @@ void App::Draw()
 		mesh->Draw(r, translate(0, radius * 1.5f, 0) * q2m(Quat(Vec3(0, 0, 1.0f), normToRad(wrappedTime))));
 		mesh->Draw(r, translate(radius * 2.0f, 0, 0) * q2m(Quat(Vec3(0, 1.0f, 0), normToRad(wrappedTime))));
 	}
-*/
+
 	meshRenderer.Flush();
 	luaMan.DrawSprites();
 	fontMan.Render();
