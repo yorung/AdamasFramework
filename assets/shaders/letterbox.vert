@@ -3,8 +3,6 @@
 out vec2 texcoord;
 out vec2 position;
 
-in int gl_VertexID;
-
 void main() {
 	vec2 vPosition = vec2((gl_VertexID & 1) != 0 ? 1 : -1, (gl_VertexID & 2) != 0 ? -1 : 1);
 
