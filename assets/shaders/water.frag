@@ -1,6 +1,6 @@
 #version 310 es
 
-precision mediump float;
+precision highp float;
 in vec2 vfPosition;
 uniform sampler2D sampler0;
 uniform sampler2D sampler1;
@@ -78,5 +78,14 @@ void main() {
 	fragColor = mix(bg, skyColor * 1.5 + color, color.w);
 //	fragColor.xyz = height.zzz;
 //	fragColor.xyz = 0.5 + normalFromHeightMap;
+
+// ok
 //	fragColor.xyz = normal;
+
+// ok
+//	fragColor.xyz = height.zzz;
+
+//wrong color when mediump
+// 	fragColor = bg;
+
 }

@@ -1,6 +1,6 @@
 #version 310 es
 
-precision mediump float;
+precision highp float;
 out vec2 vfPosition;
 uniform sampler2D waterHeightmap;
 
