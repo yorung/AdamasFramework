@@ -227,7 +227,7 @@ void WaterSurfaceClassic::Init()
 
 
 //	const char* shaderName = "vivid";
-	const char* shaderName = "letterbox_classic";
+	const char* shaderName = "letterbox";
 	shaderIdFullScr = shaderMan.Create(shaderName);
 
 	glActiveTexture(GL_TEXTURE0);
