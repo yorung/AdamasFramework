@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-const int tileMax = 512;
+const int tileMax = 256;
 const int HEIGHT_MAP_W = tileMax;
 const int HEIGHT_MAP_H = tileMax;
 
@@ -202,29 +202,27 @@ void WaterSurface::Update()
 	}
 }
 
-void WaterSurface::Draw()
+void WaterSurface::UpdateHeightMap(const UniformBuffer& hmub)
 {
-	UpdateTime();
-
-	afDepthStencilMode(false);
-	afEnableBackFaceCulling(false);
-	afBlendMode(BM_NONE);
-
-	auto& heightW = heightMap[heightCurrentWriteTarget];
-	heightCurrentWriteTarget ^= 1;
 	auto& heightR = heightMap[heightCurrentWriteTarget];
+	heightCurrentWriteTarget ^= 1;
+	auto& heightW = heightMap[heightCurrentWriteTarget];
 	afBindTextureToBindingPoint(heightR.GetTexture(), 0);
 	heightW.BeginRenderToThis();
 
 	shaderMan.Apply(heightMapGenShaderId);
-	struct UniformBuffer {
-		Vec2 mousePos;
-		float mouseDown;
-		float padding;
-		float elapsedTime;
-		float wrappedTime;
-		Vec2 heightMapSize;
-	};
+	glUniform4fv(0, sizeof(hmub) / (sizeof(GLfloat) * 4), (GLfloat*)&hmub);
+	fontMan.DrawString(Vec2(300, 20), 10, SPrintf("%f, %f", hmub.mousePos.x, hmub.mousePos.y));
+
+	glViewport(0, 0, HEIGHT_MAP_W, HEIGHT_MAP_H);
+	afBindVAO(vaoEmpty);
+	afDrawTriangleStrip(4);
+}
+
+void WaterSurface::Draw()
+{
+	UpdateTime();
+
 	UniformBuffer hmub;
 	hmub.mousePos = (Vec2)systemMetrics.GetMousePos() / (Vec2)systemMetrics.GetScreenSize() * Vec2(2, -2) + Vec2(-1, 1);
 	hmub.mouseDown = (float)systemMetrics.mouseDown;
@@ -233,12 +231,13 @@ void WaterSurface::Draw()
 	hmub.heightMapSize.y = HEIGHT_MAP_H;
 	double dummy;
 	hmub.wrappedTime = (float)modf(elapsedTime * (1.0f / loopTime), &dummy) * loopTime;
-	glUniform4fv(0, sizeof(hmub) / (sizeof(GLfloat) * 4), (GLfloat*)&hmub);
-	fontMan.DrawString(Vec2(300, 20), 10, SPrintf("%f, %f", hmub.mousePos.x, hmub.mousePos.y));
 
-	glViewport(0, 0, HEIGHT_MAP_W, HEIGHT_MAP_H);
-	afBindVAO(vaoEmpty);
-	afDrawTriangleStrip(4);
+	afDepthStencilMode(false);
+	afEnableBackFaceCulling(false);
+	afBlendMode(BM_NONE);
+
+	UpdateHeightMap(hmub);
+	UpdateHeightMap(hmub);
 
 	ivec2 scrSize = systemMetrics.GetScreenSize();
 	glViewport(0, 0, scrSize.x, scrSize.y);
@@ -250,7 +249,8 @@ void WaterSurface::Draw()
 		glBindSampler(i, texFiles[i].clamp ? samplerClamp : samplerRepeat);
 	}
 
-	afBindTextureToBindingPoint(heightW.GetTexture(), 6);
+	auto& curHeightMap = heightMap[heightCurrentWriteTarget];
+	afBindTextureToBindingPoint(curHeightMap.GetTexture(), 6);
 
 	glUniform4fv(0, sizeof(hmub) / (sizeof(GLfloat) * 4), (GLfloat*)&hmub);
 
@@ -267,7 +267,7 @@ void WaterSurface::Draw()
 	static bool toggledTab = false;
 	toggledTab ^= inputMan.GetInputCount('\t') == 1;
 	if (toggledTab) {
-		afBindTextureToBindingPoint(heightW.GetTexture(), 0);
+		afBindTextureToBindingPoint(curHeightMap.GetTexture(), 0);
 	} else {
 		afBindTextureToBindingPoint(rt.GetTexture(), 0);
 	}

@@ -1,5 +1,14 @@
 class WaterSurface
 {
+	struct UniformBuffer {
+		Vec2 mousePos;
+		float mouseDown;
+		float padding;
+		float elapsedTime;
+		float wrappedTime;
+		Vec2 heightMapSize;
+	};
+
 	Mat matProj, matView;
 	ShaderMan::SMID shaderId;
 	ShaderMan::SMID shaderIdFullScr;
@@ -12,6 +21,7 @@ class WaterSurface
 	GLuint samplerRepeat;
 	GLuint samplerNoMipmap;
 	void UpdateTime();
+	void UpdateHeightMap(const UniformBuffer& ub);
 public:
 	WaterSurface();
 	~WaterSurface();
