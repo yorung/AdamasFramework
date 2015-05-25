@@ -19,6 +19,10 @@ const float loopTime = 20.0;
 const float PI2 = 3.1415926 * 2.0;
 
 const float airToWater = 1.0 / 1.33333;
+
+const vec3 invGamma3 = vec3(1.0 / 2.2, 1.0 / 2.2, 1.0 / 2.2);
+const vec3 gamma3 = vec3(2.2, 2.2, 2.2);
+
 const vec3 camDir = vec3(0, 0, -1);
 const float waterDepth = 0.2;
 
@@ -37,11 +41,11 @@ vec3 MakeWater3DPos(vec2 position)
 
 float GetFakeSunIllum(vec2 position, vec3 normal)
 {
-	const vec3 lightPos = vec3(0.5, 0.5, 2.0);
+	const vec3 lightPos = vec3(0.5, 0.5, 4.0);
 	vec3 lightDir = normalize(lightPos - vec3(position, 0));
 	vec3 eyeDir = vec3(0, 0, 1);
 	vec3 reflectedRay = reflect(-eyeDir, normal);
-	return pow(max(0.0, dot(lightDir, reflectedRay)), 1000.0);
+	return pow(max(0.0, dot(lightDir, reflectedRay)), 2000.0);
 }
 
 void main_() {
@@ -50,6 +54,8 @@ void main_() {
 
 
 void main() {
+	fragColor.w = 1.0;
+
 	vec2 position = vfPosition;
 	vec3 heightU = MakeWater3DPos(position + vec2(0, 1.0 / (heightMapSize.y * 0.5)));
 	vec3 heightL = MakeWater3DPos(position - vec2(1.0 / (heightMapSize.x * 0.5), 0));
@@ -81,10 +87,14 @@ void main() {
 	vec3 normalForSample = normal;
 	vec3 skyColor = texture(sampler5, normalForSample.xy * vec2(0.5, -0.5) + vec2(0.5, 0.5)).xyz;
 
+	// gamma -> linear
+	bg = pow(bg, invGamma3) * 0.5;
+	skyColor = pow(skyColor, invGamma3) * 0.5;
+
 	float sunStr = GetFakeSunIllum(position.xy, normal);
 
-	fragColor.w = 1.0;
-	fragColor.xyz = mix(bg, skyColor * 1.5 + color.xyz, color.w) + sunStr;
+	vec3 outCol = mix(bg, min(vec3(5.5), color.xyz * 50.5), color.w) + sunStr;
+//	vec3 outCol = mix(bg, skyColor * 50.5, color.w) + sunStr;
 
 
 
@@ -100,4 +110,6 @@ void main() {
 //wrong color when mediump
 // 	fragColor = bg;
 
+	// linear -> gamma
+	fragColor.rgb = pow(outCol * 1.5, gamma3);
 }
