@@ -35,6 +35,15 @@ vec3 MakeWater3DPos(vec2 position)
 	return vec3(position, FetchWaterTex(position).x);
 }
 
+float GetFakeSunIllum(vec2 position, vec3 normal)
+{
+	const vec3 lightPos = vec3(0.5, 0.5, 2.0);
+	vec3 lightDir = normalize(lightPos - vec3(position, 0));
+	vec3 eyeDir = vec3(0, 0, 1);
+	vec3 reflectedRay = reflect(-eyeDir, normal);
+	return pow(max(0.0, dot(lightDir, reflectedRay)), 1000.0);
+}
+
 void main_() {
 	fragColor = vec4(1, 1, 0, 1);
 }
@@ -48,7 +57,6 @@ void main() {
 	vec3 normalFromHeightMap = cross(heightU - height, heightL - height);
 
 	vec3 normal = normalize(normalFromHeightMap);
-//	vec3 normal = normalize(vfNormal);
 
 	vec3 rayDir = refract(camDir, normal, airToWater);
 	vec3 bottom = rayDir * waterDepth / rayDir.z;
@@ -56,26 +64,30 @@ void main() {
 	float mask = dot(normal, vec3(0, 0, 1));
 	vec4 color = vec4(1, 1, 1, 1.0 - mask);
 
-
 	float dist1 = length(position + vec2(0.5, 0.5));
 	float dist2 = length(position - vec2(0.5, 0.5));
 
-	float radTimeUnit = wrappedTime / loopTime * PI2;
-//	vec2 coord = vec2(texcoord.x, texcoord.y + sin(dist1 * 8.7 + radTimeUnit * 25.0) / 800.0 + sin(dist2 * 10.0 + radTimeUnit * 48.0) / 800.0);
 	vec2 coord = texcoord;
 
-	vec4 c1 = texture(sampler0, coord);
-	vec4 c2 = texture(sampler1, coord);
-	vec4 c3 = texture(sampler2, coord);
+	vec3 c1 = texture(sampler0, coord).xyz;
+	vec3 c2 = texture(sampler1, coord).xyz;
+	vec3 c3 = texture(sampler2, coord).xyz;
 	float delaymap = texture(sampler4, texcoord).x;
 	vec4 timeline = texture(sampler3, vec2((wrappedTime - delaymap) / loopTime, 0));
-	vec4 bg = c1 * timeline.x + c2 * timeline.y + c3 * timeline.z;
-//	vec4 bg = vec4(normal, 1.0);
+	vec3 bg = c1 * timeline.x + c2 * timeline.y + c3 * timeline.z;
+//	vec3 bg = normal;
 
 
 	vec3 normalForSample = normal;
-	vec4 skyColor = texture(sampler5, normalForSample.xy * vec2(0.5, -0.5) + vec2(0.5, 0.5));
-	fragColor = mix(bg, skyColor * 1.5 + color, color.w);
+	vec3 skyColor = texture(sampler5, normalForSample.xy * vec2(0.5, -0.5) + vec2(0.5, 0.5)).xyz;
+
+	float sunStr = GetFakeSunIllum(position.xy, normal);
+
+	fragColor.w = 1.0;
+	fragColor.xyz = mix(bg, skyColor * 1.5 + color.xyz, color.w) + sunStr;
+
+
+
 //	fragColor.xyz = height.zzz;
 //	fragColor.xyz = 0.5 + normalFromHeightMap;
 
