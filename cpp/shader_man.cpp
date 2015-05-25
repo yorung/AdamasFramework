@@ -28,7 +28,7 @@ static GLuint CompileShader(int type, const char *fileName)
 		glDeleteShader(shader);
 		shader = 0;
 	} else {
-		aflog("CompileShader(%s) succeess.", fileName);
+		aflog("CompileShader(%s) succeess.\n", fileName);
 	}
 	return shader;
 }
@@ -66,7 +66,7 @@ static GLuint CreateProgram(const char* name)
 		glDeleteProgram(program);
 		program = 0;
 	} else {
-		aflog("CreateProgram(%s) succeess.", name);
+		aflog("CreateProgram(%s) succeess.\n", name);
 	}
 	return program;
 }
