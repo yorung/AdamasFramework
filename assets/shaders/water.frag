@@ -39,6 +39,17 @@ vec3 MakeWater3DPos(vec2 position)
 	return vec3(position, FetchWaterTex(position).x);
 }
 
+vec3 GetSurfaceNormal()
+{
+	vec2 position = vfPosition;
+	vec3 heightU = MakeWater3DPos(position + vec2(0, 1.0 / (heightMapSize.y * 0.5)));
+	vec3 heightL = MakeWater3DPos(position - vec2(1.0 / (heightMapSize.x * 0.5), 0));
+	vec3 height = MakeWater3DPos(position);
+	vec3 normalFromHeightMap = cross(heightU - height, heightL - height);
+
+	return normalize(normalFromHeightMap);
+}
+
 float GetFakeSunIllum(vec2 position, vec3 normal)
 {
 	const vec3 lightPos = vec3(0.5, 0.5, 4.0);
@@ -48,22 +59,11 @@ float GetFakeSunIllum(vec2 position, vec3 normal)
 	return pow(max(0.0, dot(lightDir, reflectedRay)), 2000.0);
 }
 
-void main_() {
-	fragColor = vec4(1, 1, 0, 1);
-}
-
-
 void main() {
 	fragColor.w = 1.0;
 
 	vec2 position = vfPosition;
-	vec3 heightU = MakeWater3DPos(position + vec2(0, 1.0 / (heightMapSize.y * 0.5)));
-	vec3 heightL = MakeWater3DPos(position - vec2(1.0 / (heightMapSize.x * 0.5), 0));
-	vec3 height = MakeWater3DPos(position);
-	vec3 normalFromHeightMap = cross(heightU - height, heightL - height);
-
-	vec3 normal = normalize(normalFromHeightMap);
-
+	vec3 normal = GetSurfaceNormal();
 	vec3 rayDir = refract(camDir, normal, airToWater);
 	vec3 bottom = rayDir * waterDepth / rayDir.z;
 	vec2 texcoord = (position.xy + bottom.xy) * vec2(0.5, -0.5) + vec2(0.5, 0.5);
