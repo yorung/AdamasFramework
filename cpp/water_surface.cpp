@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-const int tileMax = 128;
+const int tileMax = 256;
 const int HEIGHT_MAP_W = tileMax;
 const int HEIGHT_MAP_H = tileMax;
 

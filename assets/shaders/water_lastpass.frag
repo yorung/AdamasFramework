@@ -24,7 +24,7 @@ const vec3 invGamma3 = vec3(1.0 / 2.2, 1.0 / 2.2, 1.0 / 2.2);
 const vec3 gamma3 = vec3(2.2, 2.2, 2.2);
 
 const vec3 camDir = vec3(0, 0, -1);
-const float waterDepth = 0.2;
+const float waterDepth = 0.1;
 
 layout (location = 0) out vec4 fragColor;
 
@@ -138,7 +138,7 @@ void main() {
 	float mixFactor = 1.0 - dot(normal, vec3(0, 0, 1));
 //	vec3 outCol = mix(bg, min(vec3(5.5), vec3(1.0, 1.0, 1.0) * 50.5), mixFactor) + sunStr;
 //	vec3 outCol = mix(bg, skyColor * 50.5, mixFactor) + sunStr;
-	vec3 outCol = mix(bg, skyColor * 0.5, mixFactor) * GetCaustics(vfPosition) + sunStr;
+	vec3 outCol = mix(bg, skyColor * 0.5, mixFactor) * (GetCaustics(vfPosition) + 0.3) + sunStr;
 
 //	fragColor.xyz = height.zzz;
 //	fragColor.xyz = 0.5 + normalFromHeightMap;
