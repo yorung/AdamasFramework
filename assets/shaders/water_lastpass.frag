@@ -39,9 +39,9 @@ vec3 MakeWater3DPos(vec2 position)
 	return vec3(position, FetchWaterTex(position).x);
 }
 
-vec3 GetSurfaceNormal()
+vec3 GetSurfaceNormal(vec2 position)
 {
-	vec4 h = FetchWaterTex(vfPosition);
+	vec4 h = FetchWaterTex(position);
 	vec3 normal = vec3(h.zw, sqrt(1.0 - dot(h.zw, h.zw)));
 	return normal;
 /*
@@ -63,14 +63,46 @@ float GetFakeSunIllum(vec2 position, vec3 normal)
 	return pow(max(0.0, dot(lightDir, reflectedRay)), 2000.0);
 }
 
-float GetCaustics(vec2 position, vec3 normal)
+vec3 IntersectRayWithBottom(vec2 surfacePos, vec3 surfaceNormal)
 {
+	const vec3 lightPos = vec3(0.5, 0.5, 4.0);
+	vec3 pos3d = vec3(surfacePos, 0);
+	vec3 lightDir = normalize(lightPos - pos3d);
+	vec3 eyeDir = vec3(0, 0, 1);
+	vec3 refractedRay = refract(-eyeDir, surfaceNormal, airToWater);
+	return pos3d + refractedRay * waterDepth;
+}
+
+float GetCaustics(vec2 position)
+{
+	vec2 ofsY = position + vec2(0, 1.0 / (heightMapSize.y * 0.5));
+	vec2 ofsX = position + vec2(1.0 / (heightMapSize.x * 0.5), 0);
+
+	vec3 resultCenter = IntersectRayWithBottom(position, GetSurfaceNormal(position));
+	vec3 resultOfsX = IntersectRayWithBottom(ofsX, GetSurfaceNormal(ofsX));
+	vec3 resultOfsY = IntersectRayWithBottom(ofsY, GetSurfaceNormal(ofsY));
+
+	vec3 resultOrgCenter = IntersectRayWithBottom(position, vec3(0.0, 0.0, 1.0));
+	vec3 resultOrgOfsX = IntersectRayWithBottom(ofsX, vec3(0.0, 0.0, 1.0));
+	vec3 resultOrgOfsY = IntersectRayWithBottom(ofsY, vec3(0.0, 0.0, 1.0));
+
+	float sqWithWave = length(resultOfsX - resultCenter) * length(resultOfsY - resultCenter);
+	float sqOrg = length(resultOrgOfsX - resultOrgCenter) * length(resultOrgOfsY - resultOrgCenter);
+
+	return sqOrg / sqWithWave;
+//	return sqOrg;
+//	return 1.0;
+}
+
+float GetCaustics1(vec2 position)
+{
+	vec3 normal = GetSurfaceNormal(position);
 	const vec3 lightPos = vec3(0.5, 0.5, 4.0);
 	vec3 lightDir = normalize(lightPos - vec3(position, 0));
 	vec3 eyeDir = vec3(0, 0, 1);
-	vec3 reflectedRay = reflect(-eyeDir, normal);
-	vec3 reflectedRayOrg = reflect(-eyeDir, vec3(0.0, 0.0, 1.0));
-	return dot(reflectedRay, reflectedRayOrg);
+	vec3 refractedRay = refract(-eyeDir, normal, airToWater);
+	vec3 refractedRayOrg = refract(-eyeDir, vec3(0.0, 0.0, 1.0), airToWater);
+	return dot(refractedRay, refractedRayOrg);
 }
 
 vec3 GetBGColor(vec2 coord)
@@ -87,12 +119,11 @@ vec3 GetBGColor(vec2 coord)
 void main() {
 	fragColor.w = 1.0;
 
-	vec2 position = vfPosition;
-	vec3 normal = GetSurfaceNormal();
+	vec3 normal = GetSurfaceNormal(vfPosition);
 //	vec3 rayDirOrg = refract(camDir, vec3(0.0, 1.0, 0.0), airToWater);
 	vec3 rayDir = refract(camDir, normal, airToWater);
 	vec3 bottom = rayDir * waterDepth / rayDir.z;
-	vec2 texcoord = (position.xy + bottom.xy) * vec2(0.5, -0.5) + vec2(0.5, 0.5);
+	vec2 texcoord = (vfPosition.xy + bottom.xy) * vec2(0.5, -0.5) + vec2(0.5, 0.5);
 
 	vec3 bg = GetBGColor(texcoord);
 
@@ -102,12 +133,12 @@ void main() {
 	bg = pow(bg, invGamma3) * 0.5;
 	skyColor = pow(skyColor, invGamma3) * 0.5;
 
-	float sunStr = GetFakeSunIllum(position.xy, normal);
+	float sunStr = GetFakeSunIllum(vfPosition.xy, normal);
 
 	float mixFactor = 1.0 - dot(normal, vec3(0, 0, 1));
 //	vec3 outCol = mix(bg, min(vec3(5.5), vec3(1.0, 1.0, 1.0) * 50.5), mixFactor) + sunStr;
 //	vec3 outCol = mix(bg, skyColor * 50.5, mixFactor) + sunStr;
-	vec3 outCol = mix(bg, skyColor * 0.5, mixFactor) * GetCaustics(position, normal) + sunStr;
+	vec3 outCol = mix(bg, skyColor * 0.5, mixFactor) * GetCaustics(vfPosition) + sunStr;
 
 //	fragColor.xyz = height.zzz;
 //	fragColor.xyz = 0.5 + normalFromHeightMap;
@@ -123,4 +154,6 @@ void main() {
 
 	// linear -> gamma
 	fragColor.rgb = pow(outCol * 1.5, gamma3);
+
+//	fragColor.rgb = IntersectRayWithBottom(vfPosition, GetSurfaceNormal(vfPosition));
 }
