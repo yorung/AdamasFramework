@@ -248,12 +248,6 @@
     <None Include="..\assets\shaders\vivid.vert">
       <Filter>shaders</Filter>
     </None>
-    <None Include="..\assets\shaders\water.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\assets\shaders\water.vert">
-      <Filter>shaders</Filter>
-    </None>
     <None Include="..\assets\shaders\water_heightmap.frag">
       <Filter>shaders</Filter>
     </None>
@@ -264,6 +258,12 @@
       <Filter>shaders</Filter>
     </None>
     <None Include="..\assets\shaders\water_classic.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\assets\shaders\water_lastpass.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\assets\shaders\water_lastpass.vert">
       <Filter>shaders</Filter>
     </None>
   </ItemGroup>

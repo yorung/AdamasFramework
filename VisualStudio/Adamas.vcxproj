@@ -107,8 +107,8 @@
     <None Include="..\assets\shaders\skin.vert" />
     <None Include="..\assets\shaders\vivid.frag" />
     <None Include="..\assets\shaders\vivid.vert" />
-    <None Include="..\assets\shaders\water.frag" />
-    <None Include="..\assets\shaders\water.vert" />
+    <None Include="..\assets\shaders\water_lastpass.frag" />
+    <None Include="..\assets\shaders\water_lastpass.vert" />
     <None Include="..\assets\shaders\water_classic.frag" />
     <None Include="..\assets\shaders\water_classic.vert" />
     <None Include="..\assets\shaders\water_heightmap.frag" />

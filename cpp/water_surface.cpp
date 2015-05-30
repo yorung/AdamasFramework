@@ -139,7 +139,7 @@ void WaterSurface::Init()
 //	const char* shaderName = "vivid";
 	const char* shaderName = "letterbox";
 	shaderIdFullScr = shaderMan.Create(shaderName);
-	shaderId = shaderMan.Create("water");
+	shaderId = shaderMan.Create("water_lastpass");
 	assert(shaderId);
 	heightMapGenShaderId = shaderMan.Create("water_heightmap");
 	assert(heightMapGenShaderId);
