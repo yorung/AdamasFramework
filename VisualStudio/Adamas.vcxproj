@@ -113,6 +113,8 @@
     <None Include="..\assets\shaders\water_classic.vert" />
     <None Include="..\assets\shaders\water_heightmap.frag" />
     <None Include="..\assets\shaders\water_heightmap.vert" />
+    <None Include="..\assets\shaders\water_normal.frag" />
+    <None Include="..\assets\shaders\water_normal.vert" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="icon.ico" />

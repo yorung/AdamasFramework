@@ -101,9 +101,10 @@ WaterSurface::WaterSurface()
 	samplerClamp = 0;
 	samplerRepeat = 0;
 	samplerNoMipmap = 0;
-	shaderId = 0;
-	shaderIdFullScr = 0;
-	heightMapGenShaderId = 0;
+	shaderWaterLastPass = 0;
+	shaderFullScr = 0;
+	shaderHeightMap = 0;
+	shaderNormalMap = 0;
 }
 
 WaterSurface::~WaterSurface()
@@ -136,13 +137,14 @@ void WaterSurface::Init()
 
 	lastTime = GetTime();
 
-//	const char* shaderName = "vivid";
-	const char* shaderName = "letterbox";
-	shaderIdFullScr = shaderMan.Create(shaderName);
-	shaderId = shaderMan.Create("water_lastpass");
-	assert(shaderId);
-	heightMapGenShaderId = shaderMan.Create("water_heightmap");
-	assert(heightMapGenShaderId);
+	shaderFullScr = shaderMan.Create("letterbox");
+	assert(shaderFullScr);
+	shaderWaterLastPass = shaderMan.Create("water_lastpass");
+	assert(shaderWaterLastPass);
+	shaderHeightMap = shaderMan.Create("water_heightmap");
+	assert(shaderHeightMap);
+	shaderNormalMap = shaderMan.Create("water_normal");
+	assert(shaderNormalMap);
 
 	glActiveTexture(GL_TEXTURE0);
 	for (int i = 0; i < dimof(texFiles); i++) {
@@ -161,15 +163,15 @@ void WaterSurface::Init()
 
 	IBOID noIBO;
 	noIBO.x = 0;
-	vaoEmpty = afCreateVAO(shaderIdFullScr, nullptr, 0, 0, nullptr, nullptr, noIBO);
+	vaoEmpty = afCreateVAO(shaderFullScr, nullptr, 0, 0, nullptr, nullptr, noIBO);
 
-	afLayoutSamplerBindingManually(shaderId, "sampler0", 0);
-	afLayoutSamplerBindingManually(shaderId, "sampler1", 1);
-	afLayoutSamplerBindingManually(shaderId, "sampler2", 2);
-	afLayoutSamplerBindingManually(shaderId, "sampler3", 3);
-	afLayoutSamplerBindingManually(shaderId, "sampler4", 4);
-	afLayoutSamplerBindingManually(shaderId, "sampler5", 5);
-	afLayoutSamplerBindingManually(shaderId, "waterHeightmap", 6);
+	afLayoutSamplerBindingManually(shaderWaterLastPass, "sampler0", 0);
+	afLayoutSamplerBindingManually(shaderWaterLastPass, "sampler1", 1);
+	afLayoutSamplerBindingManually(shaderWaterLastPass, "sampler2", 2);
+	afLayoutSamplerBindingManually(shaderWaterLastPass, "sampler3", 3);
+	afLayoutSamplerBindingManually(shaderWaterLastPass, "sampler4", 4);
+	afLayoutSamplerBindingManually(shaderWaterLastPass, "sampler5", 5);
+	afLayoutSamplerBindingManually(shaderWaterLastPass, "waterHeightmap", 6);
 }
 
 void WaterSurface::UpdateTime()
@@ -210,9 +212,24 @@ void WaterSurface::UpdateHeightMap(const UniformBuffer& hmub)
 	afBindTextureToBindingPoint(heightR.GetTexture(), 0);
 	heightW.BeginRenderToThis();
 
-	shaderMan.Apply(heightMapGenShaderId);
+	shaderMan.Apply(shaderHeightMap);
 	glUniform4fv(0, sizeof(hmub) / (sizeof(GLfloat) * 4), (GLfloat*)&hmub);
-	fontMan.DrawString(Vec2(300, 20), 10, SPrintf("%f, %f", hmub.mousePos.x, hmub.mousePos.y));
+
+	glViewport(0, 0, HEIGHT_MAP_W, HEIGHT_MAP_H);
+	afBindVAO(vaoEmpty);
+	afDrawTriangleStrip(4);
+}
+
+void WaterSurface::UpdateNormalMap(const UniformBuffer& hmub)
+{
+	auto& heightR = heightMap[heightCurrentWriteTarget];
+	heightCurrentWriteTarget ^= 1;
+	auto& heightW = heightMap[heightCurrentWriteTarget];
+	afBindTextureToBindingPoint(heightR.GetTexture(), 0);
+	heightW.BeginRenderToThis();
+
+	shaderMan.Apply(shaderNormalMap);
+	glUniform4fv(0, sizeof(hmub) / (sizeof(GLfloat) * 4), (GLfloat*)&hmub);
 
 	glViewport(0, 0, HEIGHT_MAP_W, HEIGHT_MAP_H);
 	afBindVAO(vaoEmpty);
@@ -231,17 +248,19 @@ void WaterSurface::Draw()
 	hmub.heightMapSize.y = HEIGHT_MAP_H;
 	double dummy;
 	hmub.wrappedTime = (float)modf(elapsedTime * (1.0f / loopTime), &dummy) * loopTime;
+	fontMan.DrawString(Vec2(300, 20), 10, SPrintf("%f, %f", hmub.mousePos.x, hmub.mousePos.y));
 
 	afDepthStencilMode(false);
 	afEnableBackFaceCulling(false);
 	afBlendMode(BM_NONE);
 
 	UpdateHeightMap(hmub);
+	UpdateNormalMap(hmub);
 
 	ivec2 scrSize = systemMetrics.GetScreenSize();
 	glViewport(0, 0, scrSize.x, scrSize.y);
 
-	shaderMan.Apply(shaderId);
+	shaderMan.Apply(shaderWaterLastPass);
 
 	for (int i = 0; i < dimof(texFiles); i++) {
 		afBindTextureToBindingPoint(texId[i], i);
@@ -261,8 +280,8 @@ void WaterSurface::Draw()
 
 	V(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	shaderMan.Apply(shaderIdFullScr);
-	glUniform1i(glGetUniformLocation(shaderIdFullScr, "sampler"), 0);
+	shaderMan.Apply(shaderFullScr);
+	glUniform1i(glGetUniformLocation(shaderFullScr, "sampler"), 0);
 	static bool toggledTab = false;
 	toggledTab ^= inputMan.GetInputCount('\t') == 1;
 	if (toggledTab) {

@@ -41,12 +41,17 @@ vec3 MakeWater3DPos(vec2 position)
 
 vec3 GetSurfaceNormal()
 {
+	vec4 h = FetchWaterTex(vfPosition);
+	vec3 normal = vec3(h.zw, sqrt(1.0 - dot(h.zw, h.zw)));
+	return normal;
+/*
 	vec3 heightU = MakeWater3DPos(vfPosition + vec2(0, 1.0 / (heightMapSize.y * 0.5)));
 	vec3 heightL = MakeWater3DPos(vfPosition - vec2(1.0 / (heightMapSize.x * 0.5), 0));
 	vec3 height = MakeWater3DPos(vfPosition);
 	vec3 normalFromHeightMap = cross(heightU - height, heightL - height);
 
 	return normalize(normalFromHeightMap);
+*/
 }
 
 float GetFakeSunIllum(vec2 position, vec3 normal)

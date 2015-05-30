@@ -10,9 +10,10 @@ class WaterSurface
 	};
 
 	Mat matProj, matView;
-	ShaderMan::SMID shaderId;
-	ShaderMan::SMID shaderIdFullScr;
-	ShaderMan::SMID heightMapGenShaderId;
+	ShaderMan::SMID shaderHeightMap;
+	ShaderMan::SMID shaderNormalMap;
+	ShaderMan::SMID shaderWaterLastPass;
+	ShaderMan::SMID shaderFullScr;
 	double elapsedTime;
 	double lastTime;
 	double nextTime;
@@ -21,7 +22,8 @@ class WaterSurface
 	GLuint samplerRepeat;
 	GLuint samplerNoMipmap;
 	void UpdateTime();
-	void UpdateHeightMap(const UniformBuffer& ub);
+	void UpdateHeightMap(const UniformBuffer&);
+	void UpdateNormalMap(const UniformBuffer&);
 public:
 	WaterSurface();
 	~WaterSurface();
