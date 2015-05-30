@@ -1,8 +1,7 @@
 #version 310 es
 
 precision mediump float;
-in vec2 position;
-in vec2 texcoord;
+in vec2 vfPosition;
 
 layout (location = 0) out vec4 fragColor;
 layout (location = 0) uniform vec4 fakeUBO[2];
@@ -16,6 +15,8 @@ vec2 heightMapSize = fakeUBO[1].zw;
 const float heightLimit = 0.4f;
 
 void main() {
+	vec2 texcoord = vfPosition * 0.5 + 0.5;
+
 	vec4 center = texture(lastHeightMap, texcoord);
 	vec2 ofs[] = vec2[](
 		texcoord + vec2(-1.0 / heightMapSize.x, 0),
@@ -32,7 +33,7 @@ void main() {
 	ave /= 4.0;
 	float vel = ave - center.x;
 
-	float dist = length(position - mousePos);
+	float dist = length(vfPosition - mousePos);
 	center.x += max(0.0f, 1.0f - dist * 9.0) * 0.015f * mouseDown;
 	center.x = clamp(center.x, -heightLimit, heightLimit);
 
