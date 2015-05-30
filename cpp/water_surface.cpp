@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-const int tileMax = 256;
+const int tileMax = 128;
 const int HEIGHT_MAP_W = tileMax;
 const int HEIGHT_MAP_H = tileMax;
 
@@ -236,7 +236,6 @@ void WaterSurface::Draw()
 	afEnableBackFaceCulling(false);
 	afBlendMode(BM_NONE);
 
-	UpdateHeightMap(hmub);
 	UpdateHeightMap(hmub);
 
 	ivec2 scrSize = systemMetrics.GetScreenSize();
