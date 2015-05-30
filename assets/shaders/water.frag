@@ -41,10 +41,9 @@ vec3 MakeWater3DPos(vec2 position)
 
 vec3 GetSurfaceNormal()
 {
-	vec2 position = vfPosition;
-	vec3 heightU = MakeWater3DPos(position + vec2(0, 1.0 / (heightMapSize.y * 0.5)));
-	vec3 heightL = MakeWater3DPos(position - vec2(1.0 / (heightMapSize.x * 0.5), 0));
-	vec3 height = MakeWater3DPos(position);
+	vec3 heightU = MakeWater3DPos(vfPosition + vec2(0, 1.0 / (heightMapSize.y * 0.5)));
+	vec3 heightL = MakeWater3DPos(vfPosition - vec2(1.0 / (heightMapSize.x * 0.5), 0));
+	vec3 height = MakeWater3DPos(vfPosition);
 	vec3 normalFromHeightMap = cross(heightU - height, heightL - height);
 
 	return normalize(normalFromHeightMap);
@@ -57,6 +56,16 @@ float GetFakeSunIllum(vec2 position, vec3 normal)
 	vec3 eyeDir = vec3(0, 0, 1);
 	vec3 reflectedRay = reflect(-eyeDir, normal);
 	return pow(max(0.0, dot(lightDir, reflectedRay)), 2000.0);
+}
+
+float GetCaustics(vec2 position, vec3 normal)
+{
+	const vec3 lightPos = vec3(0.5, 0.5, 4.0);
+	vec3 lightDir = normalize(lightPos - vec3(position, 0));
+	vec3 eyeDir = vec3(0, 0, 1);
+	vec3 reflectedRay = reflect(-eyeDir, normal);
+	vec3 reflectedRayOrg = reflect(-eyeDir, vec3(0.0, 0.0, 1.0));
+	return dot(reflectedRay, reflectedRayOrg);
 }
 
 vec3 GetBGColor(vec2 coord)
@@ -75,14 +84,14 @@ void main() {
 
 	vec2 position = vfPosition;
 	vec3 normal = GetSurfaceNormal();
+//	vec3 rayDirOrg = refract(camDir, vec3(0.0, 1.0, 0.0), airToWater);
 	vec3 rayDir = refract(camDir, normal, airToWater);
 	vec3 bottom = rayDir * waterDepth / rayDir.z;
 	vec2 texcoord = (position.xy + bottom.xy) * vec2(0.5, -0.5) + vec2(0.5, 0.5);
 
 	vec3 bg = GetBGColor(texcoord);
 
-	vec3 normalForSample = normal;
-	vec3 skyColor = texture(sampler5, normalForSample.xy * vec2(0.5, -0.5) + vec2(0.5, 0.5)).xyz;
+	vec3 skyColor = texture(sampler5, normal.xy * vec2(0.5, -0.5) + vec2(0.5, 0.5)).xyz;
 
 	// gamma -> linear
 	bg = pow(bg, invGamma3) * 0.5;
@@ -93,7 +102,7 @@ void main() {
 	float mixFactor = 1.0 - dot(normal, vec3(0, 0, 1));
 //	vec3 outCol = mix(bg, min(vec3(5.5), vec3(1.0, 1.0, 1.0) * 50.5), mixFactor) + sunStr;
 //	vec3 outCol = mix(bg, skyColor * 50.5, mixFactor) + sunStr;
-	vec3 outCol = mix(bg, skyColor * 0.5, mixFactor) + sunStr;
+	vec3 outCol = mix(bg, skyColor * 0.5, mixFactor) * GetCaustics(position, normal) + sunStr;
 
 //	fragColor.xyz = height.zzz;
 //	fragColor.xyz = 0.5 + normalFromHeightMap;
