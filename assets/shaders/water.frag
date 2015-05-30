@@ -59,6 +59,17 @@ float GetFakeSunIllum(vec2 position, vec3 normal)
 	return pow(max(0.0, dot(lightDir, reflectedRay)), 2000.0);
 }
 
+vec3 GetBGColor(vec2 coord)
+{
+	vec3 c1 = texture(sampler0, coord).xyz;
+	vec3 c2 = texture(sampler1, coord).xyz;
+	vec3 c3 = texture(sampler2, coord).xyz;
+	float delaymap = texture(sampler4, coord).x;
+	vec4 timeline = texture(sampler3, vec2((wrappedTime - delaymap) / loopTime, 0));
+	vec3 bg = c1 * timeline.x + c2 * timeline.y + c3 * timeline.z;
+	return bg;
+}
+
 void main() {
 	fragColor.w = 1.0;
 
@@ -67,22 +78,8 @@ void main() {
 	vec3 rayDir = refract(camDir, normal, airToWater);
 	vec3 bottom = rayDir * waterDepth / rayDir.z;
 	vec2 texcoord = (position.xy + bottom.xy) * vec2(0.5, -0.5) + vec2(0.5, 0.5);
-	float mask = dot(normal, vec3(0, 0, 1));
-	vec4 color = vec4(1, 1, 1, 1.0 - mask);
 
-	float dist1 = length(position + vec2(0.5, 0.5));
-	float dist2 = length(position - vec2(0.5, 0.5));
-
-	vec2 coord = texcoord;
-
-	vec3 c1 = texture(sampler0, coord).xyz;
-	vec3 c2 = texture(sampler1, coord).xyz;
-	vec3 c3 = texture(sampler2, coord).xyz;
-	float delaymap = texture(sampler4, texcoord).x;
-	vec4 timeline = texture(sampler3, vec2((wrappedTime - delaymap) / loopTime, 0));
-	vec3 bg = c1 * timeline.x + c2 * timeline.y + c3 * timeline.z;
-//	vec3 bg = normal;
-
+	vec3 bg = GetBGColor(texcoord);
 
 	vec3 normalForSample = normal;
 	vec3 skyColor = texture(sampler5, normalForSample.xy * vec2(0.5, -0.5) + vec2(0.5, 0.5)).xyz;
@@ -93,10 +90,10 @@ void main() {
 
 	float sunStr = GetFakeSunIllum(position.xy, normal);
 
-	vec3 outCol = mix(bg, min(vec3(5.5), color.xyz * 50.5), color.w) + sunStr;
-//	vec3 outCol = mix(bg, skyColor * 50.5, color.w) + sunStr;
-
-
+	float mixFactor = 1.0 - dot(normal, vec3(0, 0, 1));
+//	vec3 outCol = mix(bg, min(vec3(5.5), vec3(1.0, 1.0, 1.0) * 50.5), mixFactor) + sunStr;
+//	vec3 outCol = mix(bg, skyColor * 50.5, mixFactor) + sunStr;
+	vec3 outCol = mix(bg, skyColor * 0.5, mixFactor) + sunStr;
 
 //	fragColor.xyz = height.zzz;
 //	fragColor.xyz = 0.5 + normalFromHeightMap;
