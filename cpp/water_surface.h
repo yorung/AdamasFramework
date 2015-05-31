@@ -21,6 +21,7 @@ class WaterSurface
 	GLuint samplerClamp;
 	GLuint samplerRepeat;
 	GLuint samplerNoMipmap;
+	bool lastMouseDown;
 	void UpdateTime();
 	void UpdateHeightMap(const UniformBuffer&);
 	void UpdateNormalMap(const UniformBuffer&);

@@ -105,6 +105,7 @@ WaterSurface::WaterSurface()
 	shaderFullScr = 0;
 	shaderHeightMap = 0;
 	shaderNormalMap = 0;
+	lastMouseDown = false;
 }
 
 WaterSurface::~WaterSurface()
@@ -240,12 +241,27 @@ void WaterSurface::Draw()
 {
 	UpdateTime();
 
+	bool mouseEdge = !lastMouseDown && systemMetrics.mouseDown;
+	lastMouseDown = systemMetrics.mouseDown;
+
+	static int frame = 0;
+	static Vec2 lastMousePos;
+	Vec2 mousePos = (Vec2)systemMetrics.GetMousePos() / (Vec2)systemMetrics.GetScreenSize() * Vec2(2, -2) + Vec2(-1, 1);
 	UniformBuffer hmub;
-	hmub.mousePos = (Vec2)systemMetrics.GetMousePos() / (Vec2)systemMetrics.GetScreenSize() * Vec2(2, -2) + Vec2(-1, 1);
-	hmub.mouseDown = (float)systemMetrics.mouseDown;
+	hmub.mousePos = mousePos;
+	hmub.mouseDown = mouseEdge;
 	hmub.elapsedTime = (float)elapsedTime;
 	hmub.heightMapSize.x = HEIGHT_MAP_W;
 	hmub.heightMapSize.y = HEIGHT_MAP_H;
+
+	if (++frame % 2 == 0 && length(lastMousePos - mousePos) >= 0.1 && systemMetrics.mouseDown) {
+		hmub.mouseDown = true;
+	}
+	if (hmub.mouseDown) {
+		lastMousePos = mousePos;
+	}
+
+
 	double dummy;
 	hmub.wrappedTime = (float)modf(elapsedTime * (1.0f / loopTime), &dummy) * loopTime;
 	fontMan.DrawString(Vec2(300, 20), 10, SPrintf("%f, %f", hmub.mousePos.x, hmub.mousePos.y));
