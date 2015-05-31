@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-const int tileMax = 256;
+const int tileMax = 180;
 const int HEIGHT_MAP_W = tileMax;
 const int HEIGHT_MAP_H = tileMax;
 
@@ -91,7 +91,16 @@ static TexFiles texFiles[] = {
 	{ "delaymap.png", true },
 	{ "sphere.jpg", true },
 };
-
+/*
+static TexFiles texFiles[] = {
+	{ "D:\\github\\BingmuWP\\app\\src\\summer\\assets\\hyomu_sm_1.jpg", true },
+	{ "D:\\github\\BingmuWP\\app\\src\\summer\\assets\\hyomu_sm_2.jpg", true },
+	{ "D:\\github\\BingmuWP\\app\\src\\summer\\assets\\hyomu_sm_3.jpg", true },
+	{ "timeline.png", false },
+	{ "delaymap.png", true },
+	{ "sphere.jpg", true },
+};
+*/
 static TexMan::TMID texId[dimof(texFiles)];
 
 
