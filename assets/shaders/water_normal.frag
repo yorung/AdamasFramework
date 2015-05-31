@@ -1,6 +1,6 @@
 #version 310 es
 
-precision mediump float;
+precision highp float;
 in vec2 vfPosition;
 
 layout (location = 0) out vec4 fragColor;
