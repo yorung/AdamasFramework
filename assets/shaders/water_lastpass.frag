@@ -105,8 +105,17 @@ float GetCaustics1(vec2 position)
 	return dot(refractedRay, refractedRayOrg);
 }
 
+vec2 GetModulatedBGCoordOffset()
+{
+	float radTimeUnit = wrappedTime / loopTime * PI2;
+	float dist1 = length(vfPosition + vec2(0.5, 0.5));
+	float dist2 = length(vfPosition - vec2(0.5, 0.5));
+	return vec2(0.0, sin(dist1 * 8.7 + radTimeUnit * 25.0) / 800.0 + sin(dist2 * 10.0 + radTimeUnit * 48.0) / 800.0);
+}
+
 vec3 GetBGColor(vec2 coord)
 {
+	coord += GetModulatedBGCoordOffset();
 	vec3 c1 = texture(sampler0, coord).xyz;
 	vec3 c2 = texture(sampler1, coord).xyz;
 	vec3 c3 = texture(sampler2, coord).xyz;
