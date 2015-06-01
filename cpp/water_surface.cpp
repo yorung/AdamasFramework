@@ -83,6 +83,7 @@ struct TexFiles
 	bool clamp;
 };
 
+#if 1
 static TexFiles texFiles[] = {
 	{ "rose.jpg", true },
 	{ "autumn.jpg", true },
@@ -91,7 +92,7 @@ static TexFiles texFiles[] = {
 	{ "delaymap.png", true },
 	{ "sphere.jpg", true },
 };
-/*
+#else
 static TexFiles texFiles[] = {
 	{ "D:\\github\\BingmuWP\\app\\src\\summer\\assets\\hyomu_sm_1.jpg", true },
 	{ "D:\\github\\BingmuWP\\app\\src\\summer\\assets\\hyomu_sm_2.jpg", true },
@@ -100,7 +101,7 @@ static TexFiles texFiles[] = {
 	{ "delaymap.png", true },
 	{ "sphere.jpg", true },
 };
-*/
+#endif
 static TexMan::TMID texId[dimof(texFiles)];
 
 
@@ -263,7 +264,7 @@ void WaterSurface::Draw()
 	hmub.heightMapSize.x = HEIGHT_MAP_W;
 	hmub.heightMapSize.y = HEIGHT_MAP_H;
 
-	if (++frame % 2 == 0 && length(lastMousePos - mousePos) >= 0.1 && systemMetrics.mouseDown) {
+	if (++frame % 2 == 0 && length(lastMousePos - mousePos) >= 0.01 && systemMetrics.mouseDown) {
 		hmub.mouseDown = true;
 	}
 	if (hmub.mouseDown) {

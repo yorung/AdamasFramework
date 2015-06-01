@@ -24,7 +24,7 @@ const vec3 invGamma3 = vec3(1.0 / 2.2, 1.0 / 2.2, 1.0 / 2.2);
 const vec3 gamma3 = vec3(2.2, 2.2, 2.2);
 
 const vec3 camDir = vec3(0, 0, -1);
-const float waterDepth = 0.2;
+const float waterDepth = 0.8;
 
 layout (location = 0) out vec4 fragColor;
 
@@ -75,6 +75,9 @@ vec3 IntersectRayWithBottom(vec2 surfacePos, vec3 surfaceNormal)
 
 float GetCaustics(vec2 position)
 {
+	const vec2 fakeOffset = vec2(0.1, 0.1);
+	position += fakeOffset;
+
 	vec2 ofsY = position + vec2(0, 1.0 / (heightMapSize.y * 0.5));
 	vec2 ofsX = position + vec2(1.0 / (heightMapSize.x * 0.5), 0);
 
@@ -131,8 +134,8 @@ void main() {
 	vec3 normal = GetSurfaceNormal(vfPosition);
 //	vec3 rayDirOrg = refract(camDir, vec3(0.0, 1.0, 0.0), airToWater);
 	vec3 rayDir = refract(camDir, normal, airToWater);
-	vec3 bottom = rayDir * waterDepth / rayDir.z;
-	vec2 texcoord = (vfPosition.xy + bottom.xy) * vec2(0.5, -0.5) + vec2(0.5, 0.5);
+	vec2 bottom = vfPosition + (rayDir * waterDepth / rayDir.z).xy;
+	vec2 texcoord = bottom.xy * vec2(0.5, -0.5) + vec2(0.5, 0.5);
 
 	vec3 bg = GetBGColor(texcoord);
 
@@ -144,10 +147,11 @@ void main() {
 
 	float sunStr = GetFakeSunIllum(vfPosition.xy, normal);
 
-	float mixFactor = 1.0 - dot(normal, vec3(0, 0, 1));
+	float mixFactor = 1.0 - dot(normal, vec3(0, 0, 1) * 2.0);
 //	vec3 outCol = mix(bg, min(vec3(5.5), vec3(1.0, 1.0, 1.0) * 50.5), mixFactor) + sunStr;
 //	vec3 outCol = mix(bg, skyColor * 50.5, mixFactor) + sunStr;
-	vec3 outCol = mix(bg, skyColor * 0.5, mixFactor) * (GetCaustics(vfPosition) + 0.3) + sunStr;
+	const float ambient = 0.3;
+	vec3 outCol = mix(bg, skyColor, mixFactor) * (ambient + GetCaustics(bottom) * 0.5) + sunStr;
 
 //	fragColor.xyz = height.zzz;
 //	fragColor.xyz = 0.5 + normalFromHeightMap;
