@@ -34,8 +34,9 @@ void main() {
 	float vel = ave - center.x;
 
 	float dist = length(vfPosition - mousePos);
-	center.x += max(0.0f, 1.0f - dist * 9.0) * 0.015f * mouseDown;
-	center.x = clamp(center.x, -heightLimit, heightLimit);
+	center.x += pow(max(0.0, 1.0 - dist * 9.0), 3.0) * 0.015f * mouseDown;
+//	center.x += max(0.0f, 1.0f - dist * 9.0) * 0.015f * mouseDown;
+//	center.x = clamp(center.x, -heightLimit, heightLimit);
 
 	center.y += vel;
 	center.y *= 0.99;
