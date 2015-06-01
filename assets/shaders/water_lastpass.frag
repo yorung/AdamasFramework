@@ -147,13 +147,19 @@ void main() {
 	bg = pow(bg, invGamma3) * 0.5;
 	skyColor = pow(skyColor, invGamma3) * 0.5;
 
-	float sunStr = GetFakeSunIllum(vfPosition.xy, normal);
+	// sun color
+	const vec3 sunColor = vec3(1.0, 0.8, 0.6);
+	bg /= sunColor;		// suspect original albedo
 
-	float mixFactor = 1.0 - dot(normal, vec3(0, 0, 1) * 2.0);
+	float sunStr = pow(GetFakeSunIllum(vfPosition.xy, normal), 3.0);
+
+//	float mixFactor = 1.0 - dot(normal, vec3(0, 0, 1));
+	float mixFactor = 1.0 - dot(normal, vec3(0, 0, 1)) * 0.8;
+//	float mixFactor = 0.5;
 //	vec3 outCol = mix(bg, min(vec3(5.5), vec3(1.0, 1.0, 1.0) * 50.5), mixFactor) + sunStr;
 //	vec3 outCol = mix(bg, skyColor * 50.5, mixFactor) + sunStr;
-	const float ambient = 0.3;
-	vec3 outCol = mix(bg, skyColor, mixFactor) * (ambient + GetCaustics(bottom) * 0.5) + sunStr;
+	const float ambient = 0.95;
+	vec3 outCol = mix(bg, skyColor, mixFactor) * (ambient + GetCaustics(bottom) * 0.3) * sunColor + sunStr * sunColor;
 
 //	fragColor.xyz = height.zzz;
 //	fragColor.xyz = 0.5 + normalFromHeightMap;
