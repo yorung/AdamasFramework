@@ -137,7 +137,9 @@ void main() {
 	vec2 bottom = vfPosition + (rayDir * waterDepth / rayDir.z).xy;
 	vec2 texcoord = bottom.xy * vec2(0.5, -0.5) + vec2(0.5, 0.5);
 
-	vec3 bg = GetBGColor(texcoord);
+	vec2 fakeWaterEdgeOffset = normal.xy * 0.5;
+
+	vec3 bg = GetBGColor(texcoord + fakeWaterEdgeOffset);
 
 	vec3 skyColor = texture(sampler5, normal.xy * vec2(0.5, -0.5) + vec2(0.5, 0.5)).xyz;
 
