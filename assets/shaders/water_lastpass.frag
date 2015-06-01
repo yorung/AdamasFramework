@@ -26,6 +26,8 @@ const vec3 gamma3 = vec3(2.2, 2.2, 2.2);
 const vec3 camDir = vec3(0, 0, -1);
 const float waterDepth = 0.8;
 
+const vec3 lightPos = vec3(0.5, 0.5, 4.0);
+
 layout (location = 0) out vec4 fragColor;
 
 vec4 FetchWaterTex(vec2 position)
@@ -56,7 +58,6 @@ vec3 GetSurfaceNormal(vec2 position)
 
 float GetFakeSunIllum(vec2 position, vec3 normal)
 {
-	const vec3 lightPos = vec3(0.5, 0.5, 4.0);
 	vec3 lightDir = normalize(lightPos - vec3(position, 0));
 	vec3 eyeDir = vec3(0, 0, 1);
 	vec3 reflectedRay = reflect(-eyeDir, normal);
@@ -65,7 +66,6 @@ float GetFakeSunIllum(vec2 position, vec3 normal)
 
 vec3 IntersectRayWithBottom(vec2 surfacePos, vec3 surfaceNormal)
 {
-	const vec3 lightPos = vec3(0.5, 0.5, 4.0);
 	vec3 pos3d = vec3(surfacePos, 0);
 	vec3 lightDir = normalize(lightPos - pos3d);
 	vec3 eyeDir = vec3(0, 0, 1);
@@ -75,8 +75,13 @@ vec3 IntersectRayWithBottom(vec2 surfacePos, vec3 surfaceNormal)
 
 float GetCaustics(vec2 position)
 {
-	const vec2 fakeOffset = vec2(0.1, 0.1);
-	position += fakeOffset;
+	vec3 bottom = vec3(position, -waterDepth);
+	vec3 lightDir = normalize(lightPos - bottom);
+	vec3 surfaceIntersect = bottom + lightDir * waterDepth / lightDir.z;
+
+	position = surfaceIntersect.xy;
+//	const vec2 fakeOffset = vec2(0.1, 0.1);
+//	position += fakeOffset;
 
 	vec2 ofsY = position + vec2(0, 1.0 / (heightMapSize.y * 0.5));
 	vec2 ofsX = position + vec2(1.0 / (heightMapSize.x * 0.5), 0);
@@ -100,7 +105,6 @@ float GetCaustics(vec2 position)
 float GetCaustics1(vec2 position)
 {
 	vec3 normal = GetSurfaceNormal(position);
-	const vec3 lightPos = vec3(0.5, 0.5, 4.0);
 	vec3 lightDir = normalize(lightPos - vec3(position, 0));
 	vec3 eyeDir = vec3(0, 0, 1);
 	vec3 refractedRay = refract(-eyeDir, normal, airToWater);
