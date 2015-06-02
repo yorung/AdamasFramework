@@ -247,6 +247,48 @@ void WaterSurface::UpdateNormalMap(const UniformBuffer& hmub)
 	afDrawTriangleStrip(4);
 }
 
+void WaterSurface::RenderWater(const UniformBuffer& hmub)
+{
+	ivec2 scrSize = systemMetrics.GetScreenSize();
+	glViewport(0, 0, scrSize.x, scrSize.y);
+
+	shaderMan.Apply(shaderWaterLastPass);
+
+	for (int i = 0; i < dimof(texFiles); i++) {
+		afBindTextureToBindingPoint(texId[i], i);
+		glBindSampler(i, texFiles[i].clamp ? samplerClamp : samplerRepeat);
+	}
+
+	auto& curHeightMap = heightMap[heightCurrentWriteTarget];
+
+	glUniform4fv(0, sizeof(hmub) / (sizeof(GLfloat) * 4), (GLfloat*)&hmub);
+
+	rt.BeginRenderToThis();
+	afBindVAO(vaoEmpty);
+	afBindTextureToBindingPoint(curHeightMap.GetTexture(), 6);
+	afDrawTriangleStrip(4);
+	afBindTextureToBindingPoint(0, 6);
+}
+
+void WaterSurface::PostProcess()
+{
+	V(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	shaderMan.Apply(shaderFullScr);
+	glUniform1i(glGetUniformLocation(shaderFullScr, "sampler"), 0);
+	static bool toggledTab = false;
+	toggledTab ^= inputMan.GetInputCount('\t') == 1;
+	if (toggledTab) {
+		auto& curHeightMap = heightMap[heightCurrentWriteTarget];
+		afBindTextureToBindingPoint(curHeightMap.GetTexture(), 0);
+	} else {
+		afBindTextureToBindingPoint(rt.GetTexture(), 0);
+	}
+	glBindSampler(0, samplerNoMipmap);
+	afBindVAO(vaoEmpty);
+	afDrawTriangleStrip(4);
+}
+
 void WaterSurface::Draw()
 {
 	UpdateTime();
@@ -282,41 +324,8 @@ void WaterSurface::Draw()
 
 	UpdateHeightMap(hmub);
 	UpdateNormalMap(hmub);
-
-	ivec2 scrSize = systemMetrics.GetScreenSize();
-	glViewport(0, 0, scrSize.x, scrSize.y);
-
-	shaderMan.Apply(shaderWaterLastPass);
-
-	for (int i = 0; i < dimof(texFiles); i++) {
-		afBindTextureToBindingPoint(texId[i], i);
-		glBindSampler(i, texFiles[i].clamp ? samplerClamp : samplerRepeat);
-	}
-
-	auto& curHeightMap = heightMap[heightCurrentWriteTarget];
-	afBindTextureToBindingPoint(curHeightMap.GetTexture(), 6);
-
-	glUniform4fv(0, sizeof(hmub) / (sizeof(GLfloat) * 4), (GLfloat*)&hmub);
-
-	rt.BeginRenderToThis();
-
-	afBindVAO(vaoEmpty);
-	afDrawTriangleStrip(4);
-	afBindTextureToBindingPoint(0, 6);
-
-	V(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	shaderMan.Apply(shaderFullScr);
-	glUniform1i(glGetUniformLocation(shaderFullScr, "sampler"), 0);
-	static bool toggledTab = false;
-	toggledTab ^= inputMan.GetInputCount('\t') == 1;
-	if (toggledTab) {
-		afBindTextureToBindingPoint(curHeightMap.GetTexture(), 0);
-	} else {
-		afBindTextureToBindingPoint(rt.GetTexture(), 0);
-	}
-	glBindSampler(0, samplerNoMipmap);
-	afDrawTriangleStrip(4);
+	RenderWater(hmub);
+	PostProcess();
 
 	glBindVertexArray(0);
 }
