@@ -99,6 +99,8 @@
   <ItemGroup>
     <None Include="..\assets\shaders\font.frag" />
     <None Include="..\assets\shaders\font.vert" />
+    <None Include="..\assets\shaders\glow_extraction.frag" />
+    <None Include="..\assets\shaders\glow_extraction.vert" />
     <None Include="..\assets\shaders\letterbox.frag" />
     <None Include="..\assets\shaders\letterbox.vert" />
     <None Include="..\assets\shaders\skin.400.frag" />

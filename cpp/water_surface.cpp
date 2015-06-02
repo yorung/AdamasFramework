@@ -4,6 +4,8 @@ const int tileMax = 180;
 const int HEIGHT_MAP_W = tileMax;
 const int HEIGHT_MAP_H = tileMax;
 
+const int GLOW_WH = 128;
+
 const float loopTime = 20.0;
 
 #define V afHandleGLError
@@ -25,6 +27,7 @@ public:
 
 static AFRenderTarget rt;
 static AFRenderTarget heightMap[2];
+static AFRenderTarget glowMap[2];
 static int heightCurrentWriteTarget;
 
 AFRenderTarget::AFRenderTarget()
