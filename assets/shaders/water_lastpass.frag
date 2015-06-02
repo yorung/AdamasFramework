@@ -61,7 +61,7 @@ float GetFakeSunIllum(vec2 position, vec3 normal)
 	vec3 lightDir = normalize(lightPos - vec3(position, 0));
 	vec3 eyeDir = vec3(0, 0, 1);
 	vec3 reflectedRay = reflect(-eyeDir, normal);
-	return pow(max(0.0, dot(lightDir, reflectedRay)), 2000.0);
+	return pow(max(0.0, dot(lightDir, reflectedRay)), 5000.0) * 10.0;
 }
 
 vec3 IntersectRayWithBottom(vec2 surfacePos, vec3 surfaceNormal)
@@ -155,7 +155,7 @@ void main() {
 	const vec3 sunColor = vec3(1.0, 0.8, 0.6);
 	bg /= sunColor;		// suspect original albedo
 
-	float sunStr = pow(GetFakeSunIllum(vfPosition.xy, normal), 3.0);
+	float sunStr = GetFakeSunIllum(vfPosition.xy, normal);
 
 //	float mixFactor = 1.0 - dot(normal, vec3(0, 0, 1));
 	float mixFactor = 1.0 - dot(normal, vec3(0, 0, 1)) * 0.8;
@@ -179,6 +179,7 @@ void main() {
 
 	// linear -> gamma
 	fragColor.rgb = pow(outCol * 1.5, gamma3);
+//	fragColor.rgb = pow(outCol * 0.2, gamma3);
 
 //	fragColor.rgb = IntersectRayWithBottom(vfPosition, GetSurfaceNormal(vfPosition));
 }
