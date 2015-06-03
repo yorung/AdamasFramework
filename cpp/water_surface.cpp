@@ -4,7 +4,7 @@ const int tileMax = 180;
 const int HEIGHT_MAP_W = tileMax;
 const int HEIGHT_MAP_H = tileMax;
 
-const int GLOW_WH = 128;
+const int GLOW_WH = 256;
 
 const float loopTime = 20.0;
 
@@ -27,7 +27,7 @@ public:
 
 static AFRenderTarget rt;
 static AFRenderTarget heightMap[2];
-static AFRenderTarget glowMap[2];
+static AFRenderTarget glowMap[4];
 static int heightCurrentWriteTarget;
 
 AFRenderTarget::AFRenderTarget()
@@ -136,6 +136,9 @@ void WaterSurface::Destroy()
 	for (auto& it : heightMap) {
 		it.Destroy();
 	}
+	for (auto& it : glowMap) {
+		it.Destroy();
+	}
 }
 
 void WaterSurface::Init()
@@ -144,7 +147,14 @@ void WaterSurface::Init()
 	rt.Init(systemMetrics.GetScreenSize());
 	for (auto& it : heightMap) {
 		it.Init(ivec2(HEIGHT_MAP_W, HEIGHT_MAP_H));
-		it.BeginRenderToThis();
+		it.BeginRenderToThis();	// clear textures
+	}
+
+	int texSize = GLOW_WH;
+	for (auto& it : glowMap) {
+		it.Init(ivec2(texSize, texSize));
+		it.BeginRenderToThis();	// clear textures
+		texSize /= 2;
 	}
 
 	V(glBindFramebuffer(GL_FRAMEBUFFER, 0));
@@ -273,19 +283,50 @@ void WaterSurface::RenderWater(const UniformBuffer& hmub)
 	afBindTextureToBindingPoint(0, 6);
 }
 
+void WaterSurface::MakeGlow()
+{
+	GLuint lastTex = rt.GetTexture();
+	glBindSampler(0, samplerClamp);
+	afBindVAO(vaoEmpty);
+
+	GLuint shader = shaderMan.Create("glow_extraction");
+	assert(shader);
+	for (auto& it : glowMap) {
+		shaderMan.Apply(shader);
+		it.BeginRenderToThis();
+		afBindTextureToBindingPoint(lastTex, 0);
+		afDrawTriangleStrip(4);
+		lastTex = it.GetTexture();
+		shader = shaderMan.Create("glow_copy");
+	}
+}
+
 void WaterSurface::PostProcess()
 {
 	V(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	shaderMan.Apply(shaderFullScr);
 	glUniform1i(glGetUniformLocation(shaderFullScr, "sampler"), 0);
-	static bool toggledTab = false;
-	toggledTab ^= inputMan.GetInputCount('\t') == 1;
-	if (toggledTab) {
+
+	static int num = 0;
+	if (inputMan.GetInputCount('\t') == 1) {
+		num = (num + 1) % 3;
+	}
+
+	switch (num) {
+	case 0:
+		afBindTextureToBindingPoint(rt.GetTexture(), 0);
+		break;
+	case 1:
+	{
 		auto& curHeightMap = heightMap[heightCurrentWriteTarget];
 		afBindTextureToBindingPoint(curHeightMap.GetTexture(), 0);
-	} else {
-		afBindTextureToBindingPoint(rt.GetTexture(), 0);
+		break;
+	}
+	case 2:
+		afBindTextureToBindingPoint(glowMap[0].GetTexture(), 0);
+//		afBindTextureToBindingPoint(glowMap[dimof(glowMap) - 1].GetTexture(), 0);
+		break;
 	}
 	glBindSampler(0, samplerNoMipmap);
 	afBindVAO(vaoEmpty);
@@ -328,6 +369,7 @@ void WaterSurface::Draw()
 	UpdateHeightMap(hmub);
 	UpdateNormalMap(hmub);
 	RenderWater(hmub);
+	MakeGlow();
 	PostProcess();
 
 	glBindVertexArray(0);

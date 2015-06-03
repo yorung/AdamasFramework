@@ -26,6 +26,7 @@ class WaterSurface
 	void UpdateHeightMap(const UniformBuffer&);
 	void UpdateNormalMap(const UniformBuffer&);
 	void RenderWater(const UniformBuffer& hmub);
+	void MakeGlow();
 	void PostProcess();
 public:
 	WaterSurface();
