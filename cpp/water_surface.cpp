@@ -4,7 +4,7 @@ const int tileMax = 180;
 const int HEIGHT_MAP_W = tileMax;
 const int HEIGHT_MAP_H = tileMax;
 
-const int GLOW_WH = 256;
+const int GLOW_WH = 512;
 
 const float loopTime = 20.0;
 
@@ -283,13 +283,31 @@ void WaterSurface::RenderWater(const UniformBuffer& hmub)
 	afBindTextureToBindingPoint(0, 6);
 }
 
+
+int GetMSB(int n)
+{
+	DWORD result;
+	if (_BitScanReverse(&result, (DWORD)n)) {
+		return (int)result;
+	}
+	return 0;
+}
+
 void WaterSurface::MakeGlow(const UniformBuffer& hmub)
 {
 	glBindSampler(0, samplerClamp);
 	afBindVAO(vaoEmpty);
 
 	shaderMan.Apply(shaderNormalMap);
-	glUniform4fv(0, sizeof(hmub) / (sizeof(GLfloat) * 4), (GLfloat*)&hmub);
+	struct GlowExtractionUniform {
+		Vec2 uv;
+		float padding[2];
+	}ub;
+	memset(&ub, 0, sizeof(ub));
+	ivec2 screenSize = systemMetrics.GetScreenSize();
+	ivec2 screenSizePOT = ivec2(2 << GetMSB(screenSize.x - 1), 2 << GetMSB(screenSize.y - 1));
+	ub.uv = (Vec2)screenSize / (Vec2)screenSizePOT;
+	glUniform4fv(0, sizeof(ub) / (sizeof(GLfloat) * 4), (GLfloat*)&ub);
 
 	GLuint shader = shaderMan.Create("glow_extraction");
 	assert(shader);
@@ -318,7 +336,7 @@ void WaterSurface::PostProcess()
 
 	static int num = 0;
 	if (inputMan.GetInputCount('\t') == 1) {
-		num = (num + 1) % 3;
+		num = (num + 1) % 4;
 	}
 
 	switch (num) {
@@ -333,10 +351,13 @@ void WaterSurface::PostProcess()
 	}
 	case 2:
 		afBindTextureToBindingPoint(glowMap[0].GetTexture(), 0);
-//		afBindTextureToBindingPoint(glowMap[dimof(glowMap) - 1].GetTexture(), 0);
+		break;
+	case 3:
+		afBindTextureToBindingPoint(glowMap[1].GetTexture(), 0);
 		break;
 	}
-	glBindSampler(0, samplerNoMipmap);
+///	glBindSampler(0, samplerNoMipmap);
+	glBindSampler(0, samplerRepeat);
 	afBindVAO(vaoEmpty);
 	afDrawTriangleStrip(4);
 }
