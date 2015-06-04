@@ -314,6 +314,7 @@ void WaterSurface::MakeGlow(const UniformBuffer& hmub)
 	shaderMan.Apply(shader);
 	glowMap[0].BeginRenderToThis();
 	afBindTextureToBindingPoint(rt.GetTexture(), 0);
+	glViewport(0, 0, GLOW_WH, GLOW_WH);
 	afDrawTriangleStrip(4);
 
 	shader = shaderMan.Create("glow_copy");
@@ -323,6 +324,7 @@ void WaterSurface::MakeGlow(const UniformBuffer& hmub)
 	for (int i = 1; i < dimof(glowMap); i++) {
 		glowMap[i].BeginRenderToThis();
 		afBindTextureToBindingPoint(glowMap[i - 1].GetTexture(), 0);
+		glViewport(0, 0, GLOW_WH >> i, GLOW_WH >> i);
 		afDrawTriangleStrip(4);
 	}
 }
@@ -336,7 +338,7 @@ void WaterSurface::PostProcess()
 
 	static int num = 0;
 	if (inputMan.GetInputCount('\t') == 1) {
-		num = (num + 1) % 4;
+		num = (num + 1) % 5;
 	}
 
 	switch (num) {
@@ -355,10 +357,17 @@ void WaterSurface::PostProcess()
 	case 3:
 		afBindTextureToBindingPoint(glowMap[1].GetTexture(), 0);
 		break;
+	case 4:
+		afBindTextureToBindingPoint(glowMap[2].GetTexture(), 0);
+		break;
 	}
-///	glBindSampler(0, samplerNoMipmap);
-	glBindSampler(0, samplerRepeat);
+	glBindSampler(0, samplerNoMipmap);
+//	glBindSampler(0, samplerRepeat);
 	afBindVAO(vaoEmpty);
+
+	ivec2 scrSize = systemMetrics.GetScreenSize();
+	glViewport(0, 0, scrSize.x, scrSize.y);
+
 	afDrawTriangleStrip(4);
 }
 

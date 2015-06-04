@@ -14,5 +14,5 @@ void main()
 //	fragColor = vec4(result);
 	fragColor = src;
 //	fragColor = vec4(vfCoord, 1.0, 1.0);
-	fragColor = vec4(vfPosition, 1.0, 1.0);
+//	fragColor = vec4(vfPosition, 1.0, 1.0);
 }
