@@ -6,10 +6,7 @@ in vec2 vfPosition;
 layout (location = 0) out vec4 fragColor;
 layout (binding = 0) uniform sampler2D sourceMap;
 
-layout (location = 0) uniform vec4 fakeUBO[2];
-
-void main()
-{
+void main() {
 	vec2 coord = vfPosition * 0.5 + 0.5;
 //	vec2 coord = vfPosition * 0.5 + 0.5;
 	vec4 src = texture(sourceMap, coord);

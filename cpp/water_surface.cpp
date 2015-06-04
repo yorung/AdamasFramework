@@ -283,21 +283,29 @@ void WaterSurface::RenderWater(const UniformBuffer& hmub)
 	afBindTextureToBindingPoint(0, 6);
 }
 
-void WaterSurface::MakeGlow()
+void WaterSurface::MakeGlow(const UniformBuffer& hmub)
 {
-	GLuint lastTex = rt.GetTexture();
 	glBindSampler(0, samplerClamp);
 	afBindVAO(vaoEmpty);
 
+	shaderMan.Apply(shaderNormalMap);
+	glUniform4fv(0, sizeof(hmub) / (sizeof(GLfloat) * 4), (GLfloat*)&hmub);
+
 	GLuint shader = shaderMan.Create("glow_extraction");
 	assert(shader);
-	for (auto& it : glowMap) {
-		shaderMan.Apply(shader);
-		it.BeginRenderToThis();
-		afBindTextureToBindingPoint(lastTex, 0);
+	shaderMan.Apply(shader);
+	glowMap[0].BeginRenderToThis();
+	afBindTextureToBindingPoint(rt.GetTexture(), 0);
+	afDrawTriangleStrip(4);
+
+	shader = shaderMan.Create("glow_copy");
+	assert(shader);
+	shaderMan.Apply(shader);
+
+	for (int i = 1; i < dimof(glowMap); i++) {
+		glowMap[i].BeginRenderToThis();
+		afBindTextureToBindingPoint(glowMap[i - 1].GetTexture(), 0);
 		afDrawTriangleStrip(4);
-		lastTex = it.GetTexture();
-		shader = shaderMan.Create("glow_copy");
 	}
 }
 
@@ -369,7 +377,7 @@ void WaterSurface::Draw()
 	UpdateHeightMap(hmub);
 	UpdateNormalMap(hmub);
 	RenderWater(hmub);
-	MakeGlow();
+	MakeGlow(hmub);
 	PostProcess();
 
 	glBindVertexArray(0);
