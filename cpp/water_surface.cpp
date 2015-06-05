@@ -14,6 +14,7 @@ WaterSurface waterSurface;
 
 class AFRenderTarget
 {
+	ivec2 texSize;
 	GLuint texColor, texDepth;
 	GLuint framebufferObject;
 	GLuint renderbufferObject;
@@ -54,6 +55,7 @@ void AFRenderTarget::Destroy()
 
 void AFRenderTarget::Init(ivec2 size)
 {
+	texSize = size;
 	texColor = afCreateDynamicTexture(size.x, size.y, AFDT_R16G16B16A16_FLOAT);
 //	texColor = afCreateDynamicTexture(size.x, size.y, AFDT_R5G6B5_UINT);
 	texDepth = afCreateDynamicTexture(size.x, size.y, AFDT_DEPTH_STENCIL);
@@ -74,6 +76,7 @@ void AFRenderTarget::Init(ivec2 size)
 
 void AFRenderTarget::BeginRenderToThis()
 {
+	glViewport(0, 0, texSize.x, texSize.y);
 	V(glBindFramebuffer(GL_FRAMEBUFFER, framebufferObject));
 	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	assert(status == GL_FRAMEBUFFER_COMPLETE);
@@ -239,7 +242,6 @@ void WaterSurface::UpdateHeightMap(const UniformBuffer& hmub)
 	shaderMan.Apply(shaderHeightMap);
 	glUniform4fv(0, sizeof(hmub) / (sizeof(GLfloat) * 4), (GLfloat*)&hmub);
 
-	glViewport(0, 0, HEIGHT_MAP_W, HEIGHT_MAP_H);
 	afBindVAO(vaoEmpty);
 	afDrawTriangleStrip(4);
 }
@@ -255,7 +257,6 @@ void WaterSurface::UpdateNormalMap(const UniformBuffer& hmub)
 	shaderMan.Apply(shaderNormalMap);
 	glUniform4fv(0, sizeof(hmub) / (sizeof(GLfloat) * 4), (GLfloat*)&hmub);
 
-	glViewport(0, 0, HEIGHT_MAP_W, HEIGHT_MAP_H);
 	afBindVAO(vaoEmpty);
 	afDrawTriangleStrip(4);
 }
@@ -314,7 +315,6 @@ void WaterSurface::MakeGlow(const UniformBuffer& hmub)
 	shaderMan.Apply(shader);
 	glowMap[0].BeginRenderToThis();
 	afBindTextureToBindingPoint(rt.GetTexture(), 0);
-	glViewport(0, 0, GLOW_WH, GLOW_WH);
 	afDrawTriangleStrip(4);
 
 	shader = shaderMan.Create("glow_copy");
@@ -324,7 +324,6 @@ void WaterSurface::MakeGlow(const UniformBuffer& hmub)
 	for (int i = 1; i < dimof(glowMap); i++) {
 		glowMap[i].BeginRenderToThis();
 		afBindTextureToBindingPoint(glowMap[i - 1].GetTexture(), 0);
-		glViewport(0, 0, GLOW_WH >> i, GLOW_WH >> i);
 		afDrawTriangleStrip(4);
 	}
 }
