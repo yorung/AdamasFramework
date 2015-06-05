@@ -165,6 +165,8 @@ void main() {
 	const float ambient = 0.95;
 	vec3 outCol = mix(bg, skyColor, mixFactor) * (ambient + GetCaustics(bottom) * 0.3) * sunColor + sunStr * sunColor;
 
+	fragColor.w = sunStr * 0.5;
+
 //	fragColor.xyz = height.zzz;
 //	fragColor.xyz = 0.5 + normalFromHeightMap;
 
