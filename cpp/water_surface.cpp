@@ -4,7 +4,7 @@ const int tileMax = 180;
 const int HEIGHT_MAP_W = tileMax;
 const int HEIGHT_MAP_H = tileMax;
 
-const int GLOW_WH = 512;
+const int GLOW_WH = 128;
 
 const float loopTime = 20.0;
 
@@ -28,7 +28,7 @@ public:
 
 static AFRenderTarget rt;
 static AFRenderTarget heightMap[2];
-static AFRenderTarget glowMap[4];
+static AFRenderTarget glowMap[6];
 static int heightCurrentWriteTarget;
 
 AFRenderTarget::AFRenderTarget()
@@ -337,7 +337,7 @@ void WaterSurface::PostProcess()
 
 	static int num = 0;
 	if (inputMan.GetInputCount('\t') == 1) {
-		num = (num + 1) % 5;
+		num = (num + 1) % 8;
 	}
 
 	switch (num) {
@@ -358,6 +358,15 @@ void WaterSurface::PostProcess()
 		break;
 	case 4:
 		afBindTextureToBindingPoint(glowMap[2].GetTexture(), 0);
+		break;
+	case 5:
+		afBindTextureToBindingPoint(glowMap[3].GetTexture(), 0);
+		break;
+	case 6:
+		afBindTextureToBindingPoint(glowMap[4].GetTexture(), 0);
+		break;
+	case 7:
+		afBindTextureToBindingPoint(glowMap[5].GetTexture(), 0);
 		break;
 	}
 	glBindSampler(0, samplerNoMipmap);
