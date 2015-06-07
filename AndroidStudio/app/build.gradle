@@ -21,7 +21,7 @@ android {
             ldLibs "log"
             ldLibs "GLESv3"
             abiFilters "armeabi", "mips", "x86"
-            stl "stlport_static"
+            stl "gnustl_static"
         }
     }
     buildTypes {
