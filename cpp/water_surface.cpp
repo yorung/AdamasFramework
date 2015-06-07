@@ -26,7 +26,7 @@ public:
 	GLuint GetTexture() { return texColor; }
 };
 
-static AFRenderTarget rt;
+static AFRenderTarget rt[2];
 static AFRenderTarget heightMap[2];
 static AFRenderTarget glowMap[6];
 static int heightCurrentWriteTarget;
@@ -135,7 +135,9 @@ void WaterSurface::Destroy()
 	afSafeDeleteSampler(samplerClamp);
 	afSafeDeleteSampler(samplerNoMipmap);
 	afSafeDeleteVAO(vaoEmpty);
-	rt.Destroy();
+	for (auto& it : rt) {
+		it.Destroy();
+	}
 	for (auto& it : heightMap) {
 		it.Destroy();
 	}
@@ -147,7 +149,10 @@ void WaterSurface::Destroy()
 void WaterSurface::Init()
 {
 	Destroy();
-	rt.Init(systemMetrics.GetScreenSize());
+	for (auto& it : rt) {
+		it.Init(systemMetrics.GetScreenSize());
+		it.BeginRenderToThis();	// clear textures
+	}
 	for (auto& it : heightMap) {
 		it.Init(ivec2(HEIGHT_MAP_W, HEIGHT_MAP_H));
 		it.BeginRenderToThis();	// clear textures
@@ -277,7 +282,7 @@ void WaterSurface::RenderWater(const UniformBuffer& hmub)
 
 	glUniform4fv(0, sizeof(hmub) / (sizeof(GLfloat) * 4), (GLfloat*)&hmub);
 
-	rt.BeginRenderToThis();
+	rt[0].BeginRenderToThis();
 	afBindVAO(vaoEmpty);
 	afBindTextureToBindingPoint(curHeightMap.GetTexture(), 6);
 	afDrawTriangleStrip(4);
@@ -314,7 +319,7 @@ void WaterSurface::MakeGlow(const UniformBuffer& hmub)
 	assert(shader);
 	shaderMan.Apply(shader);
 	glowMap[0].BeginRenderToThis();
-	afBindTextureToBindingPoint(rt.GetTexture(), 0);
+	afBindTextureToBindingPoint(rt[0].GetTexture(), 0);
 	afDrawTriangleStrip(4);
 
 	shader = shaderMan.Create("glow_copy");
@@ -326,6 +331,18 @@ void WaterSurface::MakeGlow(const UniformBuffer& hmub)
 		afBindTextureToBindingPoint(glowMap[i - 1].GetTexture(), 0);
 		afDrawTriangleStrip(4);
 	}
+
+	shader = shaderMan.Create("glow_lastpass");
+	assert(shader);
+	shaderMan.Apply(shader);
+
+	rt[1].BeginRenderToThis();
+	for (int i = 1; i < dimof(glowMap); i++) {
+		afBindTextureToBindingPoint(glowMap[i].GetTexture(), i);
+	}
+	afBindTextureToBindingPoint(rt[0].GetTexture(), 6);
+
+	afDrawTriangleStrip(4);
 }
 
 void WaterSurface::PostProcess()
@@ -335,14 +352,14 @@ void WaterSurface::PostProcess()
 	shaderMan.Apply(shaderFullScr);
 	glUniform1i(glGetUniformLocation(shaderFullScr, "sampler"), 0);
 
-	static int num = 0;
+	static int num = 8;
 	if (inputMan.GetInputCount('\t') == 1) {
-		num = (num + 1) % 8;
+		num = (num + 1) % 9;
 	}
 
 	switch (num) {
 	case 0:
-		afBindTextureToBindingPoint(rt.GetTexture(), 0);
+		afBindTextureToBindingPoint(rt[0].GetTexture(), 0);
 		break;
 	case 1:
 	{
@@ -367,6 +384,9 @@ void WaterSurface::PostProcess()
 		break;
 	case 7:
 		afBindTextureToBindingPoint(glowMap[5].GetTexture(), 0);
+		break;
+	case 8:
+		afBindTextureToBindingPoint(rt[1].GetTexture(), 0);
 		break;
 	}
 	glBindSampler(0, samplerNoMipmap);
