@@ -26,7 +26,7 @@ const vec3 gamma3 = vec3(2.2, 2.2, 2.2);
 const vec3 camDir = vec3(0, 0, -1);
 const float waterDepth = 0.8;
 
-const vec3 lightPos = vec3(0.5, 0.5, 4.0);
+const vec3 lightPos = vec3(1.4, 1.4, 16.0);
 
 layout (location = 0) out vec4 fragColor;
 
