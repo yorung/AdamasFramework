@@ -17,6 +17,7 @@ extern const char* boundJavaClass;
 #include <deque>
 #include <stack>
 #include <chrono>
+#include <random>
 
 #define _USE_MATH_DEFINES
 #include <math.h>
