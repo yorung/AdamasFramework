@@ -149,6 +149,14 @@ inline Vec2 min(const Vec2& a, const Vec2& b) {
 	return Vec2(std::min(a.x, b.x), std::min(a.y, b.y));
 }
 
+inline ivec2 max(const ivec2& a, const ivec2& b) {
+	return ivec2(std::max(a.x, b.x), std::max(a.y, b.y));
+}
+
+inline ivec2 min(const ivec2& a, const ivec2& b) {
+	return ivec2(std::min(a.x, b.x), std::min(a.y, b.y));
+}
+
 template <class V> inline affloat lengthSq(const V& v)
 {
 	return dot(v, v);

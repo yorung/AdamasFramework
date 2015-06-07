@@ -150,7 +150,7 @@ void WaterSurface::Init()
 {
 	Destroy();
 	for (auto& it : rt) {
-		it.Init(systemMetrics.GetScreenSize());
+		it.Init(min(ivec2(1024, 1024), systemMetrics.GetScreenSize()));
 		it.BeginRenderToThis();	// clear textures
 	}
 	for (auto& it : heightMap) {
