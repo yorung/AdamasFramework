@@ -290,30 +290,11 @@ void WaterSurface::RenderWater(const UniformBuffer& hmub)
 }
 
 
-int GetMSB(int n)
-{
-	DWORD result;
-	if (_BitScanReverse(&result, (DWORD)n)) {
-		return (int)result;
-	}
-	return 0;
-}
-
 void WaterSurface::MakeGlow(const UniformBuffer& hmub)
 {
 	glBindSampler(0, samplerClamp);
 	afBindVAO(vaoEmpty);
-
 	shaderMan.Apply(shaderNormalMap);
-	struct GlowExtractionUniform {
-		Vec2 uv;
-		float padding[2];
-	}ub;
-	memset(&ub, 0, sizeof(ub));
-	ivec2 screenSize = systemMetrics.GetScreenSize();
-	ivec2 screenSizePOT = ivec2(2 << GetMSB(screenSize.x - 1), 2 << GetMSB(screenSize.y - 1));
-	ub.uv = (Vec2)screenSize / (Vec2)screenSizePOT;
-	glUniform4fv(0, sizeof(ub) / (sizeof(GLfloat) * 4), (GLfloat*)&ub);
 
 	GLuint shader = shaderMan.Create("glow_extraction");
 	assert(shader);
