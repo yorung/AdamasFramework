@@ -25,13 +25,6 @@ void *LoadFile(const char *fileName, int* size)
 	return ptr;
 }
 
-double GetTime()
-{
-	timespec t;
-	clock_gettime(CLOCK_MONOTONIC, &t);
-	return (double)t.tv_sec + (double)t.tv_nsec / 1000000000;
-}
-
 void Toast(const char *text)
 {
 	jclass helper = jniEnv->FindClass(boundJavaClass);

@@ -81,14 +81,6 @@ void GoMyDir()
 	SetCurrentDirectoryA(dir);
 }
 
-double GetTime()
-{
-	LARGE_INTEGER t, f;
-	QueryPerformanceCounter(&t);
-	QueryPerformanceFrequency(&f);
-	return (double)t.QuadPart / f.QuadPart;
-}
-
 #pragma comment(lib, "winmm.lib")
 void PlayBgm(const char* fileName)
 {
