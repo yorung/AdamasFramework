@@ -11,7 +11,6 @@ StockObjects::StockObjects()
 
 void StockObjects::Init()
 {
-/*
 	AFIndex iboFullScrSrc[] = { 0, 1, 2, 3 };
 	Vec2 vboFullScrSrc[] = { { -1, -1 }, { -1, 1 }, { 1, -1 }, { 1, 1 } };
 
@@ -20,8 +19,12 @@ void StockObjects::Init()
 
 	VBOID vertexBufferIdsFullScr[] = { vboFullScr };
 	GLsizei stridesFullScr[] = { sizeof(Vec2) };
-	vaoFullScr = afCreateVAO(shaderIdFullScr, elementsFullScr, dimof(elementsFullScr), 1, vertexBufferIdsFullScr, stridesFullScr, iboFullScr);
-	*/
+
+	static const InputElement elements[] = {
+		CInputElement(SF_R32G32_FLOAT, 0, 0),
+	};
+
+	vaoFullScr = afCreateVAO(0, elements, dimof(elements), 1, vertexBufferIdsFullScr, stridesFullScr, iboFullScr);
 }
 
 

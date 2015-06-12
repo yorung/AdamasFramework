@@ -94,11 +94,13 @@
     <ClCompile Include="..\cpp\puzzle.cpp">
       <Filter>PlatformIndipendent</Filter>
     </ClCompile>
-    <ClCompile Include="..\cpp\stock_objects.cpp" />
     <ClCompile Include="..\cpp\input_man.cpp">
       <Filter>PlatformIndipendent</Filter>
     </ClCompile>
     <ClCompile Include="..\cpp\water_surface_classic.cpp">
+      <Filter>PlatformIndipendent</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cpp\stock_objects.cpp">
       <Filter>PlatformIndipendent</Filter>
     </ClCompile>
   </ItemGroup>
@@ -193,11 +195,13 @@
     <ClInclude Include="..\cpp\sprite_renderer.h">
       <Filter>PlatformIndipendent</Filter>
     </ClInclude>
-    <ClInclude Include="..\cpp\stock_objects.h" />
     <ClInclude Include="..\cpp\input_man.h">
       <Filter>PlatformIndipendent</Filter>
     </ClInclude>
     <ClInclude Include="..\cpp\water_surface_classic.h">
+      <Filter>PlatformIndipendent</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cpp\stock_objects.h">
       <Filter>PlatformIndipendent</Filter>
     </ClInclude>
   </ItemGroup>

@@ -165,7 +165,7 @@ void afSetVertexAttributes(GLuint program, const InputElement elements[], int nu
 	for (int i = 0; i < numElements; i++) {
 		const InputElement& d = elements[i];
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferIds[d.inputSlot]);
-		GLint h = glGetAttribLocation(program, d.name);
+		GLint h = d.name ? glGetAttribLocation(program, d.name) : d.attributeIndex;
 		if (h == -1) {
 			continue;
 		}

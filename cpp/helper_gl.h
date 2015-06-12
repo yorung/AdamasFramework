@@ -3,6 +3,7 @@ typedef unsigned short AFIndex;
 #define AFIndexTypeToDevice GL_UNSIGNED_SHORT
 
 enum ShaderFormat {
+	SF_INVALID,
 	SF_R32_FLOAT,
 	SF_R32G32_FLOAT,
 	SF_R32G32B32_FLOAT,
@@ -22,17 +23,25 @@ enum ShaderFormat {
 };
 
 struct InputElement {
-	int inputSlot;
-	const char* name;
-	ShaderFormat format;
-	int offset;
-	bool perInstance;
+	int inputSlot = 0;
+	const char* name = nullptr;
+	ShaderFormat format = SF_INVALID;
+	int offset = 0;
+	bool perInstance = false;
+	int attributeIndex = 0;
 };
 
 class CInputElement : public InputElement {
 public:
 	CInputElement(int inputSlot, const char* name, ShaderFormat format, int offset, bool perInstance = false) {
 		this->name = name;
+		this->format = format;
+		this->inputSlot = inputSlot;
+		this->offset = offset;
+		this->perInstance = perInstance;
+	}
+	CInputElement(ShaderFormat format, int attributeIndex, int offset, bool perInstance = false, int inputSlot = 0) {
+		this->attributeIndex = attributeIndex;
 		this->format = format;
 		this->inputSlot = inputSlot;
 		this->offset = offset;

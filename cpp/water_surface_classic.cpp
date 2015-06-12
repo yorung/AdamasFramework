@@ -175,12 +175,12 @@ static void HandleGLError(const char* func, int line, const char* command)
 #define V(command) do{ command; HandleGLError(__FUNCTION__, __LINE__, #command); } while(0)
 
 static const InputElement elements[] = {
-	{ 0, "vPosition", SF_R32G32B32_FLOAT, 0 },
-	{ 0, "vNormal", SF_R32G32B32_FLOAT, 12 },
+	CInputElement(0, "vPosition", SF_R32G32B32_FLOAT, 0),
+	CInputElement(0, "vNormal", SF_R32G32B32_FLOAT, 12),
 };
 
 static const InputElement elementsFullScr[] = {
-	{ 0, "vPosition", SF_R32G32_FLOAT, 0 },
+	CInputElement(0, "vPosition", SF_R32G32B32_FLOAT, 0),
 };
 
 void WaterSurfaceClassic::Init()
