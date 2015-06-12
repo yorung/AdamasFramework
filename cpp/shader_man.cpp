@@ -33,7 +33,7 @@ static GLuint CompileShader(int type, const char *fileName)
 	return shader;
 }
 
-static GLuint CreateProgram(const char* name)
+static GLuint CreateProgram(const char* name, const std::vector<std::string>* attributeIndex)
 {
 	char buf[256];
 	snprintf(buf, dimof(buf), "shaders/%s.vert", name);
@@ -47,6 +47,14 @@ static GLuint CreateProgram(const char* name)
 		return 0;
 	}
 	GLuint program = glCreateProgram();
+	if (attributeIndex) {
+		int sz = attributeIndex->size();
+		for (int i = 0; i < sz; i++) {
+			glBindAttribLocation(program, i, (*attributeIndex)[i].c_str());
+		}
+	}
+
+
 	glAttachShader(program, vertexShader);
 	glDeleteShader(vertexShader);
 	glAttachShader(program, fragmentShader);
@@ -71,14 +79,14 @@ static GLuint CreateProgram(const char* name)
 	return program;
 }
 
-ShaderMan::SMID ShaderMan::Create(const char *name)
+ShaderMan::SMID ShaderMan::Create(const char *name, const std::vector<std::string>* attributeIndex)
 {
 	NameToId::iterator it = nameToId.find(name);
 	if (it != nameToId.end())
 	{
 		return it->second;
 	}
-	return nameToId[name] = CreateProgram(name);
+	return nameToId[name] = CreateProgram(name, attributeIndex);
 }
 
 void ShaderMan::Destroy()
