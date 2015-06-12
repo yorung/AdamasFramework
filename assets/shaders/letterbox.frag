@@ -2,6 +2,7 @@
 
 precision mediump float;
 in vec2 vfPosition;
+in vec2 vfCoord;
 uniform sampler2D sampler;
 
 layout (location = 0) out vec4 fragColor;

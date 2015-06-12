@@ -27,11 +27,14 @@ void StockObjects::Init()
 	vaoFullScr = afCreateVAO(0, elements, dimof(elements), 1, vertexBufferIdsFullScr, stridesFullScr, iboFullScr);
 }
 
-
-
 void StockObjects::Destroy()
 {
 	afSafeDeleteBuffer(vboFullScr);
 	afSafeDeleteBuffer(iboFullScr);
 	afSafeDeleteVAO(vaoFullScr);
+}
+
+void StockObjects::ApplyFullScreenVAO()
+{
+	afBindVAO(vaoFullScr);
 }

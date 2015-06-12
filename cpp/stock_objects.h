@@ -6,5 +6,6 @@ public:
 	StockObjects();
 	void Init();
 	void Destroy();
+	void ApplyFullScreenVAO();
 };
 extern StockObjects stockObjects;

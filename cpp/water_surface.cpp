@@ -113,7 +113,6 @@ static TexMan::TMID texId[dimof(texFiles)];
 
 WaterSurface::WaterSurface()
 {
-	vaoEmpty = 0;
 	samplerClamp = 0;
 	samplerRepeat = 0;
 	samplerNoMipmap = 0;
@@ -134,7 +133,6 @@ void WaterSurface::Destroy()
 	afSafeDeleteSampler(samplerRepeat);
 	afSafeDeleteSampler(samplerClamp);
 	afSafeDeleteSampler(samplerNoMipmap);
-	afSafeDeleteVAO(vaoEmpty);
 	for (auto& it : rt) {
 		it.Destroy();
 	}
@@ -193,10 +191,6 @@ void WaterSurface::Init()
 	samplerClamp = afCreateSampler(SF_MIPMAP, SW_CLAMP);
 	samplerNoMipmap = afCreateSampler(SF_LINEAR, SW_CLAMP);
 
-	IBOID noIBO;
-	noIBO.x = 0;
-	vaoEmpty = afCreateVAO(shaderFullScr, nullptr, 0, 0, nullptr, nullptr, noIBO);
-
 	afLayoutSamplerBindingManually(shaderWaterLastPass, "sampler0", 0);
 	afLayoutSamplerBindingManually(shaderWaterLastPass, "sampler1", 1);
 	afLayoutSamplerBindingManually(shaderWaterLastPass, "sampler2", 2);
@@ -247,7 +241,7 @@ void WaterSurface::UpdateHeightMap(const UniformBuffer& hmub)
 	shaderMan.Apply(shaderHeightMap);
 	glUniform4fv(0, sizeof(hmub) / (sizeof(GLfloat) * 4), (GLfloat*)&hmub);
 
-	afBindVAO(vaoEmpty);
+	stockObjects.ApplyFullScreenVAO();
 	afDrawTriangleStrip(4);
 }
 
@@ -262,7 +256,7 @@ void WaterSurface::UpdateNormalMap(const UniformBuffer& hmub)
 	shaderMan.Apply(shaderNormalMap);
 	glUniform4fv(0, sizeof(hmub) / (sizeof(GLfloat) * 4), (GLfloat*)&hmub);
 
-	afBindVAO(vaoEmpty);
+	stockObjects.ApplyFullScreenVAO();
 	afDrawTriangleStrip(4);
 }
 
@@ -283,7 +277,7 @@ void WaterSurface::RenderWater(const UniformBuffer& hmub)
 	glUniform4fv(0, sizeof(hmub) / (sizeof(GLfloat) * 4), (GLfloat*)&hmub);
 
 	rt[0].BeginRenderToThis();
-	afBindVAO(vaoEmpty);
+	stockObjects.ApplyFullScreenVAO();
 	afBindTextureToBindingPoint(curHeightMap.GetTexture(), 6);
 	afDrawTriangleStrip(4);
 	afBindTextureToBindingPoint(0, 6);
@@ -293,7 +287,7 @@ void WaterSurface::RenderWater(const UniformBuffer& hmub)
 void WaterSurface::MakeGlow(const UniformBuffer& hmub)
 {
 	glBindSampler(0, samplerClamp);
-	afBindVAO(vaoEmpty);
+	stockObjects.ApplyFullScreenVAO();
 	shaderMan.Apply(shaderNormalMap);
 
 	GLuint shader = shaderMan.Create("glow_extraction");
@@ -372,7 +366,7 @@ void WaterSurface::PostProcess()
 	}
 	glBindSampler(0, samplerNoMipmap);
 //	glBindSampler(0, samplerRepeat);
-	afBindVAO(vaoEmpty);
+	stockObjects.ApplyFullScreenVAO();
 
 	ivec2 scrSize = systemMetrics.GetScreenSize();
 	glViewport(0, 0, scrSize.x, scrSize.y);
