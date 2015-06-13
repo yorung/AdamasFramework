@@ -183,24 +183,40 @@ void afSetVertexAttributes(GLuint program, const InputElement elements[], int nu
 		case SF_R8G8B8A8_UNORM:
 			glVertexAttribPointer(h, d.format - SF_R8_UNORM + 1, GL_UNSIGNED_BYTE, GL_TRUE, strides[d.inputSlot], (void*)d.offset);
 			break;
+		case SF_R8_UINT_TO_FLOAT:
+		case SF_R8G8_UINT_TO_FLOAT:
+		case SF_R8G8B8_UINT_TO_FLOAT:
+		case SF_R8G8B8A8_UINT_TO_FLOAT:
+			glVertexAttribPointer(h, d.format - SF_R8_UINT_TO_FLOAT + 1, GL_UNSIGNED_BYTE, GL_FALSE, strides[d.inputSlot], (void*)d.offset);
+			break;
 		case SF_R8_UINT:
 		case SF_R8G8_UINT:
 		case SF_R8G8B8_UINT:
 		case SF_R8G8B8A8_UINT:
-			//			glVertexAttribPointer(h, d.format - SF_R8_UINT + 1, GL_UNSIGNED_BYTE, GL_FALSE, strides[d.inputSlot], (void*)d.offset);
+#ifdef AF_GLES31
 			glVertexAttribIPointer(h, d.format - SF_R8_UINT + 1, GL_UNSIGNED_BYTE, strides[d.inputSlot], (void*)d.offset);
+#endif
+			break;
+		case SF_R16_UINT_TO_FLOAT:
+		case SF_R16G16_UINT_TO_FLOAT:
+		case SF_R16G16B16_UINT_TO_FLOAT:
+		case SF_R16G16B16A16_UINT_TO_FLOAT:
+			glVertexAttribPointer(h, d.format - SF_R16_UINT_TO_FLOAT + 1, GL_UNSIGNED_SHORT, GL_FALSE, strides[d.inputSlot], (void*)d.offset);
 			break;
 		case SF_R16_UINT:
 		case SF_R16G16_UINT:
 		case SF_R16G16B16_UINT:
 		case SF_R16G16B16A16_UINT:
-			//			glVertexAttribPointer(h, d.format - SF_R16_UINT + 1, GL_UNSIGNED_SHORT, GL_FALSE, strides[d.inputSlot], (void*)d.offset);
+#ifdef AF_GLES31
 			glVertexAttribIPointer(h, d.format - SF_R16_UINT + 1, GL_UNSIGNED_SHORT, strides[d.inputSlot], (void*)d.offset);
+#endif
 			break;
 		}
+#ifdef AF_GLES31
 		if (d.perInstance) {
 			glVertexAttribDivisor(h, 1);
 		}
+#endif
 	}
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
@@ -381,7 +397,9 @@ void AFRenderTarget::Init(ivec2 size, AFDTFormat colorFormat, AFDTFormat depthSt
 	afHandleGLError(glBindFramebuffer(GL_FRAMEBUFFER, framebufferObject));
 	afHandleGLError(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texColor, 0));
 	if (texDepth) {
+#ifdef AF_GLES31
 		afHandleGLError(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, texDepth, 0));
+#endif
 	}
 	afHandleGLError(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 }
