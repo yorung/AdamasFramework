@@ -116,10 +116,6 @@ WaterSurface::WaterSurface()
 	samplerClamp = 0;
 	samplerRepeat = 0;
 	samplerNoMipmap = 0;
-	shaderWaterLastPass = 0;
-	shaderFullScr = 0;
-	shaderHeightMap = 0;
-	shaderNormalMap = 0;
 	lastMouseDown = false;
 }
 

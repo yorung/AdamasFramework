@@ -10,10 +10,10 @@ class WaterSurface
 	};
 
 	Mat matProj, matView;
-	ShaderMan::SMID shaderHeightMap;
-	ShaderMan::SMID shaderNormalMap;
-	ShaderMan::SMID shaderWaterLastPass;
-	ShaderMan::SMID shaderFullScr;
+	ShaderMan::SMID shaderHeightMap = 0;
+	ShaderMan::SMID shaderNormalMap = 0;
+	ShaderMan::SMID shaderWaterLastPass = 0;
+	ShaderMan::SMID shaderFullScr = 0;
 	double elapsedTime;
 	double lastTime;
 	double nextTime;
