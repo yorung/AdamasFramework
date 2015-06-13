@@ -34,7 +34,13 @@ void StockObjects::Destroy()
 	afSafeDeleteVAO(vaoFullScr);
 }
 
-void StockObjects::ApplyFullScreenVAO()
+void StockObjects::ApplyFullScreenVAO() const
 {
 	afBindVAO(vaoFullScr);
+}
+
+const std::vector<std::string>* StockObjects::GetFullScreenVertexAttributeLayout() const
+{
+	static std::vector<std::string> layout{"POSITION"};
+	return &layout;
 }

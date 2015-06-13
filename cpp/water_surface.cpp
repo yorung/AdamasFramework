@@ -163,7 +163,13 @@ void WaterSurface::Init()
 
 	lastTime = GetTime();
 
-	shaderFullScr = shaderMan.Create("letterbox");
+	shaderGlowExtraction = shaderMan.Create("glow_extraction", stockObjects.GetFullScreenVertexAttributeLayout());
+	assert(shaderGlowExtraction);
+	shaderGlowCopy = shaderMan.Create("glow_copy", stockObjects.GetFullScreenVertexAttributeLayout());
+	assert(shaderGlowCopy);
+	shaderGlowLastPass = shaderMan.Create("glow_lastpass", stockObjects.GetFullScreenVertexAttributeLayout());
+	assert(shaderGlowLastPass);
+	shaderFullScr = shaderMan.Create("letterbox", stockObjects.GetFullScreenVertexAttributeLayout());
 	assert(shaderFullScr);
 	shaderWaterLastPass = shaderMan.Create("water_lastpass");
 	assert(shaderWaterLastPass);
@@ -171,6 +177,7 @@ void WaterSurface::Init()
 	assert(shaderHeightMap);
 	shaderNormalMap = shaderMan.Create("water_normal");
 	assert(shaderNormalMap);
+
 
 	glActiveTexture(GL_TEXTURE0);
 	for (int i = 0; i < dimof(texFiles); i++) {
@@ -279,40 +286,30 @@ void WaterSurface::RenderWater(const UniformBuffer& hmub)
 	afBindTextureToBindingPoint(0, 6);
 }
 
-
 void WaterSurface::MakeGlow(const UniformBuffer& hmub)
 {
 	glBindSampler(0, samplerClamp);
 	stockObjects.ApplyFullScreenVAO();
 	shaderMan.Apply(shaderNormalMap);
 
-	GLuint shader = shaderMan.Create("glow_extraction");
-	assert(shader);
-	shaderMan.Apply(shader);
+	shaderMan.Apply(shaderGlowExtraction);
 	glowMap[0].BeginRenderToThis();
 	afBindTextureToBindingPoint(rt[0].GetTexture(), 0);
 	afDrawTriangleStrip(4);
 
-	shader = shaderMan.Create("glow_copy");
-	assert(shader);
-	shaderMan.Apply(shader);
-
+	shaderMan.Apply(shaderGlowCopy);
 	for (int i = 1; i < dimof(glowMap); i++) {
 		glowMap[i].BeginRenderToThis();
 		afBindTextureToBindingPoint(glowMap[i - 1].GetTexture(), 0);
 		afDrawTriangleStrip(4);
 	}
 
-	shader = shaderMan.Create("glow_lastpass");
-	assert(shader);
-	shaderMan.Apply(shader);
-
+	shaderMan.Apply(shaderGlowLastPass);
 	rt[1].BeginRenderToThis();
 	for (int i = 1; i < dimof(glowMap); i++) {
 		afBindTextureToBindingPoint(glowMap[i].GetTexture(), i);
 	}
 	afBindTextureToBindingPoint(rt[0].GetTexture(), 6);
-
 	afDrawTriangleStrip(4);
 }
 

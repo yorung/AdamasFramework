@@ -14,6 +14,10 @@ class WaterSurface
 	ShaderMan::SMID shaderNormalMap = 0;
 	ShaderMan::SMID shaderWaterLastPass = 0;
 	ShaderMan::SMID shaderFullScr = 0;
+	ShaderMan::SMID shaderGlowExtraction = 0;
+	ShaderMan::SMID shaderGlowCopy = 0;
+	ShaderMan::SMID shaderGlowLastPass = 0;
+
 	double elapsedTime;
 	double lastTime;
 	double nextTime;
