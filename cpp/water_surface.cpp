@@ -203,6 +203,7 @@ void WaterSurface::Init()
 	afLayoutSamplerBindingManually(shaderWaterLastPass, "waterHeightmap", 6);
 
 	afLayoutSamplerBindingManually(shaderGlowCopy, "sourceMap", 0);
+	afLayoutSamplerBindingManually(shaderGlowExtraction, "sourceMap", 0);
 }
 
 void WaterSurface::UpdateTime()
