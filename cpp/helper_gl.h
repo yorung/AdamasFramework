@@ -154,6 +154,20 @@ void _afHandleGLError(const char* func, int line, const char* command);
 void afDumpCaps();
 void afDumpIsEnabled();
 
+class AFRenderTarget
+{
+	ivec2 texSize;
+	GLuint texColor = 0;
+	GLuint texDepth = 0;
+	GLuint framebufferObject = 0;
+	GLuint renderbufferObject = 0;
+public:
+	void Init(ivec2 size, AFDTFormat colorFormat, AFDTFormat depthStencilFormat);
+	void Destroy();
+	void BeginRenderToThis();
+	GLuint GetTexture() { return texColor; }
+};
+
 #ifdef AF_GLES31
 typedef TBufName<GL_SHADER_STORAGE_BUFFER> SSBOID;
 typedef TBufName<GL_UNIFORM_BUFFER> UBOID;

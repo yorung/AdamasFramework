@@ -355,6 +355,46 @@ void afDumpIsEnabled()
 #undef _
 }
 
+void AFRenderTarget::Destroy()
+{
+	afSafeDeleteTexture(texColor);
+	afSafeDeleteTexture(texDepth);
+	if (framebufferObject) {
+		glDeleteFramebuffers(1, &framebufferObject);
+		framebufferObject = 0;
+	}
+	if (renderbufferObject) {
+		glDeleteRenderbuffers(1, &renderbufferObject);
+		renderbufferObject = 0;
+	}
+}
+
+void AFRenderTarget::Init(ivec2 size, AFDTFormat colorFormat, AFDTFormat depthStencilFormat = AFDT_DEPTH_STENCIL)
+{
+	texSize = size;
+	texColor = afCreateDynamicTexture(size.x, size.y, colorFormat);
+	if (depthStencilFormat != AFDT_INVALID) {
+		texDepth = afCreateDynamicTexture(size.x, size.y, depthStencilFormat);
+	}
+
+	glGenFramebuffers(1, &framebufferObject);
+	afHandleGLError(glBindFramebuffer(GL_FRAMEBUFFER, framebufferObject));
+	afHandleGLError(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texColor, 0));
+	if (texDepth) {
+		afHandleGLError(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, texDepth, 0));
+	}
+	afHandleGLError(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+}
+
+void AFRenderTarget::BeginRenderToThis()
+{
+	glViewport(0, 0, texSize.x, texSize.y);
+	afHandleGLError(glBindFramebuffer(GL_FRAMEBUFFER, framebufferObject));
+	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	assert(status == GL_FRAMEBUFFER_COMPLETE);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+}
+
 #ifdef AF_GLES31
 ivec2 afGetTextureSize(GLuint tex)
 {

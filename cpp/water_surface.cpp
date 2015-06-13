@@ -12,64 +12,10 @@ const float loopTime = 20.0;
 
 WaterSurface waterSurface;
 
-class AFRenderTarget
-{
-	ivec2 texSize;
-	GLuint texColor = 0;
-	GLuint texDepth = 0;
-	GLuint framebufferObject = 0;
-	GLuint renderbufferObject = 0;
-public:
-	void Init(ivec2 size, AFDTFormat colorFormat, AFDTFormat depthStencilFormat);
-	void Destroy();
-	void BeginRenderToThis();
-	GLuint GetTexture() { return texColor; }
-};
-
 static AFRenderTarget rt[2];
 static AFRenderTarget heightMap[2];
 static AFRenderTarget glowMap[6];
 static int heightCurrentWriteTarget;
-
-void AFRenderTarget::Destroy()
-{
-	afSafeDeleteTexture(texColor);
-	afSafeDeleteTexture(texDepth);
-	if (framebufferObject) {
-		glDeleteFramebuffers(1, &framebufferObject);
-		framebufferObject = 0;
-	}
-	if (renderbufferObject) {
-		glDeleteRenderbuffers(1, &renderbufferObject);
-		renderbufferObject = 0;
-	}
-}
-
-void AFRenderTarget::Init(ivec2 size, AFDTFormat colorFormat, AFDTFormat depthStencilFormat = AFDT_DEPTH_STENCIL)
-{
-	texSize = size;
-	texColor = afCreateDynamicTexture(size.x, size.y, colorFormat);
-	if (depthStencilFormat != AFDT_INVALID) {
-		texDepth = afCreateDynamicTexture(size.x, size.y, depthStencilFormat);
-	}
-
-	glGenFramebuffers(1, &framebufferObject);
-	V(glBindFramebuffer(GL_FRAMEBUFFER, framebufferObject));
-	V(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texColor, 0));
-	if (texDepth) {
-		V(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, texDepth, 0));
-	}
-	V(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-}
-
-void AFRenderTarget::BeginRenderToThis()
-{
-	glViewport(0, 0, texSize.x, texSize.y);
-	V(glBindFramebuffer(GL_FRAMEBUFFER, framebufferObject));
-	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-	assert(status == GL_FRAMEBUFFER_COMPLETE);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-}
 
 struct TexFiles
 {
