@@ -78,7 +78,7 @@ void App::Init()
 	spriteRenderer.Init();
 	stockObjects.Init();
 	luaMan.Create();
-
+	glow.Init();
 
 	LoadMesh("jiji.x");
 	PlayBgm("sound/background.mp3");
@@ -113,6 +113,7 @@ void App::Destroy()
 	fontMan.Destroy();
 	meshRenderer.Destroy();
 	meshMan.Destroy();
+	glow.Destroy();
 	meshId = MeshMan::INVALID_MMID;
 }
 

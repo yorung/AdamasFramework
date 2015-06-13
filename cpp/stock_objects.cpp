@@ -9,7 +9,7 @@ StockObjects::StockObjects()
 	vaoFullScr = 0;
 }
 
-void StockObjects::Init()
+void StockObjects::CreateFullScreenVAO()
 {
 	AFIndex iboFullScrSrc[] = { 0, 1, 2, 3 };
 	Vec2 vboFullScrSrc[] = { { -1, -1 }, { -1, 1 }, { 1, -1 }, { 1, 1 } };
@@ -27,11 +27,28 @@ void StockObjects::Init()
 	vaoFullScr = afCreateVAO(0, elements, dimof(elements), 1, vertexBufferIdsFullScr, stridesFullScr, iboFullScr);
 }
 
+void StockObjects::CreateSamplers()
+{
+	samplerRepeat = afCreateSampler(SF_MIPMAP, SW_REPEAT);
+	samplerClamp = afCreateSampler(SF_MIPMAP, SW_CLAMP);
+	samplerNoMipmap = afCreateSampler(SF_LINEAR, SW_CLAMP);
+}
+
+void StockObjects::Init()
+{
+	CreateFullScreenVAO();
+	CreateSamplers();
+}
+
 void StockObjects::Destroy()
 {
 	afSafeDeleteBuffer(vboFullScr);
 	afSafeDeleteBuffer(iboFullScr);
 	afSafeDeleteVAO(vaoFullScr);
+
+	afSafeDeleteSampler(samplerRepeat);
+	afSafeDeleteSampler(samplerClamp);
+	afSafeDeleteSampler(samplerNoMipmap);
 }
 
 void StockObjects::ApplyFullScreenVAO() const

@@ -46,6 +46,7 @@ static const int BONE_MAX = 50;
 #include "dib.h"
 #include "fps.h"
 #include "font_man.h"
+#include "glow.h"
 #include "water_surface.h"
 #include "water_surface_classic.h"
 #include "dev_camera.h"

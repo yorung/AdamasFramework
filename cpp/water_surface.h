@@ -14,23 +14,16 @@ class WaterSurface
 	ShaderMan::SMID shaderNormalMap = 0;
 	ShaderMan::SMID shaderWaterLastPass = 0;
 	ShaderMan::SMID shaderFullScr = 0;
-	ShaderMan::SMID shaderGlowExtraction = 0;
-	ShaderMan::SMID shaderGlowCopy = 0;
-	ShaderMan::SMID shaderGlowLastPass = 0;
 
 	double elapsedTime;
 	double lastTime;
 	double nextTime;
 	VAOID vaoEmpty;
-	GLuint samplerClamp;
-	GLuint samplerRepeat;
-	GLuint samplerNoMipmap;
 	bool lastMouseDown;
 	void UpdateTime();
 	void UpdateHeightMap(const UniformBuffer&);
 	void UpdateNormalMap(const UniformBuffer&);
 	void RenderWater(const UniformBuffer&);
-	void MakeGlow(const UniformBuffer&);
 	void PostProcess();
 public:
 	WaterSurface();
