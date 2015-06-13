@@ -1,8 +1,6 @@
-#version 310 es
-
-layout (location = 0) in vec2 POSITION;
-out vec2 vfPosition;
-out vec2 vfCoord;
+attribute vec2 POSITION;
+varying vec2 vfPosition;
+varying vec2 vfCoord;
 
 void main() {
 	vfPosition = POSITION;
