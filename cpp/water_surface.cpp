@@ -15,12 +15,12 @@ WaterSurface waterSurface;
 class AFRenderTarget
 {
 	ivec2 texSize;
-	GLuint texColor, texDepth;
-	GLuint framebufferObject;
-	GLuint renderbufferObject;
+	GLuint texColor = 0;
+	GLuint texDepth = 0;
+	GLuint framebufferObject = 0;
+	GLuint renderbufferObject = 0;
 public:
-	AFRenderTarget();
-	void Init(ivec2 size);
+	void Init(ivec2 size, AFDTFormat colorFormat, AFDTFormat depthStencilFormat);
 	void Destroy();
 	void BeginRenderToThis();
 	GLuint GetTexture() { return texColor; }
@@ -30,14 +30,6 @@ static AFRenderTarget rt[2];
 static AFRenderTarget heightMap[2];
 static AFRenderTarget glowMap[6];
 static int heightCurrentWriteTarget;
-
-AFRenderTarget::AFRenderTarget()
-{
-	texColor = 0;
-	texDepth = 0;
-	framebufferObject = 0;
-	renderbufferObject = 0;
-}
 
 void AFRenderTarget::Destroy()
 {
@@ -53,24 +45,20 @@ void AFRenderTarget::Destroy()
 	}
 }
 
-void AFRenderTarget::Init(ivec2 size)
+void AFRenderTarget::Init(ivec2 size, AFDTFormat colorFormat, AFDTFormat depthStencilFormat = AFDT_DEPTH_STENCIL)
 {
 	texSize = size;
-	texColor = afCreateDynamicTexture(size.x, size.y, AFDT_R16G16B16A16_FLOAT);
-//	texColor = afCreateDynamicTexture(size.x, size.y, AFDT_R5G6B5_UINT);
-	texDepth = afCreateDynamicTexture(size.x, size.y, AFDT_DEPTH_STENCIL);
-
-//	glGenRenderbuffers(1, &renderbufferObject);
-//	glBindRenderbuffer(GL_RENDERBUFFER, renderbufferObject);
-//	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, size.x, size.y);
-//	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+	texColor = afCreateDynamicTexture(size.x, size.y, colorFormat);
+	if (depthStencilFormat != AFDT_INVALID) {
+		texDepth = afCreateDynamicTexture(size.x, size.y, depthStencilFormat);
+	}
 
 	glGenFramebuffers(1, &framebufferObject);
 	V(glBindFramebuffer(GL_FRAMEBUFFER, framebufferObject));
 	V(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texColor, 0));
-//	V(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, texDepth, 0));
-	V(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, texDepth, 0));
-//	V(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderbufferObject));
+	if (texDepth) {
+		V(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, texDepth, 0));
+	}
 	V(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 }
 
@@ -144,17 +132,17 @@ void WaterSurface::Init()
 {
 	Destroy();
 	for (auto& it : rt) {
-		it.Init(min(ivec2(1024, 1024), systemMetrics.GetScreenSize()));
+		it.Init(min(ivec2(1024, 1024), systemMetrics.GetScreenSize()), AFDT_R8G8B8A8_UINT, AFDT_INVALID);
 		it.BeginRenderToThis();	// clear textures
 	}
 	for (auto& it : heightMap) {
-		it.Init(ivec2(HEIGHT_MAP_W, HEIGHT_MAP_H));
+		it.Init(ivec2(HEIGHT_MAP_W, HEIGHT_MAP_H), AFDT_R16G16B16A16_FLOAT, AFDT_INVALID);
 		it.BeginRenderToThis();	// clear textures
 	}
 
 	int texSize = GLOW_WH;
 	for (auto& it : glowMap) {
-		it.Init(ivec2(texSize, texSize));
+		it.Init(ivec2(texSize, texSize), AFDT_R8G8B8A8_UINT, AFDT_INVALID);
 		it.BeginRenderToThis();	// clear textures
 		texSize /= 2;
 	}

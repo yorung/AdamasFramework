@@ -99,6 +99,7 @@ inline void afSafeDeleteTexture(GLuint& t)
 
 enum AFDTFormat
 {
+	AFDT_INVALID,
 	AFDT_R8G8B8A8_UINT,
 	AFDT_R5G6B5_UINT,
 	AFDT_R32G32B32A32_FLOAT,
