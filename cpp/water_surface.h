@@ -13,7 +13,6 @@ class WaterSurface
 	ShaderMan::SMID shaderHeightMap = 0;
 	ShaderMan::SMID shaderNormalMap = 0;
 	ShaderMan::SMID shaderWaterLastPass = 0;
-	ShaderMan::SMID shaderFullScr = 0;
 
 	double elapsedTime;
 	double lastTime;
@@ -24,7 +23,6 @@ class WaterSurface
 	void UpdateHeightMap(const UniformBuffer&);
 	void UpdateNormalMap(const UniformBuffer&);
 	void RenderWater(const UniformBuffer&);
-	void PostProcess(AFRenderTarget& target, GLuint srcTex);
 public:
 	WaterSurface();
 	~WaterSurface();

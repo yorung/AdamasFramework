@@ -79,10 +79,6 @@ void WaterSurface::Init()
 
 	lastTime = GetTime();
 
-	shaderFullScr = shaderMan.Create("letterbox", stockObjects.GetFullScreenVertexAttributeLayout());
-	assert(shaderFullScr);
-	afLayoutSamplerBindingManually(shaderFullScr, "sampler", 0);
-
 	shaderWaterLastPass = shaderMan.Create("water_lastpass");
 	assert(shaderWaterLastPass);
 	shaderHeightMap = shaderMan.Create("water_heightmap");
@@ -194,16 +190,6 @@ void WaterSurface::RenderWater(const UniformBuffer& hmub)
 	afBindTextureToBindingPoint(0, 6);
 }
 
-void WaterSurface::PostProcess(AFRenderTarget& target, GLuint srcTex)
-{
-	target.BeginRenderToThis();
-	afBindTextureToBindingPoint(srcTex, 0);
-	afBindSamplerToBindingPoint(stockObjects.GetNoMipmapSampler(), 0);
-	shaderMan.Apply(shaderFullScr);
-	stockObjects.ApplyFullScreenVAO();
-	afDrawTriangleStrip(4);
-}
-
 void WaterSurface::Draw()
 {
 	UpdateTime();
@@ -284,8 +270,7 @@ void WaterSurface::Draw()
 		break;
 	}
 
-
-	PostProcess(rt, srcTex);
+	letterBox.Draw(rt, srcTex);
 
 	glBindVertexArray(0);
 }
