@@ -194,52 +194,12 @@ void WaterSurface::RenderWater(const UniformBuffer& hmub)
 	afBindTextureToBindingPoint(0, 6);
 }
 
-void WaterSurface::PostProcess()
+void WaterSurface::PostProcess(AFRenderTarget& target, GLuint srcTex)
 {
-	AFRenderTarget rt;
-	rt.InitForDefaultRenderTarget();
-	rt.BeginRenderToThis();
-
+	target.BeginRenderToThis();
+	afBindTextureToBindingPoint(srcTex, 0);
+	afBindSamplerToBindingPoint(stockObjects.GetNoMipmapSampler(), 0);
 	shaderMan.Apply(shaderFullScr);
-
-	static int num = 8;
-	if (inputMan.GetInputCount('\t') == 1) {
-		num = (num + 1) % 9;
-	}
-
-	switch (num) {
-	case 0:
-		afBindTextureToBindingPoint(renderTarget[0].GetTexture(), 0);
-		break;
-	case 1:
-	{
-		auto& curHeightMap = heightMap[heightCurrentWriteTarget];
-		afBindTextureToBindingPoint(curHeightMap.GetTexture(), 0);
-		break;
-	}
-	case 2:
-		afBindTextureToBindingPoint(glowMap[0].GetTexture(), 0);
-		break;
-	case 3:
-		afBindTextureToBindingPoint(glowMap[1].GetTexture(), 0);
-		break;
-	case 4:
-		afBindTextureToBindingPoint(glowMap[2].GetTexture(), 0);
-		break;
-	case 5:
-		afBindTextureToBindingPoint(glowMap[3].GetTexture(), 0);
-		break;
-	case 6:
-		afBindTextureToBindingPoint(glowMap[4].GetTexture(), 0);
-		break;
-	case 7:
-		afBindTextureToBindingPoint(glowMap[5].GetTexture(), 0);
-		break;
-	case 8:
-		afBindTextureToBindingPoint(renderTarget[1].GetTexture(), 0);
-		break;
-	}
-	glBindSampler(0, stockObjects.GetNoMipmapSampler());
 	stockObjects.ApplyFullScreenVAO();
 	afDrawTriangleStrip(4);
 }
@@ -281,7 +241,51 @@ void WaterSurface::Draw()
 	UpdateNormalMap(hmub);
 	RenderWater(hmub);
 	glow.MakeGlow(renderTarget[1], renderTarget[0].GetTexture());
-	PostProcess();
+
+	AFRenderTarget rt;
+	rt.InitForDefaultRenderTarget();
+
+	static int num = 8;
+	if (inputMan.GetInputCount('\t') == 1) {
+		num = (num + 1) % 9;
+	}
+
+	GLuint srcTex = 0;
+	switch (num) {
+	case 0:
+		srcTex = renderTarget[0].GetTexture();
+		break;
+	case 1:
+	{
+		auto& curHeightMap = heightMap[heightCurrentWriteTarget];
+		srcTex = curHeightMap.GetTexture();
+		break;
+	}
+	case 2:
+		srcTex = glowMap[0].GetTexture();
+		break;
+	case 3:
+		srcTex = glowMap[1].GetTexture();
+		break;
+	case 4:
+		srcTex = glowMap[2].GetTexture();
+		break;
+	case 5:
+		srcTex = glowMap[3].GetTexture();
+		break;
+	case 6:
+		srcTex = glowMap[4].GetTexture();
+		break;
+	case 7:
+		srcTex = glowMap[5].GetTexture();
+		break;
+	case 8:
+		srcTex = renderTarget[1].GetTexture();
+		break;
+	}
+
+
+	PostProcess(rt, srcTex);
 
 	glBindVertexArray(0);
 }

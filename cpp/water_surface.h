@@ -24,7 +24,7 @@ class WaterSurface
 	void UpdateHeightMap(const UniformBuffer&);
 	void UpdateNormalMap(const UniformBuffer&);
 	void RenderWater(const UniformBuffer&);
-	void PostProcess();
+	void PostProcess(AFRenderTarget& target, GLuint srcTex);
 public:
 	WaterSurface();
 	~WaterSurface();
