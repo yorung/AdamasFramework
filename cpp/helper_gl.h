@@ -170,6 +170,7 @@ class AFRenderTarget
 	GLuint framebufferObject = 0;
 	GLuint renderbufferObject = 0;
 public:
+	void InitForDefaultRenderTarget();
 	void Init(ivec2 size, AFDTFormat colorFormat, AFDTFormat depthStencilFormat);
 	void Destroy();
 	void BeginRenderToThis();
