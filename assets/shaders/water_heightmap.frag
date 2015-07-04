@@ -42,5 +42,6 @@ void main() {
 	center.y *= 0.99;
 	center.x += center.y;
 
-	fragColor = center;
+	fragColor.xy = center.xy;
+	fragColor.zw = vec2(0.0, 1.0);
 }

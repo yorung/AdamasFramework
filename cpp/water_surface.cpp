@@ -12,6 +12,7 @@ WaterSurface waterSurface;
 
 static AFRenderTarget renderTarget[2];
 static AFRenderTarget heightMap[2];
+static AFRenderTarget normalMap;
 extern AFRenderTarget glowMap[6];
 static int heightCurrentWriteTarget;
 
@@ -61,6 +62,7 @@ void WaterSurface::Destroy()
 	for (auto& it : heightMap) {
 		it.Destroy();
 	}
+	normalMap.Destroy();
 }
 
 void WaterSurface::Init()
@@ -74,6 +76,8 @@ void WaterSurface::Init()
 		it.Init(ivec2(HEIGHT_MAP_W, HEIGHT_MAP_H), AFDT_R16G16B16A16_FLOAT, AFDT_INVALID);
 		it.BeginRenderToThis();	// clear textures
 	}
+	normalMap.Init(ivec2(HEIGHT_MAP_W, HEIGHT_MAP_H), AFDT_R16G16B16A16_FLOAT, AFDT_INVALID);
+	normalMap.BeginRenderToThis();	// clear textures
 
 	V(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 
@@ -105,6 +109,7 @@ void WaterSurface::Init()
 	afLayoutSamplerBindingManually(shaderWaterLastPass, "sampler4", 4);
 	afLayoutSamplerBindingManually(shaderWaterLastPass, "sampler5", 5);
 	afLayoutSamplerBindingManually(shaderWaterLastPass, "waterHeightmap", 6);
+	afLayoutSamplerBindingManually(shaderWaterLastPass, "waterNormalmap", 7);
 }
 
 void WaterSurface::UpdateTime()
@@ -155,10 +160,8 @@ void WaterSurface::UpdateHeightMap(const UniformBuffer& hmub)
 void WaterSurface::UpdateNormalMap(const UniformBuffer& hmub)
 {
 	auto& heightR = heightMap[heightCurrentWriteTarget];
-	heightCurrentWriteTarget ^= 1;
-	auto& heightW = heightMap[heightCurrentWriteTarget];
 	afBindTextureToBindingPoint(heightR.GetTexture(), 0);
-	heightW.BeginRenderToThis();
+	normalMap.BeginRenderToThis();
 
 	shaderMan.Apply(shaderNormalMap);
 	glUniform4fv(0, sizeof(hmub) / (sizeof(GLfloat) * 4), (GLfloat*)&hmub);
@@ -186,6 +189,7 @@ void WaterSurface::RenderWater(const UniformBuffer& hmub)
 	renderTarget[0].BeginRenderToThis();
 	stockObjects.ApplyFullScreenVAO();
 	afBindTextureToBindingPoint(curHeightMap.GetTexture(), 6);
+	afBindTextureToBindingPoint(normalMap.GetTexture(), 7);
 	afDrawTriangleStrip(4);
 	afBindTextureToBindingPoint(0, 6);
 }

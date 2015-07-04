@@ -9,6 +9,7 @@ uniform sampler2D sampler3;
 uniform sampler2D sampler4;
 uniform sampler2D sampler5;
 uniform sampler2D waterHeightmap;
+uniform sampler2D waterNormalmap;
 
 layout (location = 0) uniform vec4 fakeUBO[2];
 
@@ -30,6 +31,12 @@ const vec3 lightPos = vec3(1.4, 1.4, 16.0);
 
 layout (location = 0) out vec4 fragColor;
 
+vec4 FetchNormalTex(vec2 position)
+{
+	vec2 coord = position * 0.5 + 0.5;
+	return texture(waterNormalmap, coord);
+}
+
 vec4 FetchWaterTex(vec2 position)
 {
 	vec2 coord = position * 0.5 + 0.5;
@@ -43,17 +50,13 @@ vec3 MakeWater3DPos(vec2 position)
 
 vec3 GetSurfaceNormal(vec2 position)
 {
-	vec4 h = FetchWaterTex(position);
-	vec3 normal = vec3(h.zw, sqrt(1.0 - dot(h.zw, h.zw)));
-	return normal;
-/*
-	vec3 heightU = MakeWater3DPos(vfPosition + vec2(0, 1.0 / (heightMapSize.y * 0.5)));
-	vec3 heightL = MakeWater3DPos(vfPosition - vec2(1.0 / (heightMapSize.x * 0.5), 0));
-	vec3 height = MakeWater3DPos(vfPosition);
-	vec3 normalFromHeightMap = cross(heightU - height, heightL - height);
-
-	return normalize(normalFromHeightMap);
-*/
+	vec4 h = FetchNormalTex(position);
+	return normalize(h.xyz);
+//	return h.xyz;
+//	return vec3(h.xy, abs(h.z));
+//	vec3 normal = vec3(h.zw, sqrt(1.0 - dot(h.zw, h.zw)));
+//	vec3 normal = vec3(h.xy, sqrt(1.0 - dot(h.xy, h.xy)));
+//	return normal;
 }
 
 float GetFakeSunIllum(vec2 position, vec3 normal)
