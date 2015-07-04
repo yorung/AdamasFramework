@@ -5,19 +5,19 @@ in vec2 vfPosition;
 
 layout (location = 0) out vec4 fragColor;
 layout (location = 0) uniform vec4 fakeUBO[2];
-layout (binding = 0) uniform sampler2D lastHeightMap;
+layout (binding = 0) uniform sampler2D waterHeightmap;
 
 vec2 heightMapSize = fakeUBO[1].zw;
 
-vec4 FetchWaterTex(vec2 position)
+float GetWaterHeight(vec2 position)
 {
 	vec2 coord = position * 0.5 + 0.5;
-	return texture(lastHeightMap, coord);
+	return texture(waterHeightmap, coord).x;
 }
 
 vec3 MakeWater3DPos(vec2 position)
 {
-	return vec3(position, FetchWaterTex(position).x);
+	return vec3(position, GetWaterHeight(position));
 }
 
 vec3 GetSurfaceNormal()

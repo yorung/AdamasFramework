@@ -18,6 +18,8 @@ void main() {
 	vec2 texcoord = vfPosition * 0.5 + 0.5;
 
 	vec4 center = texture(lastHeightMap, texcoord);
+	float height = center.x;
+	float velocity = center.y;
 	vec2 ofs[] = vec2[](
 		texcoord + vec2(-1.0 / heightMapSize.x, 0),
 		texcoord + vec2(0, 1.0 / heightMapSize.y),
@@ -31,17 +33,16 @@ void main() {
 		ave += texture(lastHeightMap, ofs[i]).x * isCoordIn0To1;
 	}
 	ave /= 4.0;
-	float vel = ave - center.x;
+	float velAdd = ave - height;
 
 	float dist = length(vfPosition - mousePos);
-	center.x += pow(max(0.0, 1.0 - dist * 9.0), 3.0) * 0.015f * mouseDown;
-//	center.x += max(0.0f, 1.0f - dist * 9.0) * 0.015f * mouseDown;
-//	center.x = clamp(center.x, -heightLimit, heightLimit);
+	height += pow(max(0.0, 1.0 - dist * 9.0), 3.0) * 0.015f * mouseDown;
+//	height += max(0.0f, 1.0f - dist * 9.0) * 0.015f * mouseDown;
+//	height = clamp(height, -heightLimit, heightLimit);
 
-	center.y += vel;
-	center.y *= 0.99;
-	center.x += center.y;
+	velocity += velAdd;
+	velocity *= 0.99;
+	height += velocity;
 
-	fragColor.xy = center.xy;
-	fragColor.zw = vec2(0.0, 1.0);
+	fragColor = vec4(height, velocity, 0.0, 1.0);
 }
