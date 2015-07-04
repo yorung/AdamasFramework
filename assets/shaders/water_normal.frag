@@ -33,5 +33,5 @@ vec3 GetSurfaceNormal()
 void main() {
 	vec3 normal = GetSurfaceNormal();
 //	vec4 org = FetchWaterTex(vfPosition);
-	fragColor = vec4(normal.xyz, 1.0);
+	fragColor = vec4(normal.xyz * 0.5 + 0.5, 1.0);
 }

@@ -31,12 +31,6 @@ const vec3 lightPos = vec3(1.4, 1.4, 16.0);
 
 layout (location = 0) out vec4 fragColor;
 
-vec4 FetchNormalTex(vec2 position)
-{
-	vec2 coord = position * 0.5 + 0.5;
-	return texture(waterNormalmap, coord);
-}
-
 vec4 FetchWaterTex(vec2 position)
 {
 	vec2 coord = position * 0.5 + 0.5;
@@ -50,13 +44,9 @@ vec3 MakeWater3DPos(vec2 position)
 
 vec3 GetSurfaceNormal(vec2 position)
 {
-	vec4 h = FetchNormalTex(position);
-	return normalize(h.xyz);
-//	return h.xyz;
-//	return vec3(h.xy, abs(h.z));
-//	vec3 normal = vec3(h.zw, sqrt(1.0 - dot(h.zw, h.zw)));
-//	vec3 normal = vec3(h.xy, sqrt(1.0 - dot(h.xy, h.xy)));
-//	return normal;
+	vec2 coord = position * 0.5 + 0.5;
+	vec3 n = texture(waterNormalmap, coord).xyz;
+	return normalize(n * 2.0 - 1.0);
 }
 
 float GetFakeSunIllum(vec2 position, vec3 normal)
