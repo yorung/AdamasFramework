@@ -28,7 +28,7 @@ void main() {
 	for (int i = 0; i < 4; i++) {
 		vec2 o = ofs[i];
 		float isCoordIn0To1 = mod(floor(o.x) + floor(o.y) + 1.0, 2.0);
-		ave += texture(lastHeightMap, ofs[i]) * isCoordIn0To1;
+		ave += texture(lastHeightMap, ofs[i]).x * isCoordIn0To1;
 	}
 	ave /= 4.0;
 	float vel = ave - center.x;
