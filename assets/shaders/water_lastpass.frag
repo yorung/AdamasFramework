@@ -45,8 +45,12 @@ vec3 MakeWater3DPos(vec2 position)
 vec3 GetSurfaceNormal(vec2 position)
 {
 	vec2 coord = position * 0.5 + 0.5;
-	vec3 n = texture(waterNormalmap, coord).xyz;
-	return normalize(n * 2.0 - 1.0);
+	vec4 normEncoded = texture(waterNormalmap, coord);
+	vec2 normXY = asin(normEncoded.xy + normEncoded.zw / 256.0) / (3.1415926 / 2.0) * 2.0 - 1.0;
+//	vec2 normXY = pow(normEncoded.xy + normEncoded.zw / 256.0, vec2(2.0)) * 2.0 - 1.0;
+//	vec2 normXY = (normEncoded.xy + normEncoded.zw / 256.0) * 2.0 - 1.0;
+//	vec2 normXY = (normEncoded.xy) * 2.0 - 1.0;
+	return vec3(normXY, sqrt(1.0 - dot(normXY, normXY)));
 }
 
 float GetFakeSunIllum(vec2 position, vec3 normal)
