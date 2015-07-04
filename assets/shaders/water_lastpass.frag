@@ -34,7 +34,8 @@ layout (location = 0) out vec4 fragColor;
 float GetWaterHeight(vec2 position)
 {
 	vec2 coord = position * 0.5 + 0.5;
-	return texture(waterHeightmap, coord).x;
+	vec4 t = texture(waterHeightmap, coord);
+	return t.x + t.z / 256.0 - 0.5;
 }
 
 vec3 MakeWater3DPos(vec2 position)

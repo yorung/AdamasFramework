@@ -5,7 +5,7 @@ in vec2 vfPosition;
 
 layout (location = 0) out vec4 fragColor;
 layout (location = 0) uniform vec4 fakeUBO[2];
-layout (binding = 0) uniform sampler2D lastHeightMap;
+layout (binding = 0) uniform sampler2D waterHeightmap;
 
 vec2 mousePos = fakeUBO[0].xy;
 float mouseDown = fakeUBO[0].z;
@@ -14,10 +14,16 @@ vec2 heightMapSize = fakeUBO[1].zw;
 
 const float heightLimit = 0.4f;
 
+vec2 DecodeWaterHeight(vec2 coord)
+{
+	vec4 t = texture(waterHeightmap, coord);
+	return t.xy + t.zw / 256.0 - 0.5;
+}
+
 void main() {
 	vec2 texcoord = vfPosition * 0.5 + 0.5;
 
-	vec4 center = texture(lastHeightMap, texcoord);
+	vec2 center = DecodeWaterHeight(texcoord);
 	float height = center.x;
 	float velocity = center.y;
 	vec2 ofs[] = vec2[](
@@ -30,7 +36,7 @@ void main() {
 	for (int i = 0; i < 4; i++) {
 		vec2 o = ofs[i];
 		float isCoordIn0To1 = mod(floor(o.x) + floor(o.y) + 1.0, 2.0);
-		ave += texture(lastHeightMap, ofs[i]).x * isCoordIn0To1;
+		ave += DecodeWaterHeight(ofs[i]).x * isCoordIn0To1;
 	}
 	ave /= 4.0;
 	float velAdd = ave - height;
@@ -44,5 +50,9 @@ void main() {
 	velocity *= 0.99;
 	height += velocity;
 
-	fragColor = vec4(height, velocity, 0.0, 1.0);
+	vec2 hv = vec2(height, velocity) + 0.5;
+	vec2 hvff = hv * 256.0;
+	vec2 hvfract = fract(hvff);
+
+	fragColor = vec4((hvff - hvfract) / 256.0, hvfract);
 }
