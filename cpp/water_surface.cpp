@@ -73,7 +73,7 @@ void WaterSurface::Init()
 		it.BeginRenderToThis();	// clear textures
 	}
 	for (auto& it : heightMap) {
-		it.Init(ivec2(HEIGHT_MAP_W, HEIGHT_MAP_H), AFDT_R16G16B16A16_FLOAT, AFDT_INVALID);
+		it.Init(ivec2(HEIGHT_MAP_W, HEIGHT_MAP_H), AFDT_R8G8B8A8_UINT, AFDT_INVALID);
 		it.BeginRenderToThis();	// clear textures
 	}
 	normalMap.Init(ivec2(HEIGHT_MAP_W, HEIGHT_MAP_H), AFDT_R8G8B8A8_UINT, AFDT_INVALID);
