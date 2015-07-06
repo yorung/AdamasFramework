@@ -4,10 +4,8 @@ precision highp float;
 in vec2 vfPosition;
 
 layout (location = 0) out vec4 fragColor;
-layout (location = 0) uniform vec4 fakeUBO[2];
-layout (binding = 0) uniform sampler2D waterHeightmap;
-
-vec2 heightMapSize = fakeUBO[1].zw;
+uniform sampler2D waterHeightmap;
+uniform vec2 heightMapSize;
 
 float GetWaterHeight(vec2 position)
 {

@@ -88,6 +88,7 @@ void WaterSurface::Init()
 	shaderHeightMap = shaderMan.Create("water_heightmap");
 	assert(shaderHeightMap);
 	shaderNormalMap = shaderMan.Create("water_normal");
+	afLayoutSamplerBindingManually(shaderWaterLastPass, "waterHeightmap", 0);
 	assert(shaderNormalMap);
 
 
@@ -164,7 +165,7 @@ void WaterSurface::UpdateNormalMap(const UniformBuffer& hmub)
 	normalMap.BeginRenderToThis();
 
 	shaderMan.Apply(shaderNormalMap);
-	glUniform4fv(0, sizeof(hmub) / (sizeof(GLfloat) * 4), (GLfloat*)&hmub);
+	glUniform2fv(glGetUniformLocation(shaderNormalMap, "heightMapSize"), 1, (GLfloat*)&hmub.heightMapSize);
 
 	stockObjects.ApplyFullScreenVAO();
 	afDrawTriangleStrip(4);
