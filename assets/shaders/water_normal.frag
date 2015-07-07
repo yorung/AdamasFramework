@@ -1,16 +1,13 @@
-#version 310 es
-
 precision highp float;
-in vec2 vfPosition;
+varying vec2 vfPosition;
 
-layout (location = 0) out vec4 fragColor;
 uniform sampler2D waterHeightmap;
 uniform vec2 heightMapSize;
 
 float GetWaterHeight(vec2 position)
 {
 	vec2 coord = position * 0.5 + 0.5;
-	return texture(waterHeightmap, coord).x;
+	return texture2D(waterHeightmap, coord).x;
 }
 
 vec3 MakeWater3DPos(vec2 position)
@@ -35,6 +32,6 @@ void main() {
 
 	vec2 normXY256 = normXYEncoded * 256.0;
 	vec2 xyFract = fract(normXY256);
-	fragColor.xy = (normXY256 - xyFract) / 256.0;
-	fragColor.zw = xyFract;
+	gl_FragColor.xy = (normXY256 - xyFract) / 256.0;
+	gl_FragColor.zw = xyFract;
 }
