@@ -90,6 +90,10 @@ void WaterSurface::Init()
 	shaderNormalMap = shaderMan.Create("water_normal");
 	afLayoutSamplerBindingManually(shaderWaterLastPass, "waterHeightmap", 0);
 	assert(shaderNormalMap);
+	shaderMan.Apply(shaderNormalMap);
+
+	Vec2 heightMapSize(HEIGHT_MAP_W, HEIGHT_MAP_H);
+	glUniform2fv(glGetUniformLocation(shaderNormalMap, "heightMapSize"), 1, (GLfloat*)&heightMapSize);
 
 
 	glActiveTexture(GL_TEXTURE0);
@@ -158,15 +162,12 @@ void WaterSurface::UpdateHeightMap(const UniformBuffer& hmub)
 	afDrawTriangleStrip(4);
 }
 
-void WaterSurface::UpdateNormalMap(const UniformBuffer& hmub)
+void WaterSurface::UpdateNormalMap()
 {
 	auto& heightR = heightMap[heightCurrentWriteTarget];
 	afBindTextureToBindingPoint(heightR.GetTexture(), 0);
 	normalMap.BeginRenderToThis();
-
 	shaderMan.Apply(shaderNormalMap);
-	glUniform2fv(glGetUniformLocation(shaderNormalMap, "heightMapSize"), 1, (GLfloat*)&hmub.heightMapSize);
-
 	stockObjects.ApplyFullScreenVAO();
 	afDrawTriangleStrip(4);
 }
@@ -229,7 +230,7 @@ void WaterSurface::Draw()
 	afBlendMode(BM_NONE);
 
 	UpdateHeightMap(hmub);
-	UpdateNormalMap(hmub);
+	UpdateNormalMap();
 	RenderWater(hmub);
 	glow.MakeGlow(renderTarget[1], renderTarget[0].GetTexture());
 

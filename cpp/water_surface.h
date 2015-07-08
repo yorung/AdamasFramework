@@ -21,7 +21,7 @@ class WaterSurface
 	bool lastMouseDown;
 	void UpdateTime();
 	void UpdateHeightMap(const UniformBuffer&);
-	void UpdateNormalMap(const UniformBuffer&);
+	void UpdateNormalMap();
 	void RenderWater(const UniformBuffer&);
 public:
 	WaterSurface();
