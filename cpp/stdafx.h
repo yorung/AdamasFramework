@@ -10,6 +10,9 @@ extern const char* boundJavaClass;
 #include <gles3/gl31.h>
 #endif
 
+#define _USE_MATH_DEFINES
+#include <cmath>
+
 #include <vector>
 #include <algorithm>
 #include <string>
@@ -19,8 +22,6 @@ extern const char* boundJavaClass;
 #include <chrono>
 #include <random>
 
-#define _USE_MATH_DEFINES
-#include <math.h>
 #include <assert.h>
 #include <time.h>
 #include <stdint.h>
