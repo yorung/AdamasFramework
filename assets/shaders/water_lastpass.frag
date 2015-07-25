@@ -31,17 +31,6 @@ const vec3 lightPos = vec3(1.4, 1.4, 16.0);
 
 layout (location = 0) out vec4 fragColor;
 
-float GetWaterHeight(vec2 position)
-{
-	vec2 coord = position * 0.5 + 0.5;
-	return texture(waterHeightmap, coord).x;
-}
-
-vec3 MakeWater3DPos(vec2 position)
-{
-	return vec3(position, GetWaterHeight(position));
-}
-
 vec3 GetSurfaceNormal(vec2 position)
 {
 	vec2 coord = position * 0.5 + 0.5;
