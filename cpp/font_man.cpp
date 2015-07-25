@@ -239,11 +239,11 @@ bool FontMan::Build(const CharSignature& signature)
 		curX = 0;
 		curY += curLineMaxH;
 		curLineMaxH = 0;
-		aflog("FontMan::Build() new line\n");
+	//	aflog("FontMan::Build() new line\n");
 	}
 	int remainY = texSrc.getH() - curY;
 	if (remainY < dib.getH()) {
-		aflog("FontMan::Build() font texture is full!\n");
+	//	aflog("FontMan::Build() font texture is full!\n");
 		return false;
 	}
 	curLineMaxH = std::max(curLineMaxH, dib.getH());
@@ -254,9 +254,9 @@ bool FontMan::Build(const CharSignature& signature)
 		dirty = true;
 	}
 
-	char codestr[128];
-	snprintf(codestr, dimof(codestr), "%04x %c", signature.code, signature.code < 0x80 ? signature.code : 0x20);
-	aflog("FontMan::Build() curX=%d curY=%d dib.getW()=%d dib.getH()=%d code=%s\n", curX, curY, dib.getW(), dib.getH(), codestr);
+	//char codestr[128];
+	//snprintf(codestr, dimof(codestr), "%04x %c", signature.code, signature.code < 0x80 ? signature.code : 0x20);
+	//aflog("FontMan::Build() curX=%d curY=%d dib.getW()=%d dib.getH()=%d code=%s\n", curX, curY, dib.getW(), dib.getH(), codestr);
 
 	curX += (int)ceil(cache.srcWidth.x);
 	caches[signature] = cache;
