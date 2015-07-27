@@ -78,7 +78,6 @@ void App::Init()
 	spriteRenderer.Init();
 	stockObjects.Init();
 	luaMan.Create();
-	glow.Init();
 
 	LoadMesh("jiji.x");
 	PlayBgm("sound/background.mp3");

@@ -5,8 +5,12 @@ AFRenderTarget glowMap[6];
 
 const int GLOW_WH = 128;
 
-void Glow::Init()
+void Glow::LazyInit()
 {
+	if (shaderGlowExtraction) {
+		return;
+	}
+
 	int texSize = GLOW_WH;
 	for (auto& it : glowMap) {
 		it.Init(ivec2(texSize, texSize), AFDT_R8G8B8A8_UINT, AFDT_INVALID);
@@ -37,10 +41,14 @@ void Glow::Destroy()
 	for (auto& it : glowMap) {
 		it.Destroy();
 	}
+	shaderGlowExtraction = 0;
+	shaderGlowCopy = 0;
+	shaderGlowLastPass = 0;
 }
 
 void Glow::MakeGlow(AFRenderTarget& target, GLuint srcTex)
 {
+	LazyInit();
 	glBindSampler(0, stockObjects.GetClampSampler());
 	stockObjects.ApplyFullScreenVAO();
 
