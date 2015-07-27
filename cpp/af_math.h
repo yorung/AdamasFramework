@@ -75,6 +75,7 @@ struct ivec2
 	ivec2 operator+(const ivec2& r) const { return ivec2(x + r.x, y + r.y); }
 	ivec2 operator-(const ivec2& r) const { return ivec2(x - r.x, y - r.y); }
 	operator Vec2() const { return Vec2((float)x, (float)y); }
+	ivec2 operator =(const Vec2 r) { x = (int)r.x; y = (int)r.y; return *this; }
 };
 
 struct ivec3
