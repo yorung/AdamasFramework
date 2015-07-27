@@ -103,25 +103,39 @@ GLuint afCreateDynamicTexture(int w, int h, AFDTFormat format)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	auto gen = [=](GLint internalFormat, GLint format, GLenum type) {
+		afHandleGLError(glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, w, h, 0, format, type, nullptr));
+	};
 	switch (format) {
 	case AFDT_R8G8B8A8_UINT:
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+		gen(GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE);
 		break;
 	case AFDT_R5G6B5_UINT:
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, nullptr);
+		gen(GL_RGB, GL_RGB, GL_UNSIGNED_SHORT_5_6_5);
 		break;
-#ifdef AF_GLES31
-	case AFDT_R32G32B32A32_FLOAT:
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, w, h, 0, GL_RGBA, GL_FLOAT, nullptr);
-		break;
+
 	case AFDT_R16G16B16A16_FLOAT:
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, w, h, 0, GL_RGBA, GL_HALF_FLOAT, nullptr);
+#ifdef AF_GLES31
+		gen(GL_RGBA16F, GL_RGBA, GL_HALF_FLOAT);
+#else
+		gen(GL_RGBA, GL_RGBA, GL_HALF_FLOAT_OES);
+#endif
 		break;
+
+	case AFDT_R32G32B32A32_FLOAT:
+#ifdef AF_GLES31
+		gen(GL_RGBA32F, GL_RGBA, GL_FLOAT);
+#else
+		gen(GL_RGBA, GL_RGBA, GL_FLOAT);
+#endif
+		break;
+
+#ifdef AF_GLES31
 	case AFDT_DEPTH:
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, w, h, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, nullptr);
+		gen(GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT);
 		break;
 	case AFDT_DEPTH_STENCIL:
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, w, h, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, nullptr);
+		gen(GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8);
 		break;
 #endif
 	}
@@ -324,31 +338,31 @@ void _afHandleGLError(const char* func, int line, const char* command)
 		E(GL_INVALID_FRAMEBUFFER_OPERATION);
 #undef E
 		default:
-			printf("%s(%d): err=%d %s\n", func, line, r, command);
+			aflog("%s(%d): err=%d %s\n", func, line, r, command);
 			return;
 		}
-		printf("%s(%d): %s %s\n", func, line, err, command);
+		aflog("%s(%d): %s %s\n", func, line, err, command);
 	}
 }
 
 void afDumpCaps()
 {
-	printf("GL_VERSION = %s\n", (char*)glGetString(GL_VERSION));
-	printf("GL_RENDERER = %s\n", (char*)glGetString(GL_RENDERER));
-	printf("GL_VENDOR = %s\n", (char*)glGetString(GL_VENDOR));
-	printf("GL_SHADING_LANGUAGE_VERSION = %s\n", (char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
+	aflog("GL_VERSION = %s\n", (char*)glGetString(GL_VERSION));
+	aflog("GL_RENDERER = %s\n", (char*)glGetString(GL_RENDERER));
+	aflog("GL_VENDOR = %s\n", (char*)glGetString(GL_VENDOR));
+	aflog("GL_SHADING_LANGUAGE_VERSION = %s\n", (char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
 #ifdef AF_GLES31
-	puts("------ GL_EXTENSIONS");
+	aflog("------ GL_EXTENSIONS\n");
 
 	GLint num;
 	glGetIntegerv(GL_NUM_EXTENSIONS, &num);
 	for (int i = 0; i < num; i++) {
 		const GLubyte* ext = glGetStringi(GL_EXTENSIONS, i);
-		printf("%s\n", ext);
+		aflog("%s\n", ext);
 	}
 
-	puts("------ glGet");
-#define _(x) do { GLint i; glGetIntegerv(x, &i); printf(#x " = %d\n", i); } while(0)
+	aflog("------ glGet\n");
+#define _(x) do { GLint i; glGetIntegerv(x, &i); aflog(#x " = %d\n", i); } while(0)
 	_(GL_MAX_UNIFORM_BUFFER_BINDINGS);
 	_(GL_MAX_UNIFORM_BLOCK_SIZE);
 	_(GL_MAX_VERTEX_UNIFORM_BLOCKS);
@@ -396,11 +410,14 @@ void AFRenderTarget::Init(ivec2 size, AFDTFormat colorFormat, AFDTFormat depthSt
 	Destroy();
 	texSize = size;
 	texColor = afCreateDynamicTexture(size.x, size.y, colorFormat);
+	if (texColor == 0) {
+		aflog("AFRenderTarget::Init: cannot create dynamic texture. format=%d", colorFormat);
+	}
 	if (depthStencilFormat != AFDT_INVALID) {
 		texDepth = afCreateDynamicTexture(size.x, size.y, depthStencilFormat);
 	}
 
-	glGenFramebuffers(1, &framebufferObject);
+	afHandleGLError(glGenFramebuffers(1, &framebufferObject));
 	afHandleGLError(glBindFramebuffer(GL_FRAMEBUFFER, framebufferObject));
 	afHandleGLError(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texColor, 0));
 	if (texDepth) {
@@ -413,7 +430,7 @@ void AFRenderTarget::Init(ivec2 size, AFDTFormat colorFormat, AFDTFormat depthSt
 
 void AFRenderTarget::BeginRenderToThis()
 {
-	glViewport(0, 0, texSize.x, texSize.y);
+	afHandleGLError(glViewport(0, 0, texSize.x, texSize.y));
 	afHandleGLError(glBindFramebuffer(GL_FRAMEBUFFER, framebufferObject));
 	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	assert(status == GL_FRAMEBUFFER_COMPLETE);
