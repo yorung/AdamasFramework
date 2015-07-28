@@ -92,7 +92,7 @@ void WaterSurface::Init()
 	assert(shaderNormalMap);
 	shaderMan.Apply(shaderNormalMap);
 
-	Vec2 heightMapSize(HEIGHT_MAP_W, HEIGHT_MAP_H);
+	Vec2 heightMapSize((float)HEIGHT_MAP_W, (float)HEIGHT_MAP_H);
 	glUniform2fv(glGetUniformLocation(shaderNormalMap, "heightMapSize"), 1, (GLfloat*)&heightMapSize);
 
 

@@ -72,7 +72,7 @@ void WaterSurfaceClassic::UpdateVert(std::vector<WaterVert>& vert)
 	memset(hmap, 0, sizeof(hmap));
 	for (int z = 0; z <= tileMax; z++) {
 		for (int x = 0; x <= tileMax; x++) {
-			Vec2 pos = Vec2((float)x, (float)z) / tileMax * 2 - Vec2(1, 1);
+			Vec2 pos = Vec2((float)x, (float)z) / (float)tileMax * 2.0f - Vec2(1, 1);
 			for (int i = 0; i < dimof(ripples); i++) {
 				const WaterRipple& r = ripples[i];
 				float lifeTime = (float)(elapsedTime - r.generatedTime);
