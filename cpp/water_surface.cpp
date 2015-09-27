@@ -95,11 +95,13 @@ void WaterSurface::Init()
 	Vec2 heightMapSize((float)HEIGHT_MAP_W, (float)HEIGHT_MAP_H);
 	glUniform2fv(glGetUniformLocation(shaderNormalMap, "heightMapSize"), 1, (GLfloat*)&heightMapSize);
 
+	aflog("WaterSurface::Init shaders are ready!\n");
 
 	glActiveTexture(GL_TEXTURE0);
 	for (int i = 0; i < dimof(texFiles); i++) {
 		texId[i] = texMan.Create(texFiles[i].name);
-        if (!texFiles[i].clamp) {
+		aflog("WaterSurface::Init tex %s %s\n", texFiles[i].name, (texId[i] ? "OK" : "NG"));
+		if (!texFiles[i].clamp) {
             glBindTexture(GL_TEXTURE_2D, texId[i]);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -115,6 +117,8 @@ void WaterSurface::Init()
 	afLayoutSamplerBindingManually(shaderWaterLastPass, "sampler5", 5);
 	afLayoutSamplerBindingManually(shaderWaterLastPass, "waterHeightmap", 6);
 	afLayoutSamplerBindingManually(shaderWaterLastPass, "waterNormalmap", 7);
+
+	aflog("WaterSurface::Init finished!\n");
 }
 
 void WaterSurface::UpdateTime()

@@ -116,7 +116,7 @@ public class Helper {
         try {
             img = BitmapFactory.decodeStream(context.getAssets().open(s));
         } catch (IOException e) {
-            return -1;
+            return 0;
         }
         int tex[] = new int[1];
         GLES20.glGenTextures(1, tex, 0);
