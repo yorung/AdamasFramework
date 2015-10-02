@@ -13,8 +13,8 @@ uniform sampler2D waterNormalmap;
 
 layout (location = 0) uniform vec4 fakeUBO[2];
 
-float wrappedTime = fakeUBO[1].y;
-vec2 heightMapSize = fakeUBO[1].zw;
+#define wrappedTime fakeUBO[1].y
+#define heightMapSize fakeUBO[1].zw
 
 const float loopTime = 20.0;
 const float PI2 = 3.1415926 * 2.0;

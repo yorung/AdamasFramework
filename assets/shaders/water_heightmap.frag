@@ -7,10 +7,10 @@ layout (location = 0) out vec4 fragColor;
 layout (location = 0) uniform vec4 fakeUBO[2];
 layout (binding = 0) uniform sampler2D lastHeightMap;
 
-vec2 mousePos = fakeUBO[0].xy;
-float mouseDown = fakeUBO[0].z;
-float elapsedTime = fakeUBO[1].x;
-vec2 heightMapSize = fakeUBO[1].zw;
+#define mousePos fakeUBO[0].xy
+#define mouseDown fakeUBO[0].z
+#define elapsedTime fakeUBO[1].x
+#define heightMapSize fakeUBO[1].zw
 
 const float heightLimit = 0.4f;
 
