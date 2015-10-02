@@ -53,7 +53,7 @@ void StockObjects::Destroy()
 
 void StockObjects::ApplyFullScreenVAO() const
 {
-	afBindVAO(vaoFullScr);
+	afHandleGLError(afBindVAO(vaoFullScr));
 }
 
 const std::vector<std::string>* StockObjects::GetFullScreenVertexAttributeLayout() const

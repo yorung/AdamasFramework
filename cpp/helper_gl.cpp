@@ -90,8 +90,8 @@ void afBindBufferToBindingPoint(UBOID ubo, GLuint uniformBlockBinding)
 
 void afBindTextureToBindingPoint(GLuint tex, GLuint textureBindingPoint)
 {
-	glActiveTexture(GL_TEXTURE0 + textureBindingPoint);
-	glBindTexture(GL_TEXTURE_2D, tex);
+	afHandleGLError(glActiveTexture(GL_TEXTURE0 + textureBindingPoint));
+	afHandleGLError(glBindTexture(GL_TEXTURE_2D, tex));
 }
 
 GLuint afCreateDynamicTexture(int w, int h, AFDTFormat format)
@@ -434,7 +434,7 @@ void AFRenderTarget::BeginRenderToThis()
 	afHandleGLError(glBindFramebuffer(GL_FRAMEBUFFER, framebufferObject));
 	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	assert(status == GL_FRAMEBUFFER_COMPLETE);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	afHandleGLError(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT));
 }
 
 #ifdef AF_GLES31

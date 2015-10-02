@@ -156,11 +156,13 @@ void WaterSurface::UpdateHeightMap(const UniformBuffer& hmub)
 	auto& heightR = heightMap[heightCurrentWriteTarget];
 	heightCurrentWriteTarget ^= 1;
 	auto& heightW = heightMap[heightCurrentWriteTarget];
-	afBindTextureToBindingPoint(heightR.GetTexture(), 0);
+	afHandleGLError(afBindTextureToBindingPoint(heightR.GetTexture(), 0));
 	heightW.BeginRenderToThis();
 
 	shaderMan.Apply(shaderHeightMap);
-	glUniform4fv(0, sizeof(hmub) / (sizeof(GLfloat) * 4), (GLfloat*)&hmub);
+//	GLint loc = glGetUniformLocation(shaderHeightMap, "fakeUBO");
+//	aflog("shaderHeightMap loc = %d\n", loc);
+	afHandleGLError(glUniform4fv(0, sizeof(hmub) / (sizeof(GLfloat) * 4), (GLfloat*)&hmub));
 
 	stockObjects.ApplyFullScreenVAO();
 	afDrawTriangleStrip(4);
@@ -169,7 +171,7 @@ void WaterSurface::UpdateHeightMap(const UniformBuffer& hmub)
 void WaterSurface::UpdateNormalMap()
 {
 	auto& heightR = heightMap[heightCurrentWriteTarget];
-	afBindTextureToBindingPoint(heightR.GetTexture(), 0);
+	afHandleGLError(afBindTextureToBindingPoint(heightR.GetTexture(), 0));
 	normalMap.BeginRenderToThis();
 	shaderMan.Apply(shaderNormalMap);
 	stockObjects.ApplyFullScreenVAO();
@@ -190,7 +192,9 @@ void WaterSurface::RenderWater(const UniformBuffer& hmub)
 
 	auto& curHeightMap = heightMap[heightCurrentWriteTarget];
 
-	glUniform4fv(0, sizeof(hmub) / (sizeof(GLfloat) * 4), (GLfloat*)&hmub);
+//	GLint loc = glGetUniformLocation(shaderWaterLastPass, "fakeUBO");
+//	aflog("shaderWaterLastPass loc = %d\n", loc);
+	afHandleGLError(glUniform4fv(0, sizeof(hmub) / (sizeof(GLfloat) * 4), (GLfloat*)&hmub));
 
 	renderTarget[0].BeginRenderToThis();
 	stockObjects.ApplyFullScreenVAO();
@@ -229,7 +233,7 @@ void WaterSurface::Draw()
 	hmub.wrappedTime = (float)modf(elapsedTime * (1.0f / loopTime), &dummy) * loopTime;
 	fontMan.DrawString(Vec2(300, 20), 10, SPrintf("%f, %f", hmub.mousePos.x, hmub.mousePos.y));
 
-	afDepthStencilMode(false);
+	afHandleGLError(afDepthStencilMode(false));
 	afEnableBackFaceCulling(false);
 	afBlendMode(BM_NONE);
 
@@ -282,5 +286,5 @@ void WaterSurface::Draw()
 
 	letterBox.Draw(rt, srcTex);
 
-	glBindVertexArray(0);
+	afHandleGLError(glBindVertexArray(0));
 }

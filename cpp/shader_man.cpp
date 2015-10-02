@@ -100,5 +100,5 @@ void ShaderMan::Destroy()
 
 void ShaderMan::Apply(SMID id)
 {
-	glUseProgram(id);
+	afHandleGLError(glUseProgram(id));
 }
