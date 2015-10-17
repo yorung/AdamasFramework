@@ -186,9 +186,12 @@ static const char* StrMessageBox(const char* txt, const char* type)
 	return IdToStr(MessageBoxA(GetActiveWindow(), txt, "Lua Message", StrToType(type)));
 }
 
+void AddMenu(const char *name, const char *cmd);
+
 static void BindGlobalFuncs(lua_State* L)
 {
 	static luaL_Reg globalFuncs[] = {
+		{ "AddMenu", [](lua_State* L) { AddMenu(lua_tostring(L, -2), lua_tostring(L, -1)); return 0; } },
 		{ "GetKeyCount", [](lua_State* L) { lua_pushinteger(L, inputMan.GetInputCount((int)lua_tointeger(L, -1))); return 1; } },
 		{ "MessageBox", [](lua_State* L) { lua_pushstring(L, StrMessageBox(lua_tostring(L, -2), lua_tostring(L, -1))); return 1; } },
 		{ nullptr, nullptr },

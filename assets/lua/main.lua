@@ -25,8 +25,12 @@ function Update()
 ]]
 end
 
+puzzleEnabled = false
+
 function DrawSprites()
-	puzzle.Draw();
+	if puzzleEnabled then
+		puzzle.Draw();
+	end
 end
 
 --MesBox("main.lua loaded!")	-- toast
@@ -38,3 +42,6 @@ else
 	MessageBox("no!", "ok")
 end
 ]]
+
+AddMenu("Puzzle", "puzzleEnabled = true")
+AddMenu("Msg", "MessageBox('message', 'ok')")

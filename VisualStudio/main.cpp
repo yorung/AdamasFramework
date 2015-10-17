@@ -124,6 +124,74 @@ TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
 TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
 HACCEL hAccelTable;
 
+static UINT g_itemId = 1000;
+static std::map<int, std::string> g_menuTbl;
+
+void PostCommand(const char* cmdString)
+{
+	if (!strcmp(cmdString, "exit")) {
+		PostMessage(hWnd, WM_COMMAND, IDM_EXIT, 0);
+	}
+}
+
+void AddMenu(const char *name, const char *cmd)
+{
+	HMENU hMenu = GetMenu(hWnd);
+	MENUITEMINFOA mii;
+	mii.cbSize = sizeof(MENUITEMINFOA);
+	mii.fMask = MIIM_TYPE | MIIM_ID;
+	mii.fType = MFT_STRING;
+	mii.hSubMenu = NULL;
+	mii.wID = g_itemId++;
+	mii.dwTypeData = (char*)name;
+	InsertMenuItemA(hMenu, g_menuTbl.size(), TRUE, &mii);
+	g_menuTbl[mii.wID] = cmd;
+	SetMenu(hWnd, hMenu);
+	DrawMenuBar(hWnd);
+}
+
+
+static void ShowLastError()
+{
+	wchar_t* msg;
+	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, nullptr, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&msg, 0, nullptr);
+	MessageBox(hWnd, msg, L"", MB_OK);
+	LocalFree(msg);
+}
+
+static void ClearMenu()
+{
+	HMENU hMenu = GetMenu(hWnd);
+	std::for_each(g_menuTbl.begin(), g_menuTbl.end(), [hMenu](std::pair<int, std::string> m)
+	{
+		BOOL r = RemoveMenu(hMenu, m.first, MF_BYCOMMAND);
+		if (!r) {
+			ShowLastError();
+		}
+	}
+	);
+
+	SetMenu(hWnd, hMenu);
+	DrawMenuBar(hWnd);
+	g_menuTbl.clear();
+}
+
+static void ProcessLuaCommandTbl(int cmd)
+{
+	auto it = g_menuTbl.find(cmd);
+	if (it == g_menuTbl.end()) {
+		return;
+	}
+	lua_State *L = luaMan.GetState();
+	if (!L) {
+		return;
+	}
+	if (luaL_dostring(L, it->second.c_str())) {
+		const char *p = lua_tostring(L, -1);
+		MessageBoxA(GetActiveWindow(), p, "luaL_dostring error", MB_OK);
+	}
+}
+
 // WindowMessage
 static BOOL ProcessWindowMessage(){
 	MSG msg;
@@ -316,6 +384,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_COMMAND:
 		wmId    = LOWORD(wParam);
 		wmEvent = HIWORD(wParam);
+
+		ProcessLuaCommandTbl(wmId);
+
 		// Parse the menu selections:
 		switch (wmId)
 		{
