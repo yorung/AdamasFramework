@@ -160,6 +160,45 @@ void BindWin(lua_State *L)
 	lua_register(L, myClassName, RECTNew);
 }
 
+static const char* IdToStr(int id)
+{
+	switch (id) {
+	case IDOK: return "ok";
+	case IDCANCEL: return "cancel";
+	case IDYES: return "yes";
+	case IDNO: return "no";
+	}
+	return "unknown";
+}
+
+static UINT StrToType(const char* type)
+{
+	if (!strcmp(type, "okcancel")) {
+		return MB_OKCANCEL;
+	} else if (!strcmp(type, "yesno")) {
+		return MB_YESNO;
+	}
+	return MB_OK;
+}
+
+static const char* StrMessageBox(const char* txt, const char* type)
+{
+	return IdToStr(MessageBoxA(GetActiveWindow(), txt, "Lua Message", StrToType(type)));
+}
+
+static void BindGlobalFuncs(lua_State* L)
+{
+	static luaL_Reg globalFuncs[] = {
+		{ "GetKeyCount", [](lua_State* L) { lua_pushinteger(L, inputMan.GetInputCount((int)lua_tointeger(L, -1))); return 1; } },
+		{ "MessageBox", [](lua_State* L) { lua_pushstring(L, StrMessageBox(lua_tostring(L, -2), lua_tostring(L, -1))); return 1; } },
+		{ nullptr, nullptr },
+	};
+
+	lua_pushglobaltable(L);
+	luaL_setfuncs(L, globalFuncs, 0);
+	lua_pop(L, 1);
+}
+
 void LuaBind(lua_State* L)
 {
 	luaL_openlibs(L);
@@ -167,6 +206,7 @@ void LuaBind(lua_State* L)
 	BindMesBox(L);
 	BindMeshMan(L);
 	BindMatrixStack(L);
+	BindGlobalFuncs(L);
 }
 
 void LuaBindTest()
