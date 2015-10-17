@@ -2,6 +2,7 @@
 #define NOMINMAX
 #include <Windows.h>
 #include "wgl_grabber_gen.h"
+#include "voice.h"
 #else
 #include <jni.h>
 #include <android/log.h>

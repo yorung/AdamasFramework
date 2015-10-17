@@ -55,6 +55,7 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="voice.cpp" />
     <ClCompile Include="wgl_grabber_gen.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
@@ -95,6 +96,7 @@
     <ClInclude Include="..\cpp\water_surface.h" />
     <ClInclude Include="..\cpp\water_surface_classic.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="voice.h" />
     <ClInclude Include="wgl_grabber_gen.h" />
   </ItemGroup>
   <ItemGroup>

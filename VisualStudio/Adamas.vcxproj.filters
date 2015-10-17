@@ -109,6 +109,9 @@
     <ClCompile Include="..\cpp\letterbox.cpp">
       <Filter>PlatformIndipendent</Filter>
     </ClCompile>
+    <ClCompile Include="voice.cpp">
+      <Filter>Windows</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="wgl_grabber_gen.h">
@@ -215,6 +218,9 @@
     </ClInclude>
     <ClInclude Include="..\cpp\letterbox.h">
       <Filter>PlatformIndipendent</Filter>
+    </ClInclude>
+    <ClInclude Include="voice.h">
+      <Filter>Windows</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

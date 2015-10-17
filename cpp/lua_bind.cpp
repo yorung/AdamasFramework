@@ -12,6 +12,7 @@ struct RECT {
 };
 #endif
 
+static const char* voiceClassName = "Voice";
 static const char* myClassName = "RECT";
 
 #define GET_RECT \
@@ -202,12 +203,29 @@ static void BindGlobalFuncs(lua_State* L)
 	lua_pop(L, 1);
 }
 
+#define GET_VOICE \
+	Voice* p = (Voice*)luaL_checkudata(L, 1, voiceClassName); \
+	if (!p) { return 0; }
+
+static void BindVoice(lua_State* L)
+{
+	static struct luaL_Reg methods[] =
+	{
+		{ "__gc", [](lua_State* L) { GET_VOICE p->~Voice(); return 0; } },
+		{ "Play", [](lua_State* L) { GET_VOICE p->Play(!!lua_toboolean(L, 2)); return 0; } },
+		{ "Stop", [](lua_State* L) { GET_VOICE p->Stop(); return 0; } },
+		{ nullptr, nullptr },
+	};
+	aflBindClass(L, voiceClassName, methods, [](lua_State* L) { new (lua_newuserdata(L, sizeof(Voice))) Voice(lua_tostring(L, -2)); return 1; });
+}
+
 void LuaBind(lua_State* L)
 {
 	luaL_openlibs(L);
 	BindWin(L);
 	BindMesBox(L);
 	BindMeshMan(L);
+	BindVoice(L);
 	BindMatrixStack(L);
 	BindGlobalFuncs(L);
 }
