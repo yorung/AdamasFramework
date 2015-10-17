@@ -304,9 +304,7 @@ BOOL InitInstance(HINSTANCE hInstance)
 //
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	if (inputMan.HandleWindowMessage(hWnd, message, wParam, lParam)) {
-		return 0;
-	}
+	inputMan.HandleWindowMessage(hWnd, message, wParam, lParam);
 
 	int wmId, wmEvent;
 	PAINTSTRUCT ps;

@@ -43,6 +43,14 @@ BOOL InputMan::HandleWindowMessage(HWND hWnd, UINT message, WPARAM wParam, LPARA
 		break;
 		HandleEdge(wParam & 0xff, message == WM_SYSKEYUP);
 		return TRUE;
+	case WM_LBUTTONDOWN:
+	case WM_LBUTTONUP:
+		HandleEdge(VK_LBUTTON, message == WM_LBUTTONUP);
+		return TRUE;
+	case WM_RBUTTONDOWN:
+	case WM_RBUTTONUP:
+		HandleEdge(VK_RBUTTON, message == WM_RBUTTONUP);
+		return TRUE;
 	}
 	return FALSE;
 }
