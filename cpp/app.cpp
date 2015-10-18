@@ -37,8 +37,6 @@ void App::Draw()
 	afDepthStencilMode(true);
 	afBlendMode(BM_NONE);
 
-	matrixMan.Set(MatrixMan::VIEW, devCamera.CalcViewMatrix());
-
 	ivec2 scrSize = systemMetrics.GetScreenSize();
 	glViewport(0, 0, scrSize.x, scrSize.y);
 
@@ -120,6 +118,7 @@ void App::Destroy()
 void App::Update()
 {
 	inputMan.Update();
+	matrixMan.Set(MatrixMan::VIEW, devCamera.CalcViewMatrix());
 	luaMan.Update();
 	waterSurface.Update();
 	waterSurfaceClassic.Update();

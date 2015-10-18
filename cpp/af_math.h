@@ -486,6 +486,14 @@ inline Mat ortho(affloat left, affloat right, affloat bottom, affloat top, afflo
 	return proj;
 }
 
+inline Mat lookat(const Vec3& eye, const Vec3& at, const Vec3& up)
+{
+	Vec3 z = normalize(at - eye);
+	Vec3 x = normalize(cross(up, z));
+	Vec3 y = cross(z, x);
+	return fastInv(Mat(x.x, x.y, x.z, 0, y.x, y.y, y.z, 0, z.x, z.y, z.z, 0, eye.x, eye.y, eye.z, 1));
+}
+
 inline ivec4 uint32ToIvec4(uint32_t col) {
 	return ivec4(col >> 24, (col & 0x00ff0000) >> 16, (col & 0xff00) >> 8, col & 0xff);
 }

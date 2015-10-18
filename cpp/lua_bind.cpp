@@ -12,8 +12,20 @@ struct RECT {
 };
 #endif
 
+static const char* vecClassName = "Vec3";
 static const char* voiceClassName = "Voice";
 static const char* myClassName = "RECT";
+
+static int LLookAt(lua_State* L)
+{
+	const Vec3* eye = (const Vec3*)luaL_checkudata(L, -2, vecClassName);
+	const Vec3* at = (const Vec3*)luaL_checkudata(L, -1, vecClassName);
+	if (!eye || !at) {
+		return 0;
+	}
+	matrixMan.Set(MatrixMan::VIEW, lookat(*eye, *at, Vec3(0, 1, 0)));
+	return 0;
+}
 
 #define GET_RECT \
 	RECT* r = (RECT*)luaL_checkudata(L, 1, myClassName); \
@@ -194,6 +206,7 @@ static void BindGlobalFuncs(lua_State* L)
 	static luaL_Reg globalFuncs[] = {
 		{ "AddMenu", [](lua_State* L) { AddMenu(lua_tostring(L, -2), lua_tostring(L, -1)); return 0; } },
 		{ "GetKeyCount", [](lua_State* L) { lua_pushinteger(L, inputMan.GetInputCount((int)lua_tointeger(L, -1))); return 1; } },
+		{ "LookAt", LLookAt },
 		{ "MessageBox", [](lua_State* L) { lua_pushstring(L, StrMessageBox(lua_tostring(L, -2), lua_tostring(L, -1))); return 1; } },
 		{ nullptr, nullptr },
 	};
@@ -219,6 +232,61 @@ static void BindVoice(lua_State* L)
 	aflBindClass(L, voiceClassName, methods, [](lua_State* L) { new (lua_newuserdata(L, sizeof(Voice))) Voice(lua_tostring(L, -2)); return 1; });
 }
 
+static int LVectorNew(lua_State* L)
+{
+	Vec3 v((float)lua_tonumber(L, -3), (float)lua_tonumber(L, -2), (float)lua_tonumber(L, -1));
+	Vec3* p = (Vec3*)lua_newuserdata(L, sizeof(Vec3));
+	*p = v;
+	luaL_getmetatable(L, vecClassName);
+	lua_setmetatable(L, -2);
+	return 1;
+}
+
+static int LVectorIndex(lua_State* L)
+{
+	const char* key = lua_tostring(L, -1);
+	Vec3* src = (Vec3*)luaL_checkudata(L, -2, vecClassName);
+	if (!key || !src) {
+		return 0;
+	}
+	switch (*key) {
+	case 'x': lua_pushnumber(L, src->x); return 1;
+	case 'y': lua_pushnumber(L, src->y); return 1;
+	case 'z': lua_pushnumber(L, src->z); return 1;
+	}
+	return 0;
+}
+
+static int LVectorNewIndex(lua_State *L)
+{
+	Vec3* self = (Vec3*)luaL_checkudata(L, -3, vecClassName);
+	const char* key = lua_tostring(L, -2);
+	float val = (float)lua_tonumber(L, -1);
+	if (!self || !key) {
+		return 0;	// error
+	}
+	switch (*key) {
+	case 'x': self->x = val; break;
+	case 'y': self->y = val; break;
+	case 'z': self->z = val; break;
+	}
+	return 0;
+}
+
+static void BindVector(lua_State* L)
+{
+	luaL_newmetatable(L, vecClassName);
+	static struct luaL_Reg methods[] =
+	{
+		{ "__index", LVectorIndex },
+		{ "__newindex", LVectorNewIndex },
+		{ nullptr, nullptr },
+	};
+	luaL_setfuncs(L, methods, 0);
+	lua_pop(L, 1);
+	lua_register(L, vecClassName, LVectorNew);
+}
+
 void ShareVariables(lua_State* L)
 {
 	RECT rc;
@@ -238,6 +306,7 @@ void LuaBind(lua_State* L)
 	BindMesBox(L);
 	BindMeshMan(L);
 	BindVoice(L);
+	BindVector(L);
 	BindMatrixStack(L);
 	BindGlobalFuncs(L);
 	ShareVariables(L);

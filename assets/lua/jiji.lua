@@ -19,6 +19,10 @@ function Update()
 	matrixStack.Pop()
 
 	deg = deg + 3
+
+	if GetKeyCount(32) >= 0 then
+		LookAt(Vec3(10, 10, 10), Vec3(0, 0, 0))
+	end
 end
 
 function DrawSprites()
