@@ -66,3 +66,5 @@ static const int BONE_MAX = 50;
 #include "lua_man.h"
 #include "lua_bind.h"
 #include "app.h"
+
+void ClearMenu();

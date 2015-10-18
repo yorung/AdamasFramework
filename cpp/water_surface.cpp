@@ -221,7 +221,8 @@ void WaterSurface::Draw()
 	hmub.heightMapSize.x = HEIGHT_MAP_W;
 	hmub.heightMapSize.y = HEIGHT_MAP_H;
 
-	if (++frame % 2 == 0 && length(lastMousePos - mousePos) >= 0.01 && systemMetrics.mouseDown) {
+//	if (++frame % 2 == 0 && length(lastMousePos - mousePos) >= 0.01 && systemMetrics.mouseDown) {
+	if (systemMetrics.mouseDown) {
 		hmub.mouseDown = true;
 	}
 	if (hmub.mouseDown) {

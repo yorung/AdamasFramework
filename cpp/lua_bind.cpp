@@ -219,6 +219,18 @@ static void BindVoice(lua_State* L)
 	aflBindClass(L, voiceClassName, methods, [](lua_State* L) { new (lua_newuserdata(L, sizeof(Voice))) Voice(lua_tostring(L, -2)); return 1; });
 }
 
+void ShareVariables(lua_State* L)
+{
+	RECT rc;
+	GetClientRect(GetActiveWindow(), &rc);
+	lua_pushinteger(L, rc.right - rc.left);
+	lua_setglobal(L, "SCR_W");
+	lua_pushinteger(L, rc.bottom - rc.top);
+	lua_setglobal(L, "SCR_H");
+	lua_pushinteger(L, 60);
+	lua_setglobal(L, "FPS");
+}
+
 void LuaBind(lua_State* L)
 {
 	luaL_openlibs(L);
@@ -228,6 +240,7 @@ void LuaBind(lua_State* L)
 	BindVoice(L);
 	BindMatrixStack(L);
 	BindGlobalFuncs(L);
+	ShareVariables(L);
 }
 
 void LuaBindTest()

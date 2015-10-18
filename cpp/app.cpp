@@ -113,6 +113,7 @@ void App::Destroy()
 	meshRenderer.Destroy();
 	meshMan.Destroy();
 	glow.Destroy();
+	ClearMenu();
 	meshId = MeshMan::INVALID_MMID;
 }
 

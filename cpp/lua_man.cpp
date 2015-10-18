@@ -27,7 +27,12 @@ void LuaMan::Create()
 	for (auto it : GetLuaBindFuncContainer()) {
 		it(L);
 	}
-	if (!aflDoFile(L, "lua/main.lua")) {
+#ifdef _DEBUG
+	const char* start = "lua/startD.lua";
+#else
+	const char* start = "lua/start.lua";
+#endif
+	if (!aflDoFile(L, start)) {
 		printf("%s\n", lua_tostring(L, -1));
 		lua_pop(L, 1);
 	}

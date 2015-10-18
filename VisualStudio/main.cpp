@@ -159,7 +159,7 @@ static void ShowLastError()
 	LocalFree(msg);
 }
 
-static void ClearMenu()
+void ClearMenu()
 {
 	HMENU hMenu = GetMenu(hWnd);
 	std::for_each(g_menuTbl.begin(), g_menuTbl.end(), [hMenu](std::pair<int, std::string> m)
