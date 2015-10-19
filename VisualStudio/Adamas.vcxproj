@@ -37,6 +37,7 @@
     <ClCompile Include="..\cpp\mesh_x.cpp" />
     <ClCompile Include="..\cpp\puzzle.cpp" />
     <ClCompile Include="..\cpp\shader_man.cpp" />
+    <ClCompile Include="..\cpp\sky_man.cpp" />
     <ClCompile Include="..\cpp\sprite_renderer.cpp" />
     <ClCompile Include="..\cpp\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -88,6 +89,7 @@
     <ClInclude Include="..\cpp\mesh_renderer.h" />
     <ClInclude Include="..\cpp\mesh_x.h" />
     <ClInclude Include="..\cpp\shader_man.h" />
+    <ClInclude Include="..\cpp\sky_man.h" />
     <ClInclude Include="..\cpp\sprite_renderer.h" />
     <ClInclude Include="..\cpp\stdafx.h" />
     <ClInclude Include="..\cpp\stock_objects.h" />
@@ -117,6 +119,8 @@
     <None Include="..\assets\shaders\skin.400.vert" />
     <None Include="..\assets\shaders\skin.frag" />
     <None Include="..\assets\shaders\skin.vert" />
+    <None Include="..\assets\shaders\sky_photosphere.frag" />
+    <None Include="..\assets\shaders\sky_photosphere.vert" />
     <None Include="..\assets\shaders\vivid.frag" />
     <None Include="..\assets\shaders\vivid.vert" />
     <None Include="..\assets\shaders\water_lastpass.frag" />

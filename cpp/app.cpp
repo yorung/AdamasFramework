@@ -22,10 +22,12 @@ App::App()
 
 void App::Draw()
 {
-	afDepthStencilMode(true);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	waterSurface.Draw();
+	afDepthStencilMode(false);
+	afBlendMode(BM_NONE);
+	skyMan.Draw();
+//	waterSurface.Draw();
 //	waterSurfaceClassic.Draw();
 /*
 	AFRenderTarget rt;
@@ -77,6 +79,8 @@ void App::Init()
 	stockObjects.Init();
 	luaMan.Create();
 
+	skyMan.Create("hakodate.jpg", "sky_photosphere");
+
 	LoadMesh("jiji.x");
 	PlayBgm("sound/background.mp3");
 }
@@ -111,6 +115,7 @@ void App::Destroy()
 	meshRenderer.Destroy();
 	meshMan.Destroy();
 	glow.Destroy();
+	skyMan.Destroy();
 	ClearMenu();
 	meshId = MeshMan::INVALID_MMID;
 }

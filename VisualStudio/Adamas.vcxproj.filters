@@ -112,6 +112,9 @@
     <ClCompile Include="voice.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
+    <ClCompile Include="..\cpp\sky_man.cpp">
+      <Filter>PlatformIndipendent</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="wgl_grabber_gen.h">
@@ -222,6 +225,9 @@
     <ClInclude Include="voice.h">
       <Filter>Windows</Filter>
     </ClInclude>
+    <ClInclude Include="..\cpp\sky_man.h">
+      <Filter>PlatformIndipendent</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Windows">
@@ -310,6 +316,12 @@
       <Filter>shaders</Filter>
     </None>
     <None Include="..\assets\shaders\glow_lastpass.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\assets\shaders\sky_photosphere.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\assets\shaders\sky_photosphere.vert">
       <Filter>shaders</Filter>
     </None>
   </ItemGroup>
