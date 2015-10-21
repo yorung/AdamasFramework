@@ -27,6 +27,41 @@ static int LLookAt(lua_State* L)
 	return 0;
 }
 
+static ivec2 GetScreenPos()
+{
+	Mat mW, mV, mP;
+	mW = luaMatrixStack.Get();
+	matrixMan.Get(MatrixMan::VIEW, mV);
+	matrixMan.Get(MatrixMan::PROJ, mP);
+	Mat mViewport;
+	Vec2 sz = (Vec2)systemMetrics.GetScreenSize() / 2;
+	mViewport._11 = sz.x;
+	mViewport._22 = -sz.y;
+	mViewport._41 = sz.x;
+	mViewport._42 = sz.y;
+	Mat m = mW * mV * mP * mViewport;
+	return ivec2((int)(m._41 / m._44), (int)(m._42 / m._44));
+}
+
+static ivec2 GetMousePos()
+{
+	POINT p;
+	GetCursorPos(&p);
+	ScreenToClient(GetActiveWindow(), &p);
+	return ivec2(p.x, p.y);
+}
+
+static void PushPoint(lua_State* L, const ivec2& pt)
+{
+	lua_newtable(L);
+	lua_pushstring(L, "x");
+	lua_pushinteger(L, pt.x);
+	lua_rawset(L, -3);
+	lua_pushstring(L, "y");
+	lua_pushinteger(L, pt.y);
+	lua_rawset(L, -3);
+}
+
 #define GET_RECT \
 	RECT* r = (RECT*)luaL_checkudata(L, 1, myClassName); \
 	if (!r) {	\
@@ -199,15 +234,18 @@ static const char* StrMessageBox(const char* txt, const char* type)
 	return IdToStr(MessageBoxA(GetActiveWindow(), txt, "Lua Message", StrToType(type)));
 }
 
-void AddMenu(const char *name, const char *cmd);
-
 static void BindGlobalFuncs(lua_State* L)
 {
+	void AddMenu(const char *name, const char *cmd);
+	void PostCommand(const char* cmdString);
 	static luaL_Reg globalFuncs[] = {
 		{ "AddMenu", [](lua_State* L) { AddMenu(lua_tostring(L, -2), lua_tostring(L, -1)); return 0; } },
 		{ "GetKeyCount", [](lua_State* L) { lua_pushinteger(L, inputMan.GetInputCount((int)lua_tointeger(L, -1))); return 1; } },
 		{ "LookAt", LLookAt },
+		{ "GetMousePos", [](lua_State* L) { PushPoint(L, GetMousePos()); return 1; } },
+		{ "GetScreenPos", [](lua_State* L) { PushPoint(L, GetScreenPos()); return 1; } },
 		{ "MessageBox", [](lua_State* L) { lua_pushstring(L, StrMessageBox(lua_tostring(L, -2), lua_tostring(L, -1))); return 1; } },
+		{ "PostCommand", [](lua_State* L) { PostCommand(lua_tostring(L, -1)); return 0; } },
 		{ nullptr, nullptr },
 	};
 
