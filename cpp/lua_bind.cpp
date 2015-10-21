@@ -27,6 +27,11 @@ static int LLookAt(lua_State* L)
 	return 0;
 }
 
+static void LoadSkyBox(const char *fileName)
+{
+	skyMan.Create(fileName, "sky_photosphere");
+}
+
 static ivec2 GetScreenPos()
 {
 	Mat mW, mV, mP;
@@ -242,6 +247,7 @@ static void BindGlobalFuncs(lua_State* L)
 		{ "AddMenu", [](lua_State* L) { AddMenu(lua_tostring(L, -2), lua_tostring(L, -1)); return 0; } },
 		{ "GetKeyCount", [](lua_State* L) { lua_pushinteger(L, inputMan.GetInputCount((int)lua_tointeger(L, -1))); return 1; } },
 		{ "LookAt", LLookAt },
+		{ "LoadSkyBox", [](lua_State* L) { LoadSkyBox(lua_tostring(L, -1)); return 0; } },
 		{ "GetMousePos", [](lua_State* L) { PushPoint(L, GetMousePos()); return 1; } },
 		{ "GetScreenPos", [](lua_State* L) { PushPoint(L, GetScreenPos()); return 1; } },
 		{ "MessageBox", [](lua_State* L) { lua_pushstring(L, StrMessageBox(lua_tostring(L, -2), lua_tostring(L, -1))); return 1; } },

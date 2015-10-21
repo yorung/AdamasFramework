@@ -79,8 +79,6 @@ void App::Init()
 	stockObjects.Init();
 	luaMan.Create();
 
-	skyMan.Create("hakodate.jpg", "sky_photosphere");
-
 	LoadMesh("jiji.x");
 	PlayBgm("sound/background.mp3");
 }
