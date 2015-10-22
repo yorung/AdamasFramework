@@ -175,22 +175,39 @@ static void BindMatrixStack(lua_State *L)
 	aflBindNamespace(L, "matrixStack", inNamespaceFuncs);
 }
 
-static void BindMeshMan(lua_State* L)
+static void BindMesh(lua_State* L)
 {
-	static luaL_Reg inNamespaceFuncs[] = {
-		{ "Create", [](lua_State* L) { lua_pushinteger(L, meshMan.Create(lua_tostring(L, -1))); return 1; } },
-		{ "Draw", [](lua_State* L) {
-			MeshX* mesh = (MeshX*)meshMan.Get((MMID)lua_tointeger(L, -1));
+	class LMesh
+	{
+		MeshMan::MMID mmid;
+	public:
+		LMesh(const char *fileName) {
+			mmid = meshMan.Create(fileName);
+		}
+		void Draw(int animId, double time) {
+			MeshX* mesh = (MeshX*)meshMan.Get(mmid);
 			if (mesh) {
 				MeshXAnimResult r;
-				mesh->CalcAnimation(0, GetTime(), r);
+				mesh->CalcAnimation(animId, time, r);
 				mesh->Draw(r, luaMatrixStack.Get());
 			}
-			return 0; } },
+		}
+	};
+	static const char* meshClassName = "Mesh";
+#define GET_MESH \
+		LMesh* p = (LMesh*)luaL_checkudata(L, 1, meshClassName); \
+		if (!p) { return 0; }
+
+	static struct luaL_Reg methods[] =
+	{
+		{ "__gc", [](lua_State* L) { GET_MESH p->~LMesh(); return 0; } },
+		{ "Draw", [](lua_State* L) { GET_MESH p->Draw((int)lua_tointeger(L, -2), lua_tonumber(L, -1)); return 0; } },
 		{ nullptr, nullptr },
 	};
-	aflBindNamespace(L, "meshMan", inNamespaceFuncs);
+#undef GET_MESH
+	aflBindClass(L, meshClassName, methods, [](lua_State* L) { new (lua_newuserdata(L, sizeof(LMesh))) LMesh(lua_tostring(L, -2)); return 1; });
 }
+
 
 void BindWin(lua_State *L)
 {
@@ -348,7 +365,7 @@ void LuaBind(lua_State* L)
 	luaL_openlibs(L);
 	BindWin(L);
 	BindMesBox(L);
-	BindMeshMan(L);
+	BindMesh(L);
 	BindVoice(L);
 	BindVector(L);
 	BindMatrixStack(L);
