@@ -1,7 +1,10 @@
 function Update()
-	puzzle.Update();
+	puzzle.Update()
 end
 
-function DrawSprites()
-	puzzle.Draw();
+function Draw2D()
+	puzzle.Draw()
+end
+
+function Draw3D()
 end

@@ -1,9 +1,9 @@
 --local meshId = meshMan.Create("jiji.x")
 local mesh = Mesh("jiji.x")
 local deg = 0
-local elapsed = 0;
+local elapsed = 0
 
-function Update()
+function Draw3D()
 	mesh:Draw(0, elapsed)
 
 	matrixStack.Push()
@@ -28,5 +28,8 @@ function Update()
 	end
 end
 
-function DrawSprites()
+function Draw2D()
+end
+
+function Update()
 end

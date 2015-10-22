@@ -8,7 +8,8 @@ public:
 	void Create();
 	void Destroy();
 	void Update();
-	void DrawSprites();
+	void Draw2D();
+	void Draw3D();
 	lua_State* GetState() { return L; }
 };
 

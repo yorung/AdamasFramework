@@ -70,7 +70,12 @@ void LuaMan::Update()
 	CallGlobal("Update");
 }
 
-void LuaMan::DrawSprites()
+void LuaMan::Draw2D()
 {
-	CallGlobal("DrawSprites");
+	CallGlobal("Draw2D");
+}
+
+void LuaMan::Draw3D()
+{
+	CallGlobal("Draw3D");
 }

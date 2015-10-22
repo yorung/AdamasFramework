@@ -61,8 +61,9 @@ void App::Draw()
 		mesh->Draw(r, translate(radius * 2.0f, 0, 0) * q2m(Quat(Vec3(0, 1.0f, 0), normToRad(wrappedTime))));
 	}
 	*/
+	luaMan.Draw3D();
 	meshRenderer.Flush();
-	luaMan.DrawSprites();
+	luaMan.Draw2D();
 	fontMan.Render();
 }
 
