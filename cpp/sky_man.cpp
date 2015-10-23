@@ -28,6 +28,10 @@ void SkyMan::Draw()
 		return;
 	}
 
+	if (!shaderId) {
+		return;
+	}
+
 	shaderMan.Apply(shaderId);
 
 	Mat matV, matP;

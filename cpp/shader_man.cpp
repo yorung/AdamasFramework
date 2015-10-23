@@ -100,5 +100,6 @@ void ShaderMan::Destroy()
 
 void ShaderMan::Apply(SMID id)
 {
+	assert(id);
 	afHandleGLError(glUseProgram(id));
 }
