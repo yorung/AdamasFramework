@@ -69,11 +69,14 @@ static GLuint LoadTextureViaOS(const char* name)
 
 struct DDSHeader {
 	uint32_t h3[3];
-	uint32_t h, w;
+	int h, w;
 	uint32_t h2[2];
-	uint32_t mipCnt;
+	int mipCnt;
 	uint32_t h13[13];
-	uint32_t fourcc, bitsPerPixel, rMask, gMask, bMask, aMask;
+	uint32_t fourcc, bitsPerPixel, rMask, gMask, bMask, aMask, caps1, caps2;
+	bool IsCubeMap() const { return caps2 == 0xFE00; }
+	int GetArraySize() const { return IsCubeMap() ? 6 : 1; }
+	int GetMipCnt() const { return std::max(mipCnt, 1); }
 };
 
 static void bitScanForward(uint32_t* result, uint32_t mask)
@@ -91,43 +94,17 @@ static void bitScanForward(uint32_t* result, uint32_t mask)
 	*result = 0;
 }
 
-static GLuint CreateTextureFromRowDDS(const void* img, int size, ivec2& texSize)
+static void ArrangeRawDDS(void* img, int size)
 {
 	const DDSHeader* hdr = (DDSHeader*)img;
-	int w = (int)hdr->w;
-	int h = (int)hdr->h;
-	const uint32_t* im = (uint32_t*)img + 128 / 4;
-	std::vector<uint32_t> col;
-	uint32_t rShift, gShift, bShift, aShift;
-	bitScanForward(&rShift, hdr->rMask);
-	bitScanForward(&gShift, hdr->gMask);
-	bitScanForward(&bShift, hdr->bMask);
-	bitScanForward(&aShift, hdr->aMask);
-	for (int y = 0; y < h; y++) {
-		for (int x = 0; x < w; x++) {
-			uint32_t c = *im++;
-			col.push_back(
-				((hdr->aMask & c) >> aShift << 24) +
-				((hdr->bMask & c) >> bShift << 16) +
-				((hdr->gMask & c) >> gShift << 8) +
-				((hdr->rMask & c) >> rShift));
-		}
-	}
-
-	GLuint texture;
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, &col[0]);
-	glGenerateMipmap(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, 0);
-	texSize.x = hdr->w;
-	texSize.y = hdr->h;
-	return texture;
+	DWORD rShift, gShift, bShift, aShift;
+	_BitScanForward(&rShift, hdr->rMask);
+	_BitScanForward(&gShift, hdr->gMask);
+	_BitScanForward(&bShift, hdr->bMask);
+	_BitScanForward(&aShift, hdr->aMask);
+	std::for_each((uint32_t*)img + 128 / 4, (uint32_t*)img + size / 4, [&](uint32_t& im) {
+		im = ((hdr->aMask & im) >> aShift << 24) + ((hdr->bMask & im) >> bShift << 16) + ((hdr->gMask & im) >> gShift << 8) + ((hdr->rMask & im) >> rShift);
+	});
 }
 
 static GLuint LoadDDSTexture(const char* name, ivec2& texSize)
@@ -142,22 +119,28 @@ static GLuint LoadDDSTexture(const char* name, ivec2& texSize)
 	const DDSHeader* hdr = (DDSHeader*)img;
 
 	GLenum format;
-	int blockSize = 16;
+	int(*pitchCalcurator)(int, int) = nullptr;
 	switch (hdr->fourcc) {
 	case 0x31545844: //'1TXD':
 		format = 0x83F1;	// GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
-		blockSize = 8;
+		pitchCalcurator = [](int w, int h) { return ((w + 3) / 4) * ((h + 3) / 4) * 8; };
 		break;
-		//	case 0x33545844; //'3TXD':
-		//		format = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
-		//		break;
-		//	case 0x35545844; //'5TXD':
-		//		format = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-		//		break;
+	case 0x33545844: //'3TXD':
+		format = 0x83F2;	// GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
+		pitchCalcurator = [](int w, int h) { return ((w + 3) / 4) * ((h + 3) / 4) * 16; };
+		break;
+	case 0x35545844: //'5TXD':
+		format = 0x83F3;	// GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+		pitchCalcurator = [](int w, int h) { return ((w + 3) / 4) * ((h + 3) / 4) * 16; };
+		break;
 	default:
-		texture = CreateTextureFromRowDDS(img, size, texSize);
-		goto END;
+		ArrangeRawDDS(img, size);
+		format = GL_RGBA;
+		pitchCalcurator = [](int w, int h) { return w * h * 4; };
+		break;
 	}
+	texSize.x = hdr->w;
+	texSize.y = hdr->h;
 
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
@@ -166,13 +149,16 @@ static GLuint LoadDDSTexture(const char* name, ivec2& texSize)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	{
-		int texSize = blockSize * ((hdr->w + 3) / 4) * ((hdr->h + 3) / 4);
-		glCompressedTexImage2D(GL_TEXTURE_2D, 0, format, hdr->w, hdr->h, 0, texSize, (char*)img + 128);
+		if (format == GL_RGBA) {
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, hdr->w, hdr->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, (char*)img + 128);
+			glGenerateMipmap(GL_TEXTURE_2D);
+		} else {
+			int texSize = pitchCalcurator(hdr->w, hdr->h);
+			glCompressedTexImage2D(GL_TEXTURE_2D, 0, format, hdr->w, hdr->h, 0, texSize, (char*)img + 128);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	// temporary disable mipmap
+		}
 	}
 	glBindTexture(GL_TEXTURE_2D, 0);
-	texSize.x = hdr->w;
-	texSize.y = hdr->h;
-END:
 	free(img);
 	return texture;
 }
