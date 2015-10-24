@@ -66,4 +66,5 @@ void SkyMan::Draw()
 
 void SkyMan::Destroy()
 {
+	afSafeDeleteBuffer(uboId);
 }
