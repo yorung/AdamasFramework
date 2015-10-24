@@ -29,7 +29,7 @@ static int LLookAt(lua_State* L)
 
 static void LoadSkyBox(const char *fileName)
 {
-	skyMan.Create(fileName, "sky_photosphere");
+	skyMan.Create(fileName, SkyMan::PHOTOSPHERE);
 }
 
 static ivec2 GetScreenPos()

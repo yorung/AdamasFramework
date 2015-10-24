@@ -119,6 +119,8 @@
     <None Include="..\assets\shaders\skin.400.vert" />
     <None Include="..\assets\shaders\skin.frag" />
     <None Include="..\assets\shaders\skin.vert" />
+    <None Include="..\assets\shaders\sky_cubemap.frag" />
+    <None Include="..\assets\shaders\sky_cubemap.vert" />
     <None Include="..\assets\shaders\sky_photosphere.frag" />
     <None Include="..\assets\shaders\sky_photosphere.vert" />
     <None Include="..\assets\shaders\vivid.frag" />

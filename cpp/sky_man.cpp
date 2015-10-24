@@ -13,12 +13,18 @@ SkyMan::~SkyMan()
 {
 }
 
-void SkyMan::Create(const char *strCubeMapFile, const char *shader)
+void SkyMan::Create(const char *strCubeMapFile, MappingType type)
 {
+	mappingType = type;
+	static const char* shaders[] =
+	{
+		"sky_cubemap",
+		"sky_photosphere",
+	};
 	Destroy();
 
 	texId = texMan.Create(strCubeMapFile);
-	shaderId = shaderMan.Create(shader);
+	shaderId = shaderMan.Create(shaders[type]);
 	uboId = afCreateUBO(sizeof(Mat));
 }
 
@@ -48,7 +54,11 @@ void SkyMan::Draw()
 
 	afWriteBuffer(uboId, &invVP, sizeof(invVP));
 	afBindBufferToBindingPoint(uboId, 0);
-	afBindTextureToBindingPoint(texId, 0);
+	if (mappingType == CUBEMAP) {
+		afBindCubeMapToBindingPoint(texId, 0);
+	} else {
+		afBindTextureToBindingPoint(texId, 0);
+	}
 
 	stockObjects.ApplyFullScreenVAO();	// dummy
 	afDrawIndexedTriangleStrip(4);

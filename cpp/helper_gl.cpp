@@ -94,6 +94,12 @@ void afBindTextureToBindingPoint(GLuint tex, GLuint textureBindingPoint)
 	afHandleGLError(glBindTexture(GL_TEXTURE_2D, tex));
 }
 
+void afBindCubeMapToBindingPoint(GLuint tex, GLuint textureBindingPoint)
+{
+	afHandleGLError(glActiveTexture(GL_TEXTURE0 + textureBindingPoint));
+	afHandleGLError(glBindTexture(GL_TEXTURE_CUBE_MAP, tex));
+}
+
 GLuint afCreateDynamicTexture(int w, int h, AFDTFormat format)
 {
 	GLuint texture;

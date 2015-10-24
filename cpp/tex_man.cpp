@@ -142,12 +142,15 @@ static GLuint LoadDDSTexture(const char* name, ivec2& texSize)
 	texSize.x = hdr->w;
 	texSize.y = hdr->h;
 
+	GLenum target = hdr->IsCubeMap() ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D;
+	GLenum targetFace = hdr->IsCubeMap() ? GL_TEXTURE_CUBE_MAP_POSITIVE_X : GL_TEXTURE_2D;
+
 	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glBindTexture(target, texture);
+	glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 	int arraySize = hdr->GetArraySize();
 	int mipCnt = hdr->GetMipCnt();
@@ -157,23 +160,23 @@ static GLuint LoadDDSTexture(const char* name, ivec2& texSize)
 			int w = std::max(1, hdr->w >> m);
 			int h = std::max(1, hdr->h >> m);
 			if (format == GL_RGBA) {
-				glTexImage2D(GL_TEXTURE_2D, m, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, (char*)img + offset);
+				afHandleGLError(glTexImage2D(targetFace + a, m, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, (char*)img + offset));
 			} else {
 				int texSize = pitchCalcurator(w, h);
-				afHandleGLError(glCompressedTexImage2D(GL_TEXTURE_2D, m, format, w, h, 0, texSize, (char*)img + offset));
+				afHandleGLError(glCompressedTexImage2D(targetFace + a, m, format, w, h, 0, texSize, (char*)img + offset));
 			}
 			offset += pitchCalcurator(w, h);
 		}
-		if (mipCnt == 1) {
-			if (format == GL_RGBA) {
-				glGenerateMipmap(GL_TEXTURE_2D);
-			} else {
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	// temporary disable mipmap
-			}
+	}
+	if (mipCnt == 1) {
+		if (format == GL_RGBA) {
+			afHandleGLError(glGenerateMipmap(target));
+		} else {
+			glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	// temporary disable mipmap
 		}
 	}
 
-	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindTexture(target, 0);
 	free(img);
 	return texture;
 }

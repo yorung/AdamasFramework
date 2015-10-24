@@ -142,6 +142,7 @@ void afLayoutSSBOBindingManually(GLuint program, const GLchar* name, GLuint stor
 void afLayoutUBOBindingManually(GLuint program, const GLchar* name, GLuint uniformBlockBinding);
 #endif
 void afBindTextureToBindingPoint(GLuint tex, GLuint textureBindingPoint);
+void afBindCubeMapToBindingPoint(GLuint tex, GLuint textureBindingPoint);
 
 void afDrawIndexedTriangleList(int numIndices, int start = 0);
 void afDrawIndexedTriangleStrip(int numIndices, int start = 0);
