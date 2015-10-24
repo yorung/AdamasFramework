@@ -12,4 +12,4 @@ AddMenu("Msg", "MessageBox('message', 'ok')")
 AddMenu("Jiji", "dofile('lua/jiji.lua')")
 AddMenu("Instancing", "dofile('lua/instancing.lua')")
 
-LoadSkyBox("hakodate.jpg")
+LoadSkyBox("hakodate.jpg", "photosphere")
