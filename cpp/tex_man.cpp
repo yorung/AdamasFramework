@@ -148,16 +148,31 @@ static GLuint LoadDDSTexture(const char* name, ivec2& texSize)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	{
-		if (format == GL_RGBA) {
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, hdr->w, hdr->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, (char*)img + 128);
-			glGenerateMipmap(GL_TEXTURE_2D);
-		} else {
-			int texSize = pitchCalcurator(hdr->w, hdr->h);
-			glCompressedTexImage2D(GL_TEXTURE_2D, 0, format, hdr->w, hdr->h, 0, texSize, (char*)img + 128);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	// temporary disable mipmap
+
+	int arraySize = hdr->GetArraySize();
+	int mipCnt = hdr->GetMipCnt();
+	int offset = 128;
+	for (int a = 0; a < arraySize; a++) {
+		for (int m = 0; m < mipCnt; m++) {
+			int w = std::max(1, hdr->w >> m);
+			int h = std::max(1, hdr->h >> m);
+			if (format == GL_RGBA) {
+				glTexImage2D(GL_TEXTURE_2D, m, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, (char*)img + offset);
+			} else {
+				int texSize = pitchCalcurator(w, h);
+				afHandleGLError(glCompressedTexImage2D(GL_TEXTURE_2D, m, format, w, h, 0, texSize, (char*)img + offset));
+			}
+			offset += pitchCalcurator(w, h);
+		}
+		if (mipCnt == 1) {
+			if (format == GL_RGBA) {
+				glGenerateMipmap(GL_TEXTURE_2D);
+			} else {
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	// temporary disable mipmap
+			}
 		}
 	}
+
 	glBindTexture(GL_TEXTURE_2D, 0);
 	free(img);
 	return texture;
