@@ -166,6 +166,7 @@ void WaterSurface::UpdateHeightMap(const UniformBuffer& hmub)
 
 	stockObjects.ApplyFullScreenVAO();
 	afDrawTriangleStrip(4);
+	afBindVAO(0);
 }
 
 void WaterSurface::UpdateNormalMap()
@@ -176,6 +177,7 @@ void WaterSurface::UpdateNormalMap()
 	shaderMan.Apply(shaderNormalMap);
 	stockObjects.ApplyFullScreenVAO();
 	afDrawTriangleStrip(4);
+	afBindVAO(0);
 }
 
 void WaterSurface::RenderWater(const UniformBuffer& hmub)
@@ -202,6 +204,7 @@ void WaterSurface::RenderWater(const UniformBuffer& hmub)
 	afBindTextureToBindingPoint(normalMap.GetTexture(), 7);
 	afDrawTriangleStrip(4);
 	afBindTextureToBindingPoint(0, 6);
+	afBindVAO(0);
 }
 
 void WaterSurface::Draw()

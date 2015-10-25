@@ -322,6 +322,7 @@ void FontMan::Render()
 	afDrawIndexedTriangleList(numSprites * 6);
 	afDepthStencilMode(true);
 	afBlendMode(BM_NONE);
+	afBindVAO(0);
 	numSprites = 0;
 }
 

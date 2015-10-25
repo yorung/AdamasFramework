@@ -71,4 +71,5 @@ void Glow::MakeGlow(AFRenderTarget& target, GLuint srcTex)
 	}
 	afBindTextureToBindingPoint(srcTex, 6);
 	afDrawTriangleStrip(4);
+	afBindVAO(0);
 }

@@ -60,7 +60,9 @@ void SkyMan::Draw()
 		afBindTextureToBindingPoint(texId, 0);
 	}
 
+	stockObjects.ApplyFullScreenVAO();
 	afDrawTriangleStrip(4);
+	afBindVAO(0);
 }
 
 void SkyMan::Destroy()
