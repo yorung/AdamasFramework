@@ -8,6 +8,7 @@ in vec3 vBlendWeights;
 in uvec4 vBlendIndices;
 out vec2 texcoord;
 out vec4 color;
+out vec3 normal;
 uniform mat4 matV;
 uniform mat4 matP;
 struct RenderCommand {
@@ -41,4 +42,5 @@ void main() {
 	gl_Position = matP * matWV * comb * vec4(pos, 1);
 	texcoord = vTexcoord;
 	color = vColor;
+	normal = mat3(matWV) * NORMAL;
 }
