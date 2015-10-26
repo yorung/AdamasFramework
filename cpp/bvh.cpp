@@ -351,11 +351,9 @@ void Bvh::CreateBoneMesh()
 	mat.specular.x = 1.0f;
 	mat.specular.y = 1.0f;
 	mat.specular.z = 1.0f;
-	mat.specular.w = 1.0f;
 	mat.emissive.x = 0.4f;
 	mat.emissive.y = 0.4f;
 	mat.emissive.z = 0.4f;
-	mat.emissive.w = 1.0f;
 	mat.tmid = texMan.CreateWhiteTexture();
 
 	MaterialMap map;

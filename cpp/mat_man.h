@@ -2,9 +2,9 @@ struct Material
 {
 	Material() { memset(this, 0, sizeof(*this)); }
 	Vec4 faceColor;
+	Vec3 specular;
 	float power;
-	Vec4 specular;
-	Vec4 emissive;
+	Vec3 emissive;
 	TexMan::TMID tmid;
 	bool operator==(const Material& r) const;
 };

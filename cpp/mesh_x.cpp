@@ -268,11 +268,9 @@ static MMID _getMaterial(char*& p, const std::string path)
 	mat.specular.x = _getF(p);
 	mat.specular.y = _getF(p);
 	mat.specular.z = _getF(p);
-	mat.specular.w = 1.0f;
 	mat.emissive.x = _getF(p);
 	mat.emissive.y = _getF(p);
 	mat.emissive.z = _getF(p);
-	mat.emissive.w = 1.0f;
 	char *tx = _searchChildTag(p, "TextureFilename");
 	if (tx) {
 		std::string txFull = (path.length() ? path + '/' : std::string("")) + _getString(tx);
@@ -365,11 +363,9 @@ void MeshX::CreateBoneMesh()
 	mat.specular.x = 1.0f;
 	mat.specular.y = 1.0f;
 	mat.specular.z = 1.0f;
-	mat.specular.w = 1.0f;
 	mat.emissive.x = 0.4f;
 	mat.emissive.y = 0.4f;
 	mat.emissive.z = 0.4f;
-	mat.emissive.w = 1.0f;
 	mat.tmid = texMan.CreateWhiteTexture();
 
 	MaterialMap map;
