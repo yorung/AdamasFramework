@@ -181,6 +181,51 @@ static void BindMatrixStack(lua_State *L)
 	aflBindNamespace(L, "matrixStack", inNamespaceFuncs);
 }
 
+static void BindImage(lua_State* L)
+{
+	class Image
+	{
+		TexMan::TMID texId;
+		std::vector<Vec4> quads;
+	public:
+		Image(const char *fileName)
+		{
+			texId = texMan.Create(fileName);
+		}
+
+		void SetQuad(int id, const Vec4& ltrb)
+		{
+			if (id < 0) {
+				return;
+			}
+			if (id >= (int)quads.size()) {
+				quads.resize(id + 1);
+			}
+			quads[id] = ltrb;
+		}
+
+		void Draw(int id, uint32_t color)
+		{
+			if (id < 0 || id >= (int)quads.size()) {
+				return;
+			}
+			// WIP
+		}
+	};
+	static const char* imageClassName = "Image";
+#define GET_IMAGE \
+	Image* p = (Image*)luaL_checkudata(L, 1, imageClassName); \
+	if (!p) { return 0; }
+	static struct luaL_Reg methods[] =
+	{
+		{ "__gc", [](lua_State* L) { GET_IMAGE p->~Image(); return 0; } },
+		{ "DrawCell", [](lua_State* L) { GET_IMAGE p->Draw((int)lua_tointeger(L, 2), 0xffffffff); return 0; } },
+		{ "SetCell", [](lua_State* L) { return 0; } },
+		{ nullptr, nullptr },
+	};
+	aflBindClass(L, imageClassName, methods, [](lua_State* L) {new (lua_newuserdata(L, sizeof(Image))) Image(lua_tostring(L, -2)); return 1; });
+}
+
 static void BindMesh(lua_State* L)
 {
 	class LMesh
@@ -374,6 +419,7 @@ void LuaBind(lua_State* L)
 	BindMesh(L);
 	BindVoice(L);
 	BindVector(L);
+	BindImage(L);
 	BindMatrixStack(L);
 	BindGlobalFuncs(L);
 	ShareVariables(L);
