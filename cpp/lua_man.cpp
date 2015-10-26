@@ -56,7 +56,10 @@ void LuaMan::CallGlobal(const char* func)
 	luaMatrixStack.Reset();
 	lua_getglobal(L, func);
 	//	aflDumpStack();
-	lua_call(L, 0, 0);
+	if (lua_pcall(L, 0, LUA_MULTRET, 0)) {
+		printf("%s\n", lua_tostring(L, -1));
+		lua_pop(L, 1);
+	}
 	//	aflDumpStack();
 	int top = lua_gettop(L);
 	if (top > 0) {
