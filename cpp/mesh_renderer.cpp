@@ -167,7 +167,7 @@ RenderMesh* MeshRenderer::GetMeshByMRID(MRID id)
 	return r;
 }
 
-void MeshRenderer::DrawRenderMesh(MRID id, const Mat& worldMat, const Mat BoneMatrices[BONE_MAX], int nBones, const Block& block)
+void MeshRenderer::DrawRenderMesh(MRID id, const Mat& worldMat, const Mat BoneMatrices[], int nBones, const Block& block)
 {
 	assert(GetMeshByMRID(id));
 	assert(!block.materialMaps.empty());

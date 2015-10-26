@@ -47,7 +47,7 @@ public:
 	ShaderMan::SMID GetShaderId() { return shaderId; }
 	MRID CreateRenderMesh(const Block& block);
 	void SafeDestroyRenderMesh(MRID& id);
-	void DrawRenderMesh(MRID id, const Mat& worldMat, const Mat BoneMatrices[BONE_MAX], int nBones, const Block& block);
+	void DrawRenderMesh(MRID id, const Mat& worldMat, const Mat BoneMatrices[], int nBones, const Block& block);
 	void Flush();
 };
 
