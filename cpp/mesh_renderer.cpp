@@ -63,23 +63,7 @@ void RenderMesh::Init(const Block& block)
 	vbo = afCreateVertexBuffer(sizeVertex, &block.vertices[0]);
 	ibo = afCreateIndexBuffer(indices, numIndices);
 
-	std::vector<DrawElementsIndirectCommand> cmds;
-	for (int j = 0; (unsigned)j < block.materialMaps.size(); j++) {
-		const MaterialMap& matMap = block.materialMaps[j];
-		const Material* mat = matMan.Get(matMap.materialId);
-		assert(mat);
-
-		GLuint count = matMap.faces * 3;
-		GLuint start = matMap.faceStartIndex * 3;
-		DrawElementsIndirectCommand cmd = { count, 1, start, 0, 0 };
-		cmds.push_back(cmd);
-
-		if (j == 0) {
-			indirectCommand = cmd;
-		}
-	}
-	assert(cmds.size());
-
+	materialMaps = block.materialMaps;
 	VBOID verts[] = { vbo };
 	GLsizei strides[] = { sizeof(MeshVertex) };
 	int shaderId = meshRenderer.GetShaderId();
@@ -90,14 +74,25 @@ void RenderMesh::Draw(const RenderCommand& c, int instanceCount) const
 {
 	int shaderId = meshRenderer.GetShaderId();
 
+	afEnableBackFaceCulling(true);
+	glActiveTexture(GL_TEXTURE0 + SBP_DIFFUSE);
 	glBindVertexArray(vao);
-	DrawElementsIndirectCommand cmd = indirectCommand;
-	cmd.instanceCount = instanceCount;
-	glDrawElementsInstanced/*BaseVertex*/(GL_TRIANGLES,
-		cmd.count,
-		AFIndexTypeToDevice,
-		(void*)cmd.firstIndex,
-		cmd.instanceCount/*, cmd.baseVertex*/);
+	for (auto it : materialMaps) {
+		const Material* mat = matMan.Get(it.materialId);
+		assert(mat);
+		glBindTexture(GL_TEXTURE_2D, mat->tmid);
+
+		GLuint count = it.faces * 3;
+		GLuint start = it.faceStartIndex * 3;
+		DrawElementsIndirectCommand cmd = { count, (GLuint)instanceCount, start, 0, 0 };
+		glDrawElementsInstanced/*BaseVertex*/(GL_TRIANGLES,
+			cmd.count,
+			AFIndexTypeToDevice,
+			(void*)cmd.firstIndex,
+			cmd.instanceCount/*, cmd.baseVertex*/);
+	}
+
+	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindVertexArray(0);
 }
 
@@ -209,16 +204,10 @@ void MeshRenderer::Flush()
 	glUniformMatrix4fv(glGetUniformLocation(shaderId, "matV"), 1, GL_FALSE, &matV.m[0][0]);
 	glUniformMatrix4fv(glGetUniformLocation(shaderId, "matP"), 1, GL_FALSE, &matP.m[0][0]);
 
-
 	RenderCommand c = renderCommands[0];
-	const Material* mat = matMan.Get(c.materialId);
 	RenderMesh* r = GetMeshByMRID(c.meshId);
 	assert(r);
-	afEnableBackFaceCulling(true);
-	glActiveTexture(GL_TEXTURE0 + SBP_DIFFUSE);
-	glBindTexture(GL_TEXTURE_2D, mat->tmid);
 	r->Draw(c, renderCommands.size());
-	glBindTexture(GL_TEXTURE_2D, 0);
 	renderBoneMatrices.clear();
 	renderCommands.clear();
 }

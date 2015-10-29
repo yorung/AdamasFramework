@@ -2,6 +2,7 @@ struct Block;
 struct MeshVertex;
 struct MeshColor;
 struct MeshSkin;
+struct MaterialMap;
 
 typedef unsigned int MRID;
 static const MRID INVALID_MRID = 0;
@@ -20,7 +21,7 @@ class RenderMesh
 	GLuint vao;
 	VBOID vbo;
 	IBOID ibo;
-	DrawElementsIndirectCommand indirectCommand;
+	std::vector<MaterialMap> materialMaps;
 public:
 	RenderMesh();
 	~RenderMesh();
