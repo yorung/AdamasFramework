@@ -83,7 +83,7 @@ void RenderMesh::Draw(const RenderCommand& c, int instanceCount) const
 		glBindTexture(GL_TEXTURE_2D, mat->tmid);
 
 		GLuint count = it.faces * 3;
-		GLuint start = it.faceStartIndex * 3;
+		GLuint start = it.faceStartIndex * 3 * sizeof(AFIndex);
 		DrawElementsIndirectCommand cmd = { count, (GLuint)instanceCount, start, 0, 0 };
 		glDrawElementsInstanced/*BaseVertex*/(GL_TRIANGLES,
 			cmd.count,
