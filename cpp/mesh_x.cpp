@@ -684,8 +684,7 @@ void MeshX::ParseFrame(char* p, BONE_ID parentFrameId)
 			char* frameMat = _searchChildTag(child, "FrameTransformMatrix");
 			BONE_ID frameId = name.empty() ? CreateFrameId("@Anonymus") : GetOrCreateFrameIdByName(name.c_str());
 			Frame& frame = m_frames[frameId];
-			Mat frameTransformMatrix;
-			_getMatrix(frameMat, frameTransformMatrix);
+			_getMatrix(frameMat, frame.frameTransformMatrix);
 			_linkFrame(parentFrameId, frameId);
 
 			Block b;
@@ -1016,10 +1015,11 @@ void MeshX::CalcAnimation(int animId, double time, MeshXAnimResult& animResult) 
 	time *= m_animTicksPerSecond;
 
 	Mat localMats[BONE_MAX];
+	for (BONE_ID id = 0; id < (BONE_ID)m_frames.size(); id++) {
+		localMats[id] = animId < 0 ? m_frames[id].initialMatrix : m_frames[id].frameTransformMatrix;
+	}
+
 	if (animId < 0 || animId >= (int)m_animationSets.size()) {
-		for (BONE_ID id = 0; id < (BONE_ID)m_frames.size(); id++) {
-			localMats[id] = m_frames[id].initialMatrix;
-		}
 		CalcFrameMatrices(animResult, localMats);
 		return;
 	}

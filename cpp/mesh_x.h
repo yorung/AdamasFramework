@@ -92,6 +92,7 @@ struct Frame
 	char name[32];
 	Mat initialMatrix;
 	Mat boneOffsetMatrix;
+	Mat frameTransformMatrix;
 	BONE_ID parentId;
 	BONE_ID childId;
 	BONE_ID siblingId;
