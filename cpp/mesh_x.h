@@ -135,6 +135,7 @@ private:
 	void _pushMaterialMap(Block& block, const MaterialMap& map);
 	void _mergeBlocks(Block& d, const Block& s);
 	BONE_ID GetOrCreateFrameIdByName(const char* name);
+	BONE_ID CreateFrameId(const char* name);
 	BONE_ID GetFrameIdByName(const char* name) const;
 	void _linkFrame(BONE_ID parentFrameId, BONE_ID childFrameId);
 	void _storeWeight(MeshVertex& v, int frameId, float weight);

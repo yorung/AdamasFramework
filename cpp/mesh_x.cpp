@@ -420,6 +420,11 @@ BONE_ID MeshX::GetOrCreateFrameIdByName(const char* name)
 	if (id >= 0) {
 		return id;
 	}
+	return CreateFrameId(name);
+}
+
+BONE_ID MeshX::CreateFrameId(const char* name)
+{
 	Frame f;
 	assert(strlen(name) < sizeof(f.name));
 	strcpy_s(f.name, sizeof(f.name), name);
@@ -677,7 +682,7 @@ void MeshX::ParseFrame(char* p, BONE_ID parentFrameId)
 		char* child = _searchChildTag(p, "Frame", &name);
 		if (child) {
 			char* frameMat = _searchChildTag(child, "FrameTransformMatrix");
-			BONE_ID frameId = GetOrCreateFrameIdByName(name.c_str());
+			BONE_ID frameId = name.empty() ? CreateFrameId("@Anonymus") : GetOrCreateFrameIdByName(name.c_str());
 			Frame& frame = m_frames[frameId];
 			Mat frameTransformMatrix;
 			_getMatrix(frameMat, frameTransformMatrix);
