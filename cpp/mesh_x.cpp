@@ -1085,10 +1085,10 @@ void MeshX::Draw(const MeshXAnimResult& animResult, const Mat& worldMat) const
 		}
 
 		if (g_type == "mesh") {
-			meshRenderer.DrawRenderMesh(renderMeshId, worldMat, vertexTransformMat, dimof(vertexTransformMat), m_block);
+			meshRenderer.DrawRenderMesh(renderMeshId, worldMat, vertexTransformMat, m_frames.size(), m_block);
 		}
 		if (g_type == "bone") {
-			meshRenderer.DrawRenderMesh(boneRenderMeshId, worldMat, vertexTransformMat, dimof(vertexTransformMat), bones);
+			meshRenderer.DrawRenderMesh(boneRenderMeshId, worldMat, vertexTransformMat, m_frames.size(), bones);
 		}
 	}
 }
