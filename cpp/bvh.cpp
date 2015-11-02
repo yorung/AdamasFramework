@@ -357,7 +357,7 @@ void Bvh::CreateBoneMesh()
 	mat.tmid = texMan.CreateWhiteTexture();
 
 	MaterialMap map;
-	map.materialId = matMan.Create(mat);
+	map.materialId = meshRenderer.CreateMaterial(mat);
 	map.faceStartIndex = 0;
 	map.faces = m_block.indices.size() / 3;
 	m_block.materialMaps.push_back(map);

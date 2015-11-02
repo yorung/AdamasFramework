@@ -71,7 +71,7 @@ void DebugRenderer::CreatePivotMesh()
 	mat.tmid = texMan.CreateWhiteTexture();
 
 	MaterialMap map;
-	map.materialId = matMan.Create(mat);
+	map.materialId = meshRenderer.CreateMaterial(mat);
 	map.faceStartIndex = 0;
 	map.faces = pivots.indices.size() / 3;
 	pivots.materialMaps.push_back(map);

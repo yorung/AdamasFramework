@@ -1,5 +1,4 @@
 typedef unsigned short AFIndex;
-
 #define AFIndexTypeToDevice GL_UNSIGNED_SHORT
 
 enum ShaderFormat {
@@ -69,7 +68,7 @@ struct DrawElementsIndirectCommand
 template <GLenum bufType_>
 struct TBufName {
 	static const GLenum bufType = bufType_;
-	GLuint x;
+	GLuint x = 0;
 //	TBufName(GLuint r = 0) { x = r; }
 	TBufName operator=(GLuint r) { x = r; return *this; }
 	operator GLuint() const { return x; }

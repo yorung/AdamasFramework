@@ -278,7 +278,7 @@ static MMID _getMaterial(char*& p, const std::string path)
 	} else {
 		mat.tmid = texMan.CreateWhiteTexture();
 	}
-	return matMan.Create(mat);
+	return meshRenderer.CreateMaterial(mat);
 }
 
 class FrameIterator
@@ -369,7 +369,7 @@ void MeshX::CreateBoneMesh()
 	mat.tmid = texMan.CreateWhiteTexture();
 
 	MaterialMap map;
-	map.materialId = matMan.Create(mat);
+	map.materialId = meshRenderer.CreateMaterial(mat);
 	map.faceStartIndex = 0;
 	map.faces = bones.indices.size() / 3;
 	bones.materialMaps.push_back(map);

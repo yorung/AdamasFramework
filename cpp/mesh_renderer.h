@@ -7,6 +7,20 @@ struct MaterialMap;
 typedef unsigned int MRID;
 static const MRID INVALID_MRID = 0;
 
+typedef int MMID;
+static int INVALID_MMID = 0;
+
+struct Material
+{
+	Material() { memset(this, 0, sizeof(*this)); }
+	Vec4 faceColor;
+	Vec3 specular;
+	float power;
+	Vec3 emissive;
+	TexMan::TMID tmid;
+	bool operator==(const Material& r) const;
+};
+
 struct RenderCommand
 {
 	Mat matWorld;
@@ -37,7 +51,9 @@ public:
 	std::vector<RenderMesh*> renderMeshes;
 	std::vector<RenderCommand> renderCommands;
 	std::vector<Mat> renderBoneMatrices;
+	std::vector<Material> materials;
 	SSBOID ssboForBoneMatrices;
+	SSBOID ssboForMaterials;
 	UBOID uboForPerInstanceData;
 	RenderMesh* GetMeshByMRID(MRID id);
 public:
@@ -50,6 +66,8 @@ public:
 	void SafeDestroyRenderMesh(MRID& id);
 	void DrawRenderMesh(MRID id, const Mat& worldMat, const Mat BoneMatrices[], int nBones, const Block& block);
 	void Flush();
+	MMID CreateMaterial(const Material& mat);
+	const Material* GetMaterial(MMID id);
 };
 
 extern MeshRenderer meshRenderer;

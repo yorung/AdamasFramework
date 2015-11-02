@@ -18,17 +18,30 @@ struct RenderCommand {
 	uint boneStartIndex;
 	int nBones;
 };
+
+struct Material {
+	vec4 faceColor;
+	vec3 specular;
+	float power;
+	vec3 emissive;
+	int tmid;
+};
+
 layout (std140, binding = 2) uniform perInstanceUBO {
 	RenderCommand renderCommands[10];
+};
+layout (std430, binding = 4) buffer materialSSBO {
+	Material materials[];
 };
 layout (std430, binding = 5) buffer boneSSBO {
 	mat4 bonesSSBO[];
 };
 
-
 void main() {
-	mat4 matWV = matV * renderCommands[gl_InstanceID].matWorld;
-	uint boneStartIndex = renderCommands[gl_InstanceID].boneStartIndex;
+	RenderCommand cmd = renderCommands[gl_InstanceID];
+	mat4 matWV = matV * cmd.matWorld;
+	uint boneStartIndex = cmd.boneStartIndex;
+	Material material = materials[cmd.materialId];
 
 	mat4 comb =
 		bonesSSBO[boneStartIndex + vBlendIndices.x] * vBlendWeights.x +
@@ -41,6 +54,6 @@ void main() {
 
 	gl_Position = matP * matWV * comb * vec4(pos, 1);
 	texcoord = vTexcoord;
-	color = vColor;
+	color = vColor * material.faceColor;
 	normal = mat3(matWV) * NORMAL;
 }

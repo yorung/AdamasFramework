@@ -52,9 +52,6 @@
     <ClCompile Include="..\cpp\joint_db.cpp">
       <Filter>PlatformIndipendent</Filter>
     </ClCompile>
-    <ClCompile Include="..\cpp\mat_man.cpp">
-      <Filter>PlatformIndipendent</Filter>
-    </ClCompile>
     <ClCompile Include="..\cpp\bvh.cpp">
       <Filter>PlatformIndipendent</Filter>
     </ClCompile>
@@ -169,9 +166,6 @@
       <Filter>PlatformIndipendent</Filter>
     </ClInclude>
     <ClInclude Include="..\cpp\joint_db.h">
-      <Filter>PlatformIndipendent</Filter>
-    </ClInclude>
-    <ClInclude Include="..\cpp\mat_man.h">
       <Filter>PlatformIndipendent</Filter>
     </ClInclude>
     <ClInclude Include="..\cpp\bvh.h">

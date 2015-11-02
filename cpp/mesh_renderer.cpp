@@ -2,12 +2,15 @@
 
 MeshRenderer meshRenderer;
 
-static int MAX_INSTANCES = 10;
+static size_t MAX_INSTANCES = 10;
+static size_t MAX_MATERIALS = 100;
 
-static const int BONE_SSBO_SIZE = sizeof(Mat) * 1000;
-static const int PER_INSTANCE_UBO_SIZE = sizeof(RenderCommand) * MAX_INSTANCES;
+static const size_t BONE_SSBO_SIZE = sizeof(Mat) * 1000;
+static const size_t PER_INSTANCE_UBO_SIZE = sizeof(RenderCommand) * MAX_INSTANCES;
+static const size_t MATERIAL_SSBO_SIZE = sizeof(Material) * MAX_MATERIALS;
 
 enum SSBOBindingPoints {
+	SBP_MATERIALS = 4,
 	SBP_BONES = 5,
 };
 
@@ -78,7 +81,7 @@ void RenderMesh::Draw(const RenderCommand& c, int instanceCount) const
 	glActiveTexture(GL_TEXTURE0 + SBP_DIFFUSE);
 	glBindVertexArray(vao);
 	for (auto it : materialMaps) {
-		const Material* mat = matMan.Get(it.materialId);
+		const Material* mat = meshRenderer.GetMaterial(it.materialId);
 		assert(mat);
 		glBindTexture(GL_TEXTURE_2D, mat->tmid);
 
@@ -98,18 +101,20 @@ void RenderMesh::Draw(const RenderCommand& c, int instanceCount) const
 
 MeshRenderer::MeshRenderer()
 {
-	renderMeshes.push_back(nullptr);	// render mesh ID must not be 0
 }
 
 MeshRenderer::~MeshRenderer()
 {
-	assert(renderMeshes.empty());
+	assert(renderMeshes.size() == 1);
 }
 
 void MeshRenderer::Create()
 {
+	Destroy();
+
 	ssboForBoneMatrices = afCreateSSBO(BONE_SSBO_SIZE);
 	uboForPerInstanceData = afCreateUBO(PER_INSTANCE_UBO_SIZE);
+	ssboForMaterials = afCreateSSBO(MAX_MATERIALS);
 
 	shaderId = shaderMan.Create("skin.400");
 	assert(shaderId);
@@ -117,6 +122,7 @@ void MeshRenderer::Create()
 	shaderMan.Apply(shaderId);
 
 	afBindBufferToBindingPoint(ssboForBoneMatrices, SBP_BONES);
+	afBindBufferToBindingPoint(ssboForMaterials, SBP_MATERIALS);
 	afBindBufferToBindingPoint(uboForPerInstanceData, UBP_PER_INSTANCE_DATAS);
 }
 
@@ -127,7 +133,12 @@ void MeshRenderer::Destroy()
 		delete m;
 	}
 	renderMeshes.clear();
+	renderMeshes.push_back(nullptr);	// render mesh ID must not be 0
+	materials.clear();
+	materials.push_back(Material());	// make id 0 invalid
+
 	afSafeDeleteBuffer(ssboForBoneMatrices);
+	afSafeDeleteBuffer(ssboForMaterials);
 	afSafeDeleteBuffer(uboForPerInstanceData);
 }
 
@@ -210,4 +221,34 @@ void MeshRenderer::Flush()
 	r->Draw(c, renderCommands.size());
 	renderBoneMatrices.clear();
 	renderCommands.clear();
+}
+
+MMID MeshRenderer::CreateMaterial(const Material& mat)
+{
+	auto it = std::find_if(materials.begin(), materials.end(), [&mat](const Material& m) { return m == mat; });
+	if (it != materials.end()) {
+		int n = (int)std::distance(materials.begin(), it);
+		return n;
+	}
+	materials.push_back(mat);
+
+	assert(materials.size() <= MAX_MATERIALS);
+	afWriteBuffer(ssboForMaterials, &materials[0], sizeof(materials[0]) * materials.size());
+
+	return materials.size() - 1;
+}
+
+
+const Material* MeshRenderer::GetMaterial(MMID id)
+{
+	if (id >= 0 && id < (MMID)materials.size())
+	{
+		return &materials[id];
+	}
+	return nullptr;
+}
+
+bool Material::operator==(const Material& r) const
+{
+	return !memcmp(this, &r, sizeof(Material));
 }
