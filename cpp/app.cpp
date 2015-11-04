@@ -73,15 +73,23 @@ void App::Init()
 	afDepthStencilMode(true);
 
 	meshRenderer.Create();
-	waterSurface.Init();
-	waterSurfaceClassic.Init();
+//	waterSurface.Init();
+//	waterSurfaceClassic.Init();
 	fontMan.Init();
 	spriteRenderer.Init();
 	stockObjects.Init();
-	luaMan.Create();
 
 	LoadMesh("jiji.x");
-	PlayBgm("sound/background.mp3");
+//	skyMan.Create("C:\\Program Files (x86)\\Microsoft DirectX SDK (August 2009)\\Samples\\C++\\Direct3D\\StateManager\\Media\\skybox02.dds", SkyMan::CUBEMAP);
+//	skyMan.Create("D:\\mydns\\janken\\Program\\root\\Media\\skybox.dds", SkyMan::CUBEMAP);
+	skyMan.Create("D:\\mydns\\janken\\Program\\root\\Media\\LobbyCube.dds", SkyMan::CUBEMAP);
+
+
+
+	//	PlayBgm("sound/background.mp3");
+	SetCurrentDirectoryA("D:\\mydns\\janken\\Program\\root");
+	luaMan.Create();
+
 }
 
 void App::LoadMesh(const char* fileName)
