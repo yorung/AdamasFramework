@@ -17,6 +17,7 @@ struct RenderCommand {
 	int meshId;
 	uint boneStartIndex;
 	int nBones;
+	int padding;
 };
 
 struct Material {

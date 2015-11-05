@@ -27,6 +27,7 @@ struct RenderCommand
 	MRID meshId;
 	uint32_t boneStartIndex;
 	int nBones;
+	int padding;
 };
 
 class RenderMesh
