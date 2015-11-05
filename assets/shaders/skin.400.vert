@@ -21,10 +21,10 @@ struct RenderCommand {
 
 struct Material {
 	vec4 faceColor;
-	vec4 specular;
-//	float power;
-	vec4 emissive;
-//	int tmid;
+	vec3 specular;
+	float power;
+	vec3 emissive;
+	int tmid;
 };
 
 layout (std140, binding = 2) uniform perInstanceUBO {
@@ -41,7 +41,7 @@ void main() {
 	RenderCommand cmd = renderCommands[gl_InstanceID];
 	mat4 matWV = matV * cmd.matWorld;
 	uint boneStartIndex = cmd.boneStartIndex;
-//	Material material = materials[cmd.materialId];
+	Material material = materials[cmd.materialId];
 //	Material material = materials[1];
 
 	mat4 comb =
@@ -55,7 +55,7 @@ void main() {
 
 	gl_Position = matP * matWV * comb * vec4(pos, 1.0);
 	texcoord = vTexcoord;
-	color = vColor;
+	color = vColor + vec4(material.emissive, 1.0);
 //	color = vColor * vec4(material.faceColor.xyz, 1.0);
 //	color = vec4(material.faceColor.xyz, 1.0);
 //	color = vec4(material.faceColor.xyz, 1.0);

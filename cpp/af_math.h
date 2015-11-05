@@ -510,5 +510,5 @@ inline uint32_t ivec4ToUnorm(const ivec4& v) {
 inline uint32_t Vec4ToUnorm(const Vec4& f)
 {
 	auto cnv = [&](affloat f, int bit) { return uint32_t(f * 255) << bit; };
-	return cnv(f.x, 24) | cnv(f.y, 16) | cnv(f.z, 8) | cnv(f.w, 0);
+	return cnv(f.x, 0) | cnv(f.y, 8) | cnv(f.z, 16) | cnv(f.w, 24);
 }
