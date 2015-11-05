@@ -61,6 +61,7 @@ void RenderMesh::Init(const Block& block)
 		CInputElement(0, "vTexcoord", SF_R32G32_FLOAT, 28),
 		CInputElement(0, "vBlendWeights", SF_R32G32B32_FLOAT, 36),
 		CInputElement(0, "vBlendIndices", SF_R8G8B8A8_UINT, 48),
+		CInputElement(0, "materialId", SF_R32_UINT, 52),
 	};
 
 	vbo = afCreateVertexBuffer(sizeVertex, &block.vertices[0]);

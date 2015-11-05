@@ -231,6 +231,14 @@ void afSetVertexAttributes(GLuint program, const InputElement elements[], int nu
 			glVertexAttribIPointer(h, d.format - SF_R16_UINT + 1, GL_UNSIGNED_SHORT, strides[d.inputSlot], (void*)d.offset);
 #endif
 			break;
+		case SF_R32_UINT:
+		case SF_R32G32_UINT:
+		case SF_R32G32B32_UINT:
+		case SF_R32G32B32A32_UINT:
+#ifdef AF_GLES31
+			glVertexAttribIPointer(h, d.format - SF_R32_UINT + 1, GL_UNSIGNED_INT, strides[d.inputSlot], (void*)d.offset);
+#endif
+			break;
 		}
 #ifdef AF_GLES31
 		if (d.perInstance) {

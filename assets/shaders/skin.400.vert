@@ -6,6 +6,7 @@ in vec2 vTexcoord;
 in vec4 vColor;
 in vec3 vBlendWeights;
 in uvec4 vBlendIndices;
+in uint materialId;
 out vec2 texcoord;
 out vec4 color;
 out vec3 normal;
@@ -41,7 +42,7 @@ void main() {
 	RenderCommand cmd = renderCommands[gl_InstanceID];
 	mat4 matWV = matV * cmd.matWorld;
 	uint boneStartIndex = cmd.boneStartIndex;
-	Material material = materials[cmd.materialId];
+	Material material = materials[materialId];
 //	Material material = materials[1];
 
 	mat4 comb =
