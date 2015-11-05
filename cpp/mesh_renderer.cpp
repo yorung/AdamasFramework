@@ -115,7 +115,7 @@ void MeshRenderer::Create()
 
 	ssboForBoneMatrices = afCreateSSBO(BONE_SSBO_SIZE);
 	uboForPerInstanceData = afCreateUBO(PER_INSTANCE_UBO_SIZE);
-	ssboForMaterials = afCreateSSBO(MAX_MATERIALS);
+	ssboForMaterials = afCreateSSBO(MATERIAL_SSBO_SIZE);
 
 	shaderId = shaderMan.Create("skin.400");
 	assert(shaderId);
@@ -189,7 +189,6 @@ void MeshRenderer::DrawRenderMesh(MRID id, const Mat& worldMat, const Mat BoneMa
 	RenderCommand c;
 	c.matWorld = worldMat;
 	c.meshId = id;
-	c.materialId = block.materialMaps[0].materialId;
 	c.boneStartIndex = renderBoneMatrices.size();
 	c.nBones = nBones;
 

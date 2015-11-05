@@ -25,7 +25,6 @@ struct RenderCommand
 {
 	Mat matWorld;
 	MRID meshId;
-	MMID materialId;
 	uint32_t boneStartIndex;
 	int nBones;
 };

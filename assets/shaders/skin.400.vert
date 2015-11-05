@@ -15,17 +15,16 @@ uniform mat4 matP;
 struct RenderCommand {
 	mat4 matWorld;
 	int meshId;
-	int materialId;
 	uint boneStartIndex;
 	int nBones;
 };
 
 struct Material {
 	vec4 faceColor;
-	vec3 specular;
-	float power;
-	vec3 emissive;
-	int tmid;
+	vec4 specular;
+//	float power;
+	vec4 emissive;
+//	int tmid;
 };
 
 layout (std140, binding = 2) uniform perInstanceUBO {
@@ -56,8 +55,10 @@ void main() {
 
 	gl_Position = matP * matWV * comb * vec4(pos, 1.0);
 	texcoord = vTexcoord;
-	color = vColor + vec4(material.emissive, 1.0);
-//	color = vColor * vec4(material.faceColor.xyz, 1.0);
+//	color = vec4((materialId & 1u) == 0u ? 0.0 : 1.0, (materialId & 2u) == 0u ? 0.0 : 1.0, (materialId & 4u) == 0u ? 0.0 : 1.0, 1.0);
+//	color = vColor + vec4(material.emissive.xyz, 1.0);
+	color = vColor * vec4(material.faceColor.xyz, 1.0) + vec4(material.emissive.xyz, 1.0);
+//	color = vColor;
 //	color = vec4(material.faceColor.xyz, 1.0);
 //	color = vec4(material.faceColor.xyz, 1.0);
 //	color = vec4(material.emissive.xyz, 1.0);

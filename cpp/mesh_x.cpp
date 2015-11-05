@@ -644,7 +644,7 @@ bool MeshX::ParseMesh(char* imgFrame, Block& block, BONE_ID frameId)
 		for (int i = 0; i < it.faces; i++) {
 			int idx = (i + it.faceStartIndex) * 3;
 			for (int j = 0; j < 3; j++) {
-				vertices[indices[idx + j]].color = Vec4ToUnorm(m->faceColor);
+//				vertices[indices[idx + j]].color = Vec4ToUnorm(m->faceColor);
 				vertices[indices[idx + j]].materialId = it.materialId;
 			}
 		}
