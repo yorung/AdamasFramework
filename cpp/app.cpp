@@ -45,7 +45,7 @@ void App::Draw()
 	float dist = devCamera.GetDistance();
 
 	float f = dist * 1000;
-	float n = dist / 1000;
+	float n = dist / 10;
 	float aspect = (float)scrSize.x / scrSize.y;
 	Mat proj = perspective(45, aspect, n, f);
 	matrixMan.Set(MatrixMan::PROJ, proj);
