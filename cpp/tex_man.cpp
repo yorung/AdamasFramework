@@ -22,7 +22,7 @@ namespace Gdiplus {
 #include <gdiplus.h>
 #pragma comment(lib, "gdiplus.lib")
 
-static GLuint LoadTextureViaOS(const char* name)
+static GLuint LoadTextureViaOS(const char* name, ivec2& size)
 {
 	Gdiplus::GdiplusStartupInput gdiplusStartupInput;
 	ULONG_PTR gdiplusToken;
@@ -33,6 +33,8 @@ static GLuint LoadTextureViaOS(const char* name)
 
 	int w = (int)image->GetWidth();
 	int h = (int)image->GetHeight();
+	size.x = w;
+	size.y = h;
 	Gdiplus::Rect rc(0, 0, w, h);
 
 	Gdiplus::BitmapData* bitmapData = new Gdiplus::BitmapData;
@@ -188,7 +190,7 @@ static GLuint LoadTexture(const char* name, ivec2& size)
 	if (len > 4 && !stricmp(name + len - 4, ".dds")) {
 		return LoadDDSTexture(name, size);
 	} else {
-		return LoadTextureViaOS(name);
+		return LoadTextureViaOS(name, size);
 	}
 }
 

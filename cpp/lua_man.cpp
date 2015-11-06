@@ -2,6 +2,7 @@
 
 LuaMan luaMan;
 extern MatrixStack luaMatrixStack;
+extern SpriteCommands luaSpriteCommands;
 
 LuaBindFuncContainer& GetLuaBindFuncContainer()
 {
@@ -75,7 +76,10 @@ void LuaMan::Update()
 
 void LuaMan::Draw2D()
 {
+//	assert(luaSpriteCommands.empty());
 	CallGlobal("Draw2D");
+	spriteRenderer.Draw(luaSpriteCommands);
+	luaSpriteCommands.clear();
 }
 
 void LuaMan::Draw3D()

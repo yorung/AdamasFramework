@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 MatrixStack luaMatrixStack;
+SpriteCommands luaSpriteCommands;
 
 #ifndef _MSC_VER
 typedef int LONG;
@@ -15,7 +16,7 @@ struct RECT {
 static const char* vec3ClassName = "Vec3";
 static const char* vec4ClassName = "Vec4";
 static const char* voiceClassName = "Voice";
-static const char* myClassName = "RECT";
+static const char* rectClassName = "RECT";
 
 static int LLookAt(lua_State* L)
 {
@@ -75,7 +76,7 @@ static void PushPoint(lua_State* L, const ivec2& pt)
 }
 
 #define GET_RECT \
-	RECT* r = (RECT*)luaL_checkudata(L, 1, myClassName); \
+	RECT* r = (RECT*)luaL_checkudata(L, 1, rectClassName); \
 	if (!r) {	\
 		return 0;	\
 	} \
@@ -143,7 +144,7 @@ static int RECTNew(lua_State *L)
 	RECT* p = (RECT*)lua_newuserdata(L, sizeof(RECT));
 	*p = r;
 	aflDumpStack();
-	luaL_getmetatable(L, myClassName);
+	luaL_getmetatable(L, rectClassName);
 	aflDumpStack();
 	lua_setmetatable(L, -2);
 	aflDumpStack();
@@ -210,7 +211,13 @@ static void BindImage(lua_State* L)
 			if (id < 0 || id >= (int)quads.size()) {
 				return;
 			}
-			// WIP
+			ivec2 scr = systemMetrics.GetScreenSize();
+			SpriteCommand s;
+			s.matW = luaMatrixStack.Get();
+			s.quad = quads[id];
+			s.tex = texId;
+			s.color = 0xffffffff;
+			luaSpriteCommands.push_back(s);
 		}
 	};
 	static const char* imageClassName = "Image";
@@ -221,7 +228,38 @@ static void BindImage(lua_State* L)
 	{
 		{ "__gc", [](lua_State* L) { GET_IMAGE p->~Image(); return 0; } },
 		{ "DrawCell", [](lua_State* L) { GET_IMAGE p->Draw((int)lua_tointeger(L, 2), (Vec4*)luaL_testudata(L, 3, vec4ClassName)); return 0; } },
-		{ "SetCell", [](lua_State* L) { return 0; } },
+		{ "SetCell", [](lua_State* L) {
+			GET_IMAGE
+//			const RECT* r = (RECT*)luaL_checkudata(L, -1, rectClassName);
+//			p->SetQuad((int)lua_tointeger(L, -2), Vec4((float)r->left, (float)r->top, (float)r->right, (float)r->bottom));
+//			return 0;
+
+			int id = (int)lua_tointeger(L, 2);
+
+			Vec4 ltrb;
+			lua_pushstring(L, "left");
+			lua_gettable(L, -2);
+			ltrb.x = (float)lua_tonumber(L, -1);
+			lua_pop(L, 1);
+
+			lua_pushstring(L, "top");
+			lua_gettable(L, -2);
+			ltrb.y = (float)lua_tonumber(L, -1);
+			lua_pop(L, 1);
+
+			lua_pushstring(L, "right");
+			lua_gettable(L, -2);
+			ltrb.z = (float)lua_tonumber(L, -1);
+			lua_pop(L, 1);
+
+			lua_pushstring(L, "bottom");
+			lua_gettable(L, -2);
+			ltrb.w = (float)lua_tonumber(L, -1);
+			lua_pop(L, 1);
+
+			p->SetQuad(id, ltrb);
+			return 0;
+		} },
 		{ nullptr, nullptr },
 	};
 	aflBindClass(L, imageClassName, methods, [](lua_State* L) {new (lua_newuserdata(L, sizeof(Image))) Image(lua_tostring(L, -2)); return 1; });
@@ -264,7 +302,7 @@ static void BindMesh(lua_State* L)
 void BindWin(lua_State *L)
 {
 	aflDumpStack();
-	int r = luaL_newmetatable(L, myClassName);
+	int r = luaL_newmetatable(L, rectClassName);
 	assert(r);
 	aflDumpStack();
 
@@ -279,7 +317,7 @@ void BindWin(lua_State *L)
 	aflDumpStack();
 
 	lua_pop(L, 1);
-	lua_register(L, myClassName, RECTNew);
+	lua_register(L, rectClassName, RECTNew);
 }
 
 static const char* IdToStr(int id)
@@ -457,7 +495,7 @@ static void BindVec4(lua_State* L)
 	lua_register(L, vec4ClassName, LVec4New);
 }
 
-void ShareVariables(lua_State* L)
+static void ShareVariables(lua_State* L)
 {
 	RECT rc;
 	GetClientRect(GetActiveWindow(), &rc);
