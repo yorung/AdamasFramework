@@ -8,7 +8,8 @@ in vec3 vBlendWeights;
 in uvec4 vBlendIndices;
 in uint materialId;
 out vec2 texcoord;
-out vec4 color;
+out vec4 diffuse;
+out vec3 emissive;
 out vec3 normal;
 uniform mat4 matV;
 uniform mat4 matP;
@@ -53,6 +54,7 @@ void main() {
 
 	gl_Position = matP * matV * cmd.matWorld * comb * vec4(pos, 1.0);
 	texcoord = vTexcoord;
-	color = vColor * vec4(material.faceColor.xyz, 1.0) + vec4(material.emissive.xyz, 0.0);
+	diffuse = vColor * vec4(material.faceColor.xyz, 1.0);
+	emissive = material.emissive.xyz;
 	normal = mat3(cmd.matWorld * comb) * NORMAL;
 }
