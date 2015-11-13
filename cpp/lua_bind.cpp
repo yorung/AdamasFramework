@@ -56,14 +56,6 @@ static ivec2 GetScreenPos()
 	return ivec2((int)(m._41 / m._44), (int)(m._42 / m._44));
 }
 
-static ivec2 GetMousePos()
-{
-	POINT p;
-	GetCursorPos(&p);
-	ScreenToClient(GetActiveWindow(), &p);
-	return ivec2(p.x, p.y);
-}
-
 static void PushPoint(lua_State* L, const ivec2& pt)
 {
 	lua_newtable(L);
@@ -189,10 +181,16 @@ static void BindImage(lua_State* L)
 	{
 		TexMan::TMID texId;
 		std::vector<Vec4> quads;
+#ifdef _DEBUG
+		std::string fileName;
+#endif
 	public:
 		Image(const char *fileName)
 		{
 			texId = texMan.Create(fileName);
+#ifdef _DEBUG
+			this->fileName = fileName;
+#endif
 		}
 
 		void SetQuad(int id, const Vec4& ltrb)
@@ -320,42 +318,14 @@ void BindWin(lua_State *L)
 	lua_register(L, rectClassName, RECTNew);
 }
 
-static const char* IdToStr(int id)
-{
-	switch (id) {
-	case IDOK: return "ok";
-	case IDCANCEL: return "cancel";
-	case IDYES: return "yes";
-	case IDNO: return "no";
-	}
-	return "unknown";
-}
-
-static UINT StrToType(const char* type)
-{
-	if (!strcmp(type, "okcancel")) {
-		return MB_OKCANCEL;
-	} else if (!strcmp(type, "yesno")) {
-		return MB_YESNO;
-	}
-	return MB_OK;
-}
-
-static const char* StrMessageBox(const char* txt, const char* type)
-{
-	return IdToStr(MessageBoxA(GetActiveWindow(), txt, "Lua Message", StrToType(type)));
-}
-
 static void BindGlobalFuncs(lua_State* L)
 {
-	void AddMenu(const char *name, const char *cmd);
-	void PostCommand(const char* cmdString);
 	static luaL_Reg globalFuncs[] = {
 		{ "AddMenu", [](lua_State* L) { AddMenu(lua_tostring(L, -2), lua_tostring(L, -1)); return 0; } },
 		{ "GetKeyCount", [](lua_State* L) { lua_pushinteger(L, inputMan.GetInputCount((int)lua_tointeger(L, -1))); return 1; } },
 		{ "LookAt", LLookAt },
 		{ "LoadSkyBox", [](lua_State* L) { LoadSkyBox(lua_tostring(L, 1), lua_tostring(L, 2)); return 0; } },
-		{ "GetMousePos", [](lua_State* L) { PushPoint(L, GetMousePos()); return 1; } },
+		{ "GetMousePos", [](lua_State* L) { PushPoint(L, systemMetrics.GetMousePos()); return 1; } },
 		{ "GetScreenPos", [](lua_State* L) { PushPoint(L, GetScreenPos()); return 1; } },
 		{ "MessageBox", [](lua_State* L) { lua_pushstring(L, StrMessageBox(lua_tostring(L, -2), lua_tostring(L, -1))); return 1; } },
 		{ "PostCommand", [](lua_State* L) { PostCommand(lua_tostring(L, -1)); return 0; } },
@@ -497,11 +467,10 @@ static void BindVec4(lua_State* L)
 
 static void ShareVariables(lua_State* L)
 {
-	RECT rc;
-	GetClientRect(GetActiveWindow(), &rc);
-	lua_pushinteger(L, rc.right - rc.left);
+	ivec2 sz = systemMetrics.GetScreenSize();
+	lua_pushinteger(L, sz.x);
 	lua_setglobal(L, "SCR_W");
-	lua_pushinteger(L, rc.bottom - rc.top);
+	lua_pushinteger(L, sz.y);
 	lua_setglobal(L, "SCR_H");
 	lua_pushinteger(L, 60);
 	lua_setglobal(L, "FPS");

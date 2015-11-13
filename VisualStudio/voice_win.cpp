@@ -1,5 +1,12 @@
 #include "stdafx.h"
 
+struct WaveContext
+{
+	HWAVEOUT hWaveOut;
+	WAVEHDR wavehdr;
+	void *fileImg;
+};
+
 struct RiffHeader
 {
 	char type1[4];
@@ -67,38 +74,19 @@ static void mmresultVerify(MMRESULT mr)
 	assert(mr == MMSYSERR_NOERROR);
 }
 
-Voice::Voice()
+void Voice::Create(const char *fileName)
 {
-	memset(&context, 0, sizeof(context));
-}
-
-Voice::Voice(const char *fileName) : Voice()
-{
-	Load(fileName);
-}
-
-Voice::~Voice()
-{
-	Release();
-}
-
-bool Voice::IsReady()
-{
-	return !!context.fileImg;
-}
-
-void Voice::Load(const char *fileName)
-{
-	Release();
+	Destroy();
+	context = new WaveContext;
 	bool result = false;
-	result = !!(context.fileImg = LoadFile(fileName));
+	result = !!(context->fileImg = LoadFile(fileName));
 	assert(result);
-	result = !!FindWaveformatex(context.fileImg);
+	result = !!FindWaveformatex(context->fileImg);
 	assert(result);
-	result = FindAndFillWavehdr(&context.wavehdr, context.fileImg);
+	result = FindAndFillWavehdr(&context->wavehdr, context->fileImg);
 	assert(result);
-	mmresultVerify(waveOutOpen(&context.hWaveOut, WAVE_MAPPER, FindWaveformatex(context.fileImg), 0, 0, CALLBACK_NULL));
-	mmresultVerify(waveOutPrepareHeader(context.hWaveOut, &context.wavehdr, sizeof(WAVEHDR)));
+	mmresultVerify(waveOutOpen(&context->hWaveOut, WAVE_MAPPER, FindWaveformatex(context->fileImg), 0, 0, CALLBACK_NULL));
+	mmresultVerify(waveOutPrepareHeader(context->hWaveOut, &context->wavehdr, sizeof(WAVEHDR)));
 }
 
 void Voice::Play(bool loop)
@@ -106,9 +94,9 @@ void Voice::Play(bool loop)
 	if (!IsReady()) {
 		return;
 	}
-	context.wavehdr.dwFlags |= WHDR_BEGINLOOP | WHDR_ENDLOOP;
-	context.wavehdr.dwLoops = loop ? 0xffffffff : 1;
-	mmresultVerify(waveOutWrite(context.hWaveOut, &context.wavehdr, sizeof(WAVEHDR)));
+	context->wavehdr.dwFlags |= WHDR_BEGINLOOP | WHDR_ENDLOOP;
+	context->wavehdr.dwLoops = loop ? 0xffffffff : 1;
+	mmresultVerify(waveOutWrite(context->hWaveOut, &context->wavehdr, sizeof(WAVEHDR)));
 }
 
 void Voice::Stop()
@@ -116,21 +104,21 @@ void Voice::Stop()
 	if (!IsReady()) {
 		return;
 	}
-	waveOutReset(context.hWaveOut);
+	waveOutReset(context->hWaveOut);
 }
 
-void Voice::Release()
+void Voice::Destroy()
 {
 	if (!IsReady()) {
 		return;
 	}
 	Stop();
-	waveOutUnprepareHeader(context.hWaveOut, &context.wavehdr, sizeof(WAVEHDR));
-	if (context.hWaveOut) {
-		waveOutClose(context.hWaveOut);
+	waveOutUnprepareHeader(context->hWaveOut, &context->wavehdr, sizeof(WAVEHDR));
+	if (context->hWaveOut) {
+		waveOutClose(context->hWaveOut);
 	}
-	if (context.fileImg) {
-		free(context.fileImg);
+	if (context->fileImg) {
+		free(context->fileImg);
 	}
-	memset(&context, 0, sizeof(context));
+	SAFE_DELETE(context);
 }

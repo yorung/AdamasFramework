@@ -88,3 +88,29 @@ void PlayBgm(const char* fileName)
 	mciSendStringA(SPrintf("open \"%s\" type mpegvideo", fileName), NULL, 0, 0);
 	mciSendStringA(SPrintf("play \"%s\" repeat", fileName), NULL, 0, 0);
 }
+
+static UINT StrToType(const char* type)
+{
+	if (!strcmp(type, "okcancel")) {
+		return MB_OKCANCEL;
+	} else if (!strcmp(type, "yesno")) {
+		return MB_YESNO;
+	}
+	return MB_OK;
+}
+
+static const char* IdToStr(int id)
+{
+	switch (id) {
+	case IDOK: return "ok";
+	case IDCANCEL: return "cancel";
+	case IDYES: return "yes";
+	case IDNO: return "no";
+	}
+	return "unknown";
+}
+
+const char* StrMessageBox(const char* txt, const char* type)
+{
+	return IdToStr(MessageBoxA(GetActiveWindow(), txt, "MessageBox", StrToType(type)));
+}

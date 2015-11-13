@@ -2,7 +2,6 @@
 #define NOMINMAX
 #include <Windows.h>
 #include "wgl_grabber_gen.h"
-#include "voice.h"
 #else
 #include <jni.h>
 #include <android/log.h>
@@ -63,8 +62,7 @@ static const int BONE_MAX = 50;
 #include "stock_objects.h"
 #include "letterbox.h"
 #include "input_man.h"
+#include "voice.h"
 #include "lua_man.h"
 #include "lua_bind.h"
 #include "app.h"
-
-void ClearMenu();

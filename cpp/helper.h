@@ -7,6 +7,10 @@ float Random();
 void GoMyDir();
 void Toast(const char *text);
 void PlayBgm(const char *fileName);
+const char* StrMessageBox(const char* txt, const char* type);
+void ClearMenu();
+void AddMenu(const char *name, const char *cmd);
+void PostCommand(const char* cmdString);
 
 template <class T> inline void SAFE_DELETE(T& p)
 {

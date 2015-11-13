@@ -45,3 +45,21 @@ void PlayBgm(const char *fileName)
 	}
 	jniEnv->CallStaticVoidMethod(helper, method, jniEnv->NewStringUTF(fileName));
 }
+
+const char* StrMessageBox(const char* txt, const char* type)
+{
+
+}
+
+void ClearMenu()
+{
+
+}
+void AddMenu(const char *name, const char *cmd)
+{
+
+}
+void PostCommand(const char* cmdString)
+{
+
+}
