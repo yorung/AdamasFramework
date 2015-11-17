@@ -297,6 +297,10 @@ void WaterSurfaceClassic::UpdateRipple()
 
 void WaterSurfaceClassic::Update()
 {
+	if (!shaderId) {
+		return;
+	}
+
 	ivec2 scrSize = systemMetrics.GetScreenSize();
 	float offset = 0.5f;
 	float aspect = (float)scrSize.y / scrSize.x;
