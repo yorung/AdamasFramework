@@ -52,8 +52,8 @@ void SkyMan::Draw()
 	snprintf(buf, sizeof(buf), "(0,0) = %f,%f,%f", dir.x, dir.y, dir.z);
 	fontMan.DrawString(Vec2(100, 100), 20, buf);
 
-	afWriteBuffer(uboId, &invVP, sizeof(invVP));
-	afBindBufferToBindingPoint(uboId, 0);
+	afHandleGLError(afWriteBuffer(uboId, &invVP, sizeof(invVP)));
+	afHandleGLError(afBindBufferToBindingPoint(uboId, 0));
 	if (mappingType == CUBEMAP) {
 		afBindCubeMapToBindingPoint(texId, 0);
 	} else {
@@ -61,7 +61,7 @@ void SkyMan::Draw()
 	}
 
 	stockObjects.ApplyFullScreenVAO();
-	afDrawTriangleStrip(4);
+	afHandleGLError(afDrawTriangleStrip(4));
 	afBindVAO(0);
 }
 

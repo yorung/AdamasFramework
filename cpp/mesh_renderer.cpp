@@ -204,8 +204,8 @@ void MeshRenderer::Flush()
 		return;
 	}
 
-	afWriteBuffer(ssboForBoneMatrices, &renderBoneMatrices[0], sizeof(Mat) * renderBoneMatrices.size());
-	afWriteBuffer(uboForPerInstanceData, &renderCommands[0], sizeof(renderCommands[0]) * renderCommands.size());
+	afHandleGLError(afWriteBuffer(ssboForBoneMatrices, &renderBoneMatrices[0], sizeof(Mat) * renderBoneMatrices.size()));
+	afHandleGLError(afWriteBuffer(uboForPerInstanceData, &renderCommands[0], sizeof(renderCommands[0]) * renderCommands.size()));
 
 	shaderMan.Apply(shaderId);
 
