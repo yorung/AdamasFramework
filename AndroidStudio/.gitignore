@@ -11,6 +11,7 @@ $logs
 /.idea/modules.xml
 /.idea/vcs.xml
 /.idea/.name
+/.idea/runConfigurations.xml
 .DS_Store
 /build
 *.iml
