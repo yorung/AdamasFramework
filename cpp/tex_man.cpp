@@ -16,6 +16,8 @@ static GLuint LoadTextureViaOS(const char* name, ivec2& size)
 	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &size.x);
 	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &size.y);
 	glBindTexture(GL_TEXTURE_2D, 0);
+
+	return id;
 }
 #endif
 
