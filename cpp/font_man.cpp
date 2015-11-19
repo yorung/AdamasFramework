@@ -78,7 +78,7 @@ void FontMan::MakeFontBitmap(const char* fontName, const CharSignature& sig, DIB
 
 	jfloatArray floatArray = jniEnv->NewFloatArray(5);
 	jobject arrayAsJObject = jniEnv->CallStaticObjectMethod(myview, method, jniEnv->NewStringUTF(fontName), jniEnv->NewString(codeInUnicode, 1), (jint)sig.fontSize, floatArray);
-	aflog("Java method called and returned");
+//	aflog("Java method called and returned");
 
 	{
 		jfloat* pFloatArray = jniEnv->GetFloatArrayElements(floatArray, NULL);
@@ -88,19 +88,19 @@ void FontMan::MakeFontBitmap(const char* fontName, const CharSignature& sig, DIB
 		jniEnv->ReleaseFloatArrayElements(floatArray, pFloatArray, 0);
 	}
 	if (!arrayAsJObject) {
-		aflog("Java method returned null; it's white space");
+//		aflog("Java method returned null; it's white space");
 		return;
 	}
 
 	jbyteArray array = (jbyteArray)arrayAsJObject;
 	jbyte* byteArray = jniEnv->GetByteArrayElements(array, NULL);
 	jsize arrayLen = jniEnv->GetArrayLength(array);
-	aflog("arrayLen=%d", arrayLen);
+//	aflog("arrayLen=%d", arrayLen);
 
 	int expectedLen = cache.srcWidth.x * cache.srcWidth.y * 4;
 	bool result = false;
 	if (arrayLen != expectedLen) {
-		aflog("wrong size! returned=%d expected=%d", arrayLen, expectedLen);
+//		aflog("wrong size! returned=%d expected=%d", arrayLen, expectedLen);
 		afVerify(false);
 	} else {
 		dib.Create(cache.srcWidth.x, cache.srcWidth.y, 32);
