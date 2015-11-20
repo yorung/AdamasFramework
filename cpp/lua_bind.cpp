@@ -260,7 +260,7 @@ static void BindImage(lua_State* L)
 		} },
 		{ nullptr, nullptr },
 	};
-	aflBindClass(L, imageClassName, methods, [](lua_State* L) {new (lua_newuserdata(L, sizeof(Image))) Image(lua_tostring(L, -2)); return 1; });
+	aflBindClass(L, imageClassName, methods, [](lua_State* L) { void* u = lua_newuserdata(L, sizeof(Image)); new (u) Image(lua_tostring(L, -2)); return 1; });
 }
 
 static void BindMesh(lua_State* L)
@@ -293,7 +293,7 @@ static void BindMesh(lua_State* L)
 		{ nullptr, nullptr },
 	};
 #undef GET_MESH
-	aflBindClass(L, meshClassName, methods, [](lua_State* L) { new (lua_newuserdata(L, sizeof(LMesh))) LMesh(lua_tostring(L, -2)); return 1; });
+	aflBindClass(L, meshClassName, methods, [](lua_State* L) { void* u = lua_newuserdata(L, sizeof(LMesh));	new (u) LMesh(lua_tostring(L, -2)); return 1; });
 }
 
 
@@ -350,7 +350,7 @@ static void BindVoice(lua_State* L)
 		{ "Stop", [](lua_State* L) { GET_VOICE p->Stop(); return 0; } },
 		{ nullptr, nullptr },
 	};
-	aflBindClass(L, voiceClassName, methods, [](lua_State* L) { new (lua_newuserdata(L, sizeof(Voice))) Voice(lua_tostring(L, -2)); return 1; });
+	aflBindClass(L, voiceClassName, methods, [](lua_State* L) { void* u = lua_newuserdata(L, sizeof(Voice)); new (u) Voice(lua_tostring(L, -2)); return 1; });
 }
 
 static int LVec3New(lua_State* L)
