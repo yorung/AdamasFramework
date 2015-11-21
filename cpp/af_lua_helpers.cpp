@@ -95,5 +95,11 @@ bool aflDoFile(lua_State* L, const char* fileName)
 	}
 	bool ok = !luaL_dostring(L, (char*)img);
 	free(img);
-	return ok;
+	if (!ok) {
+		printf("%s\n", lua_tostring(L, -1));
+		lua_pop(L, 1);
+		luaL_error(L, "aflDoFile: error occurred in %s", fileName);
+		return false;
+	}
+	return true;
 }
