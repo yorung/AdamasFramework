@@ -13,3 +13,7 @@ AddMenu("Jiji", "dofile('lua/jiji.lua')")
 AddMenu("Instancing", "dofile('lua/instancing.lua')")
 
 LoadSkyBox("hakodate.jpg", "photosphere")
+
+dofile('lua/instancing.lua')
+--dofile('lua/puzzle.lua')
+--dofile('lua/jiji.lua')

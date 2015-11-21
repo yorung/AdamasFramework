@@ -81,13 +81,13 @@ void App::Init()
 
 	LoadMesh("jiji.x");
 //	skyMan.Create("C:\\Program Files (x86)\\Microsoft DirectX SDK (August 2009)\\Samples\\C++\\Direct3D\\StateManager\\Media\\skybox02.dds", SkyMan::CUBEMAP);
+//	skyMan.Create("D:\\mydns\\janken\\Program\\root\\Media\\LobbyCube.dds", SkyMan::CUBEMAP);
+
 //	skyMan.Create("D:\\mydns\\janken\\Program\\root\\Media\\skybox.dds", SkyMan::CUBEMAP);
-	skyMan.Create("D:\\mydns\\janken\\Program\\root\\Media\\LobbyCube.dds", SkyMan::CUBEMAP);
+//	SetCurrentDirectoryA("D:\\mydns\\janken\\Program\\root");
 
 
-
-	//	PlayBgm("sound/background.mp3");
-	SetCurrentDirectoryA("D:\\mydns\\janken\\Program\\root");
+//	PlayBgm("sound/background.mp3");
 	luaMan.Create();
 
 }

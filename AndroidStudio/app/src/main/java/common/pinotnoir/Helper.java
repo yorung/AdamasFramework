@@ -40,7 +40,22 @@ public class Helper {
             }
         } );
     }
-
+/*
+    public static void strMessageBox(String txt, String type) {
+        Activity a = activity.get();
+        if (a == null) {
+            return;
+        }
+        AlertDialog.Builder d = new AlertDialog.Builder(a).create();
+        d.setTitle("AlertDialog");
+        d.setMessage(txt);
+        a.runOnUiThread( new Runnable() {
+            public void run() {
+                Toast.makeText(context, text, Toast.LENGTH_LONG).show();
+            }
+        } );
+    }
+*/
     public static byte[] loadIntoBytes(String fileName) {
         AssetManager assetManager = context.getAssets();
         try {
