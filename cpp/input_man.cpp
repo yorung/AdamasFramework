@@ -20,6 +20,11 @@ void InputMan::Reset()
 	}
 }
 
+void InputMan::HandleTouch(bool touched)
+{
+	HandleEdge(0x01, touched);	// VK_LBUTTON
+}
+
 #ifdef _MSC_VER
 BOOL InputMan::HandleWindowMessage(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {

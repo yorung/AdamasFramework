@@ -30,6 +30,8 @@ JNIEXPORT void JNICALL FUNC(update)(JNIEnv* env, jobject obj, jfloat inputX, jfl
 {
 	jniEnv = env;
 
+	inputMan.HandleTouch(!!pressed);
+
     ivec2 scrSize = systemMetrics.GetScreenSize();
     float x = inputX / scrSize.x;
     float y = inputY / scrSize.y;

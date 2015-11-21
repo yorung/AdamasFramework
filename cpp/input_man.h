@@ -6,6 +6,7 @@ public:
 	void Update();
 	void Reset();
 	int GetInputCount(int virtualKey);
+	void HandleTouch(bool touched);
 #ifdef _MSC_VER
 	BOOL HandleWindowMessage(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 #endif
