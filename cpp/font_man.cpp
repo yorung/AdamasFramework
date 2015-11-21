@@ -280,7 +280,7 @@ void FontMan::FlushToTexture()
 	if (!dirty) {
 		return;
 	}
-	aflog("FontMan::FlushToTexture flushed");
+//	aflog("FontMan::FlushToTexture flushed\n");
 	dirty = false;
 	texMan.Write(texture, texSrc.ReferPixels());
 }

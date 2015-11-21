@@ -28,7 +28,7 @@ void LuaMan::Create()
 	for (auto it : GetLuaBindFuncContainer()) {
 		it(L);
 	}
-#ifdef _DEBUG
+#ifndef NDEBUG
 	const char* start = "lua/startD.lua";
 #else
 	const char* start = "lua/start.lua";

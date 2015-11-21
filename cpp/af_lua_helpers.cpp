@@ -3,29 +3,29 @@
 void _aflDumpStack(lua_State* L, const char* func, int line)
 {
 	int top = lua_gettop(L);
-	printf("(%s,%d) top=%d\n", func, line, top);
+	aflog("(%s,%d) top=%d\n", func, line, top);
 	for (int i = 0; i < top; i++) {
 		int positive = top - i;
 		int negative = -(i + 1);
 		int type = lua_type(L, positive);
 		int typeN = lua_type(L, negative);
 		assert(type == typeN);
-		const char* typeName = lua_typename(L, type);
-		printf("%d/%d: type=%s", positive, negative, typeName);
+		char buf[48] = "";
 		switch (type) {
 		case LUA_TNUMBER:
-			printf(" value=%f", lua_tonumber(L, positive));
+			snprintf(buf, sizeof(buf), "%f", lua_tonumber(L, positive));
 			break;
 		case LUA_TSTRING:
-			printf(" value=%s", lua_tostring(L, positive));
+			snprintf(buf, sizeof(buf), "%s", lua_tostring(L, positive));
 			break;
 		case LUA_TFUNCTION:
 			if (lua_iscfunction(L, positive)) {
-				printf(" C:%p", lua_tocfunction(L, positive));
+				snprintf(buf, sizeof(buf), "C:%p", lua_tocfunction(L, positive));
 			}
 			break;
 		}
-		printf("\n");
+		const char* typeName = lua_typename(L, type);
+		aflog("%d/%d: type=%s value=%s\n", positive, negative, typeName, buf);
 	}
 }
 
