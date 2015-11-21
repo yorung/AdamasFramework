@@ -9,6 +9,10 @@ void *LoadFile(const char *fileName, int* size)
 	}
 
 	jobject arrayAsJObject = jniEnv->CallStaticObjectMethod(myview, method, jniEnv->NewStringUTF(fileName));
+	if (!arrayAsJObject) {
+		aflog("LoadFile: Loading %s failed!", fileName);
+		return nullptr;
+	}
 	jbyteArray array = (jbyteArray)arrayAsJObject;
 
 	jbyte* byteArray = jniEnv->GetByteArrayElements(array, NULL);
