@@ -10,3 +10,4 @@ void _aflDumpStack(lua_State* L, const char* func, int line);
 void aflBindClass(lua_State* L, const char* className, luaL_Reg methods[], lua_CFunction creator);
 void aflBindNamespace(lua_State* L, const char* nameSpace, luaL_Reg methods[]);
 bool aflDoFile(lua_State* L, const char* fileName);
+int aflDoFileForReplace(lua_State* L);

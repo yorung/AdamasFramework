@@ -88,18 +88,45 @@ void aflBindNamespace(lua_State* L, const char* nameSpace, luaL_Reg funcs[])
 
 bool aflDoFile(lua_State* L, const char* fileName)
 {
-	void* img = LoadFile(fileName);
+	char* img = (char*)LoadFile(fileName);
+	if (!img) {
+		aflog("aflDoFile: could not load file %s\n", fileName);
+		return false;
+	}
+	bool ok = true;
+	if (luaL_loadbuffer(L, img, strlen(img), fileName)) {
+		aflog("luaL_loadbuffer failed!\n%s\n", lua_tostring(L, -1));
+		lua_pop(L, 1);
+		ok = false;
+	}
+	free(img);
+	if (ok && lua_pcall(L, 0, LUA_MULTRET, 0)) {
+		aflog("lua_pcall failed!\n%s\n", lua_tostring(L, -1));
+		lua_pop(L, 1);
+		ok = false;
+	}
+	return ok;
+}
+
+int aflDoFileForReplace(lua_State* L)
+{
+	const char* fileName = lua_tostring(L, -1);
+	char* img = (char*)LoadFile(fileName);
 	if (!img) {
 		luaL_error(L, "aflDoFile: could not load file %s", fileName);
 		return false;
 	}
-	bool ok = !luaL_dostring(L, (char*)img);
-	free(img);
-	if (!ok) {
-		printf("%s\n", lua_tostring(L, -1));
+	bool ok = true;
+	if (luaL_loadbuffer(L, img, strlen(img), fileName)) {
+		luaL_error(L, "luaL_loadbuffer failed!\n%s", lua_tostring(L, -1));
 		lua_pop(L, 1);
-		luaL_error(L, "aflDoFile: error occurred in %s", fileName);
-		return false;
+		ok = false;
 	}
-	return true;
+	free(img);
+	if (ok && lua_pcall(L, 0, LUA_MULTRET, 0)) {
+		luaL_error(L, "lua_pcall failed!\n%s", lua_tostring(L, -1));
+		lua_pop(L, 1);
+		ok = false;
+	}
+	return lua_gettop(L) - 1;
 }

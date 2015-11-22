@@ -479,7 +479,7 @@ static void ShareVariables(lua_State* L)
 static void ReplaceDoFile(lua_State* L)
 {
 	static luaL_Reg globalFuncs[] = {
-		{ "dofile", [](lua_State* L) { aflDoFile(L, lua_tostring(L, -1)); return lua_gettop(L) - 1; } },
+		{ "dofile", aflDoFileForReplace},
 		{ nullptr, nullptr },
 	};
 
