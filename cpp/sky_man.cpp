@@ -46,11 +46,11 @@ void SkyMan::Draw()
 	matV._41 = matV._42 = matV._43 = 0;
 	Mat invVP = inv(matV * matP);
 
-	char buf[100];
-	Vec3 pos(0, 0, 0);
-	Vec3 dir = transform(pos, invVP);
-	snprintf(buf, sizeof(buf), "(0,0) = %f,%f,%f", dir.x, dir.y, dir.z);
-	fontMan.DrawString(Vec2(100, 100), 20, buf);
+//	char buf[100];
+//	Vec3 pos(0, 0, 0);
+//	Vec3 dir = transform(pos, invVP);
+//	snprintf(buf, sizeof(buf), "(0,0) = %f,%f,%f", dir.x, dir.y, dir.z);
+//	fontMan.DrawString(Vec2(100, 100), 20, buf);
 
 	afHandleGLError(afWriteBuffer(uboId, &invVP, sizeof(invVP)));
 	afHandleGLError(afBindBufferToBindingPoint(uboId, 0));
