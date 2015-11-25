@@ -1,6 +1,5 @@
 class App {
 	MeshMan::MMID meshId;
-	float radius;
 public:
 	App();
 	void Init();

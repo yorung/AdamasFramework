@@ -42,10 +42,8 @@ void App::Draw()
 	ivec2 scrSize = systemMetrics.GetScreenSize();
 	glViewport(0, 0, scrSize.x, scrSize.y);
 
-	float dist = devCamera.GetDistance();
-
-	float f = dist * 1000;
-	float n = dist / 10;
+	float f = 1000;
+	float n = 1;
 	float aspect = (float)scrSize.x / scrSize.y;
 	Mat proj = perspective(45, aspect, n, f);
 	matrixMan.Set(MatrixMan::PROJ, proj);
@@ -97,7 +95,7 @@ void App::LoadMesh(const char* fileName)
 	meshId = meshMan.Create(fileName);
 	MeshX* mesh = (MeshX*)meshMan.Get(meshId);
 	if (mesh) {
-		radius = CalcRadius(mesh);
+		float radius = CalcRadius(mesh);
 		float scale = std::max(0.00001f, radius);
 		devCamera.SetDistance(scale * 3);
 	}
