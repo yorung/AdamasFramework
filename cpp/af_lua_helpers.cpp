@@ -113,7 +113,7 @@ int aflDoFileForReplace(lua_State* L)
 	const char* fileName = lua_tostring(L, -1);
 	char* img = (char*)LoadFile(fileName);
 	if (!img) {
-		luaL_error(L, "aflDoFile: could not load file %s", fileName);
+		luaL_error(L, "aflDoFileForReplace: could not load file %s", fileName);
 		return false;
 	}
 	bool ok = true;

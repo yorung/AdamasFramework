@@ -478,14 +478,7 @@ static void ShareVariables(lua_State* L)
 
 static void ReplaceDoFile(lua_State* L)
 {
-	static luaL_Reg globalFuncs[] = {
-		{ "dofile", aflDoFileForReplace},
-		{ nullptr, nullptr },
-	};
-
-	lua_pushglobaltable(L);
-	luaL_setfuncs(L, globalFuncs, 0);
-	lua_pop(L, 1);
+	lua_register(L, "dofile", aflDoFileForReplace);
 }
 
 void LuaBind(lua_State* L)
