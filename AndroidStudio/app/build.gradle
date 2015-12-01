@@ -20,6 +20,7 @@ android {
             cFlags "-std=c++11"
             ldLibs "log"
             ldLibs "GLESv3"
+            ldLibs "OpenSLES"
             abiFilters "armeabi", "mips", "x86"
             stl "gnustl_static"
         }
