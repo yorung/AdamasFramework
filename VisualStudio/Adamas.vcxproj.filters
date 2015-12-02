@@ -112,6 +112,9 @@
     <ClCompile Include="voice_win.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
+    <ClCompile Include="..\cpp\voice.cpp">
+      <Filter>PlatformIndipendent</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="wgl_grabber_gen.h">

@@ -7,51 +7,16 @@ struct WaveContext
 	void *fileImg;
 };
 
-struct RiffHeader
-{
-	char type1[4];
-	int size;
-	char type2[4];
-};
-
-struct RiffChunk
-{
-	char type[4];
-	int size;
-};
-
-static const void *FindChunk(const void *img, const char *requestChunkName, int *size = nullptr)
-{
-	const RiffHeader *riff = (RiffHeader*)img;
-	if (*(DWORD*)riff->type1 != *(DWORD*)"RIFF" || *(DWORD*)riff->type2 != *(DWORD*)"WAVE") {
-		return nullptr;
-	}
-
-	const void *end = (BYTE*)img + riff->size + 8;
-	img = (BYTE*)img + sizeof(RiffHeader);
-	while (img < end) {
-		const RiffChunk *chunk = (RiffChunk*)img; img = (BYTE*)img + sizeof(RiffChunk);
-		if (*(DWORD*)chunk->type == *(DWORD*)requestChunkName) {
-			if (size) {
-				*size = chunk->size;
-			}
-			return img;
-		}
-		img = (BYTE*)img + chunk->size;
-	}
-	return nullptr;
-}
-
 static const WAVEFORMATEX *FindWaveformatex(const void *fileImg)
 {
-	return (WAVEFORMATEX*)FindChunk(fileImg, "fmt ");
+	return (WAVEFORMATEX*)RiffFindChunk(fileImg, "fmt ");
 }
 
 static bool FindAndFillWavehdr(WAVEHDR *wh, const void *fileImg)
 {
 	memset(wh, 0, sizeof(*wh));
 	int size;
-	wh->lpData = (char*)FindChunk(fileImg, "data", &size);
+	wh->lpData = (char*)RiffFindChunk(fileImg, "data", &size);
 	if (!wh->lpData) {
 		return false;
 	}

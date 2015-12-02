@@ -45,6 +45,7 @@
     <ClCompile Include="..\cpp\stock_objects.cpp" />
     <ClCompile Include="..\cpp\system_metrics.cpp" />
     <ClCompile Include="..\cpp\tex_man.cpp" />
+    <ClCompile Include="..\cpp\voice.cpp" />
     <ClCompile Include="..\cpp\water_surface.cpp" />
     <ClCompile Include="..\cpp\water_surface_classic.cpp" />
     <ClCompile Include="helper_win.cpp">
