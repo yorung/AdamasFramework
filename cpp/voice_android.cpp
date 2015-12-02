@@ -47,18 +47,45 @@ public:
 
 static SL sl;
 
+struct WaveContext
+{
+	SLObjectItf playerObject;
+	SLPlayItf playerPlay;
+	SLAndroidSimpleBufferQueueItf playerBufferQueue;
+	SLEffectSendItf playerEffectSend;
+	SLMuteSoloItf playerMuteSolo;
+	SLVolumeItf playerVolume;
+};
+
 void Voice::Create(const char*)
 {
+	context = new WaveContext;
+	memset(context, 0, sizeof(*context));
+
+	SLDataLocator_AndroidSimpleBufferQueue loc_bufq = {SL_DATALOCATOR_ANDROIDSIMPLEBUFFERQUEUE, 2};
+	SLDataFormat_PCM format_pcm = {SL_DATAFORMAT_PCM, 1, SL_SAMPLINGRATE_8, SL_PCMSAMPLEFORMAT_FIXED_16, SL_PCMSAMPLEFORMAT_FIXED_16, SL_SPEAKER_FRONT_CENTER, SL_BYTEORDER_LITTLEENDIAN};
+	SLDataSource audioSrc = {&loc_bufq, &format_pcm};
 }
 
 void Voice::Play(bool)
 {
+	if (!IsReady()) {
+		return;
+	}
 }
 
 void Voice::Stop()
 {
+	if (!IsReady()) {
+		return;
+	}
 }
 
 void Voice::Destroy()
 {
+	if (!IsReady()) {
+		return;
+	}
+	SAFE_DESTROY(context->playerObject);
+	SAFE_DELETE(context);
 }
