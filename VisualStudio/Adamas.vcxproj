@@ -24,6 +24,10 @@
     <ClCompile Include="..\cpp\helper_dx.cpp" />
     <ClCompile Include="..\cpp\helper_gl.cpp" />
     <ClCompile Include="..\cpp\hub.cpp" />
+    <ClCompile Include="..\cpp\hub_android.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\cpp\input_man.cpp" />
     <ClCompile Include="..\cpp\joint_db.cpp" />
     <ClCompile Include="..\cpp\letterbox.cpp" />
@@ -46,6 +50,10 @@
     <ClCompile Include="..\cpp\system_metrics.cpp" />
     <ClCompile Include="..\cpp\tex_man.cpp" />
     <ClCompile Include="..\cpp\voice.cpp" />
+    <ClCompile Include="..\cpp\voice_android.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\cpp\water_surface.cpp" />
     <ClCompile Include="..\cpp\water_surface_classic.cpp" />
     <ClCompile Include="helper_win.cpp">

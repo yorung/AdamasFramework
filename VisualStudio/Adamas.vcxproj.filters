@@ -115,6 +115,12 @@
     <ClCompile Include="..\cpp\voice.cpp">
       <Filter>PlatformIndipendent</Filter>
     </ClCompile>
+    <ClCompile Include="..\cpp\hub_android.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cpp\voice_android.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="wgl_grabber_gen.h">
@@ -235,6 +241,9 @@
     </Filter>
     <Filter Include="shaders">
       <UniqueIdentifier>{e8de3368-1a62-4c1b-a6da-7f288e0bc3a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Android">
+      <UniqueIdentifier>{16972e84-0729-469a-b622-d14adc924279}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

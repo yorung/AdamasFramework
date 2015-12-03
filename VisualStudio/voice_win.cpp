@@ -7,11 +7,6 @@ struct WaveContext
 	void *fileImg;
 };
 
-static const WAVEFORMATEX *FindWaveformatex(const void *fileImg)
-{
-	return (WAVEFORMATEX*)RiffFindChunk(fileImg, "fmt ");
-}
-
 static bool FindAndFillWavehdr(WAVEHDR *wh, const void *fileImg)
 {
 	memset(wh, 0, sizeof(*wh));
@@ -46,11 +41,11 @@ void Voice::Create(const char *fileName)
 	bool result = false;
 	result = !!(context->fileImg = LoadFile(fileName));
 	assert(result);
-	result = !!FindWaveformatex(context->fileImg);
-	assert(result);
+	const WAVEFORMATEX* wfx = (WAVEFORMATEX*)RiffFindChunk(context->fileImg, "fmt ");
+	assert(wfx);
 	result = FindAndFillWavehdr(&context->wavehdr, context->fileImg);
 	assert(result);
-	mmresultVerify(waveOutOpen(&context->hWaveOut, WAVE_MAPPER, FindWaveformatex(context->fileImg), 0, 0, CALLBACK_NULL));
+	mmresultVerify(waveOutOpen(&context->hWaveOut, WAVE_MAPPER, wfx, 0, 0, CALLBACK_NULL));
 	mmresultVerify(waveOutPrepareHeader(context->hWaveOut, &context->wavehdr, sizeof(WAVEHDR)));
 }
 

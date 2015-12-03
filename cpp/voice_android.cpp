@@ -1,7 +1,12 @@
 #include "stdafx.h"
-
 #include <SLES/OpenSLES.h>
 #include <SLES/OpenSLES_Android.h>
+
+struct WaveFormatEx {
+	uint16_t tag, channels;
+	uint32_t samplesPerSecond, averageBytesPerSecond;
+	uint16_t blockAlign, bitsPerSample;
+};
 
 template <class T> void SAFE_DESTROY(T& p)
 {
@@ -11,11 +16,28 @@ template <class T> void SAFE_DESTROY(T& p)
 	}
 }
 
-static void Log(SLresult r, const char* msg)
+void _afHandleSLError(const char* func, int line, const char* command, SLresult r)
 {
-	aflog("%s %s", msg, (r == SL_RESULT_SUCCESS ? "success" : "failed"));
-	assert(r == SL_RESULT_SUCCESS);
+	if (r != SL_RESULT_SUCCESS) {
+		const char *err = nullptr;
+		switch (r) {
+#define E(er) case er: err = #er; break
+		E(SL_RESULT_PRECONDITIONS_VIOLATED);
+		E(SL_RESULT_PARAMETER_INVALID);
+		E(SL_RESULT_MEMORY_FAILURE);
+		E(SL_RESULT_RESOURCE_ERROR);
+		E(SL_RESULT_RESOURCE_LOST);
+		E(SL_RESULT_BUFFER_INSUFFICIENT);
+#undef E
+		default:
+			aflog("%s(%d): err=%d %s\n", func, line, r, command);
+			return;
+		}
+		aflog("%s(%d): %s %s\n", func, line, err, command);
+	}
 }
+
+#define afHandleSLError(command) do{ SLresult r = command; _afHandleSLError(__FUNCTION__, __LINE__, #command, r); } while(0)
 
 class SL {
 	SLObjectItf engineObject = nullptr;
@@ -23,26 +45,22 @@ class SL {
 	SLObjectItf outputMixObject = nullptr;
 public:
 	SL() {
-		SLresult r = slCreateEngine(&engineObject, 0, nullptr, 0, nullptr, nullptr);
-		Log(r, "slCreateEngine");
-		r = (*engineObject)->Realize(engineObject, SL_BOOLEAN_FALSE);
-		Log(r, "engineObject->Realize");
-		r = (*engineObject)->GetInterface(engineObject, SL_IID_ENGINE, &engineEngine);
-		Log(r, "engineObject->GetInterface");
+		afHandleSLError(slCreateEngine(&engineObject, 0, nullptr, 0, nullptr, nullptr));
+		afHandleSLError((*engineObject)->Realize(engineObject, SL_BOOLEAN_FALSE));
+		afHandleSLError((*engineObject)->GetInterface(engineObject, SL_IID_ENGINE, &engineEngine));
 		SLInterfaceID ids = SL_IID_ENVIRONMENTALREVERB;
 		SLboolean req = SL_BOOLEAN_FALSE;
-		r = (*engineEngine)->CreateOutputMix(engineEngine, &outputMixObject, 1, &ids, &req);
-		Log(r, "CreateOutputMix");
-		r = (*outputMixObject)->Realize(outputMixObject, SL_BOOLEAN_FALSE);
-		Log(r, "outputMixObject->Realize");
+		afHandleSLError((*engineEngine)->CreateOutputMix(engineEngine, &outputMixObject, 1, &ids, &req));
+		afHandleSLError((*outputMixObject)->Realize(outputMixObject, SL_BOOLEAN_FALSE));
 	}
 	~SL() {
 		SAFE_DESTROY(outputMixObject);
-		aflog("outputMixObject destroyed");
 		SAFE_DESTROY(engineObject);
 		engineEngine = nullptr;
 		aflog("engineObject destroyed");
 	}
+	SLEngineItf GetEngine(){ return engineEngine; }
+	SLObjectItf GetOutputMixObject() { return outputMixObject; }
 };
 
 static SL sl;
@@ -52,19 +70,31 @@ struct WaveContext
 	SLObjectItf playerObject;
 	SLPlayItf playerPlay;
 	SLAndroidSimpleBufferQueueItf playerBufferQueue;
-	SLEffectSendItf playerEffectSend;
-	SLMuteSoloItf playerMuteSolo;
-	SLVolumeItf playerVolume;
+	void *fileImg;
 };
 
-void Voice::Create(const char*)
+void Voice::Create(const char* fileName)
 {
 	context = new WaveContext;
 	memset(context, 0, sizeof(*context));
-
-	SLDataLocator_AndroidSimpleBufferQueue loc_bufq = {SL_DATALOCATOR_ANDROIDSIMPLEBUFFERQUEUE, 2};
-	SLDataFormat_PCM format_pcm = {SL_DATAFORMAT_PCM, 1, SL_SAMPLINGRATE_8, SL_PCMSAMPLEFORMAT_FIXED_16, SL_PCMSAMPLEFORMAT_FIXED_16, SL_SPEAKER_FRONT_CENTER, SL_BYTEORDER_LITTLEENDIAN};
-	SLDataSource audioSrc = {&loc_bufq, &format_pcm};
+	bool result = false;
+	result = !!(context->fileImg = LoadFile(fileName));
+	assert(result);
+	const WaveFormatEx* wfx = (WaveFormatEx*)RiffFindChunk(context->fileImg, "fmt ");
+	assert(wfx);
+	SLDataLocator_AndroidSimpleBufferQueue q = {SL_DATALOCATOR_ANDROIDSIMPLEBUFFERQUEUE, 2};
+	SLDataFormat_PCM f = {SL_DATAFORMAT_PCM, wfx->channels, wfx->samplesPerSecond * 1000, wfx->bitsPerSample, wfx->bitsPerSample, SL_SPEAKER_FRONT_CENTER, SL_BYTEORDER_LITTLEENDIAN};
+	SLDataSource src = {&q, &f};
+	SLDataLocator_OutputMix m = {SL_DATALOCATOR_OUTPUTMIX, sl.GetOutputMixObject()};
+	SLDataSink sink = {&m, nullptr};
+	SLInterfaceID ids = SL_IID_ANDROIDSIMPLEBUFFERQUEUE;
+	SLboolean req = SL_BOOLEAN_TRUE;
+	afHandleSLError((*sl.GetEngine())->CreateAudioPlayer(sl.GetEngine(), &context->playerObject, &src, &sink, 1, &ids, &req));
+	afHandleSLError((*context->playerObject)->Realize(context->playerObject, SL_BOOLEAN_FALSE));
+	afHandleSLError((*context->playerObject)->GetInterface(context->playerObject, SL_IID_ANDROIDSIMPLEBUFFERQUEUE, &context->playerBufferQueue));
+	afHandleSLError((*context->playerBufferQueue)->RegisterCallback(context->playerBufferQueue, [](SLAndroidSimpleBufferQueueItf q, void*){}, nullptr));
+	afHandleSLError((*context->playerObject)->GetInterface(context->playerObject, SL_IID_PLAY, &context->playerPlay));
+	afHandleSLError((*context->playerPlay)->SetPlayState(context->playerPlay, SL_PLAYSTATE_PLAYING));
 }
 
 void Voice::Play(bool)
@@ -72,6 +102,9 @@ void Voice::Play(bool)
 	if (!IsReady()) {
 		return;
 	}
+	int size;
+	const void* buf = RiffFindChunk(context->fileImg, "data", &size);
+	afHandleSLError((*context->playerBufferQueue)->Enqueue(context->playerBufferQueue, buf, size));
 }
 
 void Voice::Stop()
@@ -87,5 +120,8 @@ void Voice::Destroy()
 		return;
 	}
 	SAFE_DESTROY(context->playerObject);
+	if (context->fileImg) {
+		free(context->fileImg);
+	}
 	SAFE_DELETE(context);
 }
