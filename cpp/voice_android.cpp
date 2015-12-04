@@ -83,7 +83,7 @@ void Voice::Create(const char* fileName)
 	const WaveFormatEx* wfx = (WaveFormatEx*)RiffFindChunk(context->fileImg, "fmt ");
 	assert(wfx);
 	SLDataLocator_AndroidSimpleBufferQueue q = {SL_DATALOCATOR_ANDROIDSIMPLEBUFFERQUEUE, 2};
-	SLDataFormat_PCM f = {SL_DATAFORMAT_PCM, wfx->channels, wfx->samplesPerSecond * 1000, wfx->bitsPerSample, wfx->bitsPerSample, SL_SPEAKER_FRONT_CENTER, SL_BYTEORDER_LITTLEENDIAN};
+	SLDataFormat_PCM f = {SL_DATAFORMAT_PCM, wfx->channels, wfx->samplesPerSecond * 1000, wfx->bitsPerSample, wfx->bitsPerSample, wfx->channels == 2 ? SL_SPEAKER_FRONT_LEFT | SL_SPEAKER_FRONT_RIGHT : SL_SPEAKER_FRONT_CENTER, SL_BYTEORDER_LITTLEENDIAN};
 	SLDataSource src = {&q, &f};
 	SLDataLocator_OutputMix m = {SL_DATALOCATOR_OUTPUTMIX, sl.GetOutputMixObject()};
 	SLDataSink sink = {&m, nullptr};
