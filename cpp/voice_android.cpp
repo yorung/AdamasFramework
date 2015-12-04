@@ -92,19 +92,25 @@ void Voice::Create(const char* fileName)
 	afHandleSLError((*sl.GetEngine())->CreateAudioPlayer(sl.GetEngine(), &context->playerObject, &src, &sink, 1, &ids, &req));
 	afHandleSLError((*context->playerObject)->Realize(context->playerObject, SL_BOOLEAN_FALSE));
 	afHandleSLError((*context->playerObject)->GetInterface(context->playerObject, SL_IID_ANDROIDSIMPLEBUFFERQUEUE, &context->playerBufferQueue));
-	afHandleSLError((*context->playerBufferQueue)->RegisterCallback(context->playerBufferQueue, [](SLAndroidSimpleBufferQueueItf q, void*){}, nullptr));
 	afHandleSLError((*context->playerObject)->GetInterface(context->playerObject, SL_IID_PLAY, &context->playerPlay));
-	afHandleSLError((*context->playerPlay)->SetPlayState(context->playerPlay, SL_PLAYSTATE_PLAYING));
 }
 
-void Voice::Play(bool)
+
+
+void Voice::Play(bool loop)
 {
 	if (!IsReady()) {
 		return;
 	}
-	int size;
-	const void* buf = RiffFindChunk(context->fileImg, "data", &size);
-	afHandleSLError((*context->playerBufferQueue)->Enqueue(context->playerBufferQueue, buf, size));
+	auto playback = [](SLAndroidSimpleBufferQueueItf q, void* context_) {
+		WaveContext* context = (WaveContext*)context_;
+		int size;
+		const void* buf = RiffFindChunk(context->fileImg, "data", &size);
+		afHandleSLError((*q)->Enqueue(q, buf, size));
+	};
+	afHandleSLError((*context->playerBufferQueue)->RegisterCallback(context->playerBufferQueue, loop ? playback : [](SLAndroidSimpleBufferQueueItf q, void*) {}, context));
+	afHandleSLError((*context->playerPlay)->SetPlayState(context->playerPlay, SL_PLAYSTATE_PLAYING));
+	playback(context->playerBufferQueue, context);
 }
 
 void Voice::Stop()
@@ -112,6 +118,7 @@ void Voice::Stop()
 	if (!IsReady()) {
 		return;
 	}
+	afHandleSLError((*context->playerPlay)->SetPlayState(context->playerPlay, SL_PLAYSTATE_STOPPED));
 }
 
 void Voice::Destroy()
