@@ -476,9 +476,13 @@ static void ShareVariables(lua_State* L)
 	lua_setglobal(L, "FPS");
 }
 
-static void ReplaceDoFile(lua_State* L)
+static void ReplaceLuaStandardLibraryFunctions(lua_State* L)
 {
 	lua_register(L, "dofile", aflDoFileForReplace);
+	luaL_dostring(L, "function require(m)\n"
+		"package.loaded[m] = package.loaded[m] or dofile(m..'.lua') or true\n"
+		"return package.loaded[m]\n"
+		"end\n");
 }
 
 void LuaBind(lua_State* L)
@@ -493,7 +497,7 @@ void LuaBind(lua_State* L)
 	BindImage(L);
 	BindMatrixStack(L);
 	BindGlobalFuncs(L);
-	ReplaceDoFile(L);
+	ReplaceLuaStandardLibraryFunctions(L);
 	ShareVariables(L);
 }
 
