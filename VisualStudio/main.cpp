@@ -25,14 +25,8 @@ static void APIENTRY debugMessageHandler(GLenum source, GLenum type, GLuint id, 
 }
 #endif
 
-void CreateWGL(HWND hWnd)
+static void CreateWGLInternal(HDC hdc)
 {
-	HDC hdc = GetDC(hWnd);
-	dcDeleter = [hWnd](HDC hdc) {
-		int r = ReleaseDC(hWnd, hdc);
-		assert(r == 1);
-	};
-
 	PIXELFORMATDESCRIPTOR pfd;
 	memset(&pfd, 0, sizeof(pfd));
 	pfd.nSize = sizeof(pfd);
@@ -107,7 +101,7 @@ END:
 	return;	// do nothing
 }
 
-void DestroyWGL()
+static void DestroyWGL()
 {
 	HDC hdc = wglGetCurrentDC();
 	if (hdc) {
@@ -117,6 +111,26 @@ void DestroyWGL()
 	if (hglrc) {
 		wglDeleteContext(hglrc);
 		hglrc = nullptr;
+	}
+}
+
+static void CreateWGLFromWindowDC(HWND hWnd)
+{
+	HDC hdc = GetDC(hWnd);
+	dcDeleter = [hWnd](HDC hdc) {
+		int r = ReleaseDC(hWnd, hdc);
+		assert(r == 1);
+	};
+	CreateWGLInternal(hdc);
+}
+
+static void CreateNVWGL()
+{
+	HGPUNV hGpu[2] = { nullptr, nullptr };
+	for (int i = 0; wglEnumGpusNV(i, &hGpu[0]); i++) {
+		_GPU_DEVICE d = {sizeof(_GPU_DEVICE)};
+		wglEnumGpuDevicesNV(hGpu[0], 0, &d);
+//		wglCreateAffinityDCNV()
 	}
 }
 
@@ -277,7 +291,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE,
 
 	GoMyDir();
 	SetCurrentDirectoryA("../assets");
-	CreateWGL(hWnd);
+//	CreateNVWGL();
+	CreateWGLFromWindowDC(hWnd);
 //	app.Create();
 
 	int lastW = 0;
