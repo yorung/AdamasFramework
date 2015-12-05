@@ -21,6 +21,7 @@ extern const char* boundJavaClass;
 #include <stack>
 #include <chrono>
 #include <random>
+#include <functional>
 
 #include <assert.h>
 #include <time.h>
