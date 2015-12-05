@@ -2,7 +2,7 @@
 
 App app;
 
-std::string g_type;
+std::string g_type = "mesh";
 
 static float CalcRadius(const Mesh* m)
 {
@@ -82,9 +82,9 @@ void App::Init()
 	spriteRenderer.Init();
 	stockObjects.Init();
 
+//	LoadMesh("jiji.x");
 #ifdef _MSC_VER
 	// workaround -- this loads shaders from engine directory
-	LoadMesh("jiji.x");
 	skyMan.Create("D:\\mydns\\janken\\Program\\root\\Media\\skybox.dds", SkyMan::CUBEMAP);
 	//	skyMan.Create("C:\\Program Files (x86)\\Microsoft DirectX SDK (August 2009)\\Samples\\C++\\Direct3D\\StateManager\\Media\\skybox02.dds", SkyMan::CUBEMAP);
 	//	skyMan.Create("D:\\mydns\\janken\\Program\\root\\Media\\LobbyCube.dds", SkyMan::CUBEMAP);
