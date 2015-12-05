@@ -6,6 +6,9 @@
 
 #pragma comment(lib, "opengl32.lib")
 
+// Tell the NVIDIA driver to choose NVIDIA GPU
+extern "C" _declspec(dllexport) DWORD NvOptimusEnablement = 1;
+
 HGLRC hglrc;
 std::function<void(HDC)> dcDeleter;
 
