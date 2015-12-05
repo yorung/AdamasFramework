@@ -6,7 +6,7 @@ android {
 
     sourceSets {
         main.jni.srcDirs = ['../../cpp', '../../submodules/lua']
-        main.assets.srcDirs = ['../../assets']
+        main.assets.srcDirs = ['../../assets', '../../../../mydns/Janken/Program/root']
     }
 
     defaultConfig {
