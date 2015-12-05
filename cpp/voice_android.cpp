@@ -108,6 +108,7 @@ void Voice::Play(bool loop)
 		const void* buf = RiffFindChunk(context->fileImg, "data", &size);
 		afHandleSLError((*q)->Enqueue(q, buf, size));
 	};
+	afHandleSLError((*context->playerPlay)->SetPlayState(context->playerPlay, SL_PLAYSTATE_STOPPED));
 	afHandleSLError((*context->playerBufferQueue)->RegisterCallback(context->playerBufferQueue, loop ? playback : [](SLAndroidSimpleBufferQueueItf q, void*) {}, context));
 	afHandleSLError((*context->playerPlay)->SetPlayState(context->playerPlay, SL_PLAYSTATE_PLAYING));
 	playback(context->playerBufferQueue, context);
