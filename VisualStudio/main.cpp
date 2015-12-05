@@ -7,6 +7,7 @@
 #pragma comment(lib, "opengl32.lib")
 
 HGLRC hglrc;
+std::function<void(HDC)> dcDeleter;
 
 static void err(char *msg)
 {
@@ -27,6 +28,10 @@ static void APIENTRY debugMessageHandler(GLenum source, GLenum type, GLuint id, 
 void CreateWGL(HWND hWnd)
 {
 	HDC hdc = GetDC(hWnd);
+	dcDeleter = [hWnd](HDC hdc) {
+		int r = ReleaseDC(hWnd, hdc);
+		assert(r == 1);
+	};
 
 	PIXELFORMATDESCRIPTOR pfd;
 	memset(&pfd, 0, sizeof(pfd));
@@ -102,11 +107,11 @@ END:
 	return;	// do nothing
 }
 
-void DestroyWGL(HWND hWnd)
+void DestroyWGL()
 {
 	HDC hdc = wglGetCurrentDC();
 	if (hdc) {
-		ReleaseDC(hWnd, hdc);
+		dcDeleter(hdc);
 	}
 	wglMakeCurrent(nullptr, nullptr);
 	if (hglrc) {
@@ -411,7 +416,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_CLOSE:
 		hub.Destroy();
-		DestroyWGL(hWnd);
+		DestroyWGL();
 		DestroyWindow(hWnd);
 		return 0;
 	case WM_DROPFILES:
