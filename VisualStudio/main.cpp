@@ -292,8 +292,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE,
 
 	hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_ADAMAS));
 
-	GoMyDir();
-	SetCurrentDirectoryA("../assets");
 //	CreateNVWGL();
 	CreateWGLFromWindowDC(hWnd);
 //	app.Create();
