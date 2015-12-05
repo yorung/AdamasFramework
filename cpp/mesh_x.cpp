@@ -380,6 +380,7 @@ void MeshX::CreateBoneMesh()
 
 MeshX::MeshX(const char *fileName)
 {
+	aflog("MeshX::MeshX loading %s\n", fileName);
 	char strPath[256];
 	strcpy_s(strPath, dimof(strPath), fileName);
 	std::for_each(strPath, strPath + strlen(strPath), [] (char& c) { c = c == '\\' ? '/' : c; });

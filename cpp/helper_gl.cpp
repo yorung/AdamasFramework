@@ -253,11 +253,11 @@ void afSetVertexAttributes(GLuint program, const InputElement elements[], int nu
 GLuint afCreateVAO(GLuint program, const InputElement elements[], int numElements, int numBuffers, VBOID const *vertexBufferIds, const GLsizei* strides, IBOID ibo)
 {
 	GLuint vao;
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-	afSetVertexAttributes(program, elements, numElements, numBuffers, vertexBufferIds, strides);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-	glBindVertexArray(0);
+	afHandleGLError(glGenVertexArrays(1, &vao));
+	afHandleGLError(glBindVertexArray(vao));
+	afHandleGLError(afSetVertexAttributes(program, elements, numElements, numBuffers, vertexBufferIds, strides));
+	afHandleGLError(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
+	afHandleGLError(glBindVertexArray(0));
 	return vao;
 }
 #endif
@@ -339,7 +339,7 @@ SAMPLERID afCreateSampler(SamplerFilter filter, SamplerWrap wrap)
 	return id;
 }
 
-void _afHandleGLError(const char* func, int line, const char* command)
+GLenum _afHandleGLError(const char* file, const char* func, int line, const char* command)
 {
 	GLenum r = glGetError();
 	if (r != GL_NO_ERROR) {
@@ -352,11 +352,12 @@ void _afHandleGLError(const char* func, int line, const char* command)
 		E(GL_INVALID_FRAMEBUFFER_OPERATION);
 #undef E
 		default:
-			aflog("%s(%d): err=%d %s\n", func, line, r, command);
-			return;
+			aflog("%s %s(%d): err=%d %s\n", file, func, line, r, command);
+			return r;
 		}
-		aflog("%s(%d): %s %s\n", func, line, err, command);
+		aflog("%s %s(%d): %s %s\n", file, func, line, err, command);
 	}
+	return r;
 }
 
 void afDumpCaps()

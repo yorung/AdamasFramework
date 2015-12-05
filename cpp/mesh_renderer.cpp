@@ -72,32 +72,38 @@ void RenderMesh::Init(const Block& block)
 	GLsizei strides[] = { sizeof(MeshVertex) };
 	int shaderId = meshRenderer.GetShaderId();
 	vao = afCreateVAO(shaderId, elements, dimof(elements), block.indices.size(), verts, strides, ibo);
+	aflog("RenderMesh::Init created vao=%d\n", vao);
+	assert(vao);
 }
 
 void RenderMesh::Draw(const RenderCommand& c, int instanceCount) const
 {
 	int shaderId = meshRenderer.GetShaderId();
-
-	afEnableBackFaceCulling(true);
-	glActiveTexture(GL_TEXTURE0 + SBP_DIFFUSE);
+	assert(vao);
+	afHandleGLError(afEnableBackFaceCulling(true));
+	afHandleGLError(glActiveTexture(GL_TEXTURE0 + SBP_DIFFUSE));
 	glBindVertexArray(vao);
+	GLenum r = glGetError();
+	if (r != GL_NO_ERROR) {
+		aflog("glBindVertexArray error! vao=%d\n", vao);
+	}
 	for (auto it : materialMaps) {
 		const Material* mat = meshRenderer.GetMaterial(it.materialId);
 		assert(mat);
-		glBindTexture(GL_TEXTURE_2D, mat->tmid);
+		afHandleGLError(glBindTexture(GL_TEXTURE_2D, mat->tmid));
 
 		GLuint count = it.faces * 3;
 		GLuint start = it.faceStartIndex * 3 * sizeof(AFIndex);
 		DrawElementsIndirectCommand cmd = { count, (GLuint)instanceCount, start, 0, 0 };
-		glDrawElementsInstanced/*BaseVertex*/(GL_TRIANGLES,
+		afHandleGLError(glDrawElementsInstanced/*BaseVertex*/(GL_TRIANGLES,
 			cmd.count,
 			AFIndexTypeToDevice,
 			(void*)cmd.firstIndex,
-			cmd.instanceCount/*, cmd.baseVertex*/);
+			cmd.instanceCount/*, cmd.baseVertex*/));
 	}
 
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glBindVertexArray(0);
+	afHandleGLError(glBindTexture(GL_TEXTURE_2D, 0));
+	afHandleGLError(glBindVertexArray(0));
 }
 
 MeshRenderer::MeshRenderer()
@@ -203,7 +209,8 @@ void MeshRenderer::Flush()
 	if (renderCommands.empty()) {
 		return;
 	}
-
+	int i = 0;
+	afHandleGLError(i = 1);
 	afHandleGLError(afWriteBuffer(ssboForBoneMatrices, &renderBoneMatrices[0], sizeof(Mat) * renderBoneMatrices.size()));
 	afHandleGLError(afWriteBuffer(uboForPerInstanceData, &renderCommands[0], sizeof(renderCommands[0]) * renderCommands.size()));
 
@@ -212,8 +219,8 @@ void MeshRenderer::Flush()
 	Mat matV, matP;
 	matrixMan.Get(MatrixMan::VIEW, matV);
 	matrixMan.Get(MatrixMan::PROJ, matP);
-	glUniformMatrix4fv(glGetUniformLocation(shaderId, "matV"), 1, GL_FALSE, &matV.m[0][0]);
-	glUniformMatrix4fv(glGetUniformLocation(shaderId, "matP"), 1, GL_FALSE, &matP.m[0][0]);
+	afHandleGLError(glUniformMatrix4fv(glGetUniformLocation(shaderId, "matV"), 1, GL_FALSE, &matV.m[0][0]));
+	afHandleGLError(glUniformMatrix4fv(glGetUniformLocation(shaderId, "matP"), 1, GL_FALSE, &matP.m[0][0]));
 
 	RenderCommand c = renderCommands[0];
 	RenderMesh* r = GetMeshByMRID(c.meshId);
