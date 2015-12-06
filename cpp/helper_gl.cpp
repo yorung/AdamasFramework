@@ -184,51 +184,51 @@ void afSetVertexAttributes(GLuint program, const InputElement elements[], int nu
 {
 	for (int i = 0; i < numElements; i++) {
 		const InputElement& d = elements[i];
-		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferIds[d.inputSlot]);
+		afHandleGLError(glBindBuffer(GL_ARRAY_BUFFER, vertexBufferIds[d.inputSlot]));
 		GLint h = d.name ? glGetAttribLocation(program, d.name) : d.attributeIndex;
 		if (h == -1) {
 			continue;
 		}
-		glEnableVertexAttribArray(h);
+		afHandleGLError(glEnableVertexAttribArray(h));
 		switch (d.format) {
 		case SF_R32_FLOAT:
 		case SF_R32G32_FLOAT:
 		case SF_R32G32B32_FLOAT:
 		case SF_R32G32B32A32_FLOAT:
-			glVertexAttribPointer(h, d.format - SF_R32_FLOAT + 1, GL_FLOAT, GL_FALSE, strides[d.inputSlot], (void*)d.offset);
+			afHandleGLError(glVertexAttribPointer(h, d.format - SF_R32_FLOAT + 1, GL_FLOAT, GL_FALSE, strides[d.inputSlot], (void*)d.offset));
 			break;
 		case SF_R8_UNORM:
 		case SF_R8G8_UNORM:
 		case SF_R8G8B8_UNORM:
 		case SF_R8G8B8A8_UNORM:
-			glVertexAttribPointer(h, d.format - SF_R8_UNORM + 1, GL_UNSIGNED_BYTE, GL_TRUE, strides[d.inputSlot], (void*)d.offset);
+			afHandleGLError(glVertexAttribPointer(h, d.format - SF_R8_UNORM + 1, GL_UNSIGNED_BYTE, GL_TRUE, strides[d.inputSlot], (void*)d.offset));
 			break;
 		case SF_R8_UINT_TO_FLOAT:
 		case SF_R8G8_UINT_TO_FLOAT:
 		case SF_R8G8B8_UINT_TO_FLOAT:
 		case SF_R8G8B8A8_UINT_TO_FLOAT:
-			glVertexAttribPointer(h, d.format - SF_R8_UINT_TO_FLOAT + 1, GL_UNSIGNED_BYTE, GL_FALSE, strides[d.inputSlot], (void*)d.offset);
+			afHandleGLError(glVertexAttribPointer(h, d.format - SF_R8_UINT_TO_FLOAT + 1, GL_UNSIGNED_BYTE, GL_FALSE, strides[d.inputSlot], (void*)d.offset));
 			break;
 		case SF_R8_UINT:
 		case SF_R8G8_UINT:
 		case SF_R8G8B8_UINT:
 		case SF_R8G8B8A8_UINT:
 #ifdef AF_GLES31
-			glVertexAttribIPointer(h, d.format - SF_R8_UINT + 1, GL_UNSIGNED_BYTE, strides[d.inputSlot], (void*)d.offset);
+			afHandleGLError(glVertexAttribIPointer(h, d.format - SF_R8_UINT + 1, GL_UNSIGNED_BYTE, strides[d.inputSlot], (void*)d.offset));
 #endif
 			break;
 		case SF_R16_UINT_TO_FLOAT:
 		case SF_R16G16_UINT_TO_FLOAT:
 		case SF_R16G16B16_UINT_TO_FLOAT:
 		case SF_R16G16B16A16_UINT_TO_FLOAT:
-			glVertexAttribPointer(h, d.format - SF_R16_UINT_TO_FLOAT + 1, GL_UNSIGNED_SHORT, GL_FALSE, strides[d.inputSlot], (void*)d.offset);
+			afHandleGLError(glVertexAttribPointer(h, d.format - SF_R16_UINT_TO_FLOAT + 1, GL_UNSIGNED_SHORT, GL_FALSE, strides[d.inputSlot], (void*)d.offset));
 			break;
 		case SF_R16_UINT:
 		case SF_R16G16_UINT:
 		case SF_R16G16B16_UINT:
 		case SF_R16G16B16A16_UINT:
 #ifdef AF_GLES31
-			glVertexAttribIPointer(h, d.format - SF_R16_UINT + 1, GL_UNSIGNED_SHORT, strides[d.inputSlot], (void*)d.offset);
+			afHandleGLError(glVertexAttribIPointer(h, d.format - SF_R16_UINT + 1, GL_UNSIGNED_SHORT, strides[d.inputSlot], (void*)d.offset));
 #endif
 			break;
 		case SF_R32_UINT:
@@ -236,17 +236,17 @@ void afSetVertexAttributes(GLuint program, const InputElement elements[], int nu
 		case SF_R32G32B32_UINT:
 		case SF_R32G32B32A32_UINT:
 #ifdef AF_GLES31
-			glVertexAttribIPointer(h, d.format - SF_R32_UINT + 1, GL_UNSIGNED_INT, strides[d.inputSlot], (void*)d.offset);
+			afHandleGLError(glVertexAttribIPointer(h, d.format - SF_R32_UINT + 1, GL_UNSIGNED_INT, strides[d.inputSlot], (void*)d.offset));
 #endif
 			break;
 		}
 #ifdef AF_GLES31
 		if (d.perInstance) {
-			glVertexAttribDivisor(h, 1);
+			afHandleGLError(glVertexAttribDivisor(h, 1));
 		}
 #endif
 	}
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	afHandleGLError(glBindBuffer(GL_ARRAY_BUFFER, 0));
 }
 
 #ifdef AF_GLES31
@@ -255,7 +255,7 @@ GLuint afCreateVAO(GLuint program, const InputElement elements[], int numElement
 	GLuint vao;
 	afHandleGLError(glGenVertexArrays(1, &vao));
 	afHandleGLError(glBindVertexArray(vao));
-	afHandleGLError(afSetVertexAttributes(program, elements, numElements, numBuffers, vertexBufferIds, strides));
+	afSetVertexAttributes(program, elements, numElements, numBuffers, vertexBufferIds, strides);
 	afHandleGLError(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
 	afHandleGLError(glBindVertexArray(0));
 	return vao;
