@@ -2,11 +2,9 @@
 
 MeshRenderer meshRenderer;
 
-static size_t MAX_INSTANCES = 10;
-static size_t MAX_MATERIALS = 100;
+static const size_t MAX_MATERIALS = 100;
 
 static const size_t BONE_SSBO_SIZE = sizeof(Mat) * 1000;
-static const size_t PER_INSTANCE_UBO_SIZE = sizeof(RenderCommand) * MAX_INSTANCES;
 static const size_t MATERIAL_SSBO_SIZE = sizeof(Material) * MAX_MATERIALS;
 
 enum SSBOBindingPoints {
@@ -120,7 +118,7 @@ void MeshRenderer::Create()
 	Destroy();
 
 	ssboForBoneMatrices = afCreateSSBO(BONE_SSBO_SIZE);
-	uboForPerInstanceData = afCreateUBO(PER_INSTANCE_UBO_SIZE);
+	uboForPerDrawCall = afCreateUBO(sizeof(PerDrawCallUBO));
 	ssboForMaterials = afCreateSSBO(MATERIAL_SSBO_SIZE);
 
 	shaderId = shaderMan.Create("skin.400");
@@ -130,7 +128,7 @@ void MeshRenderer::Create()
 
 	afBindBufferToBindingPoint(ssboForBoneMatrices, SBP_BONES);
 	afBindBufferToBindingPoint(ssboForMaterials, SBP_MATERIALS);
-	afBindBufferToBindingPoint(uboForPerInstanceData, UBP_PER_INSTANCE_DATAS);
+	afBindBufferToBindingPoint(uboForPerDrawCall, UBP_PER_INSTANCE_DATAS);
 }
 
 void MeshRenderer::Destroy()
@@ -146,7 +144,7 @@ void MeshRenderer::Destroy()
 
 	afSafeDeleteBuffer(ssboForBoneMatrices);
 	afSafeDeleteBuffer(ssboForMaterials);
-	afSafeDeleteBuffer(uboForPerInstanceData);
+	afSafeDeleteBuffer(uboForPerDrawCall);
 }
 
 MRID MeshRenderer::CreateRenderMesh(const Block& block)
@@ -185,20 +183,18 @@ void MeshRenderer::DrawRenderMesh(MRID id, const Mat& worldMat, const Mat BoneMa
 	assert(GetMeshByMRID(id));
 	assert(!block.materialMaps.empty());
 
-	if (!renderCommands.empty() && id != renderCommands[0].meshId) {
+	if (nStoredCommands && id != perDrawCallUBO.commands[0].meshId) {
 		Flush();
 	}
-	if (renderCommands.size() == MAX_INSTANCES) {
+	if (nStoredCommands == MAX_INSTANCES) {
 		Flush();
 	}
 
-	RenderCommand c;
+	RenderCommand& c = perDrawCallUBO.commands[nStoredCommands++];
 	c.matWorld = worldMat;
 	c.meshId = id;
 	c.boneStartIndex = renderBoneMatrices.size();
 	c.nBones = nBones;
-
-	renderCommands.push_back(c);
 
 	renderBoneMatrices.resize(c.boneStartIndex + nBones);
 	memcpy(&renderBoneMatrices[0] + c.boneStartIndex, &BoneMatrices[0], sizeof(Mat) * nBones);
@@ -206,28 +202,26 @@ void MeshRenderer::DrawRenderMesh(MRID id, const Mat& worldMat, const Mat BoneMa
 
 void MeshRenderer::Flush()
 {
-	if (renderCommands.empty()) {
+	if (!nStoredCommands) {
 		return;
 	}
 	int i = 0;
 	afHandleGLError(i = 1);
 	afHandleGLError(afWriteBuffer(ssboForBoneMatrices, &renderBoneMatrices[0], sizeof(Mat) * renderBoneMatrices.size()));
-	afHandleGLError(afWriteBuffer(uboForPerInstanceData, &renderCommands[0], sizeof(renderCommands[0]) * renderCommands.size()));
+	matrixMan.Get(MatrixMan::VIEW, perDrawCallUBO.matV);
+	matrixMan.Get(MatrixMan::PROJ, perDrawCallUBO.matP);
+	afHandleGLError(afWriteBuffer(uboForPerDrawCall, &perDrawCallUBO, sizeof(PerDrawCallUBO)));
 
 	shaderMan.Apply(shaderId);
 
-	Mat matV, matP;
-	matrixMan.Get(MatrixMan::VIEW, matV);
-	matrixMan.Get(MatrixMan::PROJ, matP);
-	afHandleGLError(glUniformMatrix4fv(glGetUniformLocation(shaderId, "matV"), 1, GL_FALSE, &matV.m[0][0]));
-	afHandleGLError(glUniformMatrix4fv(glGetUniformLocation(shaderId, "matP"), 1, GL_FALSE, &matP.m[0][0]));
+//	aflog("ubo pos = %d %d\n", glGetUniformLocation(shaderId, "matV"), glGetUniformLocation(shaderId, "matP"));
 
-	RenderCommand c = renderCommands[0];
+	const RenderCommand& c = perDrawCallUBO.commands[0];
 	RenderMesh* r = GetMeshByMRID(c.meshId);
 	assert(r);
-	r->Draw(c, renderCommands.size());
+	r->Draw(c, nStoredCommands);
 	renderBoneMatrices.clear();
-	renderCommands.clear();
+	nStoredCommands = 0;
 }
 
 MMID MeshRenderer::CreateMaterial(const Material& mat)

@@ -11,8 +11,6 @@ out vec2 texcoord;
 out vec4 diffuse;
 out vec3 emissive;
 out vec3 normal;
-uniform mat4 matV;
-uniform mat4 matP;
 struct RenderCommand {
 	mat4 matWorld;
 	int meshId;
@@ -30,7 +28,9 @@ struct Material {
 };
 
 
-layout (std140, binding = 1) uniform perInstanceUBO {
+layout (std140, binding = 1) uniform perDrawCallUBO {
+	mat4 matV;
+	mat4 matP;
 	RenderCommand renderCommands[10];
 };
 layout (std430, binding = 0) buffer materialSSBO {

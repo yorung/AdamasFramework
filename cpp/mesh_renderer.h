@@ -44,17 +44,24 @@ public:
 	void Draw(const RenderCommand& c, int instanceCount) const;
 };
 
+static const size_t MAX_INSTANCES = 10;
+struct PerDrawCallUBO {
+	Mat matV, matP;
+	RenderCommand commands[MAX_INSTANCES];
+};
+
 class MeshRenderer
 {
 public:
 	ShaderMan::SMID shaderId;
 	std::vector<RenderMesh*> renderMeshes;
-	std::vector<RenderCommand> renderCommands;
+	PerDrawCallUBO perDrawCallUBO;
+	int nStoredCommands = 0;
 	std::vector<Mat> renderBoneMatrices;
 	std::vector<Material> materials;
 	SSBOID ssboForBoneMatrices;
 	SSBOID ssboForMaterials;
-	UBOID uboForPerInstanceData;
+	UBOID uboForPerDrawCall;
 	RenderMesh* GetMeshByMRID(MRID id);
 public:
 	MeshRenderer();
