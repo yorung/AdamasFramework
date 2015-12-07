@@ -29,13 +29,14 @@ struct Material {
 	int tmid;
 };
 
-layout (std140, binding = 2) uniform perInstanceUBO {
+
+layout (std140, binding = 1) uniform perInstanceUBO {
 	RenderCommand renderCommands[10];
 };
-layout (std430, binding = 4) buffer materialSSBO {
+layout (std430, binding = 0) buffer materialSSBO {
 	Material materials[];
 };
-layout (std430, binding = 5) buffer boneSSBO {
+layout (std430, binding = 1) buffer boneSSBO {
 	mat4 bonesSSBO[];
 };
 

@@ -4,7 +4,7 @@ in vec2 texcoord;
 in vec4 diffuse;
 in vec3 normal;
 in vec3 emissive;
-layout (binding = 4) uniform sampler2D sampler;
+layout (binding = 0) uniform sampler2D sampler;
 
 layout (location = 0) out vec4 fragColor;
 

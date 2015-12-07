@@ -10,16 +10,16 @@ static const size_t PER_INSTANCE_UBO_SIZE = sizeof(RenderCommand) * MAX_INSTANCE
 static const size_t MATERIAL_SSBO_SIZE = sizeof(Material) * MAX_MATERIALS;
 
 enum SSBOBindingPoints {
-	SBP_MATERIALS = 4,
-	SBP_BONES = 5,
+	SBP_MATERIALS = 0,
+	SBP_BONES = 1,
 };
 
 enum UBOBindingPoints {
-	UBP_PER_INSTANCE_DATAS = 2,
+	UBP_PER_INSTANCE_DATAS = 1,
 };
 
 enum SamplerBindingPoints {
-	SBP_DIFFUSE = 4,
+	SBP_DIFFUSE = 0,
 };
 
 RenderMesh::RenderMesh()
