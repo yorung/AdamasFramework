@@ -3,20 +3,20 @@
 IBOID afCreateIndexBuffer(const AFIndex* indi, int numIndi)
 {
 	IBOID ibo;
-	glGenBuffers(1, &ibo.x);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, numIndi * sizeof(AFIndex), &indi[0], GL_STATIC_DRAW);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	afHandleGLError(glGenBuffers(1, &ibo.x));
+	afHandleGLError(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
+	afHandleGLError(glBufferData(GL_ELEMENT_ARRAY_BUFFER, numIndi * sizeof(AFIndex), &indi[0], GL_STATIC_DRAW));
+	afHandleGLError(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
 	return ibo;
 }
 
 VBOID afCreateVertexBuffer(int size, const void* buf)
 {
 	VBOID vbo;
-	glGenBuffers(1, &vbo.x);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, size, buf, GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	afHandleGLError(glGenBuffers(1, &vbo.x));
+	afHandleGLError(glBindBuffer(GL_ARRAY_BUFFER, vbo));
+	afHandleGLError(glBufferData(GL_ARRAY_BUFFER, size, buf, GL_STATIC_DRAW));
+	afHandleGLError(glBindBuffer(GL_ARRAY_BUFFER, 0));
 	return vbo;
 }
 
@@ -184,7 +184,11 @@ void afSetVertexAttributes(GLuint program, const InputElement elements[], int nu
 {
 	for (int i = 0; i < numElements; i++) {
 		const InputElement& d = elements[i];
-		afHandleGLError(glBindBuffer(GL_ARRAY_BUFFER, vertexBufferIds[d.inputSlot]));
+		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferIds[d.inputSlot]);
+		GLenum r = glGetError();
+		if (r != GL_NO_ERROR) {
+			aflog("glBindBuffer error! i=%d inputSlot=%d vbo=%d\n", i, d.inputSlot, vertexBufferIds[d.inputSlot].x);
+		}
 		GLint h = d.name ? glGetAttribLocation(program, d.name) : d.attributeIndex;
 		if (h == -1) {
 			continue;
