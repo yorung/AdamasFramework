@@ -30,15 +30,14 @@ JNIEXPORT void JNICALL FUNC(update)(JNIEnv* env, jobject obj, jfloat inputX, jfl
 {
 	jniEnv = env;
 
-	inputMan.HandleTouch(!!pressed);
-
     ivec2 scrSize = systemMetrics.GetScreenSize();
     float x = inputX / scrSize.x;
     float y = inputY / scrSize.y;
 
     if (pressed && !lastInputState.pressed) {
         devCamera.LButtonDown(x, y);
-    }
+		inputMan.HandleTouch(true);
+	}
 
     if (pressed && lastInputState.pressed) {
         devCamera.MouseMove(x, y);
@@ -48,7 +47,8 @@ JNIEXPORT void JNICALL FUNC(update)(JNIEnv* env, jobject obj, jfloat inputX, jfl
         aflog("tap: %f, %f", inputX, inputY);
         hub.OnTap(inputX / scrSize.x * 2 - 1, inputY / scrSize.y * -2 + 1);
         devCamera.LButtonUp(x, y);
-    }
+		inputMan.HandleTouch(false);
+	}
     lastInputState.x = inputX;
     lastInputState.y = inputY;
     lastInputState.pressed = pressed;
