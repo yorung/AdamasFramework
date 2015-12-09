@@ -41,7 +41,7 @@ public:
 	~RenderMesh();
 	void Destroy();
 	void Init(const Block& block);
-	void Draw(const RenderCommand& c, int instanceCount) const;
+	void Draw(int instanceCount) const;
 };
 
 static const size_t MAX_INSTANCES = 10;

@@ -3,8 +3,7 @@
 MeshRenderer meshRenderer;
 
 static const size_t MAX_MATERIALS = 100;
-
-static const size_t BONE_SSBO_SIZE = sizeof(Mat) * 1000;
+static const size_t MAX_BONE_SSBOS = 100;
 static const size_t MATERIAL_SSBO_SIZE = sizeof(Material) * MAX_MATERIALS;
 
 enum SSBOBindingPoints {
@@ -61,7 +60,6 @@ void RenderMesh::Init(const Block& block)
 		CInputElement(0, "vBlendIndices", SF_R8G8B8A8_UINT, 48),
 		CInputElement(0, "materialId", SF_R32_UINT, 52),
 	};
-
 	vbo = afCreateVertexBuffer(sizeVertex, &block.vertices[0]);
 	ibo = afCreateIndexBuffer(indices, numIndices);
 
@@ -74,7 +72,7 @@ void RenderMesh::Init(const Block& block)
 	assert(vao);
 }
 
-void RenderMesh::Draw(const RenderCommand& c, int instanceCount) const
+void RenderMesh::Draw(int instanceCount) const
 {
 	int shaderId = meshRenderer.GetShaderId();
 	assert(vao);
@@ -117,7 +115,7 @@ void MeshRenderer::Create()
 {
 	Destroy();
 
-	ssboForBoneMatrices = afCreateSSBO(BONE_SSBO_SIZE);
+	ssboForBoneMatrices = afCreateSSBO(sizeof(Mat) * MAX_BONE_SSBOS);
 	uboForPerDrawCall = afCreateUBO(sizeof(PerDrawCallUBO));
 	ssboForMaterials = afCreateSSBO(MATERIAL_SSBO_SIZE);
 
@@ -189,6 +187,9 @@ void MeshRenderer::DrawRenderMesh(MRID id, const Mat& worldMat, const Mat BoneMa
 	if (nStoredCommands == MAX_INSTANCES) {
 		Flush();
 	}
+	if (nBones + renderBoneMatrices.size() > MAX_BONE_SSBOS) {
+		Flush();
+	}
 
 	RenderCommand& c = perDrawCallUBO.commands[nStoredCommands++];
 	c.matWorld = worldMat;
@@ -219,7 +220,7 @@ void MeshRenderer::Flush()
 	const RenderCommand& c = perDrawCallUBO.commands[0];
 	RenderMesh* r = GetMeshByMRID(c.meshId);
 	assert(r);
-	r->Draw(c, nStoredCommands);
+	r->Draw(nStoredCommands);
 	renderBoneMatrices.clear();
 	nStoredCommands = 0;
 }
