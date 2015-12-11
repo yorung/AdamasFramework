@@ -6,6 +6,7 @@ Hub::Hub()
 {
 
 }
+
 void Hub::OnTap(float x, float y)
 {
 	app.OnTap(x, y);
@@ -23,6 +24,7 @@ void Hub::Destroy()
 
 void Hub::Update()
 {
+	systemMetrics.lastUpdateTime = GetTime();
 	app.Update();
 	app.Draw();
 }

@@ -105,6 +105,11 @@ void Voice::Play(bool loop)
 	context->enqueuedSize = 0;
 	context->loop = loop;
 	auto playback = [](SLAndroidSimpleBufferQueueItf q, void* context_) {
+		double now = GetTime();
+		if (now - systemMetrics.GetLastUpdateTime() >= 0.5) {
+			return;
+		}
+
 		WaveContext* context = (WaveContext*)context_;
 		int totalSize;
 		const void* buf = RiffFindChunk(context->fileImg, "data", &totalSize);
