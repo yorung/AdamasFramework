@@ -8,7 +8,7 @@ struct WaveFormatEx {
 	uint16_t blockAlign, bitsPerSample;
 };
 
-template <class T> void SAFE_DESTROY(T& p)
+template <class T> void SafeDestroy(T& p)
 {
 	if (p) {
 		(*p)->Destroy(p);
@@ -16,7 +16,7 @@ template <class T> void SAFE_DESTROY(T& p)
 	}
 }
 
-void _afHandleSLError(const char* func, int line, const char* command, SLresult r)
+SLresult _slHandleError(const char* func, int line, const char* command, SLresult r)
 {
 	if (r != SL_RESULT_SUCCESS) {
 		const char *err = nullptr;
@@ -28,16 +28,20 @@ void _afHandleSLError(const char* func, int line, const char* command, SLresult 
 		E(SL_RESULT_RESOURCE_ERROR);
 		E(SL_RESULT_RESOURCE_LOST);
 		E(SL_RESULT_BUFFER_INSUFFICIENT);
+		E(SL_RESULT_CONTENT_CORRUPTED);
+		E(SL_RESULT_CONTENT_UNSUPPORTED);
 #undef E
 		default:
 			aflog("%s(%d): err=%d %s\n", func, line, r, command);
-			return;
+			return r;
 		}
 		aflog("%s(%d): %s %s\n", func, line, err, command);
 	}
+	return r;
 }
 
-#define afHandleSLError(command) do{ SLresult r = command; _afHandleSLError(__FUNCTION__, __LINE__, #command, r); } while(0)
+#define SLHandleError(command) _afHandleSLError(__FUNCTION__, __LINE__, #command, command)
+#define SLCall(obj,func,...) afHandleSLError((*obj)->func(obj, __VA_ARGS__))
 
 class SL {
 	SLObjectItf engineObject = nullptr;
@@ -45,17 +49,17 @@ class SL {
 	SLObjectItf outputMixObject = nullptr;
 public:
 	SL() {
-		afHandleSLError(slCreateEngine(&engineObject, 0, nullptr, 0, nullptr, nullptr));
-		afHandleSLError((*engineObject)->Realize(engineObject, SL_BOOLEAN_FALSE));
-		afHandleSLError((*engineObject)->GetInterface(engineObject, SL_IID_ENGINE, &engineEngine));
+		SLHandleError(slCreateEngine(&engineObject, 0, nullptr, 0, nullptr, nullptr));
+		SLCall(engineObject, Realize, SL_BOOLEAN_FALSE);
+		SLCall(engineObject, GetInterface, SL_IID_ENGINE, &engineEngine);
 		SLInterfaceID ids = SL_IID_ENVIRONMENTALREVERB;
 		SLboolean req = SL_BOOLEAN_FALSE;
-		afHandleSLError((*engineEngine)->CreateOutputMix(engineEngine, &outputMixObject, 1, &ids, &req));
-		afHandleSLError((*outputMixObject)->Realize(outputMixObject, SL_BOOLEAN_FALSE));
+		SLCall(engineEngine, CreateOutputMix, &outputMixObject, 1, &ids, &req);
+		SLCall(outputMixObject, Realize, SL_BOOLEAN_FALSE);
 	}
 	~SL() {
-		SAFE_DESTROY(outputMixObject);
-		SAFE_DESTROY(engineObject);
+		SafeDestroy(outputMixObject);
+		SafeDestroy(engineObject);
 		engineEngine = nullptr;
 		aflog("engineObject destroyed");
 	}
@@ -91,10 +95,10 @@ void Voice::Create(const char* fileName)
 	SLDataSink sink = {&m, nullptr};
 	SLInterfaceID ids = SL_IID_ANDROIDSIMPLEBUFFERQUEUE;
 	SLboolean req = SL_BOOLEAN_TRUE;
-	afHandleSLError((*sl.GetEngine())->CreateAudioPlayer(sl.GetEngine(), &context->playerObject, &src, &sink, 1, &ids, &req));
-	afHandleSLError((*context->playerObject)->Realize(context->playerObject, SL_BOOLEAN_FALSE));
-	afHandleSLError((*context->playerObject)->GetInterface(context->playerObject, SL_IID_ANDROIDSIMPLEBUFFERQUEUE, &context->playerBufferQueue));
-	afHandleSLError((*context->playerObject)->GetInterface(context->playerObject, SL_IID_PLAY, &context->playerPlay));
+	SLCall(sl.GetEngine(), CreateAudioPlayer, &context->playerObject, &src, &sink, 1, &ids, &req);
+	SLCall(context->playerObject, Realize, SL_BOOLEAN_FALSE);
+	SLCall(context->playerObject, GetInterface, SL_IID_ANDROIDSIMPLEBUFFERQUEUE, &context->playerBufferQueue);
+	SLCall(context->playerObject, GetInterface, SL_IID_PLAY, &context->playerPlay);
 }
 
 void Voice::Play(bool loop)
@@ -121,13 +125,13 @@ void Voice::Play(bool loop)
 			context->enqueuedSize = 0;
 		}
 		int toEnqueue = std::min(totalSize - context->enqueuedSize, 32768);
-		afHandleSLError((*q)->Enqueue(q, (char*)buf + context->enqueuedSize, toEnqueue));
+		SLCall(q, Enqueue, (char*)buf + context->enqueuedSize, toEnqueue);
 		//aflog("enqueue: from=%d size=%d", context->enqueuedSize, toEnqueue);
 		context->enqueuedSize += toEnqueue;
 	};
-	afHandleSLError((*context->playerPlay)->SetPlayState(context->playerPlay, SL_PLAYSTATE_STOPPED));
-	afHandleSLError((*context->playerBufferQueue)->RegisterCallback(context->playerBufferQueue, playback, context));
-	afHandleSLError((*context->playerPlay)->SetPlayState(context->playerPlay, SL_PLAYSTATE_PLAYING));
+	SLCall(context->playerPlay, SetPlayState, SL_PLAYSTATE_STOPPED);
+	SLCall(context->playerBufferQueue, RegisterCallback, playback, context);
+	SLCall(context->playerPlay, SetPlayState, SL_PLAYSTATE_PLAYING);
 	playback(context->playerBufferQueue, context);
 }
 
@@ -136,7 +140,7 @@ void Voice::Stop()
 	if (!IsReady()) {
 		return;
 	}
-	afHandleSLError((*context->playerPlay)->SetPlayState(context->playerPlay, SL_PLAYSTATE_STOPPED));
+	SLCall(context->playerPlay, SetPlayState, SL_PLAYSTATE_STOPPED);
 }
 
 void Voice::Destroy()
@@ -144,7 +148,7 @@ void Voice::Destroy()
 	if (!IsReady()) {
 		return;
 	}
-	SAFE_DESTROY(context->playerObject);
+	SafeDestroy(context->playerObject);
 	if (context->fileImg) {
 		free(context->fileImg);
 	}
