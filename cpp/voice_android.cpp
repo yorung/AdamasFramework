@@ -40,8 +40,8 @@ SLresult _slHandleError(const char* func, int line, const char* command, SLresul
 	return r;
 }
 
-#define SLHandleError(command) _afHandleSLError(__FUNCTION__, __LINE__, #command, command)
-#define SLCall(obj,func,...) afHandleSLError((*obj)->func(obj, __VA_ARGS__))
+#define SLHandleError(command) _slHandleError(__FUNCTION__, __LINE__, #command, command)
+#define SLCall(obj,func,...) SLHandleError((*obj)->func(obj, __VA_ARGS__))
 
 class SL {
 	SLObjectItf engineObject = nullptr;
