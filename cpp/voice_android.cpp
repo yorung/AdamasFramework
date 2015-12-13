@@ -106,8 +106,6 @@ void Voice::Play(bool loop)
 	if (!IsReady()) {
 		return;
 	}
-	context->enqueuedSize = 0;
-	context->loop = loop;
 	auto playback = [](SLAndroidSimpleBufferQueueItf q, void* context_) {
 		double now = GetTime();
 		if (now - systemMetrics.GetLastUpdateTime() >= 0.5) {
@@ -117,20 +115,24 @@ void Voice::Play(bool loop)
 		WaveContext* context = (WaveContext*)context_;
 		int totalSize;
 		const void* buf = RiffFindChunk(context->fileImg, "data", &totalSize);
-		if (context->enqueuedSize >= totalSize) {
+		int enqueued = context->enqueuedSize;
+		if (enqueued >= totalSize) {
 			if (!context->loop) {
 			//	aflog("enqueue: finished");
 				return;
 			}
-			context->enqueuedSize = 0;
+			enqueued = 0;
 		}
-		int toEnqueue = std::min(totalSize - context->enqueuedSize, 32768);
-		SLCall(q, Enqueue, (char*)buf + context->enqueuedSize, toEnqueue);
+		int toEnqueue = std::min(totalSize - enqueued, 32768);
+		enqueued += toEnqueue;
+		context->enqueuedSize = enqueued;
+		SLCall(q, Enqueue, (char*)buf + enqueued - toEnqueue, toEnqueue);
 		//aflog("enqueue: from=%d size=%d", context->enqueuedSize, toEnqueue);
-		context->enqueuedSize += toEnqueue;
 	};
 	SLCall(context->playerPlay, SetPlayState, SL_PLAYSTATE_STOPPED);
 	SLCall(context->playerBufferQueue, RegisterCallback, playback, context);
+	context->enqueuedSize = 0;
+	context->loop = loop;
 	SLCall(context->playerPlay, SetPlayState, SL_PLAYSTATE_PLAYING);
 	playback(context->playerBufferQueue, context);
 }
