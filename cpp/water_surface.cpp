@@ -69,7 +69,7 @@ void WaterSurface::Init()
 {
 	Destroy();
 	for (auto& it : renderTarget) {
-		it.Init(min(ivec2(1024, 1024), systemMetrics.GetScreenSize()), AFDT_R8G8B8A8_UINT, AFDT_INVALID);
+		it.Init(min(ivec2(1024, 1024), systemMisc.GetScreenSize()), AFDT_R8G8B8A8_UINT, AFDT_INVALID);
 		it.BeginRenderToThis();	// clear textures
 	}
 	for (auto& it : heightMap) {
@@ -130,7 +130,7 @@ void WaterSurface::UpdateTime()
 
 void WaterSurface::Update()
 {
-	ivec2 scrSize = systemMetrics.GetScreenSize();
+	ivec2 scrSize = systemMisc.GetScreenSize();
 	float offset = 0.5f;
 	float aspect = (float)scrSize.x / scrSize.y;
 	if (aspect > 1) {
@@ -182,7 +182,7 @@ void WaterSurface::UpdateNormalMap()
 
 void WaterSurface::RenderWater(const UniformBuffer& hmub)
 {
-	ivec2 scrSize = systemMetrics.GetScreenSize();
+	ivec2 scrSize = systemMisc.GetScreenSize();
 	glViewport(0, 0, scrSize.x, scrSize.y);
 
 	shaderMan.Apply(shaderWaterLastPass);
@@ -211,12 +211,12 @@ void WaterSurface::Draw()
 {
 	UpdateTime();
 
-	bool mouseEdge = !lastMouseDown && systemMetrics.mouseDown;
-	lastMouseDown = systemMetrics.mouseDown;
+	bool mouseEdge = !lastMouseDown && systemMisc.mouseDown;
+	lastMouseDown = systemMisc.mouseDown;
 
 	static int frame = 0;
 	static Vec2 lastMousePos;
-	Vec2 mousePos = (Vec2)systemMetrics.GetMousePos() / (Vec2)systemMetrics.GetScreenSize() * Vec2(2, -2) + Vec2(-1, 1);
+	Vec2 mousePos = (Vec2)systemMisc.GetMousePos() / (Vec2)systemMisc.GetScreenSize() * Vec2(2, -2) + Vec2(-1, 1);
 	UniformBuffer hmub;
 	hmub.mousePos = mousePos;
 	hmub.mouseDown = mouseEdge;
@@ -225,7 +225,7 @@ void WaterSurface::Draw()
 	hmub.heightMapSize.y = HEIGHT_MAP_H;
 
 //	if (++frame % 2 == 0 && length(lastMousePos - mousePos) >= 0.01 && systemMetrics.mouseDown) {
-	if (systemMetrics.mouseDown) {
+	if (systemMisc.mouseDown) {
 		hmub.mouseDown = true;
 	}
 	if (hmub.mouseDown) {

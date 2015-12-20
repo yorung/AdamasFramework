@@ -24,7 +24,7 @@ void Hub::Destroy()
 
 void Hub::Update()
 {
-	systemMetrics.lastUpdateTime = GetTime();
+	systemMisc.lastUpdateTime = GetTime();
 	app.Update();
 	app.Draw();
 }

@@ -47,7 +47,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\cpp\stock_objects.cpp" />
-    <ClCompile Include="..\cpp\system_metrics.cpp" />
+    <ClCompile Include="..\cpp\system_misc.cpp" />
     <ClCompile Include="..\cpp\tex_man.cpp" />
     <ClCompile Include="..\cpp\voice.cpp" />
     <ClCompile Include="..\cpp\voice_android.cpp">
@@ -100,7 +100,7 @@
     <ClInclude Include="..\cpp\sprite_renderer.h" />
     <ClInclude Include="..\cpp\stdafx.h" />
     <ClInclude Include="..\cpp\stock_objects.h" />
-    <ClInclude Include="..\cpp\system_metrics.h" />
+    <ClInclude Include="..\cpp\system_misc.h" />
     <ClInclude Include="..\cpp\tex_man.h" />
     <ClInclude Include="..\cpp\voice.h" />
     <ClInclude Include="..\cpp\water_surface.h" />

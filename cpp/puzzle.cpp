@@ -59,12 +59,12 @@ void Puzzle::Update()
 	const float pitch = 0.25f;
 	const float sprW = 64;
 
-	Vec2 mouse = systemMetrics.GetMousePos();
+	Vec2 mouse = systemMisc.GetMousePos();
 	auto isHit = [&](const Mat& m) {
 		Vec3 v = transform(Vec3(mouse.x, mouse.y, 0), inv(m));
 		return v.x >= 0 && v.y >= 0 && v.x < sprW && v.y < sprW;
 	};
-	Vec2 scrSize = systemMetrics.GetScreenSize();
+	Vec2 scrSize = systemMisc.GetScreenSize();
 	MatrixStack m;
 	float mini = std::min(scrSize.x, scrSize.y);
 	m.Mul(translate((scrSize.x - mini) / 2, (scrSize.y - mini) / 2, 0));
@@ -84,7 +84,7 @@ void Puzzle::Update()
 			cmd.matW = m.Get();
 			if (isHit(m.Get())) {
 				cmd.color = 0xff0000ff;
-				if (systemMetrics.mouseDown) {
+				if (systemMisc.mouseDown) {
 					TryMove(x, y);
 				}
 			} else {

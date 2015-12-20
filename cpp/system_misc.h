@@ -1,4 +1,4 @@
-class SystemMetrics
+class SystemMisc
 {
 public:
 	ivec2 screenSize;
@@ -11,4 +11,4 @@ public:
 	const ivec2& GetMousePos() { return mousePos; }
 	double GetLastUpdateTime() { return lastUpdateTime; }
 };
-extern SystemMetrics systemMetrics;
+extern SystemMisc systemMisc;

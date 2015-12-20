@@ -47,7 +47,7 @@ static ivec2 GetScreenPos()
 	matrixMan.Get(MatrixMan::VIEW, mV);
 	matrixMan.Get(MatrixMan::PROJ, mP);
 	Mat mViewport;
-	Vec2 sz = (Vec2)systemMetrics.GetScreenSize() / 2;
+	Vec2 sz = (Vec2)systemMisc.GetScreenSize() / 2;
 	mViewport._11 = sz.x;
 	mViewport._22 = -sz.y;
 	mViewport._41 = sz.x;
@@ -209,7 +209,7 @@ static void BindImage(lua_State* L)
 			if (id < 0 || id >= (int)quads.size()) {
 				return;
 			}
-			ivec2 scr = systemMetrics.GetScreenSize();
+			ivec2 scr = systemMisc.GetScreenSize();
 			SpriteCommand s;
 			s.matW = luaMatrixStack.Get();
 			s.quad = quads[id];
@@ -325,7 +325,7 @@ static void BindGlobalFuncs(lua_State* L)
 		{ "GetKeyCount", [](lua_State* L) { lua_pushinteger(L, inputMan.GetInputCount((int)lua_tointeger(L, -1))); return 1; } },
 		{ "LookAt", LLookAt },
 		{ "LoadSkyBox", [](lua_State* L) { LoadSkyBox(lua_tostring(L, 1), lua_tostring(L, 2)); return 0; } },
-		{ "GetMousePos", [](lua_State* L) { PushPoint(L, systemMetrics.GetMousePos()); return 1; } },
+		{ "GetMousePos", [](lua_State* L) { PushPoint(L, systemMisc.GetMousePos()); return 1; } },
 		{ "GetScreenPos", [](lua_State* L) { PushPoint(L, GetScreenPos()); return 1; } },
 		{ "MessageBox", [](lua_State* L) { lua_pushstring(L, StrMessageBox(lua_tostring(L, -2), lua_tostring(L, -1))); return 1; } },
 		{ "PostCommand", [](lua_State* L) { PostCommand(lua_tostring(L, -1)); return 0; } },
@@ -467,7 +467,7 @@ static void BindVec4(lua_State* L)
 
 static void ShareVariables(lua_State* L)
 {
-	ivec2 sz = systemMetrics.GetScreenSize();
+	ivec2 sz = systemMisc.GetScreenSize();
 	lua_pushinteger(L, sz.x);
 	lua_setglobal(L, "SCR_W");
 	lua_pushinteger(L, sz.y);

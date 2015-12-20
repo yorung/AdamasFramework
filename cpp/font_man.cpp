@@ -295,7 +295,7 @@ void FontMan::Render()
 	}
 	FlushToTexture();
 
-	Vec2 scrSize = systemMetrics.GetScreenSize();
+	Vec2 scrSize = systemMisc.GetScreenSize();
 
 	static FontVertex verts[4 * SPRITE_MAX];
 	for (int i = 0; i < numSprites; i++) {

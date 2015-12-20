@@ -36,7 +36,7 @@ static const int BONE_MAX = 50;
 
 #include "af_math.h"
 #include "af_lua_helpers.h"
-#include "system_metrics.h"
+#include "system_misc.h"
 #include "hub.h"
 #include "helper_gl.h"
 #include "helper.h"

@@ -39,7 +39,7 @@ void App::Draw()
 	afDepthStencilMode(true);
 	afBlendMode(BM_NONE);
 
-	ivec2 scrSize = systemMetrics.GetScreenSize();
+	ivec2 scrSize = systemMisc.GetScreenSize();
 	glViewport(0, 0, scrSize.x, scrSize.y);
 
 	float f = 1000;

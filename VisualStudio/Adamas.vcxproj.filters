@@ -58,9 +58,6 @@
     <ClCompile Include="..\cpp\debug_renderer.cpp">
       <Filter>PlatformIndipendent</Filter>
     </ClCompile>
-    <ClCompile Include="..\cpp\system_metrics.cpp">
-      <Filter>PlatformIndipendent</Filter>
-    </ClCompile>
     <ClCompile Include="..\cpp\dev_camera.cpp">
       <Filter>PlatformIndipendent</Filter>
     </ClCompile>
@@ -120,6 +117,9 @@
     </ClCompile>
     <ClCompile Include="..\cpp\voice_android.cpp">
       <Filter>Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cpp\system_misc.cpp">
+      <Filter>PlatformIndipendent</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -183,9 +183,6 @@
     <ClInclude Include="..\cpp\debug_renderer.h">
       <Filter>PlatformIndipendent</Filter>
     </ClInclude>
-    <ClInclude Include="..\cpp\system_metrics.h">
-      <Filter>PlatformIndipendent</Filter>
-    </ClInclude>
     <ClInclude Include="..\cpp\dev_camera.h">
       <Filter>PlatformIndipendent</Filter>
     </ClInclude>
@@ -229,6 +226,9 @@
       <Filter>PlatformIndipendent</Filter>
     </ClInclude>
     <ClInclude Include="..\cpp\voice.h">
+      <Filter>PlatformIndipendent</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cpp\system_misc.h">
       <Filter>PlatformIndipendent</Filter>
     </ClInclude>
   </ItemGroup>

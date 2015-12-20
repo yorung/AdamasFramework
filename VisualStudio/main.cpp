@@ -399,7 +399,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	PAINTSTRUCT ps;
 	HDC hdc;
 
-	ivec2 screenSize = systemMetrics.GetScreenSize();
+	ivec2 screenSize = systemMisc.GetScreenSize();
 	switch (message)
 	{
 	case WM_COMMAND:
@@ -447,22 +447,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_LBUTTONDOWN:
 		SetCapture(hWnd);
 		devCamera.LButtonDown(LOWORD(lParam) / (float)screenSize.x, HIWORD(lParam) / (float)screenSize.y);
-		systemMetrics.mouseDown = true;
+		systemMisc.mouseDown = true;
 		break;
 	case WM_LBUTTONUP:
 		ReleaseCapture();
 		devCamera.LButtonUp(LOWORD(lParam) / (float)screenSize.x, HIWORD(lParam) / (float)screenSize.y);
-		systemMetrics.mouseDown = false;
+		systemMisc.mouseDown = false;
 		break;
 	case WM_MOUSEMOVE:
-		systemMetrics.SetMousePos(ivec2(MAKEPOINTS(lParam).x, MAKEPOINTS(lParam).y));
+		systemMisc.SetMousePos(ivec2(MAKEPOINTS(lParam).x, MAKEPOINTS(lParam).y));
 		devCamera.MouseMove(MAKEPOINTS(lParam).x / (float)screenSize.x, MAKEPOINTS(lParam).y / (float)screenSize.y);
 		break;
 	case WM_MOUSEWHEEL:
 		devCamera.MouseWheel((short)HIWORD(wParam) / (float)WHEEL_DELTA);
 		break;
 	case WM_SIZE:
-		systemMetrics.SetScreenSize(ivec2(LOWORD(lParam), HIWORD(lParam)));
+		systemMisc.SetScreenSize(ivec2(LOWORD(lParam), HIWORD(lParam)));
 		break;
 	case WM_DESTROY:
 		PostQuitMessage(0);

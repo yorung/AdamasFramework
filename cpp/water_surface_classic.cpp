@@ -301,7 +301,7 @@ void WaterSurfaceClassic::Update()
 		return;
 	}
 
-	ivec2 scrSize = systemMetrics.GetScreenSize();
+	ivec2 scrSize = systemMisc.GetScreenSize();
 	float offset = 0.5f;
 	float aspect = (float)scrSize.y / scrSize.x;
 	if (aspect < 1) {

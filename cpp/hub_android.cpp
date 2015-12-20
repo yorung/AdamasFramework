@@ -13,7 +13,7 @@ extern "C" {
 JNIEXPORT void JNICALL FUNC(init)(JNIEnv* env, jobject obj, jint screenW, jint screenH)
 {
 	jniEnv = env;
-	systemMetrics.SetScreenSize(ivec2(screenW, screenH));
+	systemMisc.SetScreenSize(ivec2(screenW, screenH));
 	hub.Init();
 	memset(&lastInputState, 0, sizeof(lastInputState));
 	jniEnv = nullptr;
@@ -30,7 +30,7 @@ JNIEXPORT void JNICALL FUNC(update)(JNIEnv* env, jobject obj, jfloat inputX, jfl
 {
 	jniEnv = env;
 
-    ivec2 scrSize = systemMetrics.GetScreenSize();
+    ivec2 scrSize = systemMisc.GetScreenSize();
     float x = inputX / scrSize.x;
     float y = inputY / scrSize.y;
 
@@ -53,8 +53,8 @@ JNIEXPORT void JNICALL FUNC(update)(JNIEnv* env, jobject obj, jfloat inputX, jfl
     lastInputState.y = inputY;
     lastInputState.pressed = pressed;
 
-	systemMetrics.SetMousePos(ivec2(inputX, inputY));
-	systemMetrics.mouseDown = pressed;
+	systemMisc.SetMousePos(ivec2(inputX, inputY));
+	systemMisc.mouseDown = pressed;
 
 
 	hub.Update();

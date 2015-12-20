@@ -108,7 +108,7 @@ void Voice::Play(bool loop)
 	}
 	auto playback = [](SLAndroidSimpleBufferQueueItf q, void* context_) {
 		double now = GetTime();
-		if (now - systemMetrics.GetLastUpdateTime() >= 0.5) {
+		if (now - systemMisc.GetLastUpdateTime() >= 0.5) {
 			return;
 		}
 
