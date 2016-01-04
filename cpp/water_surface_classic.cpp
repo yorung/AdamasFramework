@@ -63,9 +63,9 @@ void WaterSurfaceClassic::UpdateVert(std::vector<WaterVert>& vert)
 			RandWave& r = randWave[i];
 			r.degreePerSec = Random() * 15 - 7.5f;
 			r.xShift = Random();
-			r.xMul = 2 + std::pow(2, 1 + 3 * Random());
-			r.timeMul = 2 + std::pow(2, 0.5f + 2 * Random());
-			r.strength = 0.005f * std::pow(2, 0.1f + 0.3f * Random());
+			r.xMul = 2 + (float)std::pow(2, 1 + 3 * Random());
+			r.timeMul = 2 + (float)std::pow(2, 0.5f + 2 * Random());
+			r.strength = 0.005f * (float)std::pow(2, 0.1f + 0.3f * Random());
 		}
 	}
 	float hmap[vertMax][vertMax];
@@ -77,7 +77,7 @@ void WaterSurfaceClassic::UpdateVert(std::vector<WaterVert>& vert)
 				const WaterRipple& r = ripples[i];
 				float lifeTime = (float)(elapsedTime - r.generatedTime);
 				float timeAfterArrived = lifeTime - length(r.centerPos - pos) / rippleSpeed;
-				float h = timeAfterArrived > 0 ? std::sin(timeAfterArrived * (M_PI * 2) * repeat) * heightUnit : 0;
+				float h = timeAfterArrived > 0 ? std::sin(timeAfterArrived * ((float)M_PI * 2) * repeat) * heightUnit : 0;
 				h *= std::min(1.0f, powf(0.5f, lifeTime / halflife));
 
 				hmap[x][z] += h;
