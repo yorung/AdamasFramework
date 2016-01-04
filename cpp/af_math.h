@@ -174,7 +174,7 @@ struct Quat
 	Vec3 v;
 	affloat w;
 	Quat() { *this = Quat(1, Vec3()); }
-	Quat(affloat W, const Vec3& V) : w(W), v(V) {}
+	Quat(affloat W, const Vec3& V) : v(V), w(W) {}
 	Quat(const Vec3& axis, affloat angle) { w = std::cos(angle / 2); v = normalize(axis) * std::sin(angle / 2); }
 #ifdef USE_SIMPLE_MATH
 	Quat(const Quaternion& q) : Quat(q.w, Vec3(q.x, q.y, q.z)) {}
