@@ -15,7 +15,7 @@
 #include <sys/resource.h>
 
 #include <EGL/egl.h>
-#include <GLES/gl.h>
+#include <GLES3/gl31.h>
 
 #include <android/sensor.h>
 

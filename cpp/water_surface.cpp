@@ -214,7 +214,6 @@ void WaterSurface::Draw()
 	bool mouseEdge = !lastMouseDown && systemMisc.mouseDown;
 	lastMouseDown = systemMisc.mouseDown;
 
-	static int frame = 0;
 	static Vec2 lastMousePos;
 	Vec2 mousePos = (Vec2)systemMisc.GetMousePos() / (Vec2)systemMisc.GetScreenSize() * Vec2(2, -2) + Vec2(-1, 1);
 	UniformBuffer hmub;

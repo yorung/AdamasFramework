@@ -15,6 +15,6 @@ public:
 	void MouseMove(float x, float y);
 	float GetDistance();
 	Mat CalcViewMatrix();
-	void SetHeight(float height);
+	void SetHeight(float height_);
 };
 extern DevCamera devCamera;

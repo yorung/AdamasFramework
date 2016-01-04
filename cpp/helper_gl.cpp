@@ -144,6 +144,9 @@ GLuint afCreateDynamicTexture(int w, int h, AFDTFormat format)
 		gen(GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8);
 		break;
 #endif
+	default:
+		assert(0);
+		break;
 	}
 	glBindTexture(GL_TEXTURE_2D, 0);
 	return texture;
@@ -242,6 +245,9 @@ void afSetVertexAttributes(GLuint program, const InputElement elements[], int nu
 #ifdef AF_GLES31
 			afHandleGLError(glVertexAttribIPointer(h, d.format - SF_R32_UINT + 1, GL_UNSIGNED_INT, strides[d.inputSlot], (void*)d.offset));
 #endif
+			break;
+		default:
+			assert(0);
 			break;
 		}
 #ifdef AF_GLES31

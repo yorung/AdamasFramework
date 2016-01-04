@@ -16,8 +16,6 @@ class WaterSurface
 
 	double elapsedTime;
 	double lastTime;
-	double nextTime;
-	VAOID vaoEmpty;
 	bool lastMouseDown;
 	void UpdateTime();
 	void UpdateHeightMap(const UniformBuffer&);

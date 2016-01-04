@@ -62,7 +62,7 @@ Mat DevCamera::CalcViewMatrix()
 	return fastInv(cam);
 }
 
-void DevCamera::SetHeight(float height)
+void DevCamera::SetHeight(float height_)
 {
-	height = height;
+	height = height_;
 }

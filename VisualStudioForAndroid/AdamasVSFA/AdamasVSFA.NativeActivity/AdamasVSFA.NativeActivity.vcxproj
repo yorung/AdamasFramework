@@ -133,9 +133,10 @@
       <CompileAs>CompileAsCpp</CompileAs>
       <CppLanguageStandard>c++1y</CppLanguageStandard>
       <AdditionalIncludeDirectories>../../../cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <CLanguageStandard>c11</CLanguageStandard>
     </ClCompile>
     <Link>
-      <LibraryDependencies>%(LibraryDependencies);GLESv1_CM;EGL;OpenSLES</LibraryDependencies>
+      <LibraryDependencies>%(LibraryDependencies);GLESv3;EGL;OpenSLES</LibraryDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
@@ -145,9 +146,10 @@
       <CompileAs>CompileAsCpp</CompileAs>
       <CppLanguageStandard>c++1y</CppLanguageStandard>
       <AdditionalIncludeDirectories>../../../cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <CLanguageStandard>c11</CLanguageStandard>
     </ClCompile>
     <Link>
-      <LibraryDependencies>%(LibraryDependencies);GLESv1_CM;EGL;OpenSLES</LibraryDependencies>
+      <LibraryDependencies>%(LibraryDependencies);GLESv3;EGL;OpenSLES</LibraryDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
@@ -157,9 +159,10 @@
       <CompileAs>CompileAsCpp</CompileAs>
       <CppLanguageStandard>c++1y</CppLanguageStandard>
       <AdditionalIncludeDirectories>../../../cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <CLanguageStandard>c11</CLanguageStandard>
     </ClCompile>
     <Link>
-      <LibraryDependencies>%(LibraryDependencies);GLESv1_CM;EGL;OpenSLES</LibraryDependencies>
+      <LibraryDependencies>%(LibraryDependencies);GLESv3;EGL;OpenSLES</LibraryDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
@@ -169,9 +172,10 @@
       <CompileAs>CompileAsCpp</CompileAs>
       <CppLanguageStandard>c++1y</CppLanguageStandard>
       <AdditionalIncludeDirectories>../../../cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <CLanguageStandard>c11</CLanguageStandard>
     </ClCompile>
     <Link>
-      <LibraryDependencies>%(LibraryDependencies);GLESv1_CM;EGL;OpenSLES</LibraryDependencies>
+      <LibraryDependencies>%(LibraryDependencies);GLESv3;EGL;OpenSLES</LibraryDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -181,9 +185,10 @@
       <CompileAs>CompileAsCpp</CompileAs>
       <CppLanguageStandard>c++1y</CppLanguageStandard>
       <AdditionalIncludeDirectories>../../../cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <CLanguageStandard>c11</CLanguageStandard>
     </ClCompile>
     <Link>
-      <LibraryDependencies>%(LibraryDependencies);GLESv1_CM;EGL;OpenSLES</LibraryDependencies>
+      <LibraryDependencies>%(LibraryDependencies);GLESv3;EGL;OpenSLES</LibraryDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -193,9 +198,10 @@
       <CompileAs>CompileAsCpp</CompileAs>
       <CppLanguageStandard>c++1y</CppLanguageStandard>
       <AdditionalIncludeDirectories>../../../cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <CLanguageStandard>c11</CLanguageStandard>
     </ClCompile>
     <Link>
-      <LibraryDependencies>%(LibraryDependencies);GLESv1_CM;EGL;OpenSLES</LibraryDependencies>
+      <LibraryDependencies>%(LibraryDependencies);GLESv3;EGL;OpenSLES</LibraryDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
@@ -205,9 +211,10 @@
       <CompileAs>CompileAsCpp</CompileAs>
       <CppLanguageStandard>c++1y</CppLanguageStandard>
       <AdditionalIncludeDirectories>../../../cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <CLanguageStandard>c11</CLanguageStandard>
     </ClCompile>
     <Link>
-      <LibraryDependencies>%(LibraryDependencies);GLESv1_CM;EGL;OpenSLES</LibraryDependencies>
+      <LibraryDependencies>%(LibraryDependencies);GLESv3;EGL;OpenSLES</LibraryDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
@@ -217,21 +224,55 @@
       <CompileAs>CompileAsCpp</CompileAs>
       <CppLanguageStandard>c++1y</CppLanguageStandard>
       <AdditionalIncludeDirectories>../../../cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <CLanguageStandard>c11</CLanguageStandard>
     </ClCompile>
     <Link>
-      <LibraryDependencies>%(LibraryDependencies);GLESv1_CM;EGL;OpenSLES</LibraryDependencies>
+      <LibraryDependencies>%(LibraryDependencies);GLESv3;EGL;OpenSLES</LibraryDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\cpp\af_math.h" />
+    <ClInclude Include="..\..\..\cpp\app.h" />
+    <ClInclude Include="..\..\..\cpp\bvh.h" />
+    <ClInclude Include="..\..\..\cpp\debug_renderer.h" />
+    <ClInclude Include="..\..\..\cpp\dev_camera.h" />
     <ClInclude Include="..\..\..\cpp\dib.h" />
+    <ClInclude Include="..\..\..\cpp\font_man.h" />
+    <ClInclude Include="..\..\..\cpp\fps.h" />
+    <ClInclude Include="..\..\..\cpp\glow.h" />
+    <ClInclude Include="..\..\..\cpp\helper.h" />
+    <ClInclude Include="..\..\..\cpp\helper_gl.h" />
+    <ClInclude Include="..\..\..\cpp\shader_man.h" />
+    <ClInclude Include="..\..\..\cpp\sky_man.h" />
+    <ClInclude Include="..\..\..\cpp\sprite_renderer.h" />
     <ClInclude Include="..\..\..\cpp\stdafx.h" />
+    <ClInclude Include="..\..\..\cpp\stock_objects.h" />
+    <ClInclude Include="..\..\..\cpp\system_misc.h" />
+    <ClInclude Include="..\..\..\cpp\tex_man.h" />
     <ClInclude Include="..\..\..\cpp\voice.h" />
+    <ClInclude Include="..\..\..\cpp\water_surface.h" />
+    <ClInclude Include="..\..\..\cpp\water_surface_classic.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="android_native_app_glue.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\cpp\app.cpp" />
+    <ClCompile Include="..\..\..\cpp\debug_renderer.cpp" />
+    <ClCompile Include="..\..\..\cpp\dev_camera.cpp" />
     <ClCompile Include="..\..\..\cpp\dib.cpp" />
+    <ClCompile Include="..\..\..\cpp\font_man.cpp" />
+    <ClCompile Include="..\..\..\cpp\fps.cpp" />
+    <ClCompile Include="..\..\..\cpp\glow.cpp" />
+    <ClCompile Include="..\..\..\cpp\helper.cpp" />
+    <ClCompile Include="..\..\..\cpp\helper_gl.cpp" />
+    <ClCompile Include="..\..\..\cpp\sky_man.cpp" />
+    <ClCompile Include="..\..\..\cpp\sprite_renderer.cpp" />
+    <ClCompile Include="..\..\..\cpp\stock_objects.cpp" />
+    <ClCompile Include="..\..\..\cpp\system_misc.cpp" />
+    <ClCompile Include="..\..\..\cpp\tex_man.cpp" />
     <ClCompile Include="..\..\..\cpp\voice.cpp" />
+    <ClCompile Include="..\..\..\cpp\water_surface.cpp" />
+    <ClCompile Include="..\..\..\cpp\water_surface_classic.cpp" />
     <ClCompile Include="android_native_app_glue.c" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>

@@ -31,7 +31,7 @@ void CreateCone(Block& b, const Vec3& v1, const Vec3& v2, BONE_ID boneId, uint32
 			InitVertex(it, color, boneId);
 		}
 		float rad = ((float)M_PI * 2) / div * (j + 1);
-		Vec3 vRot = v1 + vRot0 * cosf(rad) + vRot90 * sinf(rad);
+		Vec3 vRot = v1 + vRot0 * std::cos(rad) + vRot90 * std::sin(rad);
 		vert[0].xyz = vRotLast;
 		vert[1].xyz = v2;
 		vert[2].xyz = vRot;

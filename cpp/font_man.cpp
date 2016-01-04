@@ -21,12 +21,12 @@ static Vec2 fontVertAlign[] =
 	Vec2(1, 1),
 };
 
+#ifdef _MSC_VER
 static bool isKorean(int code)
 {
 	return IS_HANGUL2(code) || code < 0x80;
 }
 
-#ifdef _MSC_VER
 static HFONT CreateAsianFont(int code, int height)
 {
 	BOOL isK = isKorean(code);
@@ -98,7 +98,6 @@ void FontMan::MakeFontBitmap(const char* fontName, const CharSignature& sig, DIB
 //	aflog("arrayLen=%d", arrayLen);
 
 	int expectedLen = cache.srcWidth.x * cache.srcWidth.y * 4;
-	bool result = false;
 	if (arrayLen != expectedLen) {
 //		aflog("wrong size! returned=%d expected=%d", arrayLen, expectedLen);
 		afVerify(false);
@@ -230,7 +229,6 @@ void FontMan::MakeFontBitmap(const char* fontName, const CharSignature& sig, DIB
 
 bool FontMan::Build(const CharSignature& signature)
 {
-	bool result = false;
 	DIB	dib;
 	CharCache cache;
 	MakeFontBitmap("Gulim", signature, dib, cache);
