@@ -1,7 +1,6 @@
-
-/VisualStudio/ipch
-/VisualStudio/Release
-/VisualStudio/Debug
+Release/
+Debug/
+ipch/
 /VisualStudio/Tmp
 /VisualStudio/glheaders/*.h
 *.suo
@@ -9,3 +8,5 @@
 *.opensdf
 *.aps
 *.bak
+*.opendb
+*.user
