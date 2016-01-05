@@ -24,6 +24,9 @@
     <ClInclude Include="..\..\..\cpp\sky_man.h" />
     <ClInclude Include="..\..\..\cpp\sprite_renderer.h" />
     <ClInclude Include="..\..\..\cpp\shader_man.h" />
+    <ClInclude Include="..\..\..\cpp\mesh_man.h" />
+    <ClInclude Include="..\..\..\cpp\mesh_renderer.h" />
+    <ClInclude Include="..\..\..\cpp\mesh_x.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="android_native_app_glue.c" />
@@ -45,5 +48,6 @@
     <ClCompile Include="..\..\..\cpp\helper.cpp" />
     <ClCompile Include="..\..\..\cpp\sky_man.cpp" />
     <ClCompile Include="..\..\..\cpp\sprite_renderer.cpp" />
+    <ClCompile Include="..\..\..\cpp\mesh_man.cpp" />
   </ItemGroup>
 </Project>

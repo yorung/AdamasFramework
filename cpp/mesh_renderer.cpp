@@ -74,7 +74,6 @@ void RenderMesh::Init(const Block& block)
 
 void RenderMesh::Draw(int instanceCount) const
 {
-	int shaderId = meshRenderer.GetShaderId();
 	assert(vao);
 	afHandleGLError(afEnableBackFaceCulling(true));
 	afHandleGLError(glActiveTexture(GL_TEXTURE0 + SBP_DIFFUSE));

@@ -233,7 +233,7 @@ void WaterSurface::Draw()
 
 
 	double dummy;
-	hmub.wrappedTime = (float)modf(elapsedTime * (1.0f / loopTime), &dummy) * loopTime;
+	hmub.wrappedTime = (float)std::modf(elapsedTime * (1.0f / loopTime), &dummy) * loopTime;
 	fontMan.DrawString(Vec2(300, 20), 10, SPrintf("%f, %f", hmub.mousePos.x, hmub.mousePos.y));
 
 	afHandleGLError(afDepthStencilMode(false));

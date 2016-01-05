@@ -242,6 +242,9 @@
     <ClInclude Include="..\..\..\cpp\glow.h" />
     <ClInclude Include="..\..\..\cpp\helper.h" />
     <ClInclude Include="..\..\..\cpp\helper_gl.h" />
+    <ClInclude Include="..\..\..\cpp\mesh_man.h" />
+    <ClInclude Include="..\..\..\cpp\mesh_renderer.h" />
+    <ClInclude Include="..\..\..\cpp\mesh_x.h" />
     <ClInclude Include="..\..\..\cpp\shader_man.h" />
     <ClInclude Include="..\..\..\cpp\sky_man.h" />
     <ClInclude Include="..\..\..\cpp\sprite_renderer.h" />
@@ -265,6 +268,7 @@
     <ClCompile Include="..\..\..\cpp\glow.cpp" />
     <ClCompile Include="..\..\..\cpp\helper.cpp" />
     <ClCompile Include="..\..\..\cpp\helper_gl.cpp" />
+    <ClCompile Include="..\..\..\cpp\mesh_man.cpp" />
     <ClCompile Include="..\..\..\cpp\sky_man.cpp" />
     <ClCompile Include="..\..\..\cpp\sprite_renderer.cpp" />
     <ClCompile Include="..\..\..\cpp\stock_objects.cpp" />
