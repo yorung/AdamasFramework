@@ -12,7 +12,7 @@ static float CalcRadius(const Mesh* m)
 		float sq = lengthSq(it.xyz);
 		maxSq = std::max(maxSq, sq);
 	}
-	return sqrt(maxSq);
+	return std::sqrt(maxSq);
 }
 
 App::App()

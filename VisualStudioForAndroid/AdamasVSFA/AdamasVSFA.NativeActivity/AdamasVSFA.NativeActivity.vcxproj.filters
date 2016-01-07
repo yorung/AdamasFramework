@@ -27,6 +27,14 @@
     <ClInclude Include="..\..\..\cpp\mesh_man.h" />
     <ClInclude Include="..\..\..\cpp\mesh_renderer.h" />
     <ClInclude Include="..\..\..\cpp\mesh_x.h" />
+    <ClInclude Include="..\..\..\cpp\input_man.h" />
+    <ClInclude Include="..\..\..\cpp\joint_db.h" />
+    <ClInclude Include="..\..\..\cpp\letterbox.h" />
+    <ClInclude Include="..\..\..\cpp\matrix_man.h" />
+    <ClInclude Include="..\..\..\cpp\matrix_stack.h" />
+    <ClInclude Include="..\..\..\cpp\helper_text.h" />
+    <ClInclude Include="..\..\..\cpp\lua_bind.h" />
+    <ClInclude Include="..\..\..\cpp\lua_man.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="android_native_app_glue.c" />
@@ -49,5 +57,14 @@
     <ClCompile Include="..\..\..\cpp\sky_man.cpp" />
     <ClCompile Include="..\..\..\cpp\sprite_renderer.cpp" />
     <ClCompile Include="..\..\..\cpp\mesh_man.cpp" />
+    <ClCompile Include="..\..\..\cpp\input_man.cpp" />
+    <ClCompile Include="..\..\..\cpp\joint_db.cpp" />
+    <ClCompile Include="..\..\..\cpp\letterbox.cpp" />
+    <ClCompile Include="..\..\..\cpp\matrix_man.cpp" />
+    <ClCompile Include="..\..\..\cpp\matrix_stack.cpp" />
+    <ClCompile Include="..\..\..\cpp\puzzle.cpp" />
+    <ClCompile Include="..\..\..\cpp\helper_android.cpp" />
+    <ClCompile Include="..\..\..\cpp\lua_bind.cpp" />
+    <ClCompile Include="..\..\..\cpp\lua_man.cpp" />
   </ItemGroup>
 </Project>

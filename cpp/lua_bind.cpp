@@ -209,7 +209,6 @@ static void BindImage(lua_State* L)
 			if (id < 0 || id >= (int)quads.size()) {
 				return;
 			}
-			ivec2 scr = systemMisc.GetScreenSize();
 			SpriteCommand s;
 			s.matW = luaMatrixStack.Get();
 			s.quad = quads[id];
