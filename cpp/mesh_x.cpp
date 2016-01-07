@@ -1040,7 +1040,6 @@ void MeshX::CalcAnimation(int animId, double time, MeshXAnimResult& animResult) 
 	for (auto itAnimation : m_animationSets[revAnimId].animations)
 	{
 		BONE_ID id = itAnimation.first;
-		const Frame& f = m_frames[id];
 		Animation& anim = itAnimation.second;
 		if (anim.animationKeys.size() == 0) {
 			continue;
@@ -1122,7 +1121,6 @@ void MeshX::SyncLocalAxisWithBvh(Bvh* bvh, MeshXBvhBinding& bind) const
 	MeshXAnimResult r;
 	CalcFrameMatrices(r, localMats);
 	for (BONE_ID id = 0; id < (BONE_ID)m_frames.size(); id++) {
-		const Frame& f = m_frames[id];
 		bind.axisAlignQuats[id] = m2q(r.boneMat[id]);
 	}
 }
@@ -1208,8 +1206,6 @@ void MeshX::ApplyBvhInitialStance(const Bvh* bvh, MeshXBvhBinding& bind) const
 		}
 		const Frame* f = &m_frames[myId];
 		assert(f->parentId >= 0);
-		const Frame* parent = &m_frames[f->parentId];
-
 		assert(bvhF.childId >= 0);
 		assert(f->childId >= 0);
 		const BvhFrame* bvhChild = &bvhFrames[bvhF.childId];

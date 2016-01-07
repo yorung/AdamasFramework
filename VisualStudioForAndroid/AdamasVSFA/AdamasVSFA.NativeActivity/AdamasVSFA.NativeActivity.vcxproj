@@ -231,6 +231,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\cpp\af_lua_helpers.h" />
     <ClInclude Include="..\..\..\cpp\af_math.h" />
     <ClInclude Include="..\..\..\cpp\app.h" />
     <ClInclude Include="..\..\..\cpp\bvh.h" />
@@ -243,6 +244,7 @@
     <ClInclude Include="..\..\..\cpp\helper.h" />
     <ClInclude Include="..\..\..\cpp\helper_gl.h" />
     <ClInclude Include="..\..\..\cpp\helper_text.h" />
+    <ClInclude Include="..\..\..\cpp\hub.h" />
     <ClInclude Include="..\..\..\cpp\input_man.h" />
     <ClInclude Include="..\..\..\cpp\joint_db.h" />
     <ClInclude Include="..\..\..\cpp\letterbox.h" />
@@ -267,7 +269,9 @@
     <ClInclude Include="android_native_app_glue.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\cpp\af_lua_helpers.cpp" />
     <ClCompile Include="..\..\..\cpp\app.cpp" />
+    <ClCompile Include="..\..\..\cpp\bvh.cpp" />
     <ClCompile Include="..\..\..\cpp\debug_renderer.cpp" />
     <ClCompile Include="..\..\..\cpp\dev_camera.cpp" />
     <ClCompile Include="..\..\..\cpp\dib.cpp" />
@@ -277,6 +281,8 @@
     <ClCompile Include="..\..\..\cpp\helper.cpp" />
     <ClCompile Include="..\..\..\cpp\helper_android.cpp" />
     <ClCompile Include="..\..\..\cpp\helper_gl.cpp" />
+    <ClCompile Include="..\..\..\cpp\hub.cpp" />
+    <ClCompile Include="..\..\..\cpp\hub_android.cpp" />
     <ClCompile Include="..\..\..\cpp\input_man.cpp" />
     <ClCompile Include="..\..\..\cpp\joint_db.cpp" />
     <ClCompile Include="..\..\..\cpp\letterbox.cpp" />
@@ -285,13 +291,17 @@
     <ClCompile Include="..\..\..\cpp\matrix_man.cpp" />
     <ClCompile Include="..\..\..\cpp\matrix_stack.cpp" />
     <ClCompile Include="..\..\..\cpp\mesh_man.cpp" />
+    <ClCompile Include="..\..\..\cpp\mesh_renderer.cpp" />
+    <ClCompile Include="..\..\..\cpp\mesh_x.cpp" />
     <ClCompile Include="..\..\..\cpp\puzzle.cpp" />
+    <ClCompile Include="..\..\..\cpp\shader_man.cpp" />
     <ClCompile Include="..\..\..\cpp\sky_man.cpp" />
     <ClCompile Include="..\..\..\cpp\sprite_renderer.cpp" />
     <ClCompile Include="..\..\..\cpp\stock_objects.cpp" />
     <ClCompile Include="..\..\..\cpp\system_misc.cpp" />
     <ClCompile Include="..\..\..\cpp\tex_man.cpp" />
     <ClCompile Include="..\..\..\cpp\voice.cpp" />
+    <ClCompile Include="..\..\..\cpp\voice_android.cpp" />
     <ClCompile Include="..\..\..\cpp\water_surface.cpp" />
     <ClCompile Include="..\..\..\cpp\water_surface_classic.cpp" />
     <ClCompile Include="android_native_app_glue.c" />

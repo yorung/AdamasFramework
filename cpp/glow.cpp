@@ -58,7 +58,7 @@ void Glow::MakeGlow(AFRenderTarget& target, GLuint srcTex)
 	afDrawTriangleStrip(4);
 
 	shaderMan.Apply(shaderGlowCopy);
-	for (int i = 1; i < dimof(glowMap); i++) {
+	for (int i = 1; i < (int)dimof(glowMap); i++) {
 		glowMap[i].BeginRenderToThis();
 		afBindTextureToBindingPoint(glowMap[i - 1].GetTexture(), 0);
 		afDrawTriangleStrip(4);
@@ -66,7 +66,7 @@ void Glow::MakeGlow(AFRenderTarget& target, GLuint srcTex)
 
 	shaderMan.Apply(shaderGlowLastPass);
 	target.BeginRenderToThis();
-	for (int i = 1; i < dimof(glowMap); i++) {
+	for (int i = 1; i < (int)dimof(glowMap); i++) {
 		afBindTextureToBindingPoint(glowMap[i].GetTexture(), i);
 	}
 	afBindTextureToBindingPoint(srcTex, 6);

@@ -205,8 +205,6 @@ void MeshRenderer::Flush()
 	if (!nStoredCommands) {
 		return;
 	}
-	int i = 0;
-	afHandleGLError(i = 1);
 	afHandleGLError(afWriteBuffer(ssboForBoneMatrices, &renderBoneMatrices[0], sizeof(Mat) * renderBoneMatrices.size()));
 	matrixMan.Get(MatrixMan::VIEW, perDrawCallUBO.matV);
 	matrixMan.Get(MatrixMan::PROJ, perDrawCallUBO.matP);

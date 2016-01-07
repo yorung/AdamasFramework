@@ -8,7 +8,7 @@ typedef unsigned int MRID;
 static const MRID INVALID_MRID = 0;
 
 typedef int MMID;
-static int INVALID_MMID = 0;
+//static int INVALID_MMID = 0;
 
 struct Material
 {

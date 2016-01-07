@@ -627,7 +627,6 @@ void Bvh::GetRotAnim(Quat quats[BONE_MAX], double time) const
 	const Pose& pose = motion.poses[frame];
 
 	for (BONE_ID i = 0; (unsigned)i < m_frames.size(); i++)	{
-		const BvhFrame& f = m_frames[i];
 		quats[i] = pose.quats[i];
 	}
 }
