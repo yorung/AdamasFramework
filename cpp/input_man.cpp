@@ -15,7 +15,7 @@ void InputMan::HandleEdge(int vk, bool up)
 
 void InputMan::Reset()
 {
-	for(int i = 0; i < dimof(keyDownCount); i++) {
+	for(int i = 0; i < (int)dimof(keyDownCount); i++) {
 		keyDownCount[i] = -1;
 	}
 }
@@ -63,7 +63,7 @@ BOOL InputMan::HandleWindowMessage(HWND hWnd, UINT message, WPARAM wParam, LPARA
 
 void InputMan::Update()
 {
-	for (int i = 0; i < dimof(keyDownCount); i++) {
+	for (int i = 0; i < (int)dimof(keyDownCount); i++) {
 		if (keyDownCount[i] >= 0) {
 			keyDownCount[i]++;
 		}

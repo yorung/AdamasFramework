@@ -1056,7 +1056,7 @@ void MeshX::CalcAnimation(int animId, double time, MeshXAnimResult& animResult) 
 			if (maxTime <= 0) {
 				continue;
 			}
-			double timeMod = fmod(time, maxTime);
+			double timeMod = std::fmod(time, maxTime);
 			int iTime = (int)timeMod % (int)maxTime;
 	
 			for (int i = 0; i < (int)itKey.timedFloatKeys.size() - 1; i++) {
@@ -1224,7 +1224,7 @@ void MeshX::ApplyBvhInitialStance(const Bvh* bvh, MeshXBvhBinding& bind) const
 		Vec3 worldTiny = normalize(r.boneMat[childId].GetRow(3) - r.boneMat[myId].GetRow(3));
 
 		Vec3 rotAxis = cross(worldTiny, worldBvh);
-		float rotRad = acosf(dot(worldTiny, worldBvh));
+		float rotRad = std::acos(dot(worldTiny, worldBvh));
 
 		Mat rotMat = r.boneMat[myId];
 		rotMat._41 = rotMat._42 = rotMat._43 = 0;

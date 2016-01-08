@@ -52,7 +52,7 @@ void PlayBgm(const char *fileName)
 
 const char* StrMessageBox(const char* txt, const char* type)
 {
-
+	return "ok";
 }
 
 void ClearMenu()
