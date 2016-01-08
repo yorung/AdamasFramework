@@ -15,7 +15,7 @@ static Puzzle puzzle;
 
 Puzzle::Puzzle()
 {
-	for (int i = 0; i < dimof(panels); i++) {
+	for (int i = 0; i < (int)dimof(panels); i++) {
 		panels[i] = i;
 	}
 	panels[0] = -1;

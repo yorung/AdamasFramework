@@ -98,7 +98,7 @@ void WaterSurface::Init()
 	aflog("WaterSurface::Init shaders are ready!\n");
 
 	glActiveTexture(GL_TEXTURE0);
-	for (int i = 0; i < dimof(texFiles); i++) {
+	for (int i = 0; i < (int)dimof(texFiles); i++) {
 		texId[i] = texMan.Create(texFiles[i].name);
 		aflog("WaterSurface::Init tex %s %s\n", texFiles[i].name, (texId[i] ? "OK" : "NG"));
 		if (!texFiles[i].clamp) {
@@ -187,7 +187,7 @@ void WaterSurface::RenderWater(const UniformBuffer& hmub)
 
 	shaderMan.Apply(shaderWaterLastPass);
 
-	for (int i = 0; i < dimof(texFiles); i++) {
+	for (int i = 0; i < (int)dimof(texFiles); i++) {
 		afBindTextureToBindingPoint(texId[i], i);
 		glBindSampler(i, texFiles[i].clamp ? stockObjects.GetClampSampler() : stockObjects.GetRepeatSampler());
 	}

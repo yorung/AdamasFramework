@@ -59,7 +59,7 @@ void WaterSurfaceClassic::UpdateVert(std::vector<WaterVert>& vert)
 	static bool t;
 	if (!t) {
 		t = true;
-		for (int i = 0; i < dimof(randWave); i++) {
+		for (int i = 0; i < (int)dimof(randWave); i++) {
 			RandWave& r = randWave[i];
 			r.degreePerSec = Random() * 15 - 7.5f;
 			r.xShift = Random();
@@ -73,7 +73,7 @@ void WaterSurfaceClassic::UpdateVert(std::vector<WaterVert>& vert)
 	for (int z = 0; z <= tileMax; z++) {
 		for (int x = 0; x <= tileMax; x++) {
 			Vec2 pos = Vec2((float)x, (float)z) / (float)tileMax * 2.0f - Vec2(1, 1);
-			for (int i = 0; i < dimof(ripples); i++) {
+			for (int i = 0; i < (int)dimof(ripples); i++) {
 				const WaterRipple& r = ripples[i];
 				float lifeTime = (float)(elapsedTime - r.generatedTime);
 				float timeAfterArrived = lifeTime - length(r.centerPos - pos) / rippleSpeed;
@@ -83,7 +83,7 @@ void WaterSurfaceClassic::UpdateVert(std::vector<WaterVert>& vert)
 				hmap[x][z] += h;
 			}
 #if 0
-			for (int i = 0; i < dimof(randWave); i++) {
+			for (int i = 0; i < (int)dimof(randWave); i++) {
 				const RandWave& r = randWave[i];
 				float rad = (elapsedTime * r.degreePerSec) * XM_2PI / 180;
 				Vec2 posRot = pos * cosf(rad) + Vec2(-pos.y, pos.x) * sinf(rad);
@@ -231,7 +231,7 @@ void WaterSurfaceClassic::Init()
 	shaderIdFullScr = shaderMan.Create(shaderName);
 
 	glActiveTexture(GL_TEXTURE0);
-	for (int i = 0; i < dimof(texFiles); i++) {
+	for (int i = 0; i < (int)dimof(texFiles); i++) {
 		texId[i] = texMan.Create(texFiles[i].name);
         if (!texFiles[i].clamp) {
             glBindTexture(GL_TEXTURE_2D, texId[i]);
@@ -357,7 +357,7 @@ void WaterSurfaceClassic::Draw()
 
 	shaderMan.Apply(shaderId);
 
-	for (int i = 0; i < dimof(texFiles); i++) {
+	for (int i = 0; i < (int)dimof(texFiles); i++) {
 		glActiveTexture(GL_TEXTURE0 + i);
 		glBindTexture(GL_TEXTURE_2D, texId[i]);
 		glBindSampler(i, texFiles[i].clamp ? samplerClamp : samplerRepeat);
