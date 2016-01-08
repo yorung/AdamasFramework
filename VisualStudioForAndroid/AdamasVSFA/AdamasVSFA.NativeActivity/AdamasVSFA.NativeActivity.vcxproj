@@ -92,6 +92,7 @@
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Label="Shared">
+    <Import Project="..\..\..\VisualStudio\SharedLua.vcxitems" Label="Shared" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -128,9 +129,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'" />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <CompileAs>CompileAsCpp</CompileAs>
+      <CompileAs>Default</CompileAs>
       <CppLanguageStandard>c++1y</CppLanguageStandard>
       <AdditionalIncludeDirectories>../../../cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CLanguageStandard>c11</CLanguageStandard>
@@ -141,9 +142,9 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <CompileAs>CompileAsCpp</CompileAs>
+      <CompileAs>Default</CompileAs>
       <CppLanguageStandard>c++1y</CppLanguageStandard>
       <AdditionalIncludeDirectories>../../../cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CLanguageStandard>c11</CLanguageStandard>
@@ -154,9 +155,9 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <CompileAs>CompileAsCpp</CompileAs>
+      <CompileAs>Default</CompileAs>
       <CppLanguageStandard>c++1y</CppLanguageStandard>
       <AdditionalIncludeDirectories>../../../cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CLanguageStandard>c11</CLanguageStandard>
@@ -167,9 +168,9 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <CompileAs>CompileAsCpp</CompileAs>
+      <CompileAs>Default</CompileAs>
       <CppLanguageStandard>c++1y</CppLanguageStandard>
       <AdditionalIncludeDirectories>../../../cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CLanguageStandard>c11</CLanguageStandard>
@@ -180,9 +181,9 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <CompileAs>CompileAsCpp</CompileAs>
+      <CompileAs>Default</CompileAs>
       <CppLanguageStandard>c++1y</CppLanguageStandard>
       <AdditionalIncludeDirectories>../../../cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CLanguageStandard>c11</CLanguageStandard>
@@ -193,9 +194,9 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <CompileAs>CompileAsCpp</CompileAs>
+      <CompileAs>Default</CompileAs>
       <CppLanguageStandard>c++1y</CppLanguageStandard>
       <AdditionalIncludeDirectories>../../../cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CLanguageStandard>c11</CLanguageStandard>
@@ -206,9 +207,9 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <CompileAs>CompileAsCpp</CompileAs>
+      <CompileAs>Default</CompileAs>
       <CppLanguageStandard>c++1y</CppLanguageStandard>
       <AdditionalIncludeDirectories>../../../cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CLanguageStandard>c11</CLanguageStandard>
@@ -219,9 +220,9 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <CompileAs>CompileAsCpp</CompileAs>
+      <CompileAs>Default</CompileAs>
       <CppLanguageStandard>c++1y</CppLanguageStandard>
       <AdditionalIncludeDirectories>../../../cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CLanguageStandard>c11</CLanguageStandard>
