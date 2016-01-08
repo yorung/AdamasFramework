@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Adamas", "Adamas.vcxproj", "{D13F848D-7701-43BA-B781-1481A54FE77D}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -10,7 +10,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Adamas", "Adamas.vcxproj", 
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lua", "Lua.vcxproj", "{B9510AE9-6611-42BB-ABC3-73FCABF768D1}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SharedLua", "SharedLua.vcxitems", "{45D41ACC-2C3C-43D2-BC10-02AA73FFC7C7}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		SharedLua.vcxitems*{b9510ae9-6611-42bb-abc3-73fcabf768d1}*SharedItemsImports = 4
+		SharedLua.vcxitems*{45d41acc-2c3c-43d2-bc10-02aa73ffc7c7}*SharedItemsImports = 9
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
 		Release|Win32 = Release|Win32
