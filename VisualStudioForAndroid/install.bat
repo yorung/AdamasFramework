@@ -1,0 +1,1 @@
+adb install -r ARM\Debug\AdamasVSFA.apk
