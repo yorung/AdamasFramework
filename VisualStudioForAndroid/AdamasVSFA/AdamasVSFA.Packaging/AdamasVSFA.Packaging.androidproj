@@ -111,15 +111,77 @@
     </AntPackage>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <Content Include="assets\autumn.jpg" />
+    <Content Include="assets\delaymap.png" />
+    <Content Include="assets\hakodate.jpg" />
+    <Content Include="assets\jiji.dds" />
+    <Content Include="assets\jiji.x" />
+    <Content Include="assets\lua\instancing.lua" />
+    <Content Include="assets\lua\jiji.lua" />
+    <Content Include="assets\lua\puzzle.lua" />
+    <Content Include="assets\lua\startD.lua" />
+    <Content Include="assets\lua\start.lua" />
+    <Content Include="assets\lua\test.lua" />
+    <Content Include="assets\pangyo.jpg" />
+    <Content Include="assets\rose.jpg" />
+    <Content Include="assets\shaders\font.frag" />
+    <Content Include="assets\shaders\font.vert" />
+    <Content Include="assets\shaders\glow_copy.frag" />
+    <Content Include="assets\shaders\glow_copy.vert" />
+    <Content Include="assets\shaders\glow_extraction.frag" />
+    <Content Include="assets\shaders\glow_extraction.vert" />
+    <Content Include="assets\shaders\glow_lastpass.frag" />
+    <Content Include="assets\shaders\glow_lastpass.vert" />
+    <Content Include="assets\shaders\letterbox.frag" />
+    <Content Include="assets\shaders\letterbox.vert" />
+    <Content Include="assets\shaders\skin.400.frag" />
+    <Content Include="assets\shaders\skin.400.vert" />
+    <Content Include="assets\shaders\skin.frag" />
+    <Content Include="assets\shaders\skin.vert" />
+    <Content Include="assets\shaders\sky_cubemap.frag" />
+    <Content Include="assets\shaders\sky_cubemap.vert" />
+    <Content Include="assets\shaders\sky_photosphere.frag" />
+    <Content Include="assets\shaders\sky_photosphere.vert" />
+    <Content Include="assets\shaders\sprite.frag" />
+    <Content Include="assets\shaders\sprite.vert" />
+    <Content Include="assets\shaders\vivid.frag" />
+    <Content Include="assets\shaders\vivid.vert" />
+    <Content Include="assets\shaders\water_classic.frag" />
+    <Content Include="assets\shaders\water_classic.vert" />
+    <Content Include="assets\shaders\water_heightmap.frag" />
+    <Content Include="assets\shaders\water_heightmap.vert" />
+    <Content Include="assets\shaders\water_lastpass.frag" />
+    <Content Include="assets\shaders\water_lastpass.vert" />
+    <Content Include="assets\shaders\water_normal.frag" />
+    <Content Include="assets\shaders\water_normal.vert" />
+    <Content Include="assets\sound\background.mp3" />
+    <Content Include="assets\sound\README.txt" />
+    <Content Include="assets\sphere.jpg" />
+    <Content Include="assets\timeline.png" />
+    <Content Include="res\mipmap-hdpi\ic_launcher.png" />
+    <Content Include="res\mipmap-mdpi\ic_launcher.png" />
+    <Content Include="res\mipmap-xhdpi\ic_launcher.png" />
+    <Content Include="res\mipmap-xxhdpi\ic_launcher.png" />
     <Content Include="res\values\strings.xml" />
     <AntBuildXml Include="build.xml" />
-    <AndroidManifest Include="AndroidManifest.xml" />
+    <AndroidManifest Include="AndroidManifest.xml">
+      <SubType>Designer</SubType>
+    </AndroidManifest>
     <AntProjectPropertiesFile Include="project.properties" />
+    <Content Include="res\values\styles.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AdamasVSFA.NativeActivity\AdamasVSFA.NativeActivity.vcxproj">
       <Project>{0904515d-323d-47a5-8b1e-e1263bc3999f}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <JavaCompile Include="src\common\pinotnoir\Bgm.java" />
+    <JavaCompile Include="src\common\pinotnoir\glactivity\PinotGLActivity.java" />
+    <JavaCompile Include="src\common\pinotnoir\glactivity\PinotGLRenderer.java" />
+    <JavaCompile Include="src\common\pinotnoir\glactivity\PinotGLSurfaceView.java" />
+    <JavaCompile Include="src\common\pinotnoir\Helper.java" />
+    <JavaCompile Include="src\common\pinotnoir\Native.java" />
   </ItemGroup>
   <Import Project="$(AndroidTargetsPath)\Android.targets" />
   <ImportGroup Label="ExtensionTargets" />

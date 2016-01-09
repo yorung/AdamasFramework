@@ -1,6 +1,7 @@
 Release/
 Debug/
 ipch/
+bin/
 /VisualStudio/Tmp
 /VisualStudio/glheaders/*.h
 *.suo

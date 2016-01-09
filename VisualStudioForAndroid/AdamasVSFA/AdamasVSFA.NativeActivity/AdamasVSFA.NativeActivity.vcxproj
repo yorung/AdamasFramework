@@ -119,14 +119,30 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+    <TargetName>libAdamasNative</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
+    <TargetName>libAdamasNative</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <TargetName>libAdamasNative</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <TargetName>libAdamasNative</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <TargetName>libAdamasNative</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <TargetName>libAdamasNative</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+    <TargetName>libAdamasNative</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+    <TargetName>libAdamasNative</TargetName>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -137,7 +153,7 @@
       <CLanguageStandard>c11</CLanguageStandard>
     </ClCompile>
     <Link>
-      <LibraryDependencies>%(LibraryDependencies);GLESv3;EGL;OpenSLES</LibraryDependencies>
+      <LibraryDependencies>%(LibraryDependencies);GLESv3;EGL;OpenSLES;m</LibraryDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
@@ -150,7 +166,7 @@
       <CLanguageStandard>c11</CLanguageStandard>
     </ClCompile>
     <Link>
-      <LibraryDependencies>%(LibraryDependencies);GLESv3;EGL;OpenSLES</LibraryDependencies>
+      <LibraryDependencies>%(LibraryDependencies);GLESv3;EGL;OpenSLES;m</LibraryDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
@@ -163,7 +179,7 @@
       <CLanguageStandard>c11</CLanguageStandard>
     </ClCompile>
     <Link>
-      <LibraryDependencies>%(LibraryDependencies);GLESv3;EGL;OpenSLES</LibraryDependencies>
+      <LibraryDependencies>%(LibraryDependencies);GLESv3;EGL;OpenSLES;m</LibraryDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
@@ -176,7 +192,7 @@
       <CLanguageStandard>c11</CLanguageStandard>
     </ClCompile>
     <Link>
-      <LibraryDependencies>%(LibraryDependencies);GLESv3;EGL;OpenSLES</LibraryDependencies>
+      <LibraryDependencies>%(LibraryDependencies);GLESv3;EGL;OpenSLES;m</LibraryDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -189,7 +205,7 @@
       <CLanguageStandard>c11</CLanguageStandard>
     </ClCompile>
     <Link>
-      <LibraryDependencies>%(LibraryDependencies);GLESv3;EGL;OpenSLES</LibraryDependencies>
+      <LibraryDependencies>%(LibraryDependencies);GLESv3;EGL;OpenSLES;m</LibraryDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -202,7 +218,7 @@
       <CLanguageStandard>c11</CLanguageStandard>
     </ClCompile>
     <Link>
-      <LibraryDependencies>%(LibraryDependencies);GLESv3;EGL;OpenSLES</LibraryDependencies>
+      <LibraryDependencies>%(LibraryDependencies);GLESv3;EGL;OpenSLES;m</LibraryDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
@@ -215,7 +231,7 @@
       <CLanguageStandard>c11</CLanguageStandard>
     </ClCompile>
     <Link>
-      <LibraryDependencies>%(LibraryDependencies);GLESv3;EGL;OpenSLES</LibraryDependencies>
+      <LibraryDependencies>%(LibraryDependencies);GLESv3;EGL;OpenSLES;m</LibraryDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
@@ -228,7 +244,7 @@
       <CLanguageStandard>c11</CLanguageStandard>
     </ClCompile>
     <Link>
-      <LibraryDependencies>%(LibraryDependencies);GLESv3;EGL;OpenSLES</LibraryDependencies>
+      <LibraryDependencies>%(LibraryDependencies);GLESv3;EGL;OpenSLES;m</LibraryDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -267,7 +283,6 @@
     <ClInclude Include="..\..\..\cpp\water_surface.h" />
     <ClInclude Include="..\..\..\cpp\water_surface_classic.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="android_native_app_glue.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\cpp\af_lua_helpers.cpp" />
@@ -305,8 +320,6 @@
     <ClCompile Include="..\..\..\cpp\voice_android.cpp" />
     <ClCompile Include="..\..\..\cpp\water_surface.cpp" />
     <ClCompile Include="..\..\..\cpp\water_surface_classic.cpp" />
-    <ClCompile Include="android_native_app_glue.c" />
-    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
