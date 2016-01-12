@@ -5,7 +5,6 @@ typedef float affloat;
 
 inline affloat clamp(affloat x, affloat mi, affloat ma) { return std::max(std::min(x, ma), mi); }
 
-
 template <class VEC3> inline VEC3 cross(const VEC3& l, const VEC3& r)
 {
 #define _(u,v) (l.u * r.v - l.v * r.u)
@@ -454,18 +453,30 @@ inline Mat fastInv(const Mat& mtx)
 	return r;
 }
 
-inline Mat perspective(affloat fov, affloat aspect, affloat n, affloat f)
+inline Mat perspectiveLH(affloat fov, affloat aspect, affloat n, affloat f)
 {
+	affloat cotHalfFov = 1 / std::tan(fov * 0.5f);
+	Mat proj = Mat(cotHalfFov / aspect, 0, 0, 0, 0, cotHalfFov, 0, 0,
 #ifdef GL_TRUE
-	Mat proj = Mat((float)1 / std::tan(fov * (float)M_PI / 180 * 0.5f) / aspect, 0, 0, 0,
-		0, (float)1 / std::tan(fov * (float)M_PI / 180 * 0.5f), 0, 0,
 		0, 0, -(f + n) / (f - n), 1,
 		0, 0, (n * f) * 2 / (f - n), 0);
 #else
-	Mat proj = Mat((float)1 / std::tan(fov * (float)M_PI / 180 * 0.5f) / aspect, 0, 0, 0,
-		0, (float)1 / std::tan(fov * (float)M_PI / 180 * 0.5f), 0, 0,
 		0, 0, f / (f - n), 1,
 		0, 0, -(n * f) / (f - n), 0);
+#endif
+	return proj;
+}
+
+inline Mat perspectiveRH(affloat fov, affloat aspect, affloat n, affloat f)
+{
+	affloat cotHalfFov = 1 / std::tan(fov * 0.5f);
+	Mat proj = Mat(cotHalfFov / aspect, 0, 0, 0, 0, cotHalfFov, 0, 0,
+#ifdef GL_TRUE
+		0, 0, -(f + n) / (f - n), -1,
+		0, 0, -(n * f) * 2 / (f - n), 0);
+#else
+		0, 0, f / (f - n), -1,
+		0, 0, (n * f) / (f - n), 0);
 #endif
 	return proj;
 }
@@ -486,7 +497,7 @@ inline Mat ortho(affloat left, affloat right, affloat bottom, affloat top, afflo
 	return proj;
 }
 
-inline Mat lookat(const Vec3& eye, const Vec3& at, const Vec3& up)
+inline Mat lookatLH(const Vec3& eye, const Vec3& at, const Vec3& up)
 {
 	Vec3 z = normalize(at - eye);
 	Vec3 x = normalize(cross(up, z));
@@ -494,16 +505,26 @@ inline Mat lookat(const Vec3& eye, const Vec3& at, const Vec3& up)
 	return fastInv(Mat(x.x, x.y, x.z, 0, y.x, y.y, y.z, 0, z.x, z.y, z.z, 0, eye.x, eye.y, eye.z, 1));
 }
 
-inline ivec4 uint32ToIvec4(uint32_t col) {
+inline Mat lookatRH(const Vec3& eye, const Vec3& at, const Vec3& up)
+{
+	Vec3 z = normalize(eye - at);
+	Vec3 x = normalize(cross(up, z));
+	Vec3 y = cross(z, x);
+	return fastInv(Mat(x.x, x.y, x.z, 0, y.x, y.y, y.z, 0, z.x, z.y, z.z, 0, eye.x, eye.y, eye.z, 1));
+}
+
+inline ivec4 uint32ToIvec4(uint32_t col)
+{
 	return ivec4(col >> 24, (col & 0x00ff0000) >> 16, (col & 0xff00) >> 8, col & 0xff);
 }
 
-
-inline ivec4 UnormToIvec4(uint32_t col) {
+inline ivec4 UnormToIvec4(uint32_t col)
+{
 	return ivec4(col >> 24, (col & 0x00ff0000) >> 16, (col & 0xff00) >> 8, col & 0xff);
 }
 
-inline uint32_t ivec4ToUnorm(const ivec4& v) {
+inline uint32_t ivec4ToUnorm(const ivec4& v)
+{
 	return (uint32_t(0xff && v.x) << 24) | (uint32_t(0xff & v.y) << 16) | (uint32_t(0xff & v.z) << 8) | (uint32_t(v.w) & 0xff);
 }
 

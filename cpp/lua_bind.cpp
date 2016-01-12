@@ -25,7 +25,7 @@ static int LLookAt(lua_State* L)
 	if (!eye || !at) {
 		return 0;
 	}
-	matrixMan.Set(MatrixMan::VIEW, lookat(*eye, *at, Vec3(0, 1, 0)));
+	matrixMan.Set(MatrixMan::VIEW, lookatLH(*eye, *at, Vec3(0, 1, 0)));
 	return 0;
 }
 
