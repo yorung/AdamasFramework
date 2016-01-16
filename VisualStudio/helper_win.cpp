@@ -75,10 +75,8 @@ void GoMyDir()
 	char* p = strrchr(dir, '\\');
 	assert(p);
 	*p = '\0';
-	p = strrchr(dir, '\\');
-	assert(p);
-	*p = '\0';
 	SetCurrentDirectoryA(dir);
+	SetCurrentDirectoryA("../../assets");
 }
 
 #pragma comment(lib, "winmm.lib")

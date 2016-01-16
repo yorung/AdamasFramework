@@ -72,7 +72,6 @@ void App::Init()
 
 #ifdef _MSC_VER
 	GoMyDir();
-	SetCurrentDirectoryA("../assets");
 #endif
 
 	meshRenderer.Create();
@@ -82,19 +81,7 @@ void App::Init()
 	spriteRenderer.Init();
 	stockObjects.Init();
 
-//	LoadMesh("jiji.x");
-#ifdef _MSC_VER
-	// workaround -- this loads shaders from engine directory
-	skyMan.Create("D:\\mydns\\janken\\Program\\root\\Media\\skybox.dds", SkyMan::CUBEMAP);
-	//	skyMan.Create("C:\\Program Files (x86)\\Microsoft DirectX SDK (August 2009)\\Samples\\C++\\Direct3D\\StateManager\\Media\\skybox02.dds", SkyMan::CUBEMAP);
-	//	skyMan.Create("D:\\mydns\\janken\\Program\\root\\Media\\LobbyCube.dds", SkyMan::CUBEMAP);
-
-	// go to the game directory
-	SetCurrentDirectoryA("D:\\mydns\\janken\\Program\\root");
-#endif
-//	PlayBgm("sound/background.mp3");
 	luaMan.Create();
-
 }
 
 void App::LoadMesh(const char* fileName)
