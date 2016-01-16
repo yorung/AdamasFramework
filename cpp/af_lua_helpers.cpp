@@ -61,11 +61,11 @@ static void CreateClassInstanceCreator(lua_State* L, const char* className, lua_
 {
 	lua_pushstring(L, className);
 	lua_pushcfunction(L, creator);
-	aflDumpStack();
+//	aflDumpStack();
 	lua_pushcclosure(L, CreateCppClassInstance, 2);
-	aflDumpStack();
+//	aflDumpStack();
 	lua_setglobal(L, className);
-	aflDumpStack();
+//	aflDumpStack();
 }
 
 void aflBindClass(lua_State* L, const char* className, luaL_Reg methods[], lua_CFunction creator)

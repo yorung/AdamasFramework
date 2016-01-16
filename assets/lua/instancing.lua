@@ -6,10 +6,10 @@ local function ScaledMesh(fileName, scale)
 			if not mesh then
 				mesh = Mesh(fileName)
 			end
-			matrixStack.Push()
-				matrixStack.Scale(scale, scale, scale)
+			matrixStack:Push()
+				matrixStack:Scale(scale, scale, scale)
 				mesh:Draw(animId, time)
-			matrixStack.Pop()
+			matrixStack:Pop()
 		end
 	}
 end
@@ -37,15 +37,15 @@ local m_frame = 0
 local g_animId = 0
 
 local function DrawOne( x, y, mesh )
-	matrixStack.Push()
-		matrixStack.Translate( x, 0.25, -y )
+	matrixStack:Push()
+		matrixStack:Translate( x, 0.25, -y )
 		local rot = m_frame
-		matrixStack.RotateX( rot )
-		matrixStack.RotateY( rot )
-		matrixStack.RotateZ( rot )
+		matrixStack:RotateX( rot )
+		matrixStack:RotateY( rot )
+		matrixStack:RotateZ( rot )
 
 		mesh:Draw( 0, m_frame * ( 1 / FPS ) )
-	matrixStack.Pop()
+	matrixStack:Pop()
 end
 
 
@@ -89,11 +89,11 @@ local function DrawBlocks()
 end
 
 function Draw3D()
-	matrixStack.Push()
-		matrixStack.Translate( 0, 3, 0 )
-		matrixStack.RotateY( m_frame )
+	matrixStack:Push()
+		matrixStack:Translate( 0, 3, 0 )
+		matrixStack:RotateY( m_frame )
 		meshTbl[1]:Draw( g_animId, m_frame / 60 )
-	matrixStack.Pop()
+	matrixStack:Pop()
 
 	DrawBlocks()
 end

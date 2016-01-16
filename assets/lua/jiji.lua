@@ -5,19 +5,19 @@ local elapsed = 0
 function Draw3D()
 	mesh:Draw(0, elapsed)
 
-	matrixStack.Push()
-	matrixStack.Translate(2.2, 0, 0)
-	matrixStack.RotateY(deg)
-	matrixStack.Scale(0.8, 0.8, 0.8)
+	matrixStack:Push()
+	matrixStack:Translate(2.2, 0, 0)
+	matrixStack:RotateY(deg)
+	matrixStack:Scale(0.8, 0.8, 0.8)
 	mesh:Draw(0, elapsed)
-	matrixStack.Pop()
+	matrixStack:Pop()
 
-	matrixStack.Push()
-	matrixStack.Translate(-2.2, 0, 0)
-	matrixStack.RotateZ(deg)
-	matrixStack.Scale(1.0 + math.sin(deg * math.pi / 180 * 2) * 0.5, 0.8, 1.0 + math.sin(deg * math.pi / 180 * 3) * 0.5)
+	matrixStack:Push()
+	matrixStack:Translate(-2.2, 0, 0)
+	matrixStack:RotateZ(deg)
+	matrixStack:Scale(1.0 + math.sin(deg * math.pi / 180 * 2) * 0.5, 0.8, 1.0 + math.sin(deg * math.pi / 180 * 3) * 0.5)
 	mesh:Draw(0, elapsed)
-	matrixStack.Pop()
+	matrixStack:Pop()
 
 	deg = deg + 3
 	elapsed = elapsed + 0.1666666

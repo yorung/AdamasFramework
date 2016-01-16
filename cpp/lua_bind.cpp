@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-MatrixStack luaMatrixStack;
 SpriteCommands luaSpriteCommands;
 
 #ifndef _MSC_VER
@@ -17,6 +16,7 @@ static const char* vec3ClassName = "Vec3";
 static const char* vec4ClassName = "Vec4";
 static const char* voiceClassName = "Voice";
 static const char* rectClassName = "RECT";
+static const char* matrixStackClassName = "MatrixStack";
 
 static int LLookAt(lua_State* L)
 {
@@ -40,10 +40,23 @@ static void LoadSkyBox(const char *fileName, const char* mappingType)
 	skyMan.Create(fileName, type);
 }
 
-static ivec2 GetScreenPos()
+static MatrixStack* GetGlobalMatrixStack(lua_State* L)
 {
+	lua_getglobal(L, "matrixStack");
+	MatrixStack* matrixStack = (MatrixStack*)luaL_checkudata(L, -1, matrixStackClassName);
+	lua_pop(L, 1);
+	return matrixStack;
+}
+
+static ivec2 GetScreenPos(lua_State* L)
+{
+	MatrixStack* matrixStack = GetGlobalMatrixStack(L);
+	if (!matrixStack) {
+		return ivec2(0, 0);
+	}
+
 	Mat mW, mV, mP;
-	mW = luaMatrixStack.Get();
+	mW = matrixStack->Get();
 	matrixMan.Get(MatrixMan::VIEW, mV);
 	matrixMan.Get(MatrixMan::PROJ, mP);
 	Mat mViewport;
@@ -162,17 +175,35 @@ static void BindMesBox(lua_State *L)
 
 static void BindMatrixStack(lua_State *L)
 {
-	static luaL_Reg inNamespaceFuncs[] = {
-		{ "Push", [](lua_State* L) { luaMatrixStack.Push(); return 0; } },
-		{ "Pop", [](lua_State* L) { luaMatrixStack.Pop(); return 0; } },
-		{ "RotateX", [](lua_State* L) { luaMatrixStack.Mul(q2m(Quat(Vec3(1, 0, 0), (float)lua_tonumber(L, -1) * (float)M_PI / 180))); return 0; } },
-		{ "RotateY", [](lua_State* L) { luaMatrixStack.Mul(q2m(Quat(Vec3(0, 1, 0), (float)lua_tonumber(L, -1) * (float)M_PI / 180))); return 0; } },
-		{ "RotateZ", [](lua_State* L) { luaMatrixStack.Mul(q2m(Quat(Vec3(0, 0, 1), (float)lua_tonumber(L, -1) * (float)M_PI / 180))); return 0; } },
-		{ "Scale", [](lua_State* L) { luaMatrixStack.Mul(scale((float)lua_tonumber(L, -3), (float)lua_tonumber(L, -2), (float)lua_tonumber(L, -1))); return 0; } },
-		{ "Translate", [](lua_State* L) { luaMatrixStack.Mul(translate((float)lua_tonumber(L, -3), (float)lua_tonumber(L, -2), (float)lua_tonumber(L, -1))); return 0; } },
+	#define GET_MATRIX_STACK \
+		MatrixStack* p = (MatrixStack*)luaL_checkudata(L, 1, matrixStackClassName); \
+		if (!p) { return 0; }
+	static luaL_Reg methods[] = {
+		{ "Push", [](lua_State* L) { GET_MATRIX_STACK p->Push(); return 0; } },
+		{ "Pop", [](lua_State* L) { GET_MATRIX_STACK p->Pop(); return 0; } },
+		{ "RotateX", [](lua_State* L) { GET_MATRIX_STACK p->Mul(q2m(Quat(Vec3(1, 0, 0), (float)lua_tonumber(L, -1) * (float)M_PI / 180))); return 0; } },
+		{ "RotateY", [](lua_State* L) { GET_MATRIX_STACK p->Mul(q2m(Quat(Vec3(0, 1, 0), (float)lua_tonumber(L, -1) * (float)M_PI / 180))); return 0; } },
+		{ "RotateZ", [](lua_State* L) { GET_MATRIX_STACK p->Mul(q2m(Quat(Vec3(0, 0, 1), (float)lua_tonumber(L, -1) * (float)M_PI / 180))); return 0; } },
+		{ "Scale", [](lua_State* L) { GET_MATRIX_STACK p->Mul(scale((float)lua_tonumber(L, -3), (float)lua_tonumber(L, -2), (float)lua_tonumber(L, -1))); return 0; } },
+		{ "Translate", [](lua_State* L) { GET_MATRIX_STACK p->Mul(translate((float)lua_tonumber(L, -3), (float)lua_tonumber(L, -2), (float)lua_tonumber(L, -1))); return 0; } },
 		{ nullptr, nullptr },
 	};
-	aflBindNamespace(L, "matrixStack", inNamespaceFuncs);
+	#undef GET_MATRIX_STACK
+	aflBindClass(L, matrixStackClassName, methods, [](lua_State* L) { void* u = lua_newuserdata(L, sizeof(MatrixStack)); new (u) MatrixStack(); return 1; });
+
+	lua_getglobal(L, matrixStackClassName);
+	aflDumpStack();
+	if (lua_pcall(L, 0, LUA_MULTRET, 0)) {
+		printf("%s\n", lua_tostring(L, -1));
+		lua_pop(L, 1);
+		return;
+	}
+	aflDumpStack();
+	lua_setglobal(L, "matrixStack");
+	aflDumpStack();
+
+	MatrixStack* ms = GetGlobalMatrixStack(L);
+
 }
 
 static void BindImage(lua_State* L)
@@ -204,13 +235,18 @@ static void BindImage(lua_State* L)
 			quads[id] = ltrb;
 		}
 
-		void Draw(int id, const Vec4* color)
+		void Draw(lua_State* L, int id, const Vec4* color)
 		{
 			if (id < 0 || id >= (int)quads.size()) {
 				return;
 			}
+			MatrixStack* matrixStack = GetGlobalMatrixStack(L);
+			if (!matrixStack) {
+				return;
+			}
+
 			SpriteCommand s;
-			s.matW = luaMatrixStack.Get();
+			s.matW = matrixStack->Get();
 			s.quad = quads[id];
 			s.tex = texId;
 			s.color = 0xffffffff;
@@ -224,7 +260,7 @@ static void BindImage(lua_State* L)
 	static struct luaL_Reg methods[] =
 	{
 		{ "__gc", [](lua_State* L) { GET_IMAGE p->~Image(); return 0; } },
-		{ "DrawCell", [](lua_State* L) { GET_IMAGE p->Draw((int)lua_tointeger(L, 2), (Vec4*)luaL_testudata(L, 3, vec4ClassName)); return 0; } },
+		{ "DrawCell", [](lua_State* L) { GET_IMAGE p->Draw(L, (int)lua_tointeger(L, 2), (Vec4*)luaL_testudata(L, 3, vec4ClassName)); return 0; } },
 		{ "SetCell", [](lua_State* L) {
 			GET_IMAGE
 //			const RECT* r = (RECT*)luaL_checkudata(L, -1, rectClassName);
@@ -271,13 +307,19 @@ static void BindMesh(lua_State* L)
 		LMesh(const char *fileName) {
 			mmid = meshMan.Create(fileName);
 		}
-		void Draw(int animId, double time) {
+		void Draw(lua_State* L, int animId, double time) {
 			MeshX* mesh = (MeshX*)meshMan.Get(mmid);
-			if (mesh) {
-				MeshXAnimResult r;
-				mesh->CalcAnimation(animId, time, r);
-				mesh->Draw(r, luaMatrixStack.Get());
+			if (!mesh) {
+				return;
 			}
+			MatrixStack* matrixStack = GetGlobalMatrixStack(L);
+			if (!matrixStack) {
+				return;
+			}
+
+			MeshXAnimResult r;
+			mesh->CalcAnimation(animId, time, r);
+			mesh->Draw(r, matrixStack->Get());
 		}
 	};
 	static const char* meshClassName = "Mesh";
@@ -288,7 +330,7 @@ static void BindMesh(lua_State* L)
 	static struct luaL_Reg methods[] =
 	{
 		{ "__gc", [](lua_State* L) { GET_MESH p->~LMesh(); return 0; } },
-		{ "Draw", [](lua_State* L) { GET_MESH p->Draw((int)lua_tointeger(L, -2), lua_tonumber(L, -1)); return 0; } },
+		{ "Draw", [](lua_State* L) { GET_MESH p->Draw(L, (int)lua_tointeger(L, -2), lua_tonumber(L, -1)); return 0; } },
 		{ nullptr, nullptr },
 	};
 #undef GET_MESH
@@ -325,7 +367,7 @@ static void BindGlobalFuncs(lua_State* L)
 		{ "LookAt", LLookAt },
 		{ "LoadSkyBox", [](lua_State* L) { LoadSkyBox(lua_tostring(L, 1), lua_tostring(L, 2)); return 0; } },
 		{ "GetMousePos", [](lua_State* L) { PushPoint(L, systemMisc.GetMousePos()); return 1; } },
-		{ "GetScreenPos", [](lua_State* L) { PushPoint(L, GetScreenPos()); return 1; } },
+		{ "GetScreenPos", [](lua_State* L) { PushPoint(L, GetScreenPos(L)); return 1; } },
 		{ "MessageBox", [](lua_State* L) { lua_pushstring(L, StrMessageBox(lua_tostring(L, -2), lua_tostring(L, -1))); return 1; } },
 		{ "PostCommand", [](lua_State* L) { PostCommand(lua_tostring(L, -1)); return 0; } },
 		{ nullptr, nullptr },

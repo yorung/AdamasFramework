@@ -1,7 +1,6 @@
 #include "stdafx.h"
 
 LuaMan luaMan;
-extern MatrixStack luaMatrixStack;
 extern SpriteCommands luaSpriteCommands;
 
 LuaBindFuncContainer& GetLuaBindFuncContainer()
@@ -54,7 +53,6 @@ void LuaMan::Destroy()
 
 void LuaMan::CallGlobal(const char* func)
 {
-	luaMatrixStack.Reset();
 	lua_getglobal(L, func);
 	//	aflDumpStack();
 	if (lua_pcall(L, 0, LUA_MULTRET, 0)) {
@@ -66,7 +64,6 @@ void LuaMan::CallGlobal(const char* func)
 	if (top > 0) {
 		aflog("error! stack is not empty\n");
 	}
-	luaMatrixStack.Reset();
 }
 
 void LuaMan::Update()
