@@ -78,6 +78,7 @@ void LuaMan::Draw2D()
 {
 //	assert(luaSpriteCommands.empty());
 	CallGlobal("Draw2D");
+	std::stable_sort(luaSpriteCommands.begin(), luaSpriteCommands.end(), [](auto l, auto r){ return l.matW._43 < r.matW._43; });
 	spriteRenderer.Draw(luaSpriteCommands);
 	luaSpriteCommands.clear();
 }
