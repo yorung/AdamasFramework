@@ -60,6 +60,9 @@ static GLuint LoadTextureViaOS(const char* name, ivec2& size)
 	delete bitmapData;
 	delete image;
 	Gdiplus::GdiplusShutdown(gdiplusToken);
+	if (!w || !h) {
+		return 0;
+	}
 
 	GLuint texture;
 	glGenTextures(1, &texture);
