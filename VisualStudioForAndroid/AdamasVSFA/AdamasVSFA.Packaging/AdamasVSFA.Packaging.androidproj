@@ -116,11 +116,12 @@
     <Content Include="assets\hakodate.jpg" />
     <Content Include="assets\jiji.dds" />
     <Content Include="assets\jiji.x" />
+    <Content Include="assets\lua\hasami_shogi.lua" />
     <Content Include="assets\lua\instancing.lua" />
     <Content Include="assets\lua\jiji.lua" />
     <Content Include="assets\lua\puzzle.lua" />
-    <Content Include="assets\lua\startD.lua" />
     <Content Include="assets\lua\start.lua" />
+    <Content Include="assets\lua\startD.lua" />
     <Content Include="assets\lua\test.lua" />
     <Content Include="assets\pangyo.jpg" />
     <Content Include="assets\rose.jpg" />
