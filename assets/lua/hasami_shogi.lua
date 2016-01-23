@@ -209,4 +209,4 @@ end
 function Draw3D()
 end
 
-LoadSkyBox("hakodate.jpg", "photosphere")
+LoadSkyBox("hakodate.jpg", "sky_photosphere")

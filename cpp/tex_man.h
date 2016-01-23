@@ -1,3 +1,8 @@
+struct TexDesc {
+	ivec2 size;
+	int arraySize = 1;
+};
+
 class TexMan
 {
 public:
@@ -8,13 +13,13 @@ public:
 	TMID CreateDynamicTexture(const char* name, int w, int h);
 	void Destroy();
 	void Write(TMID id, const void* buf);
-	ivec2 GetSize(TMID id);
-	void StoreTexState(TMID id, const ivec2& v2);
+	const TexDesc* GetTexDesc(TMID id);
 private:
+	void StoreTexState(TMID id, const TexDesc& v);
 	typedef std::map<std::string, TMID> NameToId;
 	NameToId nameToId;
-	typedef std::vector<ivec2> TexStates;
-	TexStates texStates;
+	typedef std::vector<TexDesc> TexDescs;
+	TexDescs texDescs;
 };
 
 extern TexMan texMan;

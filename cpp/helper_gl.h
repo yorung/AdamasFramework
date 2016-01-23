@@ -1,6 +1,9 @@
 typedef unsigned short AFIndex;
 #define AFIndexTypeToDevice GL_UNSIGNED_SHORT
 
+GLenum _afHandleGLError(const char* file, const char* func, int line, const char* command);
+#define afHandleGLError(command) do{ command; _afHandleGLError(__FILE__, __FUNCTION__, __LINE__, #command); } while(0)
+
 enum ShaderFormat {
 	SF_INVALID,
 	SF_R32_FLOAT,
@@ -87,8 +90,8 @@ void afSetVertexAttributes(GLuint program, const InputElement elements[], int nu
 template <class BufName>
 void afWriteBuffer(BufName bufName, const void* buf, int size)
 {
-	glBindBuffer(BufName::bufType, bufName);
-	glBufferSubData(BufName::bufType, 0, size, buf);
+	afHandleGLError(glBindBuffer(BufName::bufType, bufName));
+	afHandleGLError(glBufferSubData(BufName::bufType, 0, size, buf));
 	glBindBuffer(BufName::bufType, 0);
 }
 
@@ -145,7 +148,6 @@ void afLayoutSSBOBindingManually(GLuint program, const GLchar* name, GLuint stor
 void afLayoutUBOBindingManually(GLuint program, const GLchar* name, GLuint uniformBlockBinding);
 #endif
 void afBindTextureToBindingPoint(GLuint tex, GLuint textureBindingPoint);
-void afBindCubeMapToBindingPoint(GLuint tex, GLuint textureBindingPoint);
 
 void afDrawIndexedTriangleList(int numIndices, int start = 0);
 void afDrawIndexedTriangleStrip(int numIndices, int start = 0);
@@ -160,8 +162,6 @@ void afBlendMode(BlendMode mode);
 void afDepthStencilMode(bool depth);
 #define afBindVAO glBindVertexArray
 #define afBindSamplerToBindingPoint(samp,pnt) glBindSampler(pnt, samp)
-GLenum _afHandleGLError(const char* file, const char* func, int line, const char* command);
-#define afHandleGLError(command) do{ command; _afHandleGLError(__FILE__, __FUNCTION__, __LINE__, #command); } while(0)
 
 void afDumpCaps();
 void afDumpIsEnabled();

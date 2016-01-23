@@ -29,17 +29,7 @@ static int LLookAt(lua_State* L)
 	return 0;
 }
 
-static void LoadSkyBox(const char *fileName, const char* mappingType)
-{
-	SkyMan::MappingType type = SkyMan::CUBEMAP;
-	if (mappingType) {
-		if (!stricmp(mappingType, "photosphere")) {
-			type = SkyMan::PHOTOSPHERE;
-		}
-	}
-	skyMan.Create(fileName, type);
-}
-
+// for Legacy
 static MatrixStack* GetGlobalMatrixStack(lua_State* L)
 {
 	lua_getglobal(L, "matrixStack");
@@ -191,6 +181,7 @@ static void BindMatrixStack(lua_State *L)
 	#undef GET_MATRIX_STACK
 	aflBindClass(L, matrixStackClassName, methods, [](lua_State* L) { void* u = lua_newuserdata(L, sizeof(MatrixStack)); new (u) MatrixStack(); return 1; });
 
+	// for Legacy
 	lua_getglobal(L, matrixStackClassName);
 	aflDumpStack();
 	if (lua_pcall(L, 0, LUA_MULTRET, 0)) {
@@ -201,9 +192,6 @@ static void BindMatrixStack(lua_State *L)
 	aflDumpStack();
 	lua_setglobal(L, "matrixStack");
 	aflDumpStack();
-
-	MatrixStack* ms = GetGlobalMatrixStack(L);
-
 }
 
 static void BindImage(lua_State* L)
@@ -260,7 +248,13 @@ static void BindImage(lua_State* L)
 	static struct luaL_Reg methods[] =
 	{
 		{ "__gc", [](lua_State* L) { GET_IMAGE p->~Image(); return 0; } },
-		{ "DrawCell", [](lua_State* L) { GET_IMAGE p->Draw(L, (int)lua_tointeger(L, 2), (Vec4*)luaL_testudata(L, 3, vec4ClassName)); return 0; } },
+
+		{ "DrawCell", [](lua_State* L) {
+			GET_IMAGE
+			p->Draw(L, (int)lua_tointeger(L, 2), (Vec4*)luaL_testudata(L, 3, vec4ClassName));
+			return 0;
+		} },
+
 		{ "SetCell", [](lua_State* L) {
 			GET_IMAGE
 //			const RECT* r = (RECT*)luaL_checkudata(L, -1, rectClassName);
@@ -365,7 +359,7 @@ static void BindGlobalFuncs(lua_State* L)
 		{ "AddMenu", [](lua_State* L) { AddMenu(lua_tostring(L, -2), lua_tostring(L, -1)); return 0; } },
 		{ "GetKeyCount", [](lua_State* L) { lua_pushinteger(L, inputMan.GetInputCount((int)lua_tointeger(L, -1))); return 1; } },
 		{ "LookAt", LLookAt },
-		{ "LoadSkyBox", [](lua_State* L) { LoadSkyBox(lua_tostring(L, 1), lua_tostring(L, 2)); return 0; } },
+		{ "LoadSkyBox", [](lua_State* L) { skyMan.Create(lua_tostring(L, 1), lua_tostring(L, 2)); return 0; } },
 		{ "GetMousePos", [](lua_State* L) { PushPoint(L, systemMisc.GetMousePos()); return 1; } },
 		{ "GetScreenPos", [](lua_State* L) { PushPoint(L, GetScreenPos(L)); return 1; } },
 		{ "MessageBox", [](lua_State* L) { lua_pushstring(L, StrMessageBox(lua_tostring(L, -2), lua_tostring(L, -1))); return 1; } },

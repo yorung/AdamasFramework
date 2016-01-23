@@ -122,7 +122,7 @@ static void ArrangeRawDDS(void* img, int size)
 	});
 }
 
-static GLuint LoadDDSTexture(const char* name, ivec2& texSize)
+static GLuint LoadDDSTexture(const char* name, TexDesc& texSize)
 {
 	int size;
 	GLuint texture = 0;
@@ -132,6 +132,9 @@ static GLuint LoadDDSTexture(const char* name, ivec2& texSize)
 		return 0;
 	}
 	const DDSHeader* hdr = (DDSHeader*)img;
+	texSize.size.x = hdr->w;
+	texSize.size.y = hdr->h;
+	texSize.arraySize = hdr->GetArraySize();
 
 	GLenum format;
 	int(*pitchCalcurator)(int, int) = nullptr;
@@ -154,8 +157,6 @@ static GLuint LoadDDSTexture(const char* name, ivec2& texSize)
 		pitchCalcurator = [](int w, int h) { return w * h * 4; };
 		break;
 	}
-	texSize.x = hdr->w;
-	texSize.y = hdr->h;
 
 	GLenum target = hdr->IsCubeMap() ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D;
 	GLenum targetFace = hdr->IsCubeMap() ? GL_TEXTURE_CUBE_MAP_POSITIVE_X : GL_TEXTURE_2D;
@@ -196,14 +197,14 @@ static GLuint LoadDDSTexture(const char* name, ivec2& texSize)
 	return texture;
 }
 
-static GLuint LoadTexture(const char* name, ivec2& size)
+static GLuint LoadTexture(const char* name, TexDesc& desc)
 {
-	size = ivec2();
 	int len = strlen(name);
 	if (len > 4 && !stricmp(name + len - 4, ".dds")) {
-		return LoadDDSTexture(name, size);
+		return LoadDDSTexture(name, desc);
 	} else {
-		return LoadTextureViaOS(name, size);
+		desc.arraySize = 1;
+		return LoadTextureViaOS(name, desc.size);
 	}
 }
 
@@ -215,8 +216,10 @@ TexMan::TMID TexMan::CreateDynamicTexture(const char* name, int w, int h)
 		return it->second;
 	}
 	TMID id = nameToId[name] = afCreateDynamicTexture(w, h, AFDT_R8G8B8A8_UINT);
-	ivec2 size(w, h);
-	StoreTexState(id, size);
+	TexDesc desc;
+	desc.size.x = w;
+	desc.size.y = h;
+	StoreTexState(id, desc);
 	return id;
 }
 
@@ -227,9 +230,9 @@ TexMan::TMID TexMan::Create(const char *name)
 	{
 		return it->second;
 	}
-	ivec2 size;
-	TMID id = nameToId[name] = LoadTexture(name, size);
-	StoreTexState(id, size);
+	TexDesc desc;
+	TMID id = nameToId[name] = LoadTexture(name, desc);
+	StoreTexState(id, desc);
 	return id;
 }
 
@@ -242,8 +245,9 @@ TexMan::TMID TexMan::CreateWhiteTexture()
 		return it->second;
 	}
 	TMID id = nameToId[name] = afCreateWhiteTexture();
-	ivec2 size(1, 1);
-	StoreTexState(id, size);
+	TexDesc desc;
+	desc.size.x = desc.size.y = 1;
+	StoreTexState(id, desc);
 	return id;
 }
 
@@ -257,26 +261,29 @@ void TexMan::Destroy()
 	nameToId.clear();
 }
 
-void TexMan::StoreTexState(TMID id, const ivec2& v2)
+void TexMan::StoreTexState(TMID id, const TexDesc& v)
 {
-	if (id >= texStates.size() ) {
-		texStates.resize(id + 1);
+	if (id >= texDescs.size() ) {
+		texDescs.resize(id + 1);
 	}
-	texStates[id] = v2;
+	texDescs[id] = v;
 }
 
-ivec2 TexMan::GetSize(TMID id)
+const TexDesc* TexMan::GetTexDesc(TMID id)
 {
-	if (id >= texStates.size()) {
-		return ivec2();
+	if (id >= texDescs.size()) {
+		return nullptr;
 	}
-	return texStates[id];
+	return &texDescs[id];
 }
 
 void TexMan::Write(TMID id, const void* buf)
 {
-	ivec2 v = GetSize(id);
+	const TexDesc* d = GetTexDesc(id);
+	if (!d) {
+		return;
+	}
 	glBindTexture(GL_TEXTURE_2D, id);
-	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, v.x, v.y, GL_RGBA, GL_UNSIGNED_BYTE, buf);
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, d->size.x, d->size.y, GL_RGBA, GL_UNSIGNED_BYTE, buf);
 	glBindTexture(GL_TEXTURE_2D, 0);
 }

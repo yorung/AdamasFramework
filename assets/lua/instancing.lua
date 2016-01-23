@@ -54,10 +54,6 @@ function Update()
 	local at = Vec3( 0, 3, 0 )
 	LookAt( eye, at )
 
-	if GetKeyCount(0x0D) == 1 then
-		LoadSkyBox( "Media/LobbyCube.dds" )
-	end
-
 	if GetKeyCount(0x25) == 1 then	-- left
 		g_animId = 0
 		table.insert(meshTbl, 1, table.remove(meshTbl))

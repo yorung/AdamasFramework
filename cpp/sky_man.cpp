@@ -13,18 +13,11 @@ SkyMan::~SkyMan()
 {
 }
 
-void SkyMan::Create(const char *strCubeMapFile, MappingType type)
+void SkyMan::Create(const char *strCubeMapFile, const char* shader)
 {
-	mappingType = type;
-	static const char* shaders[] =
-	{
-		"sky_cubemap",
-		"sky_photosphere",
-	};
 	Destroy();
-
 	texId = texMan.Create(strCubeMapFile);
-	shaderId = shaderMan.Create(shaders[type]);
+	shaderId = shaderMan.Create(shader);
 	uboId = afCreateUBO(sizeof(Mat));
 }
 
@@ -46,22 +39,12 @@ void SkyMan::Draw()
 	matV._41 = matV._42 = matV._43 = 0;
 	Mat invVP = inv(matV * matP);
 
-//	char buf[100];
-//	Vec3 pos(0, 0, 0);
-//	Vec3 dir = transform(pos, invVP);
-//	snprintf(buf, sizeof(buf), "(0,0) = %f,%f,%f", dir.x, dir.y, dir.z);
-//	fontMan.DrawString(Vec2(100, 100), 20, buf);
-
-	afHandleGLError(afWriteBuffer(uboId, &invVP, sizeof(invVP)));
-	afHandleGLError(afBindBufferToBindingPoint(uboId, 0));
-	if (mappingType == CUBEMAP) {
-		afBindCubeMapToBindingPoint(texId, 0);
-	} else {
-		afBindTextureToBindingPoint(texId, 0);
-	}
+	afWriteBuffer(uboId, &invVP, sizeof(invVP));
+	afBindBufferToBindingPoint(uboId, 0);
+	afBindTextureToBindingPoint(texId, 0);
 
 	stockObjects.ApplyFullScreenVAO();
-	afHandleGLError(afDrawTriangleStrip(4));
+	afDrawTriangleStrip(4);
 	afBindVAO(0);
 }
 
