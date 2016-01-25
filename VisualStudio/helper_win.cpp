@@ -112,3 +112,43 @@ const char* StrMessageBox(const char* txt, const char* type)
 {
 	return IdToStr(MessageBoxA(GetActiveWindow(), txt, "MessageBox", StrToType(type)));
 }
+
+namespace Gdiplus {
+	using std::min;
+	using std::max;
+}
+#include <gdiplus.h>
+#pragma comment(lib, "gdiplus.lib")
+
+bool LoadImageViaGdiPlus(const char* name, ivec2& size, std::vector<uint32_t>& col)
+{
+	Gdiplus::GdiplusStartupInput gdiplusStartupInput;
+	ULONG_PTR gdiplusToken;
+	Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, nullptr);
+	WCHAR wc[MAX_PATH];
+	MultiByteToWideChar(CP_ACP, 0, name, -1, wc, dimof(wc));
+	Gdiplus::Bitmap* image = new Gdiplus::Bitmap(wc);
+
+	int w = (int)image->GetWidth();
+	int h = (int)image->GetHeight();
+	size.x = w;
+	size.y = h;
+	Gdiplus::Rect rc(0, 0, w, h);
+
+	Gdiplus::BitmapData* bitmapData = new Gdiplus::BitmapData;
+	image->LockBits(&rc, Gdiplus::ImageLockModeRead, PixelFormat32bppARGB, bitmapData);
+
+	col.resize(w * h);
+	for (int y = 0; y < h; y++) {
+		memcpy(&col[y * w], (char*)bitmapData->Scan0 + bitmapData->Stride * y, w * 4);
+		for (int x = 0; x < w; x++) {
+			uint32_t& c = col[y * w + x];
+			c = (c & 0xff00ff00) | ((c & 0xff) << 16) | ((c & 0xff0000) >> 16);
+		}
+	}
+	image->UnlockBits(bitmapData);
+	delete bitmapData;
+	delete image;
+	Gdiplus::GdiplusShutdown(gdiplusToken);
+	return w && h;
+}

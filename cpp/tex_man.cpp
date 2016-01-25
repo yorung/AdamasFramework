@@ -22,48 +22,12 @@ static GLuint LoadTextureViaOS(const char* name, ivec2& size)
 #endif
 
 #ifdef _MSC_VER
-namespace Gdiplus {
-	using std::min;
-	using std::max;
-}
-#include <gdiplus.h>
-#pragma comment(lib, "gdiplus.lib")
-
 static GLuint LoadTextureViaOS(const char* name, ivec2& size)
 {
-	Gdiplus::GdiplusStartupInput gdiplusStartupInput;
-	ULONG_PTR gdiplusToken;
-	Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, nullptr);
-	WCHAR wc[MAX_PATH];
-	MultiByteToWideChar(CP_ACP, 0, name, -1, wc, dimof(wc));
-	Gdiplus::Bitmap* image = new Gdiplus::Bitmap(wc);
-
-	int w = (int)image->GetWidth();
-	int h = (int)image->GetHeight();
-	size.x = w;
-	size.y = h;
-	Gdiplus::Rect rc(0, 0, w, h);
-
-	Gdiplus::BitmapData* bitmapData = new Gdiplus::BitmapData;
-	image->LockBits(&rc, Gdiplus::ImageLockModeRead, PixelFormat32bppARGB, bitmapData);
-
 	std::vector<uint32_t> col;
-	col.resize(w * h);
-	for (int y = 0; y < h; y++) {
-		memcpy(&col[y * w], (char*)bitmapData->Scan0 + bitmapData->Stride * y, w * 4);
-		for (int x = 0; x < w; x++) {
-			uint32_t& c = col[y * w + x];
-			c = (c & 0xff00ff00) | ((c & 0xff) << 16) | ((c & 0xff0000) >> 16);
-		}
-	}
-	image->UnlockBits(bitmapData);
-	delete bitmapData;
-	delete image;
-	Gdiplus::GdiplusShutdown(gdiplusToken);
-	if (!w || !h) {
+	if (!LoadImageViaGdiPlus(name, size, col)) {
 		return 0;
 	}
-
 	GLuint texture;
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
@@ -72,7 +36,7 @@ static GLuint LoadTextureViaOS(const char* name, ivec2& size)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, &col[0]);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size.x, size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, &col[0]);
 	glGenerateMipmap(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	return texture;
