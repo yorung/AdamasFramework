@@ -172,7 +172,7 @@
     <Content Include="res\values\styles.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AdamasVSFA.NativeActivity\AdamasVSFA.NativeActivity.vcxproj">
+    <ProjectReference Include="..\VisualStudioForAndroid\AdamasVSFA\AdamasVSFA.NativeActivity\AdamasVSFA.NativeActivity.vcxproj">
       <Project>{0904515d-323d-47a5-8b1e-e1263bc3999f}</Project>
     </ProjectReference>
   </ItemGroup>
