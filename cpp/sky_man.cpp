@@ -2,21 +2,15 @@
 
 SkyMan skyMan;
 
-SkyMan::SkyMan()
-{
-	texId = TexMan::INVALID_TMID;
-	shaderId = ShaderMan::INVALID_SMID;
-	uboId = 0;
-}
-
 SkyMan::~SkyMan()
 {
+	assert(uboId == 0);
 }
 
-void SkyMan::Create(const char *strCubeMapFile, const char* shader)
+void SkyMan::Create(const char *texFileName, const char* shader)
 {
 	Destroy();
-	texId = texMan.Create(strCubeMapFile);
+	texId = texMan.Create(texFileName);
 	shaderId = shaderMan.Create(shader);
 	uboId = afCreateUBO(sizeof(Mat));
 }
@@ -46,6 +40,7 @@ void SkyMan::Draw()
 	stockObjects.ApplyFullScreenVAO();
 	afDrawTriangleStrip(4);
 	afBindVAO(0);
+	afBindTextureToBindingPoint(0, 0);
 }
 
 void SkyMan::Destroy()
