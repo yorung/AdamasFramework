@@ -10,7 +10,7 @@ public:
 	static const TMID INVALID_TMID = 0;
 	TMID Create(const char *name);
 	TMID CreateWhiteTexture();
-	TMID CreateDynamicTexture(const char* name, int w, int h);
+	TMID CreateDynamicTexture(const char* name, const ivec2& size);
 	void Destroy();
 	void Write(TMID id, const void* buf);
 	const TexDesc* GetTexDesc(TMID id);

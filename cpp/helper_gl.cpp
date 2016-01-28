@@ -99,11 +99,7 @@ void afBindTextureToBindingPoint(GLuint tex, GLuint textureBindingPoint)
 	}
 }
 
-void afBindCubeMapToBindingPoint(GLuint tex, GLuint textureBindingPoint)
-{
-}
-
-GLuint afCreateDynamicTexture(int w, int h, AFDTFormat format)
+SRVID afCreateDynamicTexture(AFDTFormat format, const ivec2& size)
 {
 	GLuint texture;
 	glGenTextures(1, &texture);
@@ -113,10 +109,10 @@ GLuint afCreateDynamicTexture(int w, int h, AFDTFormat format)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	auto gen = [=](GLint internalFormat, GLint format, GLenum type) {
-		afHandleGLError(glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, w, h, 0, format, type, nullptr));
+		afHandleGLError(glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, size.x, size.y, 0, format, type, nullptr));
 	};
 	switch (format) {
-	case AFDT_R8G8B8A8_UINT:
+	case AFDT_R8G8B8A8_UNORM:
 		gen(GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE);
 		break;
 	case AFDT_R5G6B5_UINT:
@@ -155,7 +151,7 @@ GLuint afCreateDynamicTexture(int w, int h, AFDTFormat format)
 	return texture;
 }
 
-GLuint afCreateWhiteTexture()
+SRVID afCreateWhiteTexture()
 {
 	uint32_t col = 0xffffffff;
 	GLuint texture;
@@ -437,12 +433,12 @@ void AFRenderTarget::Init(ivec2 size, AFDTFormat colorFormat, AFDTFormat depthSt
 {
 	Destroy();
 	texSize = size;
-	texColor = afCreateDynamicTexture(size.x, size.y, colorFormat);
+	texColor = afCreateDynamicTexture(colorFormat, size);
 	if (texColor == 0) {
 		aflog("AFRenderTarget::Init: cannot create dynamic texture. format=%d", colorFormat);
 	}
 	if (depthStencilFormat != AFDT_INVALID) {
-		texDepth = afCreateDynamicTexture(size.x, size.y, depthStencilFormat);
+		texDepth = afCreateDynamicTexture(depthStencilFormat, size);
 	}
 
 	afHandleGLError(glGenFramebuffers(1, &framebufferObject));

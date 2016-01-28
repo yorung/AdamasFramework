@@ -172,17 +172,16 @@ static GLuint LoadTexture(const char* name, TexDesc& desc)
 	}
 }
 
-TexMan::TMID TexMan::CreateDynamicTexture(const char* name, int w, int h)
+TexMan::TMID TexMan::CreateDynamicTexture(const char* name, const ivec2& size)
 {
 	auto it = nameToId.find(name);
 	if (it != nameToId.end())
 	{
 		return it->second;
 	}
-	TMID id = nameToId[name] = afCreateDynamicTexture(w, h, AFDT_R8G8B8A8_UINT);
+	TMID id = nameToId[name] = afCreateDynamicTexture(AFDT_R8G8B8A8_UNORM, size);
 	TexDesc desc;
-	desc.size.x = w;
-	desc.size.y = h;
+	desc.size = size;
 	StoreTexState(id, desc);
 	return id;
 }

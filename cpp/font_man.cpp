@@ -144,7 +144,7 @@ bool FontMan::Init()
 	if (!texSrc.Create(TEX_W, TEX_H)) {
 		return false;
 	}
-	texture = texMan.CreateDynamicTexture("$FontMan", TEX_W, TEX_H);
+	texture = texMan.CreateDynamicTexture("$FontMan", ivec2(TEX_W, TEX_H));
 	shader = shaderMan.Create("font");
 	assert(shader);
 	ibo = afCreateQuadListIndexBuffer(SPRITE_MAX);

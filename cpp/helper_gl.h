@@ -83,6 +83,7 @@ struct TBufName {
 typedef TBufName<GL_ELEMENT_ARRAY_BUFFER> IBOID;
 typedef TBufName<GL_ARRAY_BUFFER> VBOID;
 typedef GLuint SAMPLERID;
+typedef GLuint SRVID;
 
 void afSetVertexAttributes(GLuint program, const InputElement elements[], int numElements, int numBuffers, VBOID const *vertexBufferIds, const GLsizei* strides);
 
@@ -114,15 +115,15 @@ inline void afSafeDeleteTexture(GLuint& t)
 enum AFDTFormat
 {
 	AFDT_INVALID,
-	AFDT_R8G8B8A8_UINT,
+	AFDT_R8G8B8A8_UNORM,
 	AFDT_R5G6B5_UINT,
 	AFDT_R32G32B32A32_FLOAT,
 	AFDT_R16G16B16A16_FLOAT,
 	AFDT_DEPTH,
 	AFDT_DEPTH_STENCIL,
 };
-GLuint afCreateDynamicTexture(int w, int h, AFDTFormat format);
-GLuint afCreateWhiteTexture();
+SRVID afCreateDynamicTexture(AFDTFormat format, const ivec2& size);
+SRVID afCreateWhiteTexture();
 
 IBOID afCreateIndexBuffer(const AFIndex* indi, int numIndi);
 IBOID afCreateQuadListIndexBuffer(int numQuads);

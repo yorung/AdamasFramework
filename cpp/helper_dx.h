@@ -23,7 +23,7 @@ typedef ComPtr<ID3D11Buffer> IBOID;
 typedef ComPtr<ID3D11Buffer> VBOID;
 typedef ComPtr<ID3D11Buffer> UBOID;
 typedef ComPtr<ID3D11SamplerState> SAMPLERID;
-
+typedef ComPtr<ID3D11ShaderResourceView> SRVID;
 inline void afSafeDeleteBuffer(ComPtr<ID3D11Buffer>& p) { p.Reset(); }
 inline void afSafeDeleteSampler(SAMPLERID& p) { p.Reset(); }
 #define afSafeDeleteVAO SAFE_DELETE
@@ -62,17 +62,17 @@ enum BlendMode {
 void afBlendMode(BlendMode mode);
 void afDepthStencilMode(bool depth);
 
-enum AFDTFormat
-{
-	AFDT_INVALID,
-	AFDT_R8G8B8A8_UINT,
-	AFDT_R5G6B5_UINT,
-	AFDT_R32G32B32A32_FLOAT,
-	AFDT_R16G16B16A16_FLOAT,
-	AFDT_DEPTH,
-	AFDT_DEPTH_STENCIL,
-};
-//GLuint afCreateDynamicTexture(int w, int h, AFDTFormat format);
+typedef DXGI_FORMAT AFDTFormat;
+#define AFDT_INVALID DXGI_FORMAT_UNKNOWN
+#define AFDT_R8G8B8A8_UNORM DXGI_FORMAT_R8G8B8A8_UNORM
+#define AFDT_R5G6B5_UINT DXGI_FORMAT_B5G6R5_UNORM
+#define AFDT_R32G32B32A32_FLOAT DXGI_FORMAT_R32G32B32A32_FLOAT
+#define AFDT_R16G16B16A16_FLOAT DXGI_FORMAT_R16G16B16A16_FLOAT
+#define AFDT_DEPTH DXGI_FORMAT_D24_UNORM_S8_UINT
+#define AFDT_DEPTH_STENCIL DXGI_FORMAT_D24_UNORM_S8_UINT
+
+SRVID afCreateTexture2D(AFDTFormat format, const ivec2& size, void *image);
+SRVID afCreateDynamicTexture(AFDTFormat format, const ivec2& size);
 
 class AFRenderTarget
 {

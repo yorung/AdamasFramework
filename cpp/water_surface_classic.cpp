@@ -259,7 +259,7 @@ void WaterSurfaceClassic::Init()
 	glSamplerParameteri(samplerNoMipmap, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glSamplerParameteri(samplerNoMipmap, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-	texRenderTarget = afCreateDynamicTexture(512, 512, AFDT_R5G6B5_UINT);
+	texRenderTarget = afCreateDynamicTexture(AFDT_R5G6B5_UINT, ivec2(512, 512));
 
 	glGenRenderbuffers(1, &renderbufferObject);
 	glBindRenderbuffer(GL_RENDERBUFFER, renderbufferObject);
