@@ -112,6 +112,13 @@ inline void afSafeDeleteTexture(GLuint& t)
 	}
 }
 
+struct AFTexSubresourceData
+{
+	const void* ptr;
+	uint32_t pitch;
+	uint32_t pitchSlice;
+};
+
 enum AFDTFormat
 {
 	AFDT_INVALID,
@@ -121,8 +128,12 @@ enum AFDTFormat
 	AFDT_R16G16B16A16_FLOAT,
 	AFDT_DEPTH,
 	AFDT_DEPTH_STENCIL,
+	AFDT_BC1_UNORM = 0x83F1,	// GL_COMPRESSED_RGBA_S3TC_DXT1_EXT
+	AFDT_BC2_UNORM = 0x83F2,	// GL_COMPRESSED_RGBA_S3TC_DXT3_EXT
+	AFDT_BC3_UNORM = 0x83F3,	// GL_COMPRESSED_RGBA_S3TC_DXT5_EXT,
 };
 SRVID afCreateTexture2D(AFDTFormat format, const ivec2& size, void *image);
+SRVID afCreateTexture2D(AFDTFormat format, const ivec2& size, int arraySize, int mipCount, const AFTexSubresourceData datas[]);
 SRVID afCreateDynamicTexture(AFDTFormat format, const ivec2& size);
 SRVID afCreateWhiteTexture();
 

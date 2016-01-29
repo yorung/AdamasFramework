@@ -45,82 +45,62 @@ static void ArrangeRawDDS(void* img, int size)
 	});
 }
 
-static GLuint LoadDDSTexture(const char* name, TexDesc& texSize)
+static SRVID LoadDDSTexture(const char* name, TexDesc& texSize)
 {
 	int size;
-	GLuint texture = 0;
 	void* img = LoadFile(name, &size);
 	if (!img) {
 		aflog("LoadDDSTexture failed! %s", name);
 		return 0;
 	}
 	const DDSHeader* hdr = (DDSHeader*)img;
-	texSize.size.x = hdr->w;
-	texSize.size.y = hdr->h;
-	texSize.arraySize = hdr->GetArraySize();
 
-	GLenum format;
-	int(*pitchCalcurator)(int, int) = nullptr;
+	AFDTFormat format = AFDT_INVALID;
+	int (*pitchCalcurator)(int, int) = nullptr;
 	switch (hdr->fourcc) {
 	case 0x31545844: //'1TXD':
-		format = 0x83F1;	// GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+		format = AFDT_BC1_UNORM;
 		pitchCalcurator = [](int w, int h) { return ((w + 3) / 4) * ((h + 3) / 4) * 8; };
 		break;
 	case 0x33545844: //'3TXD':
-		format = 0x83F2;	// GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
+		format = AFDT_BC2_UNORM;
 		pitchCalcurator = [](int w, int h) { return ((w + 3) / 4) * ((h + 3) / 4) * 16; };
 		break;
 	case 0x35545844: //'5TXD':
-		format = 0x83F3;	// GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+		format = AFDT_BC3_UNORM;
 		pitchCalcurator = [](int w, int h) { return ((w + 3) / 4) * ((h + 3) / 4) * 16; };
 		break;
 	default:
 		ArrangeRawDDS(img, size);
-		format = GL_RGBA;
+		format = AFDT_R8G8B8A8_UNORM;
 		pitchCalcurator = [](int w, int h) { return w * h * 4; };
 		break;
 	}
-
-	GLenum target = hdr->IsCubeMap() ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D;
-	GLenum targetFace = hdr->IsCubeMap() ? GL_TEXTURE_CUBE_MAP_POSITIVE_X : GL_TEXTURE_2D;
-
-	glGenTextures(1, &texture);
-	glBindTexture(target, texture);
-	glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(target, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	texSize.size.x = hdr->w;
+	texSize.size.y = hdr->h;
+	texSize.arraySize = hdr->GetArraySize();
 
 	int arraySize = hdr->GetArraySize();
 	int mipCnt = hdr->GetMipCnt();
+
+	std::vector<AFTexSubresourceData> r;
 	int offset = 128;
 	for (int a = 0; a < arraySize; a++) {
 		for (int m = 0; m < mipCnt; m++) {
 			int w = std::max(1, hdr->w >> m);
 			int h = std::max(1, hdr->h >> m);
-			if (format == GL_RGBA) {
-				afHandleGLError(glTexImage2D(targetFace + a, m, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, (char*)img + offset));
-			} else {
-				int texSize = pitchCalcurator(w, h);
-				afHandleGLError(glCompressedTexImage2D(targetFace + a, m, format, w, h, 0, texSize, (char*)img + offset));
-			}
-			offset += pitchCalcurator(w, h);
-		}
-	}
-	if (mipCnt == 1) {
-		if (format == GL_RGBA) {
-			afHandleGLError(glGenerateMipmap(target));
-		} else {
-			glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	// temporary disable mipmap
+			int size = pitchCalcurator(w, h);
+			r.push_back({ (char*)img + offset, (uint32_t)pitchCalcurator(w, 1), (uint32_t)size });
+			offset += size;
 		}
 	}
 
-	glBindTexture(target, 0);
+	SRVID srv = afCreateTexture2D(format, texSize.size, arraySize, mipCnt, &r[0]);
 	free(img);
-	return texture;
+	return srv;
 }
 
-static GLuint LoadTexture(const char* name, TexDesc& desc)
+static SRVID LoadTexture(const char* name, TexDesc& desc)
 {
 	int len = strlen(name);
 	if (len > 4 && !stricmp(name + len - 4, ".dds")) {
@@ -147,7 +127,7 @@ TexMan::TMID TexMan::CreateDynamicTexture(const char* name, const ivec2& size)
 
 TexMan::TMID TexMan::Create(const char *name)
 {
-	NameToId::iterator it = nameToId.find(name);
+	auto it = nameToId.find(name);
 	if (it != nameToId.end())
 	{
 		return it->second;
@@ -161,7 +141,7 @@ TexMan::TMID TexMan::Create(const char *name)
 TexMan::TMID TexMan::CreateWhiteTexture()
 {
 	const std::string name = "$WHITE";
-	NameToId::iterator it = nameToId.find(name);
+	auto it = nameToId.find(name);
 	if (it != nameToId.end())
 	{
 		return it->second;

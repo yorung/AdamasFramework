@@ -183,6 +183,45 @@ SRVID afCreateWhiteTexture()
 	return texture;
 }
 
+SRVID afCreateTexture2D(AFDTFormat format, const ivec2& size, int arraySize, int mipCount, const AFTexSubresourceData datas[])
+{
+	bool isCubemap = arraySize == 6;
+	GLenum target = isCubemap ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D;
+	GLenum targetFace = isCubemap ? GL_TEXTURE_CUBE_MAP_POSITIVE_X : GL_TEXTURE_2D;
+
+	GLuint texture = 0;
+	glGenTextures(1, &texture);
+	glBindTexture(target, texture);
+	glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(target, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	int idx = 0;
+	for (int a = 0; a < arraySize; a++) {
+		for (int m = 0; m < mipCount; m++) {
+			int w = std::max(1, size.x >> m);
+			int h = std::max(1, size.y >> m);
+			if (format == AFDT_R8G8B8A8_UNORM) {
+				afHandleGLError(glTexImage2D(targetFace + a, m, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, datas[idx].ptr));
+			} else {
+				afHandleGLError(glCompressedTexImage2D(targetFace + a, m, format, w, h, 0, datas[idx].pitchSlice, datas[idx].ptr));
+			}
+			idx++;
+		}
+	}
+	if (mipCount == 1) {
+		if (format == AFDT_R8G8B8A8_UNORM) {
+			afHandleGLError(glGenerateMipmap(target));
+		} else {
+			glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	// temporary disable mipmap
+		}
+	}
+
+	glBindTexture(target, 0);
+	return texture;
+}
+
 void afDrawIndexedTriangleList(int numIndices, int start)
 {
 	glDrawElements(GL_TRIANGLES, numIndices, AFIndexTypeToDevice, (void*)(start));
