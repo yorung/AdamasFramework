@@ -7,9 +7,6 @@
     <ClCompile Include="wgl_grabber_gen.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
-    <ClCompile Include="helper_win.cpp">
-      <Filter>Windows</Filter>
-    </ClCompile>
     <ClCompile Include="..\cpp\helper.cpp">
       <Filter>PlatformIndipendent</Filter>
     </ClCompile>
@@ -120,6 +117,9 @@
     </ClCompile>
     <ClCompile Include="..\cpp\system_misc.cpp">
       <Filter>PlatformIndipendent</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cpp\helper_win.cpp">
+      <Filter>Windows</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

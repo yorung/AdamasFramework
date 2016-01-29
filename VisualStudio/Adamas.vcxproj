@@ -23,6 +23,7 @@
     <ClCompile Include="..\cpp\helper.cpp" />
     <ClCompile Include="..\cpp\helper_dx.cpp" />
     <ClCompile Include="..\cpp\helper_gl.cpp" />
+    <ClCompile Include="..\cpp\helper_win.cpp" />
     <ClCompile Include="..\cpp\hub.cpp" />
     <ClCompile Include="..\cpp\hub_android.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -56,13 +57,6 @@
     </ClCompile>
     <ClCompile Include="..\cpp\water_surface.cpp" />
     <ClCompile Include="..\cpp\water_surface_classic.cpp" />
-    <ClCompile Include="helper_win.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdafx.h</PrecompiledHeaderFile>
-    </ClCompile>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="voice_win.cpp" />
     <ClCompile Include="wgl_grabber_gen.cpp">

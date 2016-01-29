@@ -2,47 +2,6 @@
 
 TexMan texMan;
 
-#ifndef _MSC_VER
-static GLuint LoadTextureViaOS(const char* name, ivec2& size)
-{
-	jclass myview = jniEnv->FindClass(boundJavaClass);
-	jmethodID method = method = jniEnv->GetStaticMethodID(myview, "loadTexture", "(Ljava/lang/String;)I");
-	if (method == 0) {
-		return 0;
-	}
-	GLuint id = jniEnv->CallStaticIntMethod(myview, method, jniEnv->NewStringUTF(name));
-
-	glBindTexture(GL_TEXTURE_2D, id);
-	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &size.x);
-	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &size.y);
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	return id;
-}
-#endif
-
-#ifdef _MSC_VER
-static GLuint LoadTextureViaOS(const char* name, ivec2& size)
-{
-	std::vector<uint32_t> col;
-	if (!LoadImageViaGdiPlus(name, size, col)) {
-		return 0;
-	}
-	GLuint texture;
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size.x, size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, &col[0]);
-	glGenerateMipmap(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, 0);
-	return texture;
-}
-#endif
-
 struct DDSHeader {
 	uint32_t h3[3];
 	int h, w;

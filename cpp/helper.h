@@ -12,6 +12,7 @@ void ClearMenu();
 void AddMenu(const char *name, const char *cmd);
 void PostCommand(const char* cmdString);
 bool LoadImageViaGdiPlus(const char* name, ivec2& size, std::vector<uint32_t>& col);
+SRVID LoadTextureViaOS(const char* name, ivec2& size);
 
 template <class T> inline void SAFE_DELETE(T& p)
 {

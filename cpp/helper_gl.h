@@ -122,6 +122,7 @@ enum AFDTFormat
 	AFDT_DEPTH,
 	AFDT_DEPTH_STENCIL,
 };
+SRVID afCreateTexture2D(AFDTFormat format, const ivec2& size, void *image);
 SRVID afCreateDynamicTexture(AFDTFormat format, const ivec2& size);
 SRVID afCreateWhiteTexture();
 
