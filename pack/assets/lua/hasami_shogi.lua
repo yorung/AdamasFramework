@@ -48,19 +48,18 @@ end]]
 
 local numGrid = 9
 
-local grid = {}
-for y = 0, numGrid - 1 do
-	grid[y] = {}
-	for x = 0, numGrid - 1 do
-		if y == 0 then
-			grid[y][x] = 1
-		elseif y == numGrid - 1 then
-			grid[y][x] = 0
-		else
-			grid[y][x] = -1
+local function CreateGrid(valFunc)
+	local _ = {}
+	for y = 0, numGrid - 1 do
+		_[y] = {}
+		for x = 0, numGrid - 1 do
+			_[y][x] = valFunc(x, y)
 		end
 	end
+	return _
 end
+
+local grid = CreateGrid(function(x, y) return y == 0 and 1 or y == numGrid - 1 and 0 or -1 end)
 
 local smallerSize = math.min(SCR_W, SCR_H)
 local function MoveToBoard()
