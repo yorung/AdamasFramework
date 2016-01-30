@@ -26,9 +26,11 @@ typedef ComPtr<ID3D11SamplerState> SAMPLERID;
 typedef ComPtr<ID3D11ShaderResourceView> SRVID;
 inline void afSafeDeleteBuffer(ComPtr<ID3D11Buffer>& p) { p.Reset(); }
 inline void afSafeDeleteSampler(SAMPLERID& p) { p.Reset(); }
+inline void afSafeDeleteTexture(SRVID& p) { p.Reset(); }
 #define afSafeDeleteVAO SAFE_DELETE
 
 void afWriteBuffer(const IBOID p, const void* buf, int size);
+void afWriteTexture(SRVID srv, const struct TexDesc& desc, const void* buf);
 
 IBOID afCreateIndexBuffer(const AFIndex* indi, int numIndi);
 IBOID afCreateQuadListIndexBuffer(int numQuads);
@@ -48,7 +50,7 @@ UBOID afCreateUBO(int size);
 SAMPLERID afCreateSampler(SamplerFilter samplerFilter, SamplerWrap wrap);
 
 void afBindBufferToBindingPoint(UBOID ubo, UINT uniformBlockBinding);
-void afBindTextureToBindingPoint(TexMan::TMID tex, UINT textureBindingPoint);
+void afBindTextureToBindingPoint(SRVID srv, UINT textureBindingPoint);
 void afBindSamplerToBindingPoint(SAMPLERID sampler, UINT textureBindingPoint);
 
 void afDrawIndexedTriangleList(int numIndices, int start = 0);
@@ -62,6 +64,7 @@ enum BlendMode {
 void afBlendMode(BlendMode mode);
 void afDepthStencilMode(bool depth);
 
+typedef D3D11_SUBRESOURCE_DATA AFTexSubresourceData;
 typedef DXGI_FORMAT AFDTFormat;
 #define AFDT_INVALID DXGI_FORMAT_UNKNOWN
 #define AFDT_R8G8B8A8_UNORM DXGI_FORMAT_R8G8B8A8_UNORM
@@ -70,8 +73,12 @@ typedef DXGI_FORMAT AFDTFormat;
 #define AFDT_R16G16B16A16_FLOAT DXGI_FORMAT_R16G16B16A16_FLOAT
 #define AFDT_DEPTH DXGI_FORMAT_D24_UNORM_S8_UINT
 #define AFDT_DEPTH_STENCIL DXGI_FORMAT_D24_UNORM_S8_UINT
+#define AFDT_BC1_UNORM DXGI_FORMAT_BC1_UNORM
+#define AFDT_BC2_UNORM DXGI_FORMAT_BC2_UNORM
+#define AFDT_BC3_UNORM DXGI_FORMAT_BC3_UNORM
 
 SRVID afCreateTexture2D(AFDTFormat format, const ivec2& size, void *image);
+SRVID afCreateTexture2D(AFDTFormat format, const ivec2& size, int arraySize, int mipCount, const AFTexSubresourceData datas[]);
 SRVID afCreateDynamicTexture(AFDTFormat format, const ivec2& size);
 
 class AFRenderTarget

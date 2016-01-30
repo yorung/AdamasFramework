@@ -42,6 +42,18 @@ SRVID afCreateTexture2D(AFDTFormat format, const ivec2& size, void *image)
 	return srv;
 }
 
+SRVID afCreateTexture2D(AFDTFormat format, const ivec2& size, int arraySize, int mipCount, const AFTexSubresourceData datas[])
+{
+	bool isCubemap = arraySize == 6;
+	ComPtr<ID3D11Texture2D> tex;
+	CD3D11_TEXTURE2D_DESC desc(format, size.x, size.y, arraySize, mipCount, D3D11_BIND_SHADER_RESOURCE, D3D11_USAGE_DEFAULT, 0, 1, 0, isCubemap ? D3D11_RESOURCE_MISC_TEXTURECUBE : 0);
+	deviceMan11.GetDevice()->CreateTexture2D(&desc, datas, &tex);
+	CD3D11_SHADER_RESOURCE_VIEW_DESC srvDesc(isCubemap ? D3D_SRV_DIMENSION_TEXTURECUBE : D3D_SRV_DIMENSION_TEXTURE2D, desc.Format, 0, -1);
+	ComPtr<ID3D11ShaderResourceView> srv;
+	deviceMan11.GetDevice()->CreateShaderResourceView(tex.Get(), &srvDesc, &srv);
+	return srv;
+}
+
 SRVID afCreateDynamicTexture(AFDTFormat format, const ivec2& size)
 {
 	CD3D11_TEXTURE2D_DESC desc(format, size.x, size.y, 1, 1, D3D11_BIND_SHADER_RESOURCE, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
@@ -74,10 +86,9 @@ void afBindBufferToBindingPoint(UBOID ubo, UINT uniformBlockBinding)
 	deviceMan11.GetContext()->PSSetConstantBuffers(uniformBlockBinding, 1, ubo.GetAddressOf());
 }
 
-void afBindTextureToBindingPoint(TexMan::TMID tex, UINT textureBindingPoint)
+void afBindTextureToBindingPoint(SRVID srv, UINT textureBindingPoint)
 {
-	ComPtr<ID3D11ShaderResourceView> tx = texMan.Get(tex);
-	deviceMan11.GetContext()->PSSetShaderResources(textureBindingPoint, 1, tx.GetAddressOf());
+	deviceMan11.GetContext()->PSSetShaderResources(textureBindingPoint, 1, srv.GetAddressOf());
 }
 
 void afBindSamplerToBindingPoint(SAMPLERID sampler, UINT textureBindingPoint)
@@ -99,6 +110,24 @@ void afWriteBuffer(const IBOID p, const void* buf, int size)
 	HRESULT hr = deviceMan11.GetContext()->Map(p.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &m);
 	memcpy(m.pData, buf, size);
 	deviceMan11.GetContext()->Unmap(p.Get(), 0);
+}
+
+void afWriteTexture(SRVID srv, const TexDesc& desc, const void* buf)
+{
+	ComPtr<ID3D11Resource> res;
+	srv->GetResource(&res);
+	assert(res);
+	ComPtr<ID3D11Texture2D> tx;
+	res.As(&tx);
+	assert(tx);
+
+//	D3D11_TEXTURE2D_DESC desc;
+//	tx->GetDesc(&desc);
+
+	D3D11_MAPPED_SUBRESOURCE m;
+	HRESULT hr = deviceMan11.GetContext()->Map(tx.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &m);
+	memcpy(m.pData, buf, desc.size.x * desc.size.y * 4);
+	deviceMan11.GetContext()->Unmap(tx.Get(), 0);
 }
 
 
