@@ -133,7 +133,7 @@ enum AFDTFormat
 	AFDT_BC3_UNORM = 0x83F3,	// GL_COMPRESSED_RGBA_S3TC_DXT5_EXT,
 };
 SRVID afCreateTexture2D(AFDTFormat format, const ivec2& size, void *image);
-SRVID afCreateTexture2D(AFDTFormat format, const ivec2& size, int arraySize, int mipCount, const AFTexSubresourceData datas[]);
+SRVID afCreateTexture2D(AFDTFormat format, const struct TexDesc& desc, int mipCount, const AFTexSubresourceData datas[]);
 SRVID afCreateDynamicTexture(AFDTFormat format, const ivec2& size);
 SRVID afCreateWhiteTexture();
 
@@ -161,6 +161,7 @@ void afLayoutSSBOBindingManually(GLuint program, const GLchar* name, GLuint stor
 void afLayoutUBOBindingManually(GLuint program, const GLchar* name, GLuint uniformBlockBinding);
 #endif
 void afBindTextureToBindingPoint(GLuint tex, GLuint textureBindingPoint);
+void afBindCubeMapToBindingPoint(GLuint tex, GLuint textureBindingPoint);
 
 void afDrawIndexedTriangleList(int numIndices, int start = 0);
 void afDrawIndexedTriangleStrip(int numIndices, int start = 0);

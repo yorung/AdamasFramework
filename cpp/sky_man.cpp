@@ -4,13 +4,15 @@ SkyMan skyMan;
 
 SkyMan::~SkyMan()
 {
-	assert(uboId == 0);
+	assert(!uboId);
+	assert(!texId);
 }
 
 void SkyMan::Create(const char *texFileName, const char* shader)
 {
 	Destroy();
-	texId = texMan.Create(texFileName);
+
+	texId = afLoadTexture(texFileName, texDesc);
 	shaderId = shaderMan.Create(shader);
 	uboId = afCreateUBO(sizeof(Mat));
 }
@@ -35,7 +37,7 @@ void SkyMan::Draw()
 
 	afWriteBuffer(uboId, &invVP, sizeof(invVP));
 	afBindBufferToBindingPoint(uboId, 0);
-	afBindTextureToBindingPoint(texId, 0);
+	(texDesc.isCubeMap ? afBindCubeMapToBindingPoint : afBindTextureToBindingPoint)(texId, 0);
 
 	stockObjects.ApplyFullScreenVAO();
 	afDrawTriangleStrip(4);
@@ -46,4 +48,5 @@ void SkyMan::Draw()
 void SkyMan::Destroy()
 {
 	afSafeDeleteBuffer(uboId);
+	afSafeDeleteTexture(texId);
 }

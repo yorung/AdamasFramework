@@ -91,12 +91,13 @@ void afBindBufferToBindingPoint(UBOID ubo, GLuint uniformBlockBinding)
 void afBindTextureToBindingPoint(GLuint tex, GLuint textureBindingPoint)
 {
 	afHandleGLError(glActiveTexture(GL_TEXTURE0 + textureBindingPoint));
-	const TexDesc* d = texMan.GetTexDesc(tex);
-	if (d->arraySize == 6) {
-		afHandleGLError(glBindTexture(GL_TEXTURE_CUBE_MAP, tex));
-	} else {
-		afHandleGLError(glBindTexture(GL_TEXTURE_2D, tex));
-	}
+	afHandleGLError(glBindTexture(GL_TEXTURE_2D, tex));
+}
+
+void afBindCubeMapToBindingPoint(GLuint tex, GLuint textureBindingPoint)
+{
+	afHandleGLError(glActiveTexture(GL_TEXTURE0 + textureBindingPoint));
+	afHandleGLError(glBindTexture(GL_TEXTURE_CUBE_MAP, tex));
 }
 
 SRVID afCreateDynamicTexture(AFDTFormat format, const ivec2& size)
@@ -183,11 +184,10 @@ SRVID afCreateWhiteTexture()
 	return texture;
 }
 
-SRVID afCreateTexture2D(AFDTFormat format, const ivec2& size, int arraySize, int mipCount, const AFTexSubresourceData datas[])
+SRVID afCreateTexture2D(AFDTFormat format, const TexDesc& desc, int mipCount, const AFTexSubresourceData datas[])
 {
-	bool isCubemap = arraySize == 6;
-	GLenum target = isCubemap ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D;
-	GLenum targetFace = isCubemap ? GL_TEXTURE_CUBE_MAP_POSITIVE_X : GL_TEXTURE_2D;
+	GLenum target = desc.isCubeMap ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D;
+	GLenum targetFace = desc.isCubeMap ? GL_TEXTURE_CUBE_MAP_POSITIVE_X : GL_TEXTURE_2D;
 
 	GLuint texture = 0;
 	glGenTextures(1, &texture);
@@ -198,10 +198,10 @@ SRVID afCreateTexture2D(AFDTFormat format, const ivec2& size, int arraySize, int
 	glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
 	int idx = 0;
-	for (int a = 0; a < arraySize; a++) {
+	for (int a = 0; a < desc.arraySize; a++) {
 		for (int m = 0; m < mipCount; m++) {
-			int w = std::max(1, size.x >> m);
-			int h = std::max(1, size.y >> m);
+			int w = std::max(1, desc.size.x >> m);
+			int h = std::max(1, desc.size.y >> m);
 			if (format == AFDT_R8G8B8A8_UNORM) {
 				afHandleGLError(glTexImage2D(targetFace + a, m, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, datas[idx].ptr));
 			} else {
