@@ -58,7 +58,7 @@ void DevCamera::MouseMove(float x, float y)
 
 Mat DevCamera::CalcViewMatrix()
 {
-	Mat cam = translate(0, height, -dist) * q2m(Quat(Vec3(1, 0, 0), rotY)) * q2m(Quat(Vec3(0, 1, 0), rotX));
+	Mat cam = translate(0, height, -dist) * q2m(Quat(Vec3(1, 0, 0), rotY) * Quat(Vec3(0, 1, 0), rotX));
 	return fastInv(cam);
 }
 
