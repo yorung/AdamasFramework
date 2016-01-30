@@ -144,22 +144,21 @@ bool FontMan::Init()
 	if (!texSrc.Create(TEX_W, TEX_H)) {
 		return false;
 	}
-	texture = texMan.CreateDynamicTexture("$FontMan", ivec2(TEX_W, TEX_H));
+	texture = afCreateDynamicTexture(AFDT_R8G8B8A8_UNORM, ivec2(TEX_W, TEX_H));
 	shader = shaderMan.Create("font");
 	assert(shader);
 	ibo = afCreateQuadListIndexBuffer(SPRITE_MAX);
 	vbo = afCreateDynamicVertexBuffer(SPRITE_MAX * sizeof(FontVertex) * 4);
 	int stride = sizeof(FontVertex);
-	vao = afCreateVAO(shader, elements, dimof(elements), 1, &vbo, &stride, ibo);
+	VBOID vboIds[] = {vbo};
+	vao = afCreateVAO(shader, elements, dimof(elements), 1, vboIds, &stride, ibo);
 	sampler = afCreateSampler(SF_POINT, SW_CLAMP);
 	return true;
 }
 
 void FontMan::Destroy()
 {
-	// TODO: delete texture
-//	texMan.Delete(texture);
-	texture = TexMan::INVALID_TMID;
+	afSafeDeleteTexture(texture);
 
 //  shaderMan.Delete(shader);
 	shader = ShaderMan::INVALID_SMID;
@@ -279,7 +278,9 @@ void FontMan::FlushToTexture()
 	}
 //	aflog("FontMan::FlushToTexture flushed\n");
 	dirty = false;
-	texMan.Write(texture, texSrc.ReferPixels());
+	TexDesc desc;
+	desc.size = ivec2(TEX_W, TEX_H);
+	afWriteTexture(texture, desc, texSrc.ReferPixels());
 }
 
 void FontMan::Render()

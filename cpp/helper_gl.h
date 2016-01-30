@@ -137,6 +137,8 @@ SRVID afCreateTexture2D(AFDTFormat format, const struct TexDesc& desc, int mipCo
 SRVID afCreateDynamicTexture(AFDTFormat format, const ivec2& size);
 SRVID afCreateWhiteTexture();
 
+void afWriteTexture(SRVID srv, const TexDesc& desc, const void* buf);
+
 IBOID afCreateIndexBuffer(const AFIndex* indi, int numIndi);
 IBOID afCreateQuadListIndexBuffer(int numQuads);
 VBOID afCreateVertexBuffer(int size, const void* buf);

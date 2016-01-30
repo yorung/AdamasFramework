@@ -100,6 +100,13 @@ void afBindCubeMapToBindingPoint(GLuint tex, GLuint textureBindingPoint)
 	afHandleGLError(glBindTexture(GL_TEXTURE_CUBE_MAP, tex));
 }
 
+void afWriteTexture(SRVID srv, const TexDesc& desc, const void* buf)
+{
+	glBindTexture(GL_TEXTURE_2D, srv);
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, desc.size.x, desc.size.y, GL_RGBA, GL_UNSIGNED_BYTE, buf);
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
 SRVID afCreateDynamicTexture(AFDTFormat format, const ivec2& size)
 {
 	GLuint texture;
@@ -154,6 +161,7 @@ SRVID afCreateDynamicTexture(AFDTFormat format, const ivec2& size)
 
 SRVID afCreateTexture2D(AFDTFormat format, const ivec2& size, void *image)
 {
+	assert(format == AFDT_R8G8B8A8_UNORM);
 	GLuint texture;
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
