@@ -4,6 +4,7 @@ class SkyMan
 	TexDesc texDesc;
 	ShaderMan::SMID shaderId = ShaderMan::INVALID_SMID;
 	UBOID uboId;
+	SAMPLERID sampler;
 public:
 	~SkyMan();
 	void Create(const char *texFileName, const char* shader);
