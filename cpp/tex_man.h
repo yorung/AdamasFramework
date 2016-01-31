@@ -1,6 +1,7 @@
 class TexMan
 {
 public:
+	~TexMan();
 	typedef GLuint TMID;
 	static const TMID INVALID_TMID = 0;
 	TMID Create(const char *name);

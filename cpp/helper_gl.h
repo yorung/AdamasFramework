@@ -135,7 +135,6 @@ enum AFDTFormat
 SRVID afCreateTexture2D(AFDTFormat format, const ivec2& size, void *image);
 SRVID afCreateTexture2D(AFDTFormat format, const struct TexDesc& desc, int mipCount, const AFTexSubresourceData datas[]);
 SRVID afCreateDynamicTexture(AFDTFormat format, const ivec2& size);
-SRVID afCreateWhiteTexture();
 
 void afWriteTexture(SRVID srv, const TexDesc& desc, const void* buf);
 

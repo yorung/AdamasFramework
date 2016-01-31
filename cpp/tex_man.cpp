@@ -2,6 +2,11 @@
 
 TexMan texMan;
 
+TexMan::~TexMan()
+{
+	assert(nameToId.empty());
+}
+
 TexMan::TMID TexMan::Create(const char *name)
 {
 	auto it = nameToId.find(name);
@@ -23,7 +28,8 @@ TexMan::TMID TexMan::CreateWhiteTexture()
 	{
 		return it->second;
 	}
-	TMID id = nameToId[name] = afCreateWhiteTexture();
+	uint32_t white = 0xffffffff;
+	TMID id = nameToId[name] = afCreateTexture2D(AFDT_R8G8B8A8_UNORM, ivec2(1, 1), &white);
 	TexDesc desc;
 	desc.size.x = desc.size.y = 1;
 	StoreTexState(id, desc);
@@ -34,8 +40,7 @@ void TexMan::Destroy()
 {
 	for (NameToId::iterator it = nameToId.begin(); it != nameToId.end(); ++it)
 	{
-		GLuint id[1] = { it->second };
-		glDeleteTextures(1, id);
+		afSafeDeleteTexture(it->second);
 	}
 	nameToId.clear();
 }
