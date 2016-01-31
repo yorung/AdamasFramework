@@ -106,37 +106,39 @@
     <ResourceCompile Include="Resource.rc" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\assets\shaders\font.frag" />
-    <None Include="..\assets\shaders\font.vert" />
-    <None Include="..\assets\shaders\glow_copy.frag" />
-    <None Include="..\assets\shaders\glow_copy.vert" />
-    <None Include="..\assets\shaders\glow_extraction.frag" />
-    <None Include="..\assets\shaders\glow_extraction.vert" />
-    <None Include="..\assets\shaders\glow_lastpass.frag" />
-    <None Include="..\assets\shaders\glow_lastpass.vert" />
-    <None Include="..\assets\shaders\letterbox.frag" />
-    <None Include="..\assets\shaders\letterbox.vert" />
-    <None Include="..\assets\shaders\skin.400.frag" />
-    <None Include="..\assets\shaders\skin.400.vert" />
-    <None Include="..\assets\shaders\skin.frag" />
-    <None Include="..\assets\shaders\skin.vert" />
-    <None Include="..\assets\shaders\sky_cubemap.frag" />
-    <None Include="..\assets\shaders\sky_cubemap.vert" />
-    <None Include="..\assets\shaders\sky_photosphere.frag" />
-    <None Include="..\assets\shaders\sky_photosphere.vert" />
-    <None Include="..\assets\shaders\vivid.frag" />
-    <None Include="..\assets\shaders\vivid.vert" />
-    <None Include="..\assets\shaders\water_lastpass.frag" />
-    <None Include="..\assets\shaders\water_lastpass.vert" />
-    <None Include="..\assets\shaders\water_classic.frag" />
-    <None Include="..\assets\shaders\water_classic.vert" />
-    <None Include="..\assets\shaders\water_heightmap.frag" />
-    <None Include="..\assets\shaders\water_heightmap.vert" />
-    <None Include="..\assets\shaders\water_normal.frag" />
-    <None Include="..\assets\shaders\water_normal.vert" />
+    <Image Include="icon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="icon.ico" />
+    <None Include="..\pack\assets\shaders\font.frag" />
+    <None Include="..\pack\assets\shaders\font.vert" />
+    <None Include="..\pack\assets\shaders\glow_copy.frag" />
+    <None Include="..\pack\assets\shaders\glow_copy.vert" />
+    <None Include="..\pack\assets\shaders\glow_extraction.frag" />
+    <None Include="..\pack\assets\shaders\glow_extraction.vert" />
+    <None Include="..\pack\assets\shaders\glow_lastpass.frag" />
+    <None Include="..\pack\assets\shaders\glow_lastpass.vert" />
+    <None Include="..\pack\assets\shaders\letterbox.frag" />
+    <None Include="..\pack\assets\shaders\letterbox.vert" />
+    <None Include="..\pack\assets\shaders\skin.400.frag" />
+    <None Include="..\pack\assets\shaders\skin.400.vert" />
+    <None Include="..\pack\assets\shaders\skin.frag" />
+    <None Include="..\pack\assets\shaders\skin.vert" />
+    <None Include="..\pack\assets\shaders\sky_cubemap.frag" />
+    <None Include="..\pack\assets\shaders\sky_cubemap.vert" />
+    <None Include="..\pack\assets\shaders\sky_photosphere.frag" />
+    <None Include="..\pack\assets\shaders\sky_photosphere.vert" />
+    <None Include="..\pack\assets\shaders\sprite.frag" />
+    <None Include="..\pack\assets\shaders\sprite.vert" />
+    <None Include="..\pack\assets\shaders\vivid.frag" />
+    <None Include="..\pack\assets\shaders\vivid.vert" />
+    <None Include="..\pack\assets\shaders\water_classic.frag" />
+    <None Include="..\pack\assets\shaders\water_classic.vert" />
+    <None Include="..\pack\assets\shaders\water_heightmap.frag" />
+    <None Include="..\pack\assets\shaders\water_heightmap.vert" />
+    <None Include="..\pack\assets\shaders\water_lastpass.frag" />
+    <None Include="..\pack\assets\shaders\water_lastpass.vert" />
+    <None Include="..\pack\assets\shaders\water_normal.frag" />
+    <None Include="..\pack\assets\shaders\water_normal.vert" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{D13F848D-7701-43BA-B781-1481A54FE77D}</ProjectGuid>

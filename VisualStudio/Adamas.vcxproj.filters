@@ -252,92 +252,98 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\assets\shaders\font.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\assets\shaders\font.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\assets\shaders\letterbox.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\assets\shaders\letterbox.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\assets\shaders\skin.400.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\assets\shaders\skin.400.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\assets\shaders\skin.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\assets\shaders\skin.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\assets\shaders\vivid.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\assets\shaders\vivid.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\assets\shaders\water_heightmap.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\assets\shaders\water_heightmap.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\assets\shaders\water_classic.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\assets\shaders\water_classic.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\assets\shaders\water_lastpass.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\assets\shaders\water_lastpass.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\assets\shaders\water_normal.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\assets\shaders\water_normal.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\assets\shaders\glow_extraction.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\assets\shaders\glow_extraction.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\assets\shaders\glow_copy.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\assets\shaders\glow_copy.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\assets\shaders\glow_lastpass.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\assets\shaders\glow_lastpass.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\assets\shaders\sky_photosphere.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\assets\shaders\sky_photosphere.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\assets\shaders\sky_cubemap.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\assets\shaders\sky_cubemap.vert">
-      <Filter>shaders</Filter>
-    </None>
+    <Image Include="icon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="icon.ico" />
+    <None Include="..\pack\assets\shaders\font.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\pack\assets\shaders\font.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\pack\assets\shaders\glow_copy.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\pack\assets\shaders\glow_copy.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\pack\assets\shaders\glow_extraction.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\pack\assets\shaders\glow_extraction.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\pack\assets\shaders\glow_lastpass.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\pack\assets\shaders\glow_lastpass.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\pack\assets\shaders\letterbox.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\pack\assets\shaders\letterbox.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\pack\assets\shaders\skin.400.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\pack\assets\shaders\skin.400.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\pack\assets\shaders\skin.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\pack\assets\shaders\skin.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\pack\assets\shaders\sky_cubemap.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\pack\assets\shaders\sky_cubemap.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\pack\assets\shaders\sky_photosphere.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\pack\assets\shaders\sky_photosphere.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\pack\assets\shaders\sprite.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\pack\assets\shaders\sprite.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\pack\assets\shaders\vivid.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\pack\assets\shaders\vivid.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\pack\assets\shaders\water_classic.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\pack\assets\shaders\water_classic.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\pack\assets\shaders\water_heightmap.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\pack\assets\shaders\water_heightmap.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\pack\assets\shaders\water_lastpass.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\pack\assets\shaders\water_lastpass.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\pack\assets\shaders\water_normal.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\pack\assets\shaders\water_normal.vert">
+      <Filter>shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
