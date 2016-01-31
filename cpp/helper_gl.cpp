@@ -362,17 +362,24 @@ void afBlendMode(BlendMode mode)
 	}
 }
 
-void afDepthStencilMode(bool depth)
+void afDepthStencilMode(DepthStencilMode mode)
 {
-	if (depth) {
-		glEnable(GL_DEPTH_TEST);
-		glDepthMask(GL_TRUE);
-		glDepthFunc(GL_GEQUAL);
-		glClearDepthf(0);
-	} else {
+	switch (mode) {
+	case DSM_DISABLE:
 		glDisable(GL_DEPTH_TEST);
 		glDepthMask(GL_FALSE);
 		glDepthFunc(GL_ALWAYS);
+		break;
+	case DSM_DEPTH_LESS_WRITE:
+		glEnable(GL_DEPTH_TEST);
+		glDepthMask(GL_TRUE);
+		glDepthFunc(GL_GREATER);
+		break;
+	case DSM_DEPTH_LESSEQUAL:
+		glEnable(GL_DEPTH_TEST);
+		glDepthMask(GL_FALSE);
+		glDepthFunc(GL_GEQUAL);
+		break;
 	}
 }
 

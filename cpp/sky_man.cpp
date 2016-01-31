@@ -42,6 +42,8 @@ void SkyMan::Draw()
 
 	stockObjects.ApplyFullScreenVAO();
 	afBindSamplerToBindingPoint(sampler, 0);
+	afBlendMode(BM_NONE);
+	afDepthStencilMode(DSM_DEPTH_LESSEQUAL);
 	afDrawTriangleStrip(4);
 	afBindVAO(0);
 	afBindTextureToBindingPoint(0, 0);

@@ -76,6 +76,8 @@ void RenderMesh::Draw(int instanceCount) const
 {
 	assert(vao);
 	afHandleGLError(afEnableBackFaceCulling(true));
+	afBlendMode(BM_NONE);
+	afDepthStencilMode(DSM_DEPTH_LESS_WRITE);
 	afHandleGLError(glActiveTexture(GL_TEXTURE0 + SBP_DIFFUSE));
 	glBindVertexArray(vao);
 	GLenum r = glGetError();

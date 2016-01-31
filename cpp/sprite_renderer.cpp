@@ -74,7 +74,7 @@ void SpriteRenderer::Draw(const SpriteCommands& sprites)
 	Mat proj = ortho(0, scrSize.x, scrSize.y, 0, -1000, 1000);
 
 	shaderMan.Apply(shaderId);
-	afDepthStencilMode(false);
+	afDepthStencilMode(DSM_DISABLE);
 
 	afBlendMode(BM_ALPHA);
 	afEnableBackFaceCulling(false);

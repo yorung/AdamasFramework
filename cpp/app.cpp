@@ -22,11 +22,9 @@ App::App()
 
 void App::Draw()
 {
+	afDepthStencilMode(DSM_DEPTH_LESS_WRITE);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	afDepthStencilMode(false);
-	afBlendMode(BM_NONE);
-	skyMan.Draw();
 //	waterSurface.Draw();
 //	waterSurfaceClassic.Draw();
 /*
@@ -36,8 +34,6 @@ void App::Draw()
 	afSetRenderTarget(nullptr);
 	afDrawFullScrenEffect("letterBox", rc);
 */
-	afDepthStencilMode(true);
-	afBlendMode(BM_NONE);
 
 	ivec2 scrSize = systemMisc.GetScreenSize();
 	glViewport(0, 0, scrSize.x, scrSize.y);
@@ -61,6 +57,7 @@ void App::Draw()
 	*/
 	luaMan.Draw3D();
 	meshRenderer.Flush();
+	skyMan.Draw();
 	luaMan.Draw2D();
 	fontMan.Render();
 }
@@ -68,7 +65,7 @@ void App::Draw()
 void App::Init()
 {
 	glClearColor(0.0f, 0.0f, 0.5f, 1.0f);
-	afDepthStencilMode(true);
+	glClearDepthf(0);
 
 #ifdef _MSC_VER
 	GoMyDir();

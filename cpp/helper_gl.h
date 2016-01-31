@@ -175,7 +175,12 @@ enum BlendMode {
 	BM_ALPHA,
 };
 void afBlendMode(BlendMode mode);
-void afDepthStencilMode(bool depth);
+enum DepthStencilMode {
+	DSM_DISABLE,
+	DSM_DEPTH_LESS_WRITE,
+	DSM_DEPTH_LESSEQUAL,
+};
+void afDepthStencilMode(DepthStencilMode mode);
 #define afBindVAO glBindVertexArray
 #define afBindSamplerToBindingPoint(samp,pnt) glBindSampler(pnt, samp)
 

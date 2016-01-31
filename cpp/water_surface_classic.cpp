@@ -348,7 +348,7 @@ void WaterSurfaceClassic::Update()
 
 void WaterSurfaceClassic::Draw()
 {
-	afDepthStencilMode(false);
+	afDepthStencilMode(DSM_DISABLE);
 	afBlendMode(BM_NONE);
 
 	V(glBindBuffer(GL_ARRAY_BUFFER, vbo));
