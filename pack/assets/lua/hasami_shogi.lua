@@ -48,12 +48,21 @@ end]]
 
 local numGrid = 9
 
-local function IsValidPos(x, y)
-	return x >= 0 and y >= 0 and x < numGrid and y < numGrid
-end
+local function CreateGrid(numGrid, valFunc)
+	local function IsValidPos(x, y)
+		return x >= 0 and y >= 0 and x < numGrid and y < numGrid
+	end
 
-local function CreateGrid(valFunc)
-	local _ = {}
+	local _
+	_ = {
+		IsValidPos = IsValidPos,
+		GetGridSafe = function(x, y)
+			if IsValidPos(x, y) then
+				return _[y][x]
+			end
+			return -1
+		end,
+	}
 	for y = 0, numGrid - 1 do
 		_[y] = {}
 		for x = 0, numGrid - 1 do _[y][x] = valFunc(x, y) end
@@ -68,7 +77,7 @@ local function FindPath(pathGrid, grid, from)
 		while true do
 			x = x + dir.x
 			y = y + dir.y
-			if not IsValidPos(x, y) then
+			if not grid.IsValidPos(x, y) then
 				return
 			end
 			if grid[y][x] ~= -1 then
@@ -84,7 +93,7 @@ local function FindPath(pathGrid, grid, from)
 	return pathGrid
 end
 
-local grid = CreateGrid(function(x, y) return y == 0 and 1 or y == numGrid - 1 and 0 or -1 end)
+local grid = CreateGrid(numGrid, function(x, y) return y == 0 and 1 or y == numGrid - 1 and 0 or -1 end)
 
 local smallerSize = math.min(SCR_W, SCR_H)
 local function MoveToBoard()
@@ -109,18 +118,11 @@ local function GetMousePosInBoard()
 	local p = GetMousePos()
 	local x = math.floor((p.x - boardLT.x) / (boardRB.x - boardLT.x) * numGrid)
 	local y = math.floor((p.y - boardLT.y) / (boardRB.y - boardLT.y) * numGrid)
-	if not IsValidPos(x, y) then
+	if not grid.IsValidPos(x, y) then
 		print(string.format("invalid pos %d %d", x, y))
 		return
 	end
 	return {x = x, y = y}
-end
-
-local function GetGridSafe(x, y)
-	if IsValidPos(x, y) then
-		return grid[y][x]
-	end
-	return -1
 end
 
 local function Detection(pos, currentTurn)
@@ -128,7 +130,7 @@ local function Detection(pos, currentTurn)
 		local x = pos.x + dx
 		local y = pos.y + dy
 		while true do
-			local t = GetGridSafe(x, y)
+			local t = grid.GetGridSafe(x, y)
 			if t == currentTurn then
 				return true
 			elseif t < 0 then
@@ -143,7 +145,7 @@ local function Detection(pos, currentTurn)
 		local x = pos.x + dx
 		local y = pos.y + dy
 		while true do
-			local t = GetGridSafe(x, y)
+			local t = grid.GetGridSafe(x, y)
 			if t == currentTurn then
 				return
 			end
@@ -175,7 +177,7 @@ local co = coroutine.create(function()
 			print(string.format("my units not found at pos %d %d", from.x, from.y))
 			return
 		end
-		local pathGrid = FindPath(CreateGrid(function(x, y) return -1 end), grid, from)
+		local pathGrid = FindPath(CreateGrid(numGrid, function(x, y) return -1 end), grid, from)
 		Sleep(1)
 		WaitClickLeft()
 		local to = GetMousePosInBoard()
@@ -214,7 +216,6 @@ function Draw2D()
 	matrixStack:Scale(1 / numGrid, 1 / numGrid, 1)
 	for x = 0, numGrid - 1 do
 		for y = 0, numGrid - 1 do
-		--	DrawJiji(x, y, 1)
 			if grid[y][x] == 0 then
 				DrawJiji(x, y, 2)
 			elseif grid[y][x] == 1 then
@@ -225,9 +226,6 @@ function Draw2D()
 			end
 		end
 	end
-
---	matrixStack:Scale(2 / 256, 2 / 256, 1)
---	jiji:DrawCell(0)
 	matrixStack:Pop()
 end
 
