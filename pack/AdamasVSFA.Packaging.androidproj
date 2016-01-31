@@ -116,7 +116,8 @@
     <Content Include="assets\hakodate.jpg" />
     <Content Include="assets\jiji.dds" />
     <Content Include="assets\jiji.x" />
-    <Content Include="assets\lua\hasami_shogi.lua" />
+    <Content Include="assets\lua\hasami_shogi\grid_tools.lua" />
+    <Content Include="assets\lua\hasami_shogi\main.lua" />
     <Content Include="assets\lua\instancing.lua" />
     <Content Include="assets\lua\jiji.lua" />
     <Content Include="assets\lua\puzzle.lua" />
