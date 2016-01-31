@@ -1,3 +1,5 @@
+local gridTools = dofile("lua/hasami_shogi/grid_tools.lua")
+
 local jiji = Image("jiji.dds")
 jiji:SetCell(0, {left = 0, top = 0, right = 256, bottom = 256})
 
@@ -48,52 +50,8 @@ end]]
 
 local numGrid = 9
 
-local function CreateGrid(numGrid, valFunc)
-	local function IsValidPos(x, y)
-		return x >= 0 and y >= 0 and x < numGrid and y < numGrid
-	end
 
-	local _
-	_ = {
-		IsValidPos = IsValidPos,
-		GetGridSafe = function(x, y)
-			if IsValidPos(x, y) then
-				return _[y][x]
-			end
-			return -1
-		end,
-	}
-	for y = 0, numGrid - 1 do
-		_[y] = {}
-		for x = 0, numGrid - 1 do _[y][x] = valFunc(x, y) end
-	end
-	return _
-end
-
-local function FindPath(pathGrid, grid, from)
-	local function findDir(dir)
-		local x = from.x
-		local y = from.y
-		while true do
-			x = x + dir.x
-			y = y + dir.y
-			if not grid.IsValidPos(x, y) then
-				return
-			end
-			if grid[y][x] ~= -1 then
-				return
-			end
-			pathGrid[y][x] = 0
-		end
-	end
-	findDir({x = 1, y = 0})
-	findDir({x = -1, y = 0})
-	findDir({x = 0, y = 1})
-	findDir({x = 0, y = -1})
-	return pathGrid
-end
-
-local grid = CreateGrid(numGrid, function(x, y) return y == 0 and 1 or y == numGrid - 1 and 0 or -1 end)
+local grid = gridTools.CreateGrid(numGrid, function(x, y) return y == 0 and 1 or y == numGrid - 1 and 0 or -1 end)
 
 local smallerSize = math.min(SCR_W, SCR_H)
 local function MoveToBoard()
@@ -177,7 +135,7 @@ local co = coroutine.create(function()
 			print(string.format("my units not found at pos %d %d", from.x, from.y))
 			return
 		end
-		local pathGrid = FindPath(CreateGrid(numGrid, function(x, y) return -1 end), grid, from)
+		local pathGrid = gridTools.FindPath(gridTools.CreateGrid(numGrid, function(x, y) return -1 end), grid, from)
 		Sleep(1)
 		WaitClickLeft()
 		local to = GetMousePosInBoard()
