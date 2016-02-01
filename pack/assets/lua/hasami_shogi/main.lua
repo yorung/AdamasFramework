@@ -1,5 +1,7 @@
 local gridTools = dofile("lua/hasami_shogi/grid_tools.lua")
 
+local matrixStack = MatrixStack()
+
 local jiji = Image("jiji.dds")
 jiji:SetCell(0, {left = 0, top = 0, right = 256, bottom = 256})
 
@@ -20,19 +22,19 @@ end
 
 local DrawJiji = WrapDrawer(function()
 	matrixStack:Scale(1 / 256, 1 / 256, 1)
-	jiji:DrawCell(0)
+	jiji:DrawCell(matrixStack, 0)
 end)
 
 local DrawReverseJiji = WrapDrawer(function()
 	matrixStack:Translate(1, 1, 0)
 	matrixStack:Scale(1 / 256, 1 / 256, 1)
 	matrixStack:RotateZ(180)
-	jiji:DrawCell(0)
+	jiji:DrawCell(matrixStack, 0)
 end)
 
 local DrawBoard = WrapDrawer(function()
 	matrixStack:Scale(1 / 64, 1 / 64, 1)
-	board:DrawCell(0)
+	board:DrawCell(matrixStack, 0)
 end)
 
 --[[
@@ -43,7 +45,7 @@ for i = 0, 15 do
 	chips[i] = {
 		Draw = WrapDrawer(function()
 			matrixStack:Scale(1 / 64, 1 / 64, 1)
-			img:DrawCell(0)
+			img:DrawCell(matrixStack, 0)
 		end)
 	}
 end]]
@@ -62,15 +64,6 @@ end
 
 local boardLT = {x = SCR_W / 2 - smallerSize * 0.5, y = SCR_H / 2 - smallerSize * 0.5}
 local boardRB = {x = SCR_W / 2 + smallerSize * 0.5, y = SCR_H / 2 + smallerSize * 0.5}
---[[
-matrixStack:Push()
-	MoveToBoard()
-	local boardLT = GetScreenPos()
-	matrixStack:Translate(numGrid, numGrid, 0)
-local boardRB = GetScreenPos()
-matrixStack:Pop()
-print(string.format("lt = %d %d rb = %d %d", boardLT.x, boardLT.y, boardRB.x, boardRB.y))
-]]
 
 local function GetMousePosInBoard()
 	local p = GetMousePos()

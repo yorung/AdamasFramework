@@ -2,6 +2,8 @@ local mesh = Mesh("jiji.x")
 local deg = 0
 local elapsed = 0
 
+local matrixStack = MatrixStack()
+
 function Draw3D()
 	mesh:Draw(0, elapsed)
 
@@ -9,14 +11,14 @@ function Draw3D()
 	matrixStack:Translate(2.2, 0, 0)
 	matrixStack:RotateY(deg)
 	matrixStack:Scale(0.8, 0.8, 0.8)
-	mesh:Draw(0, elapsed)
+	mesh:Draw(matrixStack, 0, elapsed)
 	matrixStack:Pop()
 
 	matrixStack:Push()
 	matrixStack:Translate(-2.2, 0, 0)
 	matrixStack:RotateZ(deg)
 	matrixStack:Scale(1.0 + math.sin(deg * math.pi / 180 * 2) * 0.5, 0.8, 1.0 + math.sin(deg * math.pi / 180 * 3) * 0.5)
-	mesh:Draw(0, elapsed)
+	mesh:Draw(matrixStack, 0, elapsed)
 	matrixStack:Pop()
 
 	deg = deg + 3

@@ -29,24 +29,10 @@ static int LLookAt(lua_State* L)
 	return 0;
 }
 
-// for Legacy
-static MatrixStack* GetGlobalMatrixStack(lua_State* L)
+static ivec2 GetScreenPos(lua_State* L, const MatrixStack* ms)
 {
-	lua_getglobal(L, "matrixStack");
-	MatrixStack* matrixStack = (MatrixStack*)luaL_checkudata(L, -1, matrixStackClassName);
-	lua_pop(L, 1);
-	return matrixStack;
-}
-
-static ivec2 GetScreenPos(lua_State* L)
-{
-	MatrixStack* matrixStack = GetGlobalMatrixStack(L);
-	if (!matrixStack) {
-		return ivec2(0, 0);
-	}
-
 	Mat mW, mV, mP;
-	mW = matrixStack->Get();
+	mW = ms ? ms->Get() : Mat();
 	matrixMan.Get(MatrixMan::VIEW, mV);
 	matrixMan.Get(MatrixMan::PROJ, mP);
 	Mat mViewport;
@@ -180,18 +166,6 @@ static void BindMatrixStack(lua_State *L)
 	};
 	#undef GET_MATRIX_STACK
 	aflBindClass(L, matrixStackClassName, methods, [](lua_State* L) { void* u = lua_newuserdata(L, sizeof(MatrixStack)); new (u) MatrixStack(); return 1; });
-
-	// for Legacy
-	lua_getglobal(L, matrixStackClassName);
-	aflDumpStack();
-	if (lua_pcall(L, 0, LUA_MULTRET, 0)) {
-		printf("%s\n", lua_tostring(L, -1));
-		lua_pop(L, 1);
-		return;
-	}
-	aflDumpStack();
-	lua_setglobal(L, "matrixStack");
-	aflDumpStack();
 }
 
 static void BindImage(lua_State* L)
@@ -223,21 +197,16 @@ static void BindImage(lua_State* L)
 			quads[id] = ltrb;
 		}
 
-		void Draw(lua_State* L, int id, const Vec4* color)
+		void Draw(lua_State* L, const MatrixStack* matrixStack, int id, const Vec4* color)
 		{
 			if (id < 0 || id >= (int)quads.size()) {
 				return;
 			}
-			MatrixStack* matrixStack = GetGlobalMatrixStack(L);
-			if (!matrixStack) {
-				return;
-			}
-
 			SpriteCommand s;
-			s.matW = matrixStack->Get();
+			s.matW = matrixStack ? matrixStack->Get() : Mat();
 			s.quad = quads[id];
 			s.tex = texId;
-			s.color = 0xffffffff;
+			s.color = color ? Vec4ToUnorm(*color) : 0xffffffff;
 			luaSpriteCommands.push_back(s);
 		}
 	};
@@ -251,7 +220,7 @@ static void BindImage(lua_State* L)
 
 		{ "DrawCell", [](lua_State* L) {
 			GET_IMAGE
-			p->Draw(L, (int)lua_tointeger(L, 2), (Vec4*)luaL_testudata(L, 3, vec4ClassName));
+			p->Draw(L, (MatrixStack*)luaL_testudata(L, 2, matrixStackClassName), (int)lua_tointeger(L, 3), (Vec4*)luaL_testudata(L, 4, vec4ClassName));
 			return 0;
 		} },
 
@@ -301,19 +270,14 @@ static void BindMesh(lua_State* L)
 		LMesh(const char *fileName) {
 			mmid = meshMan.Create(fileName);
 		}
-		void Draw(lua_State* L, int animId, double time) {
+		void Draw(lua_State* L, const MatrixStack* m, int animId, double time) {
 			MeshX* mesh = (MeshX*)meshMan.Get(mmid);
 			if (!mesh) {
 				return;
 			}
-			MatrixStack* matrixStack = GetGlobalMatrixStack(L);
-			if (!matrixStack) {
-				return;
-			}
-
 			MeshXAnimResult r;
 			mesh->CalcAnimation(animId, time, r);
-			mesh->Draw(r, matrixStack->Get());
+			mesh->Draw(r, m ? m->Get() : Mat());
 		}
 	};
 	static const char* meshClassName = "Mesh";
@@ -324,7 +288,7 @@ static void BindMesh(lua_State* L)
 	static struct luaL_Reg methods[] =
 	{
 		{ "__gc", [](lua_State* L) { GET_MESH p->~LMesh(); return 0; } },
-		{ "Draw", [](lua_State* L) { GET_MESH p->Draw(L, (int)lua_tointeger(L, -2), lua_tonumber(L, -1)); return 0; } },
+		{ "Draw", [](lua_State* L) { GET_MESH p->Draw(L, (MatrixStack*)luaL_testudata(L, 2, matrixStackClassName), (int)lua_tointeger(L, -2), lua_tonumber(L, -1)); return 0; } },
 		{ nullptr, nullptr },
 	};
 #undef GET_MESH
@@ -361,7 +325,7 @@ static void BindGlobalFuncs(lua_State* L)
 		{ "LookAt", LLookAt },
 		{ "LoadSkyBox", [](lua_State* L) { skyMan.Create(lua_tostring(L, 1), lua_tostring(L, 2)); return 0; } },
 		{ "GetMousePos", [](lua_State* L) { PushPoint(L, systemMisc.GetMousePos()); return 1; } },
-		{ "GetScreenPos", [](lua_State* L) { PushPoint(L, GetScreenPos(L)); return 1; } },
+		{ "GetScreenPos", [](lua_State* L) { PushPoint(L, GetScreenPos(L, (MatrixStack*)luaL_testudata(L, 1, matrixStackClassName))); return 1; } },
 		{ "MessageBox", [](lua_State* L) { lua_pushstring(L, StrMessageBox(lua_tostring(L, -2), lua_tostring(L, -1))); return 1; } },
 		{ "PostCommand", [](lua_State* L) { PostCommand(lua_tostring(L, -1)); return 0; } },
 		{ nullptr, nullptr },

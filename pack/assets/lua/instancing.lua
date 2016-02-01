@@ -1,3 +1,5 @@
+local matrixStack = MatrixStack()
+
 local function ScaledMesh(fileName, scale)
 	local mesh
 	return
@@ -8,7 +10,7 @@ local function ScaledMesh(fileName, scale)
 			end
 			matrixStack:Push()
 				matrixStack:Scale(scale, scale, scale)
-				mesh:Draw(animId, time)
+				mesh:Draw(matrixStack, animId, time)
 			matrixStack:Pop()
 		end
 	}
@@ -44,7 +46,7 @@ local function DrawOne( x, y, mesh )
 		matrixStack:RotateY( rot )
 		matrixStack:RotateZ( rot )
 
-		mesh:Draw( 0, m_frame * ( 1 / FPS ) )
+		mesh:Draw(matrixStack, 0, m_frame * ( 1 / FPS ))
 	matrixStack:Pop()
 end
 
@@ -88,7 +90,7 @@ function Draw3D()
 	matrixStack:Push()
 		matrixStack:Translate( 0, 3, 0 )
 		matrixStack:RotateY( m_frame )
-		meshTbl[1]:Draw( g_animId, m_frame / 60 )
+		meshTbl[1]:Draw(matrixStack, g_animId, m_frame / 60)
 	matrixStack:Pop()
 
 	DrawBlocks()

@@ -7,5 +7,5 @@ public:
 	void Push();
 	void Pop();
 	void Mul(const Mat& m);
-	const Mat& Get() { return stack.top(); }
+	const Mat& Get() const { return stack.top(); }
 };
