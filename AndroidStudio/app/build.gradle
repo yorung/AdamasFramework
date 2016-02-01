@@ -6,7 +6,7 @@ android {
 
     sourceSets {
         main.jni.srcDirs = ['../../cpp', '../../submodules/lua']
-        main.assets.srcDirs = ['../../assets', '../../../../mydns/Janken/Program/root']
+        main.assets.srcDirs = ['../../pack/assets']
     }
 
     defaultConfig {
@@ -17,11 +17,11 @@ android {
         versionName "1.0"
         ndk {
             moduleName 'AdamasNative'
-            cFlags "-std=c++11"
+            cFlags "-std=c++1y"
             ldLibs "log"
             ldLibs "GLESv3"
             ldLibs "OpenSLES"
-            abiFilters "armeabi", "mips", "x86"
+            abiFilters "armeabi"
             stl "gnustl_static"
         }
     }
