@@ -1,6 +1,28 @@
 #include "stdafx.h"
 
-WaterSurfaceClassic waterSurfaceClassic;
+class WaterSurfaceClassicBinder {
+public:
+	WaterSurfaceClassicBinder() {
+		GetLuaBindFuncContainer().push_back([](lua_State* L) {
+			static luaL_Reg methods[] = {
+				{ "Update", [](lua_State* L) {
+					WaterSurfaceClassic* p = (WaterSurfaceClassic*)luaL_checkudata(L, 1, "WaterSurfaceClassic");
+					if (p) {
+						p->Update();
+					}
+					return 0; } },
+				{ "Draw", [](lua_State* L) {
+					WaterSurfaceClassic* p = (WaterSurfaceClassic*)luaL_checkudata(L, 1, "WaterSurfaceClassic");
+					if (p) {
+						p->Draw();
+					}
+					return 0; } },
+				{ nullptr, nullptr },
+			};
+			aflBindClass(L, "WaterSurfaceClassic", methods, [](lua_State* L) { void* u = lua_newuserdata(L, sizeof(WaterSurfaceClassic)); new (u) WaterSurfaceClassic(); return 1; });
+		});
+	}
+} static waterSurfaceClassicBinder;
 
 struct TexFiles
 {
@@ -16,9 +38,6 @@ static TexFiles texFiles[] = {
 	{ "delaymap.png", true },
 	{ "sphere.jpg", true },
 };
-
-static TexMan::TMID texId[dimof(texFiles)];
-
 
 const int tileMax = 50;
 const int vertMax = tileMax + 1;
@@ -123,6 +142,7 @@ WaterSurfaceClassic::WaterSurfaceClassic()
 	renderbufferObject = 0;
 	storedW = 0;
 	storedH = 0;
+	Init();
 }
 
 WaterSurfaceClassic::~WaterSurfaceClassic()
@@ -150,6 +170,9 @@ void WaterSurfaceClassic::Destroy()
 	}
 	afSafeDeleteVAO(vao);
 	afSafeDeleteVAO(vaoFullScr);
+	for (auto& it : texIds) {
+		afSafeDeleteTexture(it);
+	}
 }
 
 static void HandleGLError(const char* func, int line, const char* command)
@@ -231,10 +254,11 @@ void WaterSurfaceClassic::Init()
 	shaderIdFullScr = shaderMan.Create(shaderName);
 
 	glActiveTexture(GL_TEXTURE0);
+	texIds.resize(dimof(texFiles));
 	for (int i = 0; i < (int)dimof(texFiles); i++) {
-		texId[i] = texMan.Create(texFiles[i].name);
+		texIds[i] = texMan.Create(texFiles[i].name);
         if (!texFiles[i].clamp) {
-            glBindTexture(GL_TEXTURE_2D, texId[i]);
+            glBindTexture(GL_TEXTURE_2D, texIds[i]);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
             glBindTexture(GL_TEXTURE_2D, 0);
@@ -359,7 +383,7 @@ void WaterSurfaceClassic::Draw()
 
 	for (int i = 0; i < (int)dimof(texFiles); i++) {
 		glActiveTexture(GL_TEXTURE0 + i);
-		glBindTexture(GL_TEXTURE_2D, texId[i]);
+		glBindTexture(GL_TEXTURE_2D, texIds[i]);
 		glBindSampler(i, texFiles[i].clamp ? samplerClamp : samplerRepeat);
 	}
 

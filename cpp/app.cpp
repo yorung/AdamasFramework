@@ -95,7 +95,7 @@ void App::LoadMesh(const char* fileName)
 
 void App::OnTap(float x, float y)
 {
-	waterSurfaceClassic.CreateRipple(Vec2(x, y));
+//	waterSurfaceClassic.CreateRipple(Vec2(x, y));
 }
 
 void App::Destroy()
@@ -106,7 +106,6 @@ void App::Destroy()
 	texMan.Destroy();
 	shaderMan.Destroy();
 	waterSurface.Destroy();
-	waterSurfaceClassic.Destroy();
 	fontMan.Destroy();
 	meshRenderer.Destroy();
 	meshMan.Destroy();
@@ -122,7 +121,6 @@ void App::Update()
 	matrixMan.Set(MatrixMan::VIEW, devCamera.CalcViewMatrix());
 	luaMan.Update();
 	waterSurface.Update();
-	waterSurfaceClassic.Update();
 	fps.Update();
 	fontMan.DrawString(Vec2(20, 40), 20, SPrintf("FPS: %f", fps.Get()));
 }

@@ -11,7 +11,29 @@ public:
 	void Draw();
 };
 
-static Puzzle puzzle;
+class PuzzleBinder {
+public:
+	PuzzleBinder() {
+		GetLuaBindFuncContainer().push_back([](lua_State* L) {
+			static luaL_Reg methods[] = {
+				{ "Update", [](lua_State* L) {
+					Puzzle* p = (Puzzle*)luaL_checkudata(L, 1, "Puzzle");
+					if (p) {
+						p->Update();
+					}
+					return 0; } },
+				{ "Draw", [](lua_State* L) {
+					Puzzle* p = (Puzzle*)luaL_checkudata(L, 1, "Puzzle");
+					if (p) {
+						p->Draw();
+					}
+					return 0; } },
+				{ nullptr, nullptr },
+			};
+			aflBindClass(L, "Puzzle", methods, [](lua_State* L) { void* u = lua_newuserdata(L, sizeof(Puzzle)); new (u) Puzzle(); return 1; });
+		});
+	}
+} static puzzleBinder;
 
 Puzzle::Puzzle()
 {
@@ -23,15 +45,6 @@ Puzzle::Puzzle()
 	for (int i = 0; i < 10000; i++) {
 		TryMove(rand() % 4, rand() % 4);
 	}
-
-	GetLuaBindFuncContainer().push_back([](lua_State* L) {
-		static luaL_Reg inNamespaceFuncs[] = {
-			{ "Update", [](lua_State* L) { puzzle.Update(); return 0; } },
-			{ "Draw", [](lua_State* L) { puzzle.Draw(); return 0; } },
-			{ nullptr, nullptr },
-		};
-		aflBindNamespace(L, "puzzle", inNamespaceFuncs);
-	});
 }
 
 void Puzzle::TryMove(int x, int y)

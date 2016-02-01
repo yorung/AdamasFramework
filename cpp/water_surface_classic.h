@@ -24,7 +24,7 @@ class WaterSurfaceClassic
 	void UpdateRipple();
 	WaterRipple ripples[2];
 	int ripplesNext;
-	double elapsedTime;
+	double elapsedTime = 0;
 	double lastTime;
 	double nextTime;
 	VBOID vbo, vboFullScr;
@@ -38,6 +38,7 @@ class WaterSurfaceClassic
 	GLuint framebufferObject;
 	GLuint renderbufferObject;
 	int storedW, storedH;
+	std::vector<SRVID> texIds;
 public:
 	WaterSurfaceClassic();
 	~WaterSurfaceClassic();
@@ -47,5 +48,3 @@ public:
 	void Draw();
 	void CreateRipple(Vec2 pos);
 };
-
-extern WaterSurfaceClassic waterSurfaceClassic;
