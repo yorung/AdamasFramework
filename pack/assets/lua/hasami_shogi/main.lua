@@ -37,6 +37,13 @@ local DrawBoard = WrapDrawer(function()
 	board:DrawCell(matrixStack, 0)
 end)
 
+local DrawRange = WrapDrawer(function()
+	matrixStack:Translate(1, 1, 0)
+	matrixStack:Scale(1 / 64, 1 / 64, 1)
+	matrixStack:RotateZ(180)
+	board:DrawCell(matrixStack, 0)
+end)
+
 --[[
 local chips = {}
 for i = 0, 15 do
@@ -54,6 +61,7 @@ local numGrid = 9
 
 
 local grid = gridTools.CreateGrid(numGrid, function(x, y) return y == 0 and 1 or y == numGrid - 1 and 0 or -1 end)
+local pathGrid
 
 local smallerSize = math.min(SCR_W, SCR_H)
 local function MoveToBoard()
@@ -114,33 +122,32 @@ end
 local co = coroutine.create(function()
 	local function Sleep(f) for i=1, f do coroutine.yield() end end
 	local function WaitClickLeft()
+		Sleep(1)
 		while GetKeyCount(1) ~= 1 do Sleep(1) end
 	end
 	local function MoveUnit(currentTurn)
-		Sleep(1) -- prevent infinity loop
 		WaitClickLeft()
 		local from = GetMousePosInBoard()
-		if not from then
-			print("invalid pos")
-			return
-		end
+		if not from then print("invalid pos") return end
 		if grid[from.y][from.x] ~= currentTurn then
 			print(string.format("my units not found at pos %d %d", from.x, from.y))
 			return
 		end
-		local pathGrid = gridTools.FindPath(gridTools.CreateGrid(numGrid, function(x, y) return -1 end), grid, from)
-		Sleep(1)
+		pathGrid = gridTools.FindPath(gridTools.CreateGrid(numGrid, function(x, y) return -1 end), grid, from)
 		WaitClickLeft()
 		local to = GetMousePosInBoard()
 		if not to then
 			print("invalid pos to move! reason: out of board")
+			pathGrid = nil
 			return
 		end
 		if pathGrid[to.y][to.x] == -1 then
 			print("invalid pos to move! reason: pathGrid")
+			pathGrid = nil
 			return
 		end
 		print(string.format("move units from %d %d to %d %d", from.x, from.y, to.x, to.y))
+		pathGrid = nil
 		if grid[to.y][to.x] >= 0 then
 			print("grid occupied")
 			return
@@ -171,8 +178,9 @@ function Draw2D()
 				DrawJiji(x, y, 2)
 			elseif grid[y][x] == 1 then
 				DrawReverseJiji(x, y, 2)
+			elseif pathGrid and pathGrid[y][x] ~= -1 then
+				DrawRange(x, y, 1)
 			else
-			--	chips[x % 3].Draw(x, y, 1)
 				DrawBoard(x, y, 1)
 			end
 		end
