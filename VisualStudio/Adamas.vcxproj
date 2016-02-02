@@ -98,7 +98,6 @@
     <ClInclude Include="..\cpp\tex_man.h" />
     <ClInclude Include="..\cpp\voice.h" />
     <ClInclude Include="..\cpp\water_surface.h" />
-    <ClInclude Include="..\cpp\water_surface_classic.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="wgl_grabber_gen.h" />
   </ItemGroup>

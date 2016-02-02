@@ -53,7 +53,6 @@ static const int BONE_MAX = 50;
 #include "sky_man.h"
 #include "glow.h"
 #include "water_surface.h"
-#include "water_surface_classic.h"
 #include "dev_camera.h"
 #include "joint_db.h"
 #include "mesh_renderer.h"

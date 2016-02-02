@@ -1,5 +1,56 @@
 #include "stdafx.h"
 
+struct WaterVert
+{
+	Vec3 pos;
+	Vec3 normal;
+};
+
+struct WaterRipple
+{
+	WaterRipple()
+	{
+		generatedTime = -10000;
+	}
+	double generatedTime;
+	Vec2 centerPos;
+};
+
+class WaterSurfaceClassic
+{
+	Mat matProj, matView;
+	ShaderMan::SMID shaderId;
+	ShaderMan::SMID shaderIdFullScr;
+	int lines;
+	void UpdateVert(std::vector<WaterVert>& vert);
+	void UpdateRipple();
+	WaterRipple ripples[2];
+	int ripplesNext;
+	double elapsedTime = 0;
+	double lastTime;
+	double nextTime;
+	VBOID vbo, vboFullScr;
+	IBOID ibo, iboFullScr;
+	GLuint vao, vaoFullScr;
+	int nIndi;
+	GLuint samplerClamp;
+	GLuint samplerRepeat;
+	GLuint samplerNoMipmap;
+	GLuint texRenderTarget;
+	GLuint framebufferObject;
+	GLuint renderbufferObject;
+	int storedW, storedH;
+	std::vector<SRVID> texIds;
+public:
+	WaterSurfaceClassic();
+	~WaterSurfaceClassic();
+	void Destroy();
+	void Init();
+	void Update();
+	void Draw();
+	void CreateRipple(Vec2 pos);
+};
+
 class WaterSurfaceClassicBinder {
 public:
 	WaterSurfaceClassicBinder() {
@@ -240,8 +291,8 @@ void WaterSurfaceClassic::Init()
 	vbo = afCreateDynamicVertexBuffer(vert.size() * sizeof(WaterVert));
 	ibo = afCreateIndexBuffer(&indi[0], indi.size());
 
-	AFIndex iboFullScrSrc[] = {0, 1, 2, 3};
-	Vec2 vboFullScrSrc[] = {{-1, -1}, {-1, 1}, {1, -1}, {1, 1}};
+	AFIndex iboFullScrSrc[] = { 0, 1, 2, 3 };
+	Vec2 vboFullScrSrc[] = {{-1, 1}, {-1, -1}, {1, 1}, {1, -1}};
 
 	vboFullScr = afCreateVertexBuffer(sizeof(vboFullScrSrc), &vboFullScrSrc[0]);
 	iboFullScr = afCreateIndexBuffer(&iboFullScrSrc[0], dimof(iboFullScrSrc));
@@ -306,6 +357,11 @@ void WaterSurfaceClassic::UpdateRipple()
 	double now = GetTime();
 	elapsedTime += now - lastTime;
 	lastTime = now;
+
+	if (inputMan.GetInputCount(1) == 1) {
+		Vec2 pos = (Vec2)systemMisc.GetMousePos() / (Vec2)systemMisc.GetScreenSize() * Vec2(2, -2) + Vec2(-1, 1);
+		CreateRipple(pos);
+	}
 
 	std::vector<WaterVert> vert;
 	UpdateVert(vert);
@@ -407,7 +463,6 @@ void WaterSurfaceClassic::Draw()
 	V(glBindRenderbuffer(GL_RENDERBUFFER, renderbufferObject));
 	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	if (status == GL_FRAMEBUFFER_COMPLETE) {
-		glClearColor(0, 0, 1, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glBindVertexArray(vao);
 		glDrawElements(GL_TRIANGLE_STRIP, nIndi, GL_UNSIGNED_SHORT, 0);
@@ -424,14 +479,13 @@ void WaterSurfaceClassic::Draw()
 		shaderMan.Apply(shaderIdFullScr);
 		glUniform1i(glGetUniformLocation(shaderIdFullScr, "sampler"), 0);
 
-
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texRenderTarget);
 //		glBindTexture(GL_TEXTURE_2D, texId[1]);
 		glBindSampler(0, samplerNoMipmap);
 
 		glBindVertexArray(vaoFullScr);
-		V(glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, 0));
+		afDrawIndexedTriangleStrip(4);
 		glBindVertexArray(0);
 	}
 }

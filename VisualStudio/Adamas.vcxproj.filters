@@ -210,9 +210,6 @@
     <ClInclude Include="..\cpp\input_man.h">
       <Filter>PlatformIndipendent</Filter>
     </ClInclude>
-    <ClInclude Include="..\cpp\water_surface_classic.h">
-      <Filter>PlatformIndipendent</Filter>
-    </ClInclude>
     <ClInclude Include="..\cpp\stock_objects.h">
       <Filter>PlatformIndipendent</Filter>
     </ClInclude>
