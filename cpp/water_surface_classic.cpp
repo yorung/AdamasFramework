@@ -203,7 +203,7 @@ static const InputElement elements[] = {
 };
 
 static const InputElement elementsFullScr[] = {
-	CInputElement(0, "vPosition", SF_R32G32B32_FLOAT, 0),
+	CInputElement(0, "vPosition", SF_R32G32_FLOAT, 0),
 };
 
 void WaterSurfaceClassic::Init()
