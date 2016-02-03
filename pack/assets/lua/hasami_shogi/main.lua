@@ -1,4 +1,5 @@
 local gridTools = dofile("lua/hasami_shogi/grid_tools.lua")
+local commonTools = dofile("lua/hasami_shogi/common_tools.lua")
 
 local matrixStack = MatrixStack()
 
@@ -84,41 +85,6 @@ local function GetMousePosInBoard()
 	return {x = x, y = y}
 end
 
-local function Detection(pos, currentTurn)
-	local function DetectToward(dx, dy)
-		local x = pos.x + dx
-		local y = pos.y + dy
-		while true do
-			local t = grid.GetGridSafe(x, y)
-			if t == currentTurn then
-				return true
-			elseif t < 0 then
-				return false
-			end
-			x = x + dx
-			y = y + dy
-		end
-	end
-	local function TryKill(dx, dy)
-		if not DetectToward(dx, dy) then return end
-		local x = pos.x + dx
-		local y = pos.y + dy
-		while true do
-			local t = grid.GetGridSafe(x, y)
-			if t == currentTurn then
-				return
-			end
-			grid[y][x] = -1
-			x = x + dx
-			y = y + dy
-		end
-	end
-	TryKill(1, 0)
-	TryKill(-1, 0)
-	TryKill(0, 1)
-	TryKill(0, -1)
-end
-
 local co = coroutine.create(function()
 	local function Sleep(f) for i=1, f do coroutine.yield() end end
 	local function WaitClickLeft()
@@ -133,7 +99,7 @@ local co = coroutine.create(function()
 			print(string.format("my units not found at pos %d %d", from.x, from.y))
 			return
 		end
-		pathGrid = gridTools.FindPath(gridTools.CreateGrid(numGrid, function(x, y) return -1 end), grid, from)
+		pathGrid = gridTools.FindPath(grid, numGrid, from)
 		WaitClickLeft()
 		local to = GetMousePosInBoard()
 		if not to then
@@ -152,15 +118,43 @@ local co = coroutine.create(function()
 			print("grid occupied")
 			return
 		end
-		grid[to.y][to.x] = grid[from.y][from.x]
-		grid[from.y][from.x] = -1
-		Detection(to, currentTurn)
+		gridTools.Judge(grid, from, to, currentTurn)
 		return true
+	end
+
+	local function Think(currentTurn)
+		local maxVal = -1
+		local maxFrom
+		local maxTo
+		for from in gridTools.ValForeach(grid, numGrid, function(v) return v == currentTurn end) do
+			pathGrid = gridTools.FindPath(grid, numGrid, from)
+--			Sleep(3)
+			for to in gridTools.ValForeach(pathGrid, numGrid, function(v) return v ~= -1 end) do
+				local gridTmp = commonTools.DeepCopy(grid)
+				gridTools.Judge(gridTmp, from, to, currentTurn)
+				local val = math.random()
+				if maxVal < val then
+					maxVal = val
+					maxFrom = from
+					maxTo = to
+				end
+			end
+			pathGrid = nil
+		end
+		if maxFrom ~= nil and maxTo ~= nil then
+			print("maxFrom", maxFrom)
+			print("maxTo", maxTo)
+			pathGrid = gridTools.FindPath(grid, numGrid, maxFrom)
+			Sleep(15)
+			gridTools.Judge(grid, maxFrom, maxTo, currentTurn)
+			pathGrid = nil
+		end
 	end
 
 	while true do
 		while not MoveUnit(0) do end
-		while not MoveUnit(1) do end
+		Think(1)
+	--	while not MoveUnit(1) do end
 	end
 end)
 
@@ -172,17 +166,15 @@ function Draw2D()
 	matrixStack:Push()
 	MoveToBoard()
 	matrixStack:Scale(1 / numGrid, 1 / numGrid, 1)
-	for x = 0, numGrid - 1 do
-		for y = 0, numGrid - 1 do
-			if grid[y][x] == 0 then
-				DrawJiji(x, y, 2)
-			elseif grid[y][x] == 1 then
-				DrawReverseJiji(x, y, 2)
-			elseif pathGrid and pathGrid[y][x] ~= -1 then
-				DrawRange(x, y, 1)
-			else
-				DrawBoard(x, y, 1)
-			end
+	for x, y in gridTools.GridForeach(numGrid) do
+		if grid[y][x] == 0 then
+			DrawJiji(x, y, 2)
+		elseif grid[y][x] == 1 then
+			DrawReverseJiji(x, y, 2)
+		elseif pathGrid and pathGrid[y][x] ~= -1 then
+			DrawRange(x, y, 1)
+		else
+			DrawBoard(x, y, 1)
 		end
 	end
 	matrixStack:Pop()
