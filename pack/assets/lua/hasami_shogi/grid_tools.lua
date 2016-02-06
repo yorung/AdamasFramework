@@ -99,42 +99,24 @@ local function ValForeach(grid, numGrid, func)
 end
 
 local function Judge(grid, from, to)
-	local faction = grid[from.y][from.x]
-	grid[to.y][to.x] = faction
+	local myFaction = grid[from.y][from.x]
+	grid[to.y][to.x] = myFaction
 	grid[from.y][from.x] = -1
-
-	local function DetectToward(dx, dy)
-		local x = to.x + dx
-		local y = to.y + dy
-		while true do
-			local t = grid.GetGridSafe(x, y)
-			if t == faction then
-				return true
-			elseif t < 0 then
-				return false
-			end
-			x = x + dx
-			y = y + dy
-		end
-	end
-	local function TryKill(dx, dy)
-		if not DetectToward(dx, dy) then return end
-		local x = to.x + dx
-		local y = to.y + dy
-		while true do
-			local t = grid.GetGridSafe(x, y)
-			if t == faction then
-				return
-			end
+	local enemyFaction = 1 - myFaction
+	local function TryKill(x, y, dx, dy)
+		x = x + dx
+		y = y + dy
+		local t = grid.GetGridSafe(x, y)
+		if t == myFaction then return true end
+		if t == enemyFaction and TryKill(x, y, dx, dy) then
 			grid[y][x] = -1
-			x = x + dx
-			y = y + dy
+			return true
 		end
 	end
-	TryKill(1, 0)
-	TryKill(-1, 0)
-	TryKill(0, 1)
-	TryKill(0, -1)
+	TryKill(to.x, to.y, 1, 0)
+	TryKill(to.x, to.y, -1, 0)
+	TryKill(to.x, to.y, 0, 1)
+	TryKill(to.x, to.y, 0, -1)
 end
 
 return {
