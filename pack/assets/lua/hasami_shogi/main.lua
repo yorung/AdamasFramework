@@ -122,6 +122,12 @@ local co = coroutine.create(function()
 		return true
 	end
 
+	local function Validate(grid, numGrid, myFaction)
+		local myCnt = gridTools.Count(grid, numGrid, myFaction)
+		local eneCnt = gridTools.Count(grid, numGrid, 1 - myFaction)
+		return myCnt - eneCnt + math.random()
+	end
+
 	local function Think(currentTurn)
 		local maxVal = -1
 		local maxFrom
@@ -132,7 +138,7 @@ local co = coroutine.create(function()
 			for to in gridTools.ValForeach(pathGrid, numGrid, function(v) return v ~= -1 end) do
 				local gridTmp = commonTools.DeepCopy(grid)
 				gridTools.Judge(gridTmp, from, to, currentTurn)
-				local val = math.random()
+				local val = Validate(gridTmp, numGrid, currentTurn)
 				if maxVal < val then
 					maxVal = val
 					maxFrom = from

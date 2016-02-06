@@ -58,6 +58,16 @@ local function GridForeach(numGrid)
 	end
 end
 
+local function Count(grid, numGrid, faction)
+	local cnt = 0
+	for x, y in GridForeach(numGrid) do
+		if faction == grid[y][x] then
+			cnt = cnt + 1
+		end
+	end
+	return cnt
+end
+
 local function ValForeach(grid, numGrid, func)
 	local gen = GridForeach(numGrid)
 	return function()
@@ -117,4 +127,5 @@ return {
 	GridForeach = GridForeach,
 	ValForeach = ValForeach,
 	Judge = Judge,
+	Count = Count,
 }
