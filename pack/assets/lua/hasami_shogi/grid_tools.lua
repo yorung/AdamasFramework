@@ -1,3 +1,17 @@
+local function GridForeach(numGrid)
+	local i = 0
+	local sq = numGrid * numGrid
+	return function()
+		if i >= sq then
+			return nil
+		end
+		local x = i % numGrid
+		local y = math.floor(i / numGrid)
+		i = i + 1
+		return x, y
+	end
+end
+
 local function CreateGrid(numGrid, valFunc)
 	local function IsValidPos(x, y)
 		return x >= 0 and y >= 0 and x < numGrid and y < numGrid
@@ -12,12 +26,25 @@ local function CreateGrid(numGrid, valFunc)
 			end
 			return -1
 		end,
+		Count = function(faction)
+			local cnt = 0
+			for x, y in GridForeach(numGrid) do
+				if faction == _[y][x] then
+					cnt = cnt + 1
+				end
+			end
+			return cnt
+		end,
 	}
 	for y = 0, numGrid - 1 do
 		_[y] = {}
 		for x = 0, numGrid - 1 do _[y][x] = valFunc(x, y) end
 	end
 	return _
+end
+
+local function DuplicateGrid(grid, numGrid)
+	return CreateGrid(numGrid, function(x, y) return grid[y][x] end)
 end
 
 local function FindPath(grid, numGrid, from)
@@ -44,20 +71,6 @@ local function FindPath(grid, numGrid, from)
 	return pathGrid
 end
 
-local function GridForeach(numGrid)
-	local i = 0
-	local sq = numGrid * numGrid
-	return function()
-		if i >= sq then
-			return nil
-		end
-		local x = i % numGrid
-		local y = math.floor(i / numGrid)
-		i = i + 1
-		return x, y
-	end
-end
-
 local function Count(grid, numGrid, faction)
 	local cnt = 0
 	for x, y in GridForeach(numGrid) do
@@ -69,6 +82,7 @@ local function Count(grid, numGrid, faction)
 end
 
 local function ValForeach(grid, numGrid, func)
+--	print(string.format("ValForeach numGrid[%d]", numGrid))
 	local gen = GridForeach(numGrid)
 	return function()
 		while true do
@@ -76,6 +90,7 @@ local function ValForeach(grid, numGrid, func)
 			if x == nil then
 				return
 			end
+--			print(string.format("ValForeach x[%d] y[%d]", x, y))
 			if func(grid[y][x]) then
 				return {x = x, y = y}
 			end
@@ -83,8 +98,9 @@ local function ValForeach(grid, numGrid, func)
 	end
 end
 
-local function Judge(grid, from, to, currentTurn)
-	grid[to.y][to.x] = grid[from.y][from.x]
+local function Judge(grid, from, to)
+	local faction = grid[from.y][from.x]
+	grid[to.y][to.x] = faction
 	grid[from.y][from.x] = -1
 
 	local function DetectToward(dx, dy)
@@ -92,7 +108,7 @@ local function Judge(grid, from, to, currentTurn)
 		local y = to.y + dy
 		while true do
 			local t = grid.GetGridSafe(x, y)
-			if t == currentTurn then
+			if t == faction then
 				return true
 			elseif t < 0 then
 				return false
@@ -107,7 +123,7 @@ local function Judge(grid, from, to, currentTurn)
 		local y = to.y + dy
 		while true do
 			local t = grid.GetGridSafe(x, y)
-			if t == currentTurn then
+			if t == faction then
 				return
 			end
 			grid[y][x] = -1
@@ -128,4 +144,5 @@ return {
 	ValForeach = ValForeach,
 	Judge = Judge,
 	Count = Count,
+	DuplicateGrid = DuplicateGrid,
 }

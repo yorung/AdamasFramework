@@ -61,7 +61,7 @@ end]]
 local numGrid = 9
 
 
-local grid = gridTools.CreateGrid(numGrid, function(x, y) return y == 0 and 1 or y == numGrid - 1 and 0 or -1 end)
+local globalGrid = gridTools.CreateGrid(numGrid, function(x, y) return y == 0 and 1 or y == numGrid - 1 and 0 or -1 end)
 local pathGrid
 
 local smallerSize = math.min(SCR_W, SCR_H)
@@ -78,11 +78,51 @@ local function GetMousePosInBoard()
 	local p = GetMousePos()
 	local x = math.floor((p.x - boardLT.x) / (boardRB.x - boardLT.x) * numGrid)
 	local y = math.floor((p.y - boardLT.y) / (boardRB.y - boardLT.y) * numGrid)
-	if not grid.IsValidPos(x, y) then
+	if not globalGrid.IsValidPos(x, y) then
 		print(string.format("invalid pos %d %d", x, y))
 		return
 	end
 	return {x = x, y = y}
+end
+
+local function FindBest(grid, numGrid, myFaction, evaluator, depth)
+	local maxVal = -10000
+	local maxFrom
+	local maxTo
+--	print(string.format("FindBest numGrid[%d] myFaction[%d] depth[%d]", numGrid, myFaction, depth))
+	for from in gridTools.ValForeach(grid, numGrid, function(v) return v == myFaction end) do
+		local pathGrid = gridTools.FindPath(grid, numGrid, from)
+		for to in gridTools.ValForeach(pathGrid, numGrid, function(v) return v ~= -1 end) do
+			local gridTmp = gridTools.DuplicateGrid(grid, numGrid)
+			gridTools.Judge(gridTmp, from, to)
+			local val = evaluator(gridTmp, numGrid, myFaction, depth + 1)
+			if depth == 0 then
+				print(string.format("depth[%d] from[%d %d] to[%d %d] val[%f]", depth, from.x, from.y, to.x, to.y, val))
+			--[[	if from.x == 2 and from.y == 0 and to.x == 2 and to.y == 1 then
+					print(string.format("Dump for FindBest evaluator numGrid[%d] myFaction[%d] depth[%d]", numGrid, myFaction, depth))
+					commonTools.Dump(gridTmp)
+				end]]
+			end
+			if maxVal < val then
+				maxVal = val
+				maxFrom = from
+				maxTo = to
+			end
+		end
+	end
+	return maxFrom, maxTo, maxVal
+end
+
+local function Evaluate(grid, numGrid, myFaction, depth)
+--	print(string.format("Evaluate numGrid[%d] myFaction[%d] depth[%d]", numGrid, myFaction, depth))
+	if depth < 2 then
+		local enemyFaction = 1 - myFaction
+		local from, to, val = FindBest(grid, numGrid, enemyFaction, Evaluate, depth)
+		return -val
+	end
+	local myCnt = gridTools.Count(grid, numGrid, myFaction)
+	local eneCnt = gridTools.Count(grid, numGrid, 1 - myFaction)
+	return myCnt - eneCnt + math.random() * 0.1
 end
 
 local co = coroutine.create(function()
@@ -91,7 +131,20 @@ local co = coroutine.create(function()
 		Sleep(1)
 		while GetKeyCount(1) ~= 1 do Sleep(1) end
 	end
-	local function MoveUnit(currentTurn)
+
+	local function Think(grid, numGrid, myFaction)
+	--	print(string.format("Think numGrid[%d] myFaction[%d]", numGrid, myFaction))
+		local from, to, val = FindBest(grid, numGrid, myFaction, Evaluate, 0)
+		if from ~= nil and to ~= nil then
+			pathGrid = gridTools.FindPath(grid, numGrid, from)
+			print(string.format("move units from[%d %d] to[%d %d] val[%f]", from.x, from.y, to.x, to.y, val))
+			Sleep(15)
+			gridTools.Judge(grid, from, to)
+			pathGrid = nil
+		end
+	end
+
+	local function MoveUnit(grid, currentTurn)
 		WaitClickLeft()
 		local from = GetMousePosInBoard()
 		if not from then print("invalid pos") return end
@@ -118,54 +171,28 @@ local co = coroutine.create(function()
 			print("grid occupied")
 			return
 		end
-		gridTools.Judge(grid, from, to, currentTurn)
+		gridTools.Judge(grid, from, to)
 		return true
 	end
 
-	local function Validate(grid, numGrid, myFaction)
-		local myCnt = gridTools.Count(grid, numGrid, myFaction)
-		local eneCnt = gridTools.Count(grid, numGrid, 1 - myFaction)
-		return myCnt - eneCnt + math.random()
-	end
-
-	local function Think(currentTurn)
-		local maxVal = -1
-		local maxFrom
-		local maxTo
-		for from in gridTools.ValForeach(grid, numGrid, function(v) return v == currentTurn end) do
-			pathGrid = gridTools.FindPath(grid, numGrid, from)
---			Sleep(3)
-			for to in gridTools.ValForeach(pathGrid, numGrid, function(v) return v ~= -1 end) do
-				local gridTmp = commonTools.DeepCopy(grid)
-				gridTools.Judge(gridTmp, from, to, currentTurn)
-				local val = Validate(gridTmp, numGrid, currentTurn)
-				if maxVal < val then
-					maxVal = val
-					maxFrom = from
-					maxTo = to
-				end
-			end
-			pathGrid = nil
-		end
-		if maxFrom ~= nil and maxTo ~= nil then
-			print("maxFrom", maxFrom)
-			print("maxTo", maxTo)
-			pathGrid = gridTools.FindPath(grid, numGrid, maxFrom)
-			Sleep(15)
-			gridTools.Judge(grid, maxFrom, maxTo, currentTurn)
-			pathGrid = nil
-		end
-	end
 
 	while true do
-		while not MoveUnit(0) do end
-		Think(1)
+		while not MoveUnit(globalGrid, 0) do end
+		Sleep(1)
+		Think(globalGrid, numGrid, 1)
 	--	while not MoveUnit(1) do end
 	end
 end)
 
 function Update()
+	local globalCnt = commonTools.CountElements(_G)
 	assert(coroutine.resume(co))
+	assert(globalCnt == commonTools.CountElements(_G))
+--[[	if GetKeyCount(2) == 1 then
+		for k, v in pairs(_G) do
+			print(string.format("%s:%s", k, v))
+		end
+	end]]
 end
 
 function Draw2D()
@@ -173,9 +200,9 @@ function Draw2D()
 	MoveToBoard()
 	matrixStack:Scale(1 / numGrid, 1 / numGrid, 1)
 	for x, y in gridTools.GridForeach(numGrid) do
-		if grid[y][x] == 0 then
+		if globalGrid[y][x] == 0 then
 			DrawJiji(x, y, 2)
-		elseif grid[y][x] == 1 then
+		elseif globalGrid[y][x] == 1 then
 			DrawReverseJiji(x, y, 2)
 		elseif pathGrid and pathGrid[y][x] ~= -1 then
 			DrawRange(x, y, 1)
@@ -186,7 +213,26 @@ function Draw2D()
 	matrixStack:Pop()
 end
 
+
+
 function Draw3D()
 end
 
 LoadSkyBox("hakodate.jpg", "sky_photosphere")
+
+--[[
+local tbl = {
+{-1, 1, 1, 0},
+{-1, 1,-1,-1},
+{-1,-1,-1,-1},
+{ 0, 0, 0, 0},
+}
+local t = gridTools.CreateGrid(4, function(x, y) return tbl[y + 1][x + 1] end)
+
+
+
+--Think(t, 4, 1)
+local from, to, val = FindBest(t, 4, 1, Evaluate, 0)
+--local from, to, val = FindBest(t, 4, 0, Evaluate, 1)
+print(string.format("move units from[%d %d] to[%d %d] val[%f]", from.x, from.y, to.x, to.y, val))
+]]
