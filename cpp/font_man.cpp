@@ -113,13 +113,6 @@ void FontMan::MakeFontBitmap(const char* fontName, const CharSignature& sig, DIB
 FontMan::FontMan()
 {
 	ClearCache();
-	texture = TexMan::INVALID_TMID;
-	shader = ShaderMan::INVALID_SMID;
-	dirty = false;
-	ibo = 0;
-	vbo = 0;
-	vao = 0;
-	sampler = 0;
 }
 
 FontMan::~FontMan()
