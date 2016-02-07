@@ -77,7 +77,7 @@ typedef TBufName<GL_ARRAY_BUFFER> VBOID;
 typedef GLuint SAMPLERID;
 typedef GLuint SRVID;
 
-void afSetVertexAttributes(GLuint program, const InputElement elements[], int numElements, int numBuffers, VBOID const *vertexBufferIds, const GLsizei* strides);
+void afSetVertexAttributes(const InputElement elements[], int numElements, int numBuffers, VBOID const *vertexBufferIds, const GLsizei* strides);
 
 
 template <class BufName>
@@ -201,7 +201,7 @@ SSBOID afCreateSSBO(int size);
 UBOID afCreateUBO(int size);
 void afBindBufferToBindingPoint(SSBOID ssbo, GLuint storageBlockBinding);
 void afBindBufferToBindingPoint(UBOID ubo, GLuint uniformBlockBinding);
-VAOID afCreateVAO(GLuint program, const InputElement elements[], int numElements, int numBuffers, VBOID const *vertexBufferIds, const GLsizei* strides, IBOID ibo);
+VAOID afCreateVAO(const InputElement elements[], int numElements, int numBuffers, VBOID const *vertexBufferIds, const GLsizei* strides, IBOID ibo);
 inline void afSafeDeleteVAO(GLuint& vao)
 {
 	if (vao != 0) {

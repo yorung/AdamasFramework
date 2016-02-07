@@ -83,11 +83,16 @@ void WaterSurface::Init()
 
 	lastTime = GetTime();
 
-	shaderWaterLastPass = shaderMan.Create("water_lastpass");
+	shaderWaterLastPass = shaderMan.Create("water_lastpass", nullptr, 0);
 	assert(shaderWaterLastPass);
-	shaderHeightMap = shaderMan.Create("water_heightmap");
+	shaderHeightMap = shaderMan.Create("water_heightmap", nullptr, 0);
 	assert(shaderHeightMap);
-	shaderNormalMap = shaderMan.Create("water_normal");
+
+	{
+		int numElements = 0;
+		const InputElement* elements = stockObjects.GetFullScreenInputElements(numElements);
+		shaderNormalMap = shaderMan.Create("water_normal", elements, numElements);
+	}
 	afLayoutSamplerBindingManually(shaderWaterLastPass, "waterHeightmap", 0);
 	assert(shaderNormalMap);
 	shaderMan.Apply(shaderNormalMap);

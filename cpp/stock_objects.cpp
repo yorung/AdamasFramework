@@ -24,7 +24,7 @@ void StockObjects::CreateFullScreenVAO()
 	VBOID vertexBufferIdsFullScr[] = { vboFullScr };
 	GLsizei stridesFullScr[] = { sizeof(Vec2) };
 
-	vaoFullScr = afCreateVAO(0, elements, dimof(elements), 1, vertexBufferIdsFullScr, stridesFullScr, iboFullScr);
+	vaoFullScr = afCreateVAO(elements, dimof(elements), 1, vertexBufferIdsFullScr, stridesFullScr, iboFullScr);
 }
 
 void StockObjects::CreateSamplers()

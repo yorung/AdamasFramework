@@ -13,7 +13,7 @@ void SkyMan::Create(const char *texFileName, const char* shader)
 {
 	Destroy();
 	texId = afLoadTexture(texFileName, texDesc);
-	shaderId = shaderMan.Create(shader);
+	shaderId = shaderMan.Create(shader, nullptr, 0);
 	uboId = afCreateUBO(sizeof(Mat));
 	sampler = afCreateSampler(SF_LINEAR, SW_REPEAT);
 }

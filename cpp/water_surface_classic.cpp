@@ -275,12 +275,12 @@ void WaterSurfaceClassic::Init()
 	vboFullScr = afCreateVertexBuffer(sizeof(vboFullScrSrc), &vboFullScrSrc[0]);
 	iboFullScr = afCreateIndexBuffer(&iboFullScrSrc[0], dimof(iboFullScrSrc));
 
-	shaderId = shaderMan.Create("water_classic");
+	shaderId = shaderMan.Create("water_classic", elements, dimof(elements));
 
 
 //	const char* shaderName = "vivid";
 	const char* shaderName = "letterbox";
-	shaderIdFullScr = shaderMan.Create(shaderName);
+	shaderIdFullScr = shaderMan.Create(shaderName, elementsFullScr, dimof(elementsFullScr));
 
 	glActiveTexture(GL_TEXTURE0);
 	texIds.resize(dimof(texFiles));
@@ -323,11 +323,11 @@ void WaterSurfaceClassic::Init()
 
 	VBOID vertexBufferIds[] = { vbo };
 	GLsizei strides[] = { sizeof(WaterVert) };
-	vao = afCreateVAO(shaderId, elements, dimof(elements), 1, vertexBufferIds, strides, ibo);
+	vao = afCreateVAO(elements, dimof(elements), 1, vertexBufferIds, strides, ibo);
 
 	VBOID vertexBufferIdsFullScr[] = { vboFullScr };
 	GLsizei stridesFullScr[] = { sizeof(Vec2) };
-	vaoFullScr = afCreateVAO(shaderIdFullScr, elementsFullScr, dimof(elementsFullScr), 1, vertexBufferIdsFullScr, stridesFullScr, iboFullScr);
+	vaoFullScr = afCreateVAO(elementsFullScr, dimof(elementsFullScr), 1, vertexBufferIdsFullScr, stridesFullScr, iboFullScr);
 }
 
 void WaterSurfaceClassic::UpdateRipple()

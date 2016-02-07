@@ -6,6 +6,16 @@ static const size_t MAX_MATERIALS = 100;
 static const size_t MAX_BONE_SSBOS = 100;
 static const size_t MATERIAL_SSBO_SIZE = sizeof(Material) * MAX_MATERIALS;
 
+static const InputElement elements[] = {
+	CInputElement(0, "POSITION", SF_R32G32B32_FLOAT, 0),
+	CInputElement(0, "NORMAL", SF_R32G32B32_FLOAT, 12),
+	CInputElement(0, "vColor", SF_R8G8B8A8_UNORM, 24),
+	CInputElement(0, "vTexcoord", SF_R32G32_FLOAT, 28),
+	CInputElement(0, "vBlendWeights", SF_R32G32B32_FLOAT, 36),
+	CInputElement(0, "vBlendIndices", SF_R8G8B8A8_UINT, 48),
+	CInputElement(0, "materialId", SF_R32_UINT, 52),
+};
+
 enum SSBOBindingPoints {
 	SBP_MATERIALS = 0,
 	SBP_BONES = 1,
@@ -50,16 +60,6 @@ void RenderMesh::Init(const Block& block)
 	Destroy();
 
 	int sizeVertex = numVertices * sizeof(MeshVertex);
-
-	static const InputElement elements[] = {
-		CInputElement(0, "POSITION", SF_R32G32B32_FLOAT, 0),
-		CInputElement(0, "NORMAL", SF_R32G32B32_FLOAT, 12),
-		CInputElement(0, "vColor", SF_R8G8B8A8_UNORM, 24),
-		CInputElement(0, "vTexcoord", SF_R32G32_FLOAT, 28),
-		CInputElement(0, "vBlendWeights", SF_R32G32B32_FLOAT, 36),
-		CInputElement(0, "vBlendIndices", SF_R8G8B8A8_UINT, 48),
-		CInputElement(0, "materialId", SF_R32_UINT, 52),
-	};
 	vbo = afCreateVertexBuffer(sizeVertex, &block.vertices[0]);
 	ibo = afCreateIndexBuffer(indices, numIndices);
 
@@ -67,7 +67,7 @@ void RenderMesh::Init(const Block& block)
 	VBOID verts[] = { vbo };
 	GLsizei strides[] = { sizeof(MeshVertex) };
 	int shaderId = meshRenderer.GetShaderId();
-	vao = afCreateVAO(shaderId, elements, dimof(elements), block.indices.size(), verts, strides, ibo);
+	vao = afCreateVAO(elements, dimof(elements), block.indices.size(), verts, strides, ibo);
 	aflog("RenderMesh::Init created vao=%d\n", vao);
 	assert(vao);
 }
@@ -120,7 +120,7 @@ void MeshRenderer::Create()
 	uboForPerDrawCall = afCreateUBO(sizeof(PerDrawCallUBO));
 	ssboForMaterials = afCreateSSBO(MATERIAL_SSBO_SIZE);
 
-	shaderId = shaderMan.Create("skin.400");
+	shaderId = shaderMan.Create("skin.400", elements, dimof(elements));
 	assert(shaderId);
 
 	shaderMan.Apply(shaderId);

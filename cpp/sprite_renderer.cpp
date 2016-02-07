@@ -42,7 +42,7 @@ void SpriteRenderer::Init()
 		CInputElement(0, "COLOR", SF_R8G8B8A8_UNORM, 12),
 		CInputElement(0, "TEXCOORD", SF_R32G32_FLOAT, 16),
 	};
-	shaderId = shaderMan.Create("sprite");
+	shaderId = shaderMan.Create("sprite", layout, dimof(layout));
 
 	sampler = afCreateSampler(SF_LINEAR, SW_CLAMP);
 	vbo = afCreateDynamicVertexBuffer(sizeof(SpriteVertex) * MAX_SPRITES_IN_ONE_DRAW_CALL * 6);
@@ -50,7 +50,7 @@ void SpriteRenderer::Init()
 	ibo = afCreateQuadListIndexBuffer(MAX_SPRITES_IN_ONE_DRAW_CALL);
 
 	int strides[] = { sizeof(SpriteVertex) };
-	vao = afCreateVAO(shaderId, layout, dimof(layout), 1, &vbo, strides, ibo);
+	vao = afCreateVAO(layout, dimof(layout), 1, &vbo, strides, ibo);
 }
 
 static void StoreVertices(SpriteVertex v[4], float width, float height, uint32_t color, float uLeft, float vTop, float uRight, float vBottom, const Mat& matW)

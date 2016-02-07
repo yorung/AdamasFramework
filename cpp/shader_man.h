@@ -7,9 +7,8 @@ private:
 	typedef std::map<std::string, SMID> NameToId;
 	NameToId nameToId;
 public:
-	SMID Create(const char *name, const InputElement elements[] = nullptr, int numElements = 0);
+	SMID Create(const char *name, const InputElement elements[], int numElements);
 	void Destroy();
-	void Reload();
 	void Apply(SMID id);
 };
 
