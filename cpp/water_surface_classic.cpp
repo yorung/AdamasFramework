@@ -226,35 +226,13 @@ void WaterSurfaceClassic::Destroy()
 	}
 }
 
-static void HandleGLError(const char* func, int line, const char* command)
-{
-	GLenum r = glGetError();
-	if (r != GL_NO_ERROR) {
-		const char *err = nullptr;
-		switch (r) {
-#define E(er) case er: err = #er; break;
-		E(GL_INVALID_ENUM)
-		E(GL_INVALID_VALUE)
-		E(GL_INVALID_OPERATION)
-		E(GL_INVALID_FRAMEBUFFER_OPERATION)
-#undef E
-		default:
-			printf("%s(%d): err=%d %s\n", func, line, r, command);
-			return;
-		}
-		printf("%s(%d): %s %s\n", func, line, err, command);
-	}
-}
-
-#define V(command) do{ command; HandleGLError(__FUNCTION__, __LINE__, #command); } while(0)
-
 static const InputElement elements[] = {
 	CInputElement(0, "vPosition", SF_R32G32B32_FLOAT, 0),
 	CInputElement(0, "vNormal", SF_R32G32B32_FLOAT, 12),
 };
 
 static const InputElement elementsFullScr[] = {
-	CInputElement(0, "vPosition", SF_R32G32_FLOAT, 0),
+	CInputElement(0, "POSITION", SF_R32G32_FLOAT, 0),
 };
 
 void WaterSurfaceClassic::Init()
@@ -431,7 +409,7 @@ void WaterSurfaceClassic::Draw()
 	afDepthStencilMode(DSM_DISABLE);
 	afBlendMode(BM_NONE);
 
-	V(glBindBuffer(GL_ARRAY_BUFFER, vbo));
+	afHandleGLError(glBindBuffer(GL_ARRAY_BUFFER, vbo));
 
 	UpdateRipple();
 
@@ -457,21 +435,21 @@ void WaterSurfaceClassic::Draw()
 	glUniformMatrix4fv(glGetUniformLocation(shaderId, "matV"), 1, GL_FALSE, &matView.m[0][0]);
 	glUniformMatrix4fv(glGetUniformLocation(shaderId, "matP"), 1, GL_FALSE, &matProj.m[0][0]);
 
-	V(glBindFramebuffer(GL_FRAMEBUFFER, framebufferObject));
-	V(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texRenderTarget, 0));
-	V(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderbufferObject));
-	V(glBindRenderbuffer(GL_RENDERBUFFER, renderbufferObject));
+	afHandleGLError(glBindFramebuffer(GL_FRAMEBUFFER, framebufferObject));
+	afHandleGLError(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texRenderTarget, 0));
+	afHandleGLError(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderbufferObject));
+	afHandleGLError(glBindRenderbuffer(GL_RENDERBUFFER, renderbufferObject));
 	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	if (status == GL_FRAMEBUFFER_COMPLETE) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glBindVertexArray(vao);
 		glDrawElements(GL_TRIANGLE_STRIP, nIndi, GL_UNSIGNED_SHORT, 0);
 		glBindVertexArray(0);
-		V(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0));
-		V(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, 0));
+		afHandleGLError(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0));
+		afHandleGLError(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, 0));
 
-		V(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-	//	V(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0));
+		afHandleGLError(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+	//	afHandleGLError(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0));
 //		glDrawElements(GL_TRIANGLE_STRIP, nIndi, GL_UNSIGNED_SHORT, 0);
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
