@@ -85,17 +85,17 @@ local function GetMousePosInBoard()
 	return {x = x, y = y}
 end
 
-local function FindBest(grid, numGrid, myFaction, evaluator, depth)
+local function FindBest(grid, myFaction, evaluator, depth)
 	local maxVal = -10000
 	local maxFrom
 	local maxTo
 --	print(string.format("FindBest numGrid[%d] myFaction[%d] depth[%d]", numGrid, myFaction, depth))
-	for from in gridTools.ValForeach(grid, numGrid, function(v) return v == myFaction end) do
-		local pathGrid = gridTools.FindPath(grid, numGrid, from)
-		for to in gridTools.ValForeach(pathGrid, numGrid, function(v) return v ~= -1 end) do
-			local gridTmp = gridTools.DuplicateGrid(grid, numGrid)
+	for from in gridTools.ValForeach(grid, function(v) return v == myFaction end) do
+		local pathGrid = gridTools.FindPath(grid, from)
+		for to in gridTools.ValForeach(pathGrid, function(v) return v ~= -1 end) do
+			local gridTmp = gridTools.DuplicateGrid(grid)
 			gridTools.Judge(gridTmp, from, to)
-			local val = evaluator(gridTmp, numGrid, myFaction, depth + 1)
+			local val = evaluator(gridTmp, myFaction, depth + 1)
 			if depth == 0 then
 				print(string.format("depth[%d] from[%d %d] to[%d %d] val[%f]", depth, from.x, from.y, to.x, to.y, val))
 			--[[	if from.x == 2 and from.y == 0 and to.x == 2 and to.y == 1 then
@@ -113,15 +113,15 @@ local function FindBest(grid, numGrid, myFaction, evaluator, depth)
 	return maxFrom, maxTo, maxVal
 end
 
-local function Evaluate(grid, numGrid, myFaction, depth)
+local function Evaluate(grid, myFaction, depth)
 --	print(string.format("Evaluate numGrid[%d] myFaction[%d] depth[%d]", numGrid, myFaction, depth))
 	if depth < 2 then
 		local enemyFaction = 1 - myFaction
-		local from, to, val = FindBest(grid, numGrid, enemyFaction, Evaluate, depth)
+		local from, to, val = FindBest(grid, enemyFaction, Evaluate, depth)
 		return -val
 	end
-	local myCnt = gridTools.Count(grid, numGrid, myFaction)
-	local eneCnt = gridTools.Count(grid, numGrid, 1 - myFaction)
+	local myCnt = grid.Count(myFaction)
+	local eneCnt = grid.Count(1 - myFaction)
 	return myCnt - eneCnt + math.random() * 0.1
 end
 
@@ -132,11 +132,12 @@ local co = coroutine.create(function()
 		while GetKeyCount(1) ~= 1 do Sleep(1) end
 	end
 
-	local function Think(grid, numGrid, myFaction)
+	local function Think(grid, myFaction)
+		Sleep(1)
 	--	print(string.format("Think numGrid[%d] myFaction[%d]", numGrid, myFaction))
-		local from, to, val = FindBest(grid, numGrid, myFaction, Evaluate, 0)
+		local from, to, val = FindBest(grid, myFaction, Evaluate, 0)
 		if from ~= nil and to ~= nil then
-			pathGrid = gridTools.FindPath(grid, numGrid, from)
+			pathGrid = gridTools.FindPath(grid, from)
 			print(string.format("move units from[%d %d] to[%d %d] val[%f]", from.x, from.y, to.x, to.y, val))
 			Sleep(15)
 			gridTools.Judge(grid, from, to)
@@ -152,7 +153,7 @@ local co = coroutine.create(function()
 			print(string.format("my units not found at pos %d %d", from.x, from.y))
 			return
 		end
-		pathGrid = gridTools.FindPath(grid, numGrid, from)
+		pathGrid = gridTools.FindPath(grid, from)
 		WaitClickLeft()
 		local to = GetMousePosInBoard()
 		if not to then
@@ -178,9 +179,8 @@ local co = coroutine.create(function()
 
 	while true do
 		while not MoveUnit(globalGrid, 0) do end
-		Sleep(1)
-		Think(globalGrid, numGrid, 1)
-	--	while not MoveUnit(1) do end
+--		while not MoveUnit(globalGrid, 1) do end
+		Think(globalGrid, 1)
 	end
 end)
 

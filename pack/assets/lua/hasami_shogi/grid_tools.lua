@@ -35,6 +35,7 @@ local function CreateGrid(numGrid, valFunc)
 			end
 			return cnt
 		end,
+		GetNumGrid = function() return numGrid end,
 	}
 	for y = 0, numGrid - 1 do
 		_[y] = {}
@@ -43,12 +44,12 @@ local function CreateGrid(numGrid, valFunc)
 	return _
 end
 
-local function DuplicateGrid(grid, numGrid)
-	return CreateGrid(numGrid, function(x, y) return grid[y][x] end)
+local function DuplicateGrid(grid)
+	return CreateGrid(grid.GetNumGrid(), function(x, y) return grid[y][x] end)
 end
 
-local function FindPath(grid, numGrid, from)
-	local pathGrid = CreateGrid(numGrid, function(x, y) return -1 end)
+local function FindPath(grid, from)
+	local pathGrid = CreateGrid(grid.GetNumGrid(), function(x, y) return -1 end)
 	local function findDir(dir)
 		local x = from.x
 		local y = from.y
@@ -71,19 +72,9 @@ local function FindPath(grid, numGrid, from)
 	return pathGrid
 end
 
-local function Count(grid, numGrid, faction)
-	local cnt = 0
-	for x, y in GridForeach(numGrid) do
-		if faction == grid[y][x] then
-			cnt = cnt + 1
-		end
-	end
-	return cnt
-end
-
-local function ValForeach(grid, numGrid, func)
+local function ValForeach(grid, func)
 --	print(string.format("ValForeach numGrid[%d]", numGrid))
-	local gen = GridForeach(numGrid)
+	local gen = GridForeach(grid.GetNumGrid())
 	return function()
 		while true do
 			local x, y = gen()
