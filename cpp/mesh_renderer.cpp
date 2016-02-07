@@ -76,8 +76,6 @@ void RenderMesh::Draw(int instanceCount) const
 {
 	assert(vao);
 	afHandleGLError(afEnableBackFaceCulling(true));
-	afBlendMode(BM_NONE);
-	afDepthStencilMode(DSM_DEPTH_ENABLE);
 	afHandleGLError(glActiveTexture(GL_TEXTURE0 + SBP_DIFFUSE));
 	glBindVertexArray(vao);
 	GLenum r = glGetError();
@@ -119,8 +117,7 @@ void MeshRenderer::Create()
 	ssboForBoneMatrices = afCreateSSBO(sizeof(Mat) * MAX_BONE_SSBOS);
 	uboForPerDrawCall = afCreateUBO(sizeof(PerDrawCallUBO));
 	ssboForMaterials = afCreateSSBO(MATERIAL_SSBO_SIZE);
-
-	shaderId = shaderMan.Create("skin.400", elements, dimof(elements));
+	shaderId = shaderMan.Create("skin.400", elements, dimof(elements), BM_NONE, DSM_DEPTH_ENABLE);
 	assert(shaderId);
 
 	shaderMan.Apply(shaderId);

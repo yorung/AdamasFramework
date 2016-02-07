@@ -10,7 +10,7 @@ void LetterBox::LazyInit()
 
 	int numElements = 0;
 	const InputElement* elements = stockObjects.GetFullScreenInputElements(numElements);
-	shader = shaderMan.Create("letterbox", elements, numElements);
+	shader = shaderMan.Create("letterbox", elements, numElements, BM_NONE, DSM_DISABLE);
 	afLayoutSamplerBindingManually(shader, "sampler", 0);
 }
 

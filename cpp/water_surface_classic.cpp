@@ -275,12 +275,12 @@ void WaterSurfaceClassic::Init()
 	vboFullScr = afCreateVertexBuffer(sizeof(vboFullScrSrc), &vboFullScrSrc[0]);
 	iboFullScr = afCreateIndexBuffer(&iboFullScrSrc[0], dimof(iboFullScrSrc));
 
-	shaderId = shaderMan.Create("water_classic", elements, dimof(elements));
+	shaderId = shaderMan.Create("water_classic", elements, dimof(elements), BM_NONE, DSM_DISABLE);
 
 
 //	const char* shaderName = "vivid";
 	const char* shaderName = "letterbox";
-	shaderIdFullScr = shaderMan.Create(shaderName, elementsFullScr, dimof(elementsFullScr));
+	shaderIdFullScr = shaderMan.Create(shaderName, elementsFullScr, dimof(elementsFullScr), BM_NONE, DSM_DISABLE);
 
 	glActiveTexture(GL_TEXTURE0);
 	texIds.resize(dimof(texFiles));
@@ -406,9 +406,6 @@ void WaterSurfaceClassic::Update()
 
 void WaterSurfaceClassic::Draw()
 {
-	afDepthStencilMode(DSM_DISABLE);
-	afBlendMode(BM_NONE);
-
 	afHandleGLError(glBindBuffer(GL_ARRAY_BUFFER, vbo));
 
 	UpdateRipple();
