@@ -1,3 +1,5 @@
+local wall = -2
+
 local function GridForeach(numGrid)
 	local i = 0
 	local sq = numGrid * numGrid
@@ -24,7 +26,7 @@ local function CreateGrid(numGrid, valFunc)
 			if IsValidPos(x, y) then
 				return _[y][x]
 			end
-			return -1
+			return wall
 		end,
 		Count = function(faction)
 			local cnt = 0
@@ -94,20 +96,46 @@ local function Judge(grid, from, to)
 	grid[to.y][to.x] = myFaction
 	grid[from.y][from.x] = -1
 	local enemyFaction = 1 - myFaction
-	local function TryKill(x, y, dx, dy)
+	local function TryFlank(x, y, dx, dy)
 		x = x + dx
 		y = y + dy
 		local t = grid.GetGridSafe(x, y)
 		if t == myFaction then return true end
-		if t == enemyFaction and TryKill(x, y, dx, dy) then
+		if t == enemyFaction and TryFlank(x, y, dx, dy) then
 			grid[y][x] = -1
 			return true
 		end
 	end
-	TryKill(to.x, to.y, 1, 0)
-	TryKill(to.x, to.y, -1, 0)
-	TryKill(to.x, to.y, 0, 1)
-	TryKill(to.x, to.y, 0, -1)
+	local function IsSurrounded(x, y)
+		local t = grid.GetGridSafe(x, y)
+		if t == -1 then return false end
+		if t == wall or t == myFaction then return true end
+		assert(t == enemyFaction)
+		grid[y][x] = wall
+		local surrounded = IsSurrounded(x + 1, y) and IsSurrounded(x - 1, y) and IsSurrounded(x, y + 1) and IsSurrounded(x, y - 1)
+		grid[y][x] = enemyFaction
+		return surrounded
+	end
+	local function KillSurroundTroop(x, y)
+		local t = grid.GetGridSafe(x, y)
+		if t == enemyFaction then
+			grid[y][x] = -1
+			KillSurroundTroop(x + 1, y)
+			KillSurroundTroop(x - 1, y)
+			KillSurroundTroop(x, y + 1)
+			KillSurroundTroop(x, y - 1)
+		end
+	end
+	local function TryKill(dx, dy)
+		TryFlank(to.x, to.y, dx, dy)
+		if IsSurrounded(to.x + dx, to.y + dy) then
+			KillSurroundTroop(to.x + dx, to.y + dy)
+		end
+	end
+	TryKill(1, 0)
+	TryKill(-1, 0)
+	TryKill(0, 1)
+	TryKill(0, -1)
 end
 
 return {
