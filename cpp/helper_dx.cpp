@@ -199,9 +199,9 @@ void afDepthStencilMode(DepthStencilMode mode)
 	case DSM_DISABLE:
 		desc.DepthEnable = FALSE;
 		break;
-	case DSM_DEPTH_LESS_WRITE:
+	case DSM_DEPTH_ENABLE:
 		break;	// same as default
-	case DSM_DEPTH_LESSEQUAL:
+	case DSM_DEPTH_CLOSEREQUAL_READONLY:
 		desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
 		desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
 		break;
@@ -210,9 +210,11 @@ void afDepthStencilMode(DepthStencilMode mode)
 	deviceMan11.GetContext()->OMSetDepthStencilState(ds.Get(), 1);
 }
 
-VAOID afCreateVAO(ShaderMan::SMID program, const InputElement elements[], int numElements, int numBuffers, VBOID* const vertexBufferIds, const int* strides, IBOID ibo)
+VAOID afCreateVAO(const InputElement elements[], int numElements, int numBuffers, VBOID* const vertexBufferIds, const int* strides, IBOID ibo)
 {
-	return new FakeVAO(program, elements, numElements, numBuffers, vertexBufferIds, strides, nullptr, ibo);
+	(void)elements;
+	(void)numElements;
+	return new FakeVAO(numBuffers, vertexBufferIds, strides, nullptr, ibo);
 }
 
 void AFRenderTarget::InitForDefaultRenderTarget()

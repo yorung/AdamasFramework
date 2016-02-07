@@ -22,7 +22,7 @@ App::App()
 
 void App::Draw()
 {
-	afDepthStencilMode(DSM_DEPTH_LESS_WRITE);
+	afDepthStencilMode(DSM_DEPTH_ENABLE);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 //	waterSurface.Draw();

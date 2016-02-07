@@ -350,12 +350,12 @@ void afDepthStencilMode(DepthStencilMode mode)
 		glDepthMask(GL_FALSE);
 		glDepthFunc(GL_ALWAYS);
 		break;
-	case DSM_DEPTH_LESS_WRITE:
+	case DSM_DEPTH_ENABLE:
 		glEnable(GL_DEPTH_TEST);
 		glDepthMask(GL_TRUE);
 		glDepthFunc(GL_GREATER);
 		break;
-	case DSM_DEPTH_LESSEQUAL:
+	case DSM_DEPTH_CLOSEREQUAL_READONLY:
 		glEnable(GL_DEPTH_TEST);
 		glDepthMask(GL_FALSE);
 		glDepthFunc(GL_GEQUAL);

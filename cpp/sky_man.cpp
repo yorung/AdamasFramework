@@ -40,12 +40,10 @@ void SkyMan::Draw()
 	afBindBufferToBindingPoint(uboId, 0);
 	(texDesc.isCubeMap ? afBindCubeMapToBindingPoint : afBindTextureToBindingPoint)(texId, 0);
 
-	stockObjects.ApplyFullScreenVAO();
 	afBindSamplerToBindingPoint(sampler, 0);
 	afBlendMode(BM_NONE);
-	afDepthStencilMode(DSM_DEPTH_LESSEQUAL);
+	afDepthStencilMode(DSM_DEPTH_CLOSEREQUAL_READONLY);
 	afDrawTriangleStrip(4);
-	afBindVAO(0);
 	afBindTextureToBindingPoint(0, 0);
 }
 
