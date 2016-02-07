@@ -33,7 +33,7 @@ static GLuint CompileShader(int type, const char *fileName)
 	return shader;
 }
 
-static GLuint CreateProgram(const char* name, const std::vector<std::string>* attributeIndex)
+static GLuint CreateProgram(const char* name, const InputElement elements[], int numElements)
 {
 	char buf[256];
 	snprintf(buf, dimof(buf), "shaders/%s.vert", name);
@@ -47,13 +47,9 @@ static GLuint CreateProgram(const char* name, const std::vector<std::string>* at
 		return 0;
 	}
 	GLuint program = glCreateProgram();
-	if (attributeIndex) {
-		int sz = attributeIndex->size();
-		for (int i = 0; i < sz; i++) {
-			glBindAttribLocation(program, i, (*attributeIndex)[i].c_str());
-		}
+	for (int i = 0; i < numElements; i++) {
+		glBindAttribLocation(program, i, elements[i].name);
 	}
-
 
 	glAttachShader(program, vertexShader);
 	glDeleteShader(vertexShader);
@@ -79,14 +75,14 @@ static GLuint CreateProgram(const char* name, const std::vector<std::string>* at
 	return program;
 }
 
-ShaderMan::SMID ShaderMan::Create(const char *name, const std::vector<std::string>* attributeIndex)
+ShaderMan::SMID ShaderMan::Create(const char *name, const InputElement elements[], int numElements)
 {
 	NameToId::iterator it = nameToId.find(name);
 	if (it != nameToId.end())
 	{
 		return it->second;
 	}
-	return nameToId[name] = CreateProgram(name, attributeIndex);
+	return nameToId[name] = CreateProgram(name, elements, numElements);
 }
 
 void ShaderMan::Destroy()

@@ -8,10 +8,10 @@ void LetterBox::LazyInit()
 		return;
 	}
 
-	shader = shaderMan.Create("letterbox", stockObjects.GetFullScreenVertexAttributeLayout());
-	assert(shader);
+	int numElements = 0;
+	const InputElement* elements = stockObjects.GetFullScreenInputElements(numElements);
+	shader = shaderMan.Create("letterbox", elements, numElements);
 	afLayoutSamplerBindingManually(shader, "sampler", 0);
-
 }
 
 void LetterBox::Draw(AFRenderTarget& target, GLuint srcTex)

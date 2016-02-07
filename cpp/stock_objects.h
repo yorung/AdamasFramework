@@ -12,7 +12,7 @@ public:
 	void Init();
 	void Destroy();
 	void ApplyFullScreenVAO() const;
-	const std::vector<std::string>* GetFullScreenVertexAttributeLayout() const;
+	const InputElement* GetFullScreenInputElements(int& numElements) const;
 	GLuint GetClampSampler() { return samplerClamp; }
 	GLuint GetRepeatSampler() { return samplerRepeat; }
 	GLuint GetNoMipmapSampler() { return samplerNoMipmap; }

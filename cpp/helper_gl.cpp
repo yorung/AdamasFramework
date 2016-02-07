@@ -238,7 +238,7 @@ void afSetVertexAttributes(GLuint program, const InputElement elements[], int nu
 		if (r != GL_NO_ERROR) {
 			aflog("glBindBuffer error! i=%d inputSlot=%d vbo=%d\n", i, d.inputSlot, vertexBufferIds[d.inputSlot].x);
 		}
-		GLint h = d.name ? glGetAttribLocation(program, d.name) : d.attributeIndex;
+		GLint h = program ? glGetAttribLocation(program, d.name) : i;
 		if (h == -1) {
 			continue;
 		}

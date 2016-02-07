@@ -1,5 +1,9 @@
 #include "stdafx.h"
 
+static const InputElement elements[] = {
+	CInputElement(0, "POSITION", SF_R32G32_FLOAT, 0),
+};
+
 StockObjects stockObjects;
 
 StockObjects::StockObjects()
@@ -19,10 +23,6 @@ void StockObjects::CreateFullScreenVAO()
 
 	VBOID vertexBufferIdsFullScr[] = { vboFullScr };
 	GLsizei stridesFullScr[] = { sizeof(Vec2) };
-
-	static const InputElement elements[] = {
-		CInputElement(SF_R32G32_FLOAT, 0, 0),
-	};
 
 	vaoFullScr = afCreateVAO(0, elements, dimof(elements), 1, vertexBufferIdsFullScr, stridesFullScr, iboFullScr);
 }
@@ -56,8 +56,8 @@ void StockObjects::ApplyFullScreenVAO() const
 	afHandleGLError(afBindVAO(vaoFullScr));
 }
 
-const std::vector<std::string>* StockObjects::GetFullScreenVertexAttributeLayout() const
+const InputElement* StockObjects::GetFullScreenInputElements(int& numElements) const
 {
-	static std::vector<std::string> layout{"POSITION"};
-	return &layout;
+	numElements = dimof(elements);
+	return elements;
 }

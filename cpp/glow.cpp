@@ -18,11 +18,13 @@ void Glow::LazyInit()
 		texSize /= 2;
 	}
 
-	shaderGlowExtraction = shaderMan.Create("glow_extraction", stockObjects.GetFullScreenVertexAttributeLayout());
+	int numElements = 0;
+	const InputElement* elements = stockObjects.GetFullScreenInputElements(numElements);
+	shaderGlowExtraction = shaderMan.Create("glow_extraction", elements, numElements);
 	assert(shaderGlowExtraction);
-	shaderGlowCopy = shaderMan.Create("glow_copy", stockObjects.GetFullScreenVertexAttributeLayout());
+	shaderGlowCopy = shaderMan.Create("glow_copy", elements, numElements);
 	assert(shaderGlowCopy);
-	shaderGlowLastPass = shaderMan.Create("glow_lastpass", stockObjects.GetFullScreenVertexAttributeLayout());
+	shaderGlowLastPass = shaderMan.Create("glow_lastpass", elements, numElements);
 	assert(shaderGlowLastPass);
 
 	afLayoutSamplerBindingManually(shaderGlowExtraction, "sourceMap", 0);
