@@ -62,8 +62,22 @@ void Picking::Update()
 	for (int i = 0; i < 3; i++) {
 		radian += (float)M_PI * 2 / 3;
 		v[i].pos = Vec2(std::sin(radian) / aspect, std::cos(radian)) * radius;
-		v[i].color = Vec3(i == 0, i == 1, i == 2);
 	}
+
+	bool hit = true;
+	Vec2 cursor = Vec2(systemMisc.GetMousePos()) / Vec2(systemMisc.GetScreenSize()) * Vec2(2, -2) + Vec2(-1, 1);
+	for (int i = 0; i < 3; i++) {
+		Vec2 dir = v[(i + 1) % 3].pos - v[i].pos;
+		Vec2 cursorDir = cursor - v[i].pos;
+		if (cross2d(dir, cursorDir) > 0) {
+			hit = false;
+		}
+	}
+
+	for (int i = 0; i < 3; i++) {
+		v[i].color = hit ? Vec3(i == 0, i == 1, i == 2) : Vec3(0.5, 0.5, 0.5);
+	}
+
 	afWriteBuffer(vbo, v, sizeof(v));
 }
 

@@ -12,6 +12,11 @@ template <class VEC3> inline VEC3 cross(const VEC3& l, const VEC3& r)
 #undef _
 }
 
+template <class VEC2> inline affloat cross2d(const VEC2& l, const VEC2& r)
+{
+	return l.x * r.y - l.y * r.x;
+}
+
 struct Vec2
 {
 	affloat x, y;
