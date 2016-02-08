@@ -83,15 +83,15 @@ void WaterSurface::Init()
 
 	lastTime = GetTime();
 
-	shaderWaterLastPass = shaderMan.Create("water_lastpass", nullptr, 0, BM_NONE, DSM_DISABLE);
+	shaderWaterLastPass = shaderMan.Create("water_lastpass", nullptr, 0, BM_NONE, DSM_DISABLE, CM_DISABLE);
 	assert(shaderWaterLastPass);
-	shaderHeightMap = shaderMan.Create("water_heightmap", nullptr, 0, BM_NONE, DSM_DISABLE);
+	shaderHeightMap = shaderMan.Create("water_heightmap", nullptr, 0, BM_NONE, DSM_DISABLE, CM_DISABLE);
 	assert(shaderHeightMap);
 
 	{
 		int numElements = 0;
 		const InputElement* elements = stockObjects.GetFullScreenInputElements(numElements);
-		shaderNormalMap = shaderMan.Create("water_normal", elements, numElements, BM_NONE, DSM_DISABLE);
+		shaderNormalMap = shaderMan.Create("water_normal", elements, numElements, BM_NONE, DSM_DISABLE, CM_DISABLE);
 	}
 	afLayoutSamplerBindingManually(shaderWaterLastPass, "waterHeightmap", 0);
 	assert(shaderNormalMap);
@@ -240,8 +240,6 @@ void WaterSurface::Draw()
 	double dummy;
 	hmub.wrappedTime = (float)std::modf(elapsedTime * (1.0f / loopTime), &dummy) * loopTime;
 	fontMan.DrawString(Vec2(300, 20), 10, SPrintf("%f, %f", hmub.mousePos.x, hmub.mousePos.y));
-
-	afEnableBackFaceCulling(false);
 
 	UpdateHeightMap(hmub);
 	UpdateNormalMap();

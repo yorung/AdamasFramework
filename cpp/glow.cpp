@@ -20,11 +20,11 @@ void Glow::LazyInit()
 
 	int numElements = 0;
 	const InputElement* elements = stockObjects.GetFullScreenInputElements(numElements);
-	shaderGlowExtraction = shaderMan.Create("glow_extraction", elements, numElements, BM_NONE, DSM_DISABLE);
+	shaderGlowExtraction = shaderMan.Create("glow_extraction", elements, numElements, BM_NONE, DSM_DISABLE, CM_DISABLE);
 	assert(shaderGlowExtraction);
-	shaderGlowCopy = shaderMan.Create("glow_copy", elements, numElements, BM_NONE, DSM_DISABLE);
+	shaderGlowCopy = shaderMan.Create("glow_copy", elements, numElements, BM_NONE, DSM_DISABLE, CM_DISABLE);
 	assert(shaderGlowCopy);
-	shaderGlowLastPass = shaderMan.Create("glow_lastpass", elements, numElements, BM_NONE, DSM_DISABLE);
+	shaderGlowLastPass = shaderMan.Create("glow_lastpass", elements, numElements, BM_NONE, DSM_DISABLE, CM_DISABLE);
 	assert(shaderGlowLastPass);
 
 	afLayoutSamplerBindingManually(shaderGlowExtraction, "sourceMap", 0);

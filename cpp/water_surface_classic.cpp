@@ -275,12 +275,12 @@ void WaterSurfaceClassic::Init()
 	vboFullScr = afCreateVertexBuffer(sizeof(vboFullScrSrc), &vboFullScrSrc[0]);
 	iboFullScr = afCreateIndexBuffer(&iboFullScrSrc[0], dimof(iboFullScrSrc));
 
-	shaderId = shaderMan.Create("water_classic", elements, dimof(elements), BM_NONE, DSM_DISABLE);
+	shaderId = shaderMan.Create("water_classic", elements, dimof(elements), BM_NONE, DSM_DISABLE, CM_DISABLE);
 
 
 //	const char* shaderName = "vivid";
 	const char* shaderName = "letterbox";
-	shaderIdFullScr = shaderMan.Create(shaderName, elementsFullScr, dimof(elementsFullScr), BM_NONE, DSM_DISABLE);
+	shaderIdFullScr = shaderMan.Create(shaderName, elementsFullScr, dimof(elementsFullScr), BM_NONE, DSM_DISABLE, CM_DISABLE);
 
 	glActiveTexture(GL_TEXTURE0);
 	texIds.resize(dimof(texFiles));
@@ -440,7 +440,7 @@ void WaterSurfaceClassic::Draw()
 	if (status == GL_FRAMEBUFFER_COMPLETE) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glBindVertexArray(vao);
-		glDrawElements(GL_TRIANGLE_STRIP, nIndi, GL_UNSIGNED_SHORT, 0);
+		afDrawIndexedTriangleStrip(nIndi);
 		glBindVertexArray(0);
 		afHandleGLError(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0));
 		afHandleGLError(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, 0));

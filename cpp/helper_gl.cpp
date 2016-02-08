@@ -363,16 +363,22 @@ void afDepthStencilMode(DepthStencilMode mode)
 	}
 }
 
-void afEnableBackFaceCulling(bool cullBack)
+void afCullMode(CullMode cullMode)
 {
-	if (cullBack) {
+	switch(cullMode) {
+	case CM_DISABLE:
+		glDisable(GL_CULL_FACE);
+		break;
+	case CM_CCW:
+		glEnable(GL_CULL_FACE);
+		glCullFace(GL_BACK);
+		glFrontFace(GL_CCW);
+		break;
+	case CM_CW:
 		glEnable(GL_CULL_FACE);
 		glCullFace(GL_BACK);
 		glFrontFace(GL_CW);
-//		glCullFace(GL_FRONT);
-//		glFrontFace(GL_CCW);
-	} else {
-		glDisable(GL_CULL_FACE);
+		break;
 	}
 }
 
