@@ -39,6 +39,7 @@
     <ClCompile Include="..\cpp\mesh_man.cpp" />
     <ClCompile Include="..\cpp\mesh_renderer.cpp" />
     <ClCompile Include="..\cpp\mesh_x.cpp" />
+    <ClCompile Include="..\cpp\picking.cpp" />
     <ClCompile Include="..\cpp\puzzle.cpp" />
     <ClCompile Include="..\cpp\shader_man.cpp" />
     <ClCompile Include="..\cpp\sky_man.cpp" />
@@ -125,6 +126,8 @@
     <None Include="..\pack\assets\shaders\sky_cubemap.vert" />
     <None Include="..\pack\assets\shaders\sky_photosphere.frag" />
     <None Include="..\pack\assets\shaders\sky_photosphere.vert" />
+    <None Include="..\pack\assets\shaders\solid.frag" />
+    <None Include="..\pack\assets\shaders\solid.vert" />
     <None Include="..\pack\assets\shaders\sprite.frag" />
     <None Include="..\pack\assets\shaders\sprite.vert" />
     <None Include="..\pack\assets\shaders\vivid.frag" />

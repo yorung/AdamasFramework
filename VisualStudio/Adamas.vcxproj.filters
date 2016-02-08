@@ -121,6 +121,9 @@
     <ClCompile Include="..\cpp\helper_win.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
+    <ClCompile Include="..\cpp\picking.cpp">
+      <Filter>PlatformIndipendent</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="wgl_grabber_gen.h">
@@ -337,6 +340,12 @@
       <Filter>shaders</Filter>
     </None>
     <None Include="..\pack\assets\shaders\water_normal.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\pack\assets\shaders\solid.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\pack\assets\shaders\solid.frag">
       <Filter>shaders</Filter>
     </None>
   </ItemGroup>
