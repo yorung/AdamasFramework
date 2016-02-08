@@ -239,27 +239,6 @@ static BOOL ProcessWindowMessage(){
 	}
 }
 
-static void Input()
-{
-	static bool last;
-	bool current = !!(GetKeyState(VK_LBUTTON) & 0x80);
-	bool edge = current && !last;
-	last = current;
-
-	if (edge) {
-		POINT pt;
-		GetCursorPos(&pt);
-		ScreenToClient(GetForegroundWindow(), &pt);
-
-		RECT rc;
-		GetClientRect(hWnd, &rc);
-		int w = rc.right - rc.left;
-		int h = rc.bottom - rc.top;
-
-		hub.OnTap((float)pt.x / w * 2 - 1, (float)pt.y / h * -2 + 1);
-	}
-}
-
 // Forward declarations of functions included in this code module:
 ATOM				MyRegisterClass(HINSTANCE hInstance);
 BOOL				InitInstance(HINSTANCE);
@@ -304,7 +283,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE,
 		if (!ProcessWindowMessage()) {
 			break;
 		}
-		Input();
 
 		RECT rc;
 		GetClientRect(hWnd, &rc);

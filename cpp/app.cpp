@@ -25,16 +25,6 @@ void App::Draw()
 	afDepthStencilMode(DSM_DEPTH_ENABLE);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-//	waterSurface.Draw();
-//	waterSurfaceClassic.Draw();
-/*
-	AFRenderTarget rt;
-	afSetRenderTarget(rt);
-	waterSurface.Draw();
-	afSetRenderTarget(nullptr);
-	afDrawFullScrenEffect("letterBox", rc);
-*/
-
 	ivec2 scrSize = systemMisc.GetScreenSize();
 	glViewport(0, 0, scrSize.x, scrSize.y);
 
@@ -72,8 +62,6 @@ void App::Init()
 #endif
 
 	meshRenderer.Create();
-//	waterSurface.Init();
-//	waterSurfaceClassic.Init();
 	fontMan.Init();
 	spriteRenderer.Init();
 	stockObjects.Init();
@@ -93,11 +81,6 @@ void App::LoadMesh(const char* fileName)
 	g_type = "mesh";
 }
 
-void App::OnTap(float x, float y)
-{
-//	waterSurfaceClassic.CreateRipple(Vec2(x, y));
-}
-
 void App::Destroy()
 {
 	luaMan.Destroy();
@@ -105,7 +88,6 @@ void App::Destroy()
 	spriteRenderer.Destroy();
 	texMan.Destroy();
 	shaderMan.Destroy();
-	waterSurface.Destroy();
 	fontMan.Destroy();
 	meshRenderer.Destroy();
 	meshMan.Destroy();
@@ -120,7 +102,6 @@ void App::Update()
 	inputMan.Update();
 	matrixMan.Set(MatrixMan::VIEW, devCamera.CalcViewMatrix());
 	luaMan.Update();
-	waterSurface.Update();
 	fps.Update();
 	fontMan.DrawString(Vec2(20, 40), 20, SPrintf("FPS: %f", fps.Get()));
 }

@@ -7,11 +7,6 @@ Hub::Hub()
 
 }
 
-void Hub::OnTap(float x, float y)
-{
-	app.OnTap(x, y);
-}
-
 void Hub::Init()
 {
 	app.Init();

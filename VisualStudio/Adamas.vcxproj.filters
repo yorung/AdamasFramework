@@ -153,9 +153,6 @@
     <ClInclude Include="..\cpp\tex_man.h">
       <Filter>PlatformIndipendent</Filter>
     </ClInclude>
-    <ClInclude Include="..\cpp\water_surface.h">
-      <Filter>PlatformIndipendent</Filter>
-    </ClInclude>
     <ClInclude Include="..\cpp\af_math.h">
       <Filter>PlatformIndipendent</Filter>
     </ClInclude>

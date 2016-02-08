@@ -1,5 +1,67 @@
 #include "stdafx.h"
 
+class WaterSurface
+{
+	struct UniformBuffer {
+		Vec2 mousePos;
+		float mouseDown;
+		float padding;
+		float elapsedTime;
+		float wrappedTime;
+		Vec2 heightMapSize;
+	};
+
+	Mat matProj, matView;
+	ShaderMan::SMID shaderHeightMap = 0;
+	ShaderMan::SMID shaderNormalMap = 0;
+	ShaderMan::SMID shaderWaterLastPass = 0;
+	std::vector<TexMan::TMID> texId;
+	AFRenderTarget renderTarget[2];
+	AFRenderTarget heightMap[2];
+	AFRenderTarget normalMap;
+	int heightCurrentWriteTarget = 0;
+
+	double elapsedTime;
+	double lastTime;
+	bool lastMouseDown;
+	void UpdateTime();
+	void UpdateHeightMap(const UniformBuffer&);
+	void UpdateNormalMap();
+	void RenderWater(const UniformBuffer&);
+	void Init();
+	void Destroy();
+public:
+	WaterSurface();
+	~WaterSurface();
+	void Update();
+	void Draw();
+};
+
+class WaterSurfaceBinder {
+public:
+	WaterSurfaceBinder() {
+		GetLuaBindFuncContainer().push_back([](lua_State* L) {
+			static luaL_Reg methods[] = {
+				{ "Update", [](lua_State* L) {
+				WaterSurface* p = (WaterSurface*)luaL_checkudata(L, 1, "WaterSurface");
+				if (p) {
+					p->Update();
+				}
+				return 0; } },
+				{ "Draw", [](lua_State* L) {
+					WaterSurface* p = (WaterSurface*)luaL_checkudata(L, 1, "WaterSurface");
+					if (p) {
+						p->Draw();
+					}
+					return 0; } },
+					{ nullptr, nullptr },
+			};
+			aflBindClass(L, "WaterSurface", methods, [](lua_State* L) { void* u = lua_newuserdata(L, sizeof(WaterSurface)); new (u) WaterSurface(); return 1; });
+		});
+	}
+} static waterSurfaceClassicBinder;
+
+
 const int tileMax = 180;
 const int HEIGHT_MAP_W = tileMax;
 const int HEIGHT_MAP_H = tileMax;
@@ -8,13 +70,7 @@ const float loopTime = 20.0;
 
 #define V afHandleGLError
 
-WaterSurface waterSurface;
-
-static AFRenderTarget renderTarget[2];
-static AFRenderTarget heightMap[2];
-static AFRenderTarget normalMap;
 extern AFRenderTarget glowMap[6];
-static int heightCurrentWriteTarget;
 
 struct TexFiles
 {
@@ -41,12 +97,12 @@ static TexFiles texFiles[] = {
 	{ "sphere.jpg", true },
 };
 #endif
-static TexMan::TMID texId[dimof(texFiles)];
 
 
 WaterSurface::WaterSurface()
 {
 	lastMouseDown = false;
+	Init();
 }
 
 WaterSurface::~WaterSurface()
@@ -103,6 +159,7 @@ void WaterSurface::Init()
 	aflog("WaterSurface::Init shaders are ready!\n");
 
 	glActiveTexture(GL_TEXTURE0);
+	texId.resize(dimof(texFiles));
 	for (int i = 0; i < (int)dimof(texFiles); i++) {
 		texId[i] = texMan.Create(texFiles[i].name);
 		aflog("WaterSurface::Init tex %s %s\n", texFiles[i].name, (texId[i] ? "OK" : "NG"));

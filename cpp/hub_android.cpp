@@ -45,7 +45,6 @@ JNIEXPORT void JNICALL FUNC(update)(JNIEnv* env, jobject obj, jfloat inputX, jfl
 
     if (!pressed && lastInputState.pressed) {
         aflog("tap: %f, %f", inputX, inputY);
-        hub.OnTap(inputX / scrSize.x * 2 - 1, inputY / scrSize.y * -2 + 1);
         devCamera.LButtonUp(x, y);
 		inputMan.HandleTouch(false);
 	}

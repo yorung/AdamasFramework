@@ -6,7 +6,6 @@ public:
 	void LoadMesh(const char* fileName);
 	void Update();
 	void Draw();
-	void OnTap(float x, float y);
 	void Destroy();
 };
 
