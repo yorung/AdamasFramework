@@ -35,12 +35,7 @@ static ivec2 GetScreenPos(lua_State* L, const MatrixStack* ms)
 	mW = ms ? ms->Get() : Mat();
 	matrixMan.Get(MatrixMan::VIEW, mV);
 	matrixMan.Get(MatrixMan::PROJ, mP);
-	Mat mViewport;
-	Vec2 sz = (Vec2)systemMisc.GetScreenSize() / 2;
-	mViewport._11 = sz.x;
-	mViewport._22 = -sz.y;
-	mViewport._41 = sz.x;
-	mViewport._42 = sz.y;
+	Mat mViewport = makeViewportMatrix(systemMisc.GetScreenSize());
 	Mat m = mW * mV * mP * mViewport;
 	return ivec2((int)(m._41 / m._44), (int)(m._42 / m._44));
 }
