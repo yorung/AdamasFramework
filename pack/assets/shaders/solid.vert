@@ -1,9 +1,16 @@
+#version 310 es
+
 precision highp float;
-attribute vec2 POSITION;
-attribute vec3 COLOR;
-varying vec3 color;
+in vec3 POSITION;
+in vec3 COLOR;
+out vec3 color;
+
+layout (std140, binding = 0) uniform perDrawCallUBO {
+	mat4 matV;
+	mat4 matP;
+};
 
 void main() {
-	gl_Position = vec4(POSITION.xy, 0, 1);
+	gl_Position = matP * matV * vec4(POSITION, 1);
 	color = COLOR;
 }
