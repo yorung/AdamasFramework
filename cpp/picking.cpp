@@ -1,8 +1,8 @@
 #include "stdafx.h"
 
 static InputElement elements[] = {
-	CInputElement(0, "POSITION", SF_R32G32B32_FLOAT, 0),
-	CInputElement(0, "COLOR", SF_R32G32B32_FLOAT, 12),
+	CInputElement("POSITION", SF_R32G32B32_FLOAT, 0),
+	CInputElement("COLOR", SF_R32G32B32_FLOAT, 12),
 };
 
 struct Vertex {

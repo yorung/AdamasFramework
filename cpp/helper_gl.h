@@ -46,7 +46,7 @@ struct InputElement {
 
 class CInputElement : public InputElement {
 public:
-	CInputElement(int inputSlot, const char* name, ShaderFormat format, int offset, bool perInstance = false) {
+	CInputElement(const char* name, ShaderFormat format, int offset, int inputSlot = 0, bool perInstance = false) {
 		this->name = name;
 		this->format = format;
 		this->inputSlot = inputSlot;

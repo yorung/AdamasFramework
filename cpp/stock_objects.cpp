@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 static const InputElement elements[] = {
-	CInputElement(0, "POSITION", SF_R32G32_FLOAT, 0),
+	CInputElement("POSITION", SF_R32G32_FLOAT, 0),
 };
 
 StockObjects stockObjects;

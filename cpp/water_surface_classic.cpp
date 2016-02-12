@@ -227,12 +227,12 @@ void WaterSurfaceClassic::Destroy()
 }
 
 static const InputElement elements[] = {
-	CInputElement(0, "vPosition", SF_R32G32B32_FLOAT, 0),
-	CInputElement(0, "vNormal", SF_R32G32B32_FLOAT, 12),
+	CInputElement("vPosition", SF_R32G32B32_FLOAT, 0),
+	CInputElement("vNormal", SF_R32G32B32_FLOAT, 12),
 };
 
 static const InputElement elementsFullScr[] = {
-	CInputElement(0, "POSITION", SF_R32G32_FLOAT, 0),
+	CInputElement("POSITION", SF_R32G32_FLOAT, 0),
 };
 
 void WaterSurfaceClassic::Init()

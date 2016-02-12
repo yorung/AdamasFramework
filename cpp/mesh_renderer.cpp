@@ -7,13 +7,13 @@ static const size_t MAX_BONE_SSBOS = 100;
 static const size_t MATERIAL_SSBO_SIZE = sizeof(Material) * MAX_MATERIALS;
 
 static const InputElement elements[] = {
-	CInputElement(0, "POSITION", SF_R32G32B32_FLOAT, 0),
-	CInputElement(0, "NORMAL", SF_R32G32B32_FLOAT, 12),
-	CInputElement(0, "vColor", SF_R8G8B8A8_UNORM, 24),
-	CInputElement(0, "vTexcoord", SF_R32G32_FLOAT, 28),
-	CInputElement(0, "vBlendWeights", SF_R32G32B32_FLOAT, 36),
-	CInputElement(0, "vBlendIndices", SF_R8G8B8A8_UINT, 48),
-	CInputElement(0, "materialId", SF_R32_UINT, 52),
+	CInputElement("POSITION", SF_R32G32B32_FLOAT, 0),
+	CInputElement("NORMAL", SF_R32G32B32_FLOAT, 12),
+	CInputElement("vColor", SF_R8G8B8A8_UNORM, 24),
+	CInputElement("vTexcoord", SF_R32G32_FLOAT, 28),
+	CInputElement("vBlendWeights", SF_R32G32B32_FLOAT, 36),
+	CInputElement("vBlendIndices", SF_R8G8B8A8_UINT, 48),
+	CInputElement("materialId", SF_R32_UINT, 52),
 };
 
 enum SSBOBindingPoints {
