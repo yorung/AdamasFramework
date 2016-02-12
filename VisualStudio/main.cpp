@@ -1,141 +1,6 @@
-// WGLTest.cpp : Defines the entry point for the application.
-//
-
 #include "stdafx.h"
 #include "resource.h"
-
-#pragma comment(lib, "opengl32.lib")
-
-// Tell the NVIDIA driver to choose NVIDIA GPU
-extern "C" _declspec(dllexport) DWORD NvOptimusEnablement = 1;
-
-HGLRC hglrc;
-std::function<void(HDC)> dcDeleter;
-
-static void err(char *msg)
-{
-	puts(msg);
-}
-
-#ifdef _DEBUG
-static void APIENTRY debugMessageHandler(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam)
-{
-	switch (type) {
-	case GL_DEBUG_TYPE_OTHER_ARB:
-		return;
-	}
-	puts(message);
-}
-#endif
-
-static void CreateWGLInternal(HDC hdc)
-{
-	PIXELFORMATDESCRIPTOR pfd;
-	memset(&pfd, 0, sizeof(pfd));
-	pfd.nSize = sizeof(pfd);
-	pfd.nVersion = 1;
-	pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
-	pfd.iPixelType = PFD_TYPE_RGBA;
-	pfd.cColorBits = 24;
-	pfd.cDepthBits = 32;
-	pfd.iLayerType = PFD_MAIN_PLANE;
-	int pixelFormat;
-	if (!(pixelFormat = ChoosePixelFormat(hdc, &pfd))){
-		err("ChoosePixelFormat failed.");
-		goto END;
-	}
-	if (!SetPixelFormat(hdc, pixelFormat, &pfd)){
-		err("SetPixelFormat failed.");
-		goto END;
-	}
-	if (!(hglrc = wglCreateContext(hdc))){
-		err("wglCreateContext failed.");
-		goto END;
-	}
-	if (!wglMakeCurrent(hdc, hglrc)){
-		err("wglMakeCurrent failed.");
-		goto END;
-	}
-#if 0 // for test
-	void* glpu = wglGetProcAddress("glProgramUniform1f");
-	void* gldei = wglGetProcAddress("glDrawElementsIndirect");
-	void* glen1 = glEnable;
-	void* glen2 = wglGetProcAddress("glEnable");
-	GLuint(APIENTRY*glCreateProgram)(void);
-	glCreateProgram = (GLuint(APIENTRY*)(void))wglGetProcAddress("glCreateProgram");
-	GLuint(APIENTRY*glCreateShader)(GLenum type);
-	glCreateShader = (GLuint(APIENTRY*)(GLenum type))wglGetProcAddress("glCreateShader");
-	GLuint test = glCreateShader(GL_VERTEX_SHADER);
-	void(APIENTRY*glDeleteShader)(GLuint name);
-	glDeleteShader = (void(APIENTRY*)(GLuint name))wglGetProcAddress("glDeleteShader");
-	glDeleteShader(test);
-#endif
-	WGLGrabberInit();
-	int flags = 0;
-#ifdef _DEBUG
-	flags |= WGL_CONTEXT_DEBUG_BIT_ARB;
-#endif
-	static const int attribList[] = {
-		WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
-		WGL_CONTEXT_MINOR_VERSION_ARB, 1,
-		WGL_CONTEXT_FLAGS_ARB, flags,
-		WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_ES2_PROFILE_BIT_EXT,
-		0,
-	};
-	HGLRC hglrcNew = wglCreateContextAttribsARB(hdc, 0, attribList);
-
-	wglMakeCurrent(nullptr, nullptr);
-	if (hglrcNew) {
-		wglDeleteContext(hglrc);
-		hglrc = hglrcNew;
-	}
-	if (!wglMakeCurrent(hdc, hglrc)){
-		err("wglMakeCurrent failed.");
-		goto END;
-	}
-#ifdef _DEBUG
-	afDumpCaps();
-	afDumpIsEnabled();
-	glDebugMessageCallbackARB(debugMessageHandler, nullptr);
-	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
-#endif
-END:
-//	ReleaseDC(hWnd, hdc);	// do not release dc; WGL using it
-	return;	// do nothing
-}
-
-static void DestroyWGL()
-{
-	HDC hdc = wglGetCurrentDC();
-	if (hdc) {
-		dcDeleter(hdc);
-	}
-	wglMakeCurrent(nullptr, nullptr);
-	if (hglrc) {
-		wglDeleteContext(hglrc);
-		hglrc = nullptr;
-	}
-}
-
-static void CreateWGLFromWindowDC(HWND hWnd)
-{
-	HDC hdc = GetDC(hWnd);
-	dcDeleter = [hWnd](HDC hdc) {
-		int r = ReleaseDC(hWnd, hdc);
-		assert(r == 1);
-	};
-	CreateWGLInternal(hdc);
-}
-
-static void CreateNVWGL()
-{
-	HGPUNV hGpu[2] = { nullptr, nullptr };
-	for (int i = 0; wglEnumGpusNV(i, &hGpu[0]); i++) {
-		_GPU_DEVICE d = {sizeof(_GPU_DEVICE)};
-		wglEnumGpuDevicesNV(hGpu[0], 0, &d);
-//		wglCreateAffinityDCNV()
-	}
-}
+#include "device_man_wgl.h"
 
 #define MAX_LOADSTRING 100
 
@@ -171,7 +36,6 @@ void AddMenu(const char *name, const char *cmd)
 	SetMenu(hWnd, hMenu);
 	DrawMenuBar(hWnd);
 }
-
 
 static void ShowLastError()
 {
@@ -271,9 +135,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE,
 
 	hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_ADAMAS));
 
-//	CreateNVWGL();
-	CreateWGLFromWindowDC(hWnd);
-//	app.Create();
+	deviceManWgl.Create(hWnd);
 
 	int lastW = 0;
 	int lastH = 0;
@@ -294,15 +156,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE,
 			hub.Destroy();
 			hub.Init();
 		}
-		float aspect = (float)w / (float)h;
 		hub.Update();
-		SwapBuffers(wglGetCurrentDC());
+		deviceManWgl.Present();
 		Sleep(1);
 	}
 	return 0;
 }
-
-
 
 //
 //  FUNCTION: MyRegisterClass()
@@ -410,7 +269,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_CLOSE:
 		hub.Destroy();
-		DestroyWGL();
+		deviceManWgl.Destroy();
 		DestroyWindow(hWnd);
 		return 0;
 	case WM_DROPFILES:

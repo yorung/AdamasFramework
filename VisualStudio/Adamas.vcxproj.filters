@@ -127,6 +127,9 @@
     <ClCompile Include="..\cpp\grid_renderer.cpp">
       <Filter>PlatformIndipendent</Filter>
     </ClCompile>
+    <ClCompile Include="device_man_wgl.cpp">
+      <Filter>Windows</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="wgl_grabber_gen.h">
@@ -233,6 +236,9 @@
     </ClInclude>
     <ClInclude Include="..\cpp\grid_renderer.h">
       <Filter>PlatformIndipendent</Filter>
+    </ClInclude>
+    <ClInclude Include="device_man_wgl.h">
+      <Filter>Windows</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

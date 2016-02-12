@@ -59,6 +59,7 @@
     </ClCompile>
     <ClCompile Include="..\cpp\water_surface.cpp" />
     <ClCompile Include="..\cpp\water_surface_classic.cpp" />
+    <ClCompile Include="device_man_wgl.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="voice_win.cpp" />
     <ClCompile Include="wgl_grabber_gen.cpp">
@@ -100,6 +101,7 @@
     <ClInclude Include="..\cpp\system_misc.h" />
     <ClInclude Include="..\cpp\tex_man.h" />
     <ClInclude Include="..\cpp\voice.h" />
+    <ClInclude Include="device_man_wgl.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="wgl_grabber_gen.h" />
   </ItemGroup>
