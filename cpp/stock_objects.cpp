@@ -6,13 +6,6 @@ static const InputElement elements[] = {
 
 StockObjects stockObjects;
 
-StockObjects::StockObjects()
-{
-	vboFullScr = 0;
-	iboFullScr = 0;
-	vaoFullScr = 0;
-}
-
 void StockObjects::CreateFullScreenVAO()
 {
 	AFIndex iboFullScrSrc[] = { 0, 1, 2, 3 };

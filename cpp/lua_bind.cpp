@@ -167,7 +167,7 @@ static void BindImage(lua_State* L)
 {
 	class Image
 	{
-		TexMan::TMID texId;
+		SRVID texId;
 		std::vector<Vec4> quads;
 #ifdef _DEBUG
 		std::string fileName;

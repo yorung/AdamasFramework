@@ -3,7 +3,7 @@ struct SpriteCommand
 	Mat matW;
 	Vec4 quad;
 	uint32_t color;
-	TexMan::TMID tex;
+	SRVID tex;
 };
 
 typedef std::vector<SpriteCommand> SpriteCommands;

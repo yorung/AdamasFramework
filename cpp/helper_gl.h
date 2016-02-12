@@ -68,14 +68,17 @@ template <GLenum bufType_>
 struct TBufName {
 	static const GLenum bufType = bufType_;
 	GLuint x = 0;
-//	TBufName(GLuint r = 0) { x = r; }
-	TBufName operator=(GLuint r) { x = r; return *this; }
 	operator GLuint() const { return x; }
 };
+struct AFGLName {
+	GLuint x = 0;
+	operator GLuint() const { return x; }
+};
+
 typedef TBufName<GL_ELEMENT_ARRAY_BUFFER> IBOID;
 typedef TBufName<GL_ARRAY_BUFFER> VBOID;
-typedef GLuint SAMPLERID;
-typedef GLuint SRVID;
+typedef AFGLName SAMPLERID;
+typedef AFGLName SRVID;
 
 void afSetVertexAttributes(const InputElement elements[], int numElements, int numBuffers, VBOID const *vertexBufferIds, const GLsizei* strides);
 
@@ -96,11 +99,11 @@ inline void afSafeDeleteBuffer(BufName& b)
 		b.x = 0;
 	}
 }
-inline void afSafeDeleteTexture(GLuint& t)
+inline void afSafeDeleteTexture(SRVID& t)
 {
 	if (t != 0) {
-		glDeleteTextures(1, &t);
-		t = 0;
+		glDeleteTextures(1, &t.x);
+		t.x = 0;
 	}
 }
 
@@ -187,8 +190,8 @@ void afDumpIsEnabled();
 class AFRenderTarget
 {
 	ivec2 texSize;
-	GLuint texColor = 0;
-	GLuint texDepth = 0;
+	SRVID texColor;
+	SRVID texDepth;
 	GLuint framebufferObject = 0;
 	GLuint renderbufferObject = 0;
 public:
@@ -202,24 +205,24 @@ public:
 #ifdef AF_GLES31
 typedef TBufName<GL_SHADER_STORAGE_BUFFER> SSBOID;
 typedef TBufName<GL_UNIFORM_BUFFER> UBOID;
-typedef GLuint VAOID;
+typedef AFGLName VAOID;
 SSBOID afCreateSSBO(int size);
 UBOID afCreateUBO(int size);
 void afBindBufferToBindingPoint(SSBOID ssbo, GLuint storageBlockBinding);
 void afBindBufferToBindingPoint(UBOID ubo, GLuint uniformBlockBinding);
 VAOID afCreateVAO(const InputElement elements[], int numElements, int numBuffers, VBOID const *vertexBufferIds, const GLsizei* strides, IBOID ibo);
-inline void afSafeDeleteVAO(GLuint& vao)
+inline void afSafeDeleteVAO(VAOID& vao)
 {
 	if (vao != 0) {
-		glDeleteVertexArrays(1, &vao);
-		vao = 0;
+		glDeleteVertexArrays(1, &vao.x);
+		vao.x = 0;
 	}
 }
-inline void afSafeDeleteSampler(GLuint& s)
+inline void afSafeDeleteSampler(SAMPLERID& s)
 {
 	if (s != 0) {
-		glDeleteSamplers(1, &s);
-		s = 0;
+		glDeleteSamplers(1, &s.x);
+		s.x = 0;
 	}
 }
 ivec2 afGetTextureSize(GLuint tex);

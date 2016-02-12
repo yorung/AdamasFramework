@@ -17,7 +17,7 @@ struct Material
 	Vec3 specular;
 	float power;
 	Vec3 emissive;
-	TexMan::TMID tmid;
+	SRVID tmid;
 	bool operator==(const Material& r) const;
 };
 
@@ -32,12 +32,11 @@ struct RenderCommand
 
 class RenderMesh
 {
-	GLuint vao;
+	VAOID vao;
 	VBOID vbo;
 	IBOID ibo;
 	std::vector<MaterialMap> materialMaps;
 public:
-	RenderMesh();
 	~RenderMesh();
 	void Destroy();
 	void Init(const Block& block);

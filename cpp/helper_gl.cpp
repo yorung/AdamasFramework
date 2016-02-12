@@ -109,8 +109,8 @@ void afWriteTexture(SRVID srv, const TexDesc& desc, const void* buf)
 
 SRVID afCreateDynamicTexture(AFDTFormat format, const ivec2& size)
 {
-	GLuint texture;
-	glGenTextures(1, &texture);
+	SRVID texture;
+	glGenTextures(1, &texture.x);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -162,8 +162,8 @@ SRVID afCreateDynamicTexture(AFDTFormat format, const ivec2& size)
 SRVID afCreateTexture2D(AFDTFormat format, const ivec2& size, void *image)
 {
 	assert(format == AFDT_R8G8B8A8_UNORM);
-	GLuint texture;
-	glGenTextures(1, &texture);
+	SRVID texture;
+	glGenTextures(1, &texture.x);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -181,8 +181,8 @@ SRVID afCreateTexture2D(AFDTFormat format, const TexDesc& desc, int mipCount, co
 	GLenum target = desc.isCubeMap ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D;
 	GLenum targetFace = desc.isCubeMap ? GL_TEXTURE_CUBE_MAP_POSITIVE_X : GL_TEXTURE_2D;
 
-	GLuint texture = 0;
-	glGenTextures(1, &texture);
+	SRVID texture;
+	glGenTextures(1, &texture.x);
 	glBindTexture(target, texture);
 	glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -307,10 +307,10 @@ void afSetVertexAttributes(const InputElement elements[], int numElements, int n
 }
 
 #ifdef AF_GLES31
-GLuint afCreateVAO(const InputElement elements[], int numElements, int numBuffers, VBOID const *vertexBufferIds, const GLsizei* strides, IBOID ibo)
+VAOID afCreateVAO(const InputElement elements[], int numElements, int numBuffers, VBOID const *vertexBufferIds, const GLsizei* strides, IBOID ibo)
 {
-	GLuint vao;
-	afHandleGLError(glGenVertexArrays(1, &vao));
+	VAOID vao;
+	afHandleGLError(glGenVertexArrays(1, &vao.x));
 	afHandleGLError(glBindVertexArray(vao));
 	afSetVertexAttributes(elements, numElements, numBuffers, vertexBufferIds, strides);
 	afHandleGLError(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
@@ -389,8 +389,8 @@ void afCullMode(CullMode cullMode)
 
 SAMPLERID afCreateSampler(SamplerFilter filter, SamplerWrap wrap)
 {
-	SAMPLERID id = 0;
-	glGenSamplers(1, &id);
+	SAMPLERID id;
+	glGenSamplers(1, &id.x);
 	glSamplerParameteri(id, GL_TEXTURE_WRAP_S, wrap);
 	glSamplerParameteri(id, GL_TEXTURE_WRAP_T, wrap);
 	switch(filter) {

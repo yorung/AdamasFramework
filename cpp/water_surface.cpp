@@ -15,7 +15,7 @@ class WaterSurface
 	ShaderMan::SMID shaderHeightMap = 0;
 	ShaderMan::SMID shaderNormalMap = 0;
 	ShaderMan::SMID shaderWaterLastPass = 0;
-	std::vector<TexMan::TMID> texId;
+	std::vector<SRVID> texId;
 	AFRenderTarget renderTarget[2];
 	AFRenderTarget heightMap[2];
 	AFRenderTarget normalMap;

@@ -2,19 +2,18 @@ class StockObjects {
 	VBOID vboFullScr;
 	IBOID iboFullScr;
 	VAOID vaoFullScr;
-	GLuint samplerClamp = 0;
-	GLuint samplerRepeat = 0;
-	GLuint samplerNoMipmap = 0;
+	SAMPLERID samplerClamp;
+	SAMPLERID samplerRepeat;
+	SAMPLERID samplerNoMipmap;
 	void CreateFullScreenVAO();
 	void CreateSamplers();
 public:
-	StockObjects();
 	void Init();
 	void Destroy();
 	void ApplyFullScreenVAO() const;
 	const InputElement* GetFullScreenInputElements(int& numElements) const;
-	GLuint GetClampSampler() { return samplerClamp; }
-	GLuint GetRepeatSampler() { return samplerRepeat; }
-	GLuint GetNoMipmapSampler() { return samplerNoMipmap; }
+	SAMPLERID GetClampSampler() { return samplerClamp; }
+	SAMPLERID GetRepeatSampler() { return samplerRepeat; }
+	SAMPLERID GetNoMipmapSampler() { return samplerNoMipmap; }
 };
 extern StockObjects stockObjects;

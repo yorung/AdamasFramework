@@ -12,11 +12,6 @@ struct SpriteVertex {
 
 SpriteRenderer::SpriteRenderer()
 {
-	sampler = 0;
-	vbo = 0;
-	ibo = 0;
-	vao = 0;
-	ubo = 0;
 	shaderId = ShaderMan::INVALID_SMID;
 }
 
@@ -82,7 +77,7 @@ void SpriteRenderer::Draw(const SpriteCommands& sprites)
 
 	SpriteVertex v[MAX_SPRITES_IN_ONE_DRAW_CALL][4];
 	int numStoredSprites = 0;
-	TexMan::TMID curTex = TexMan::INVALID_TMID;
+	SRVID curTex;
 	auto flush = [&] {
 		if (numStoredSprites > 0) {
 			afBindTextureToBindingPoint(curTex, 0);

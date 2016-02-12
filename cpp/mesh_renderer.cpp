@@ -29,12 +29,6 @@ enum SamplerBindingPoints {
 	SBP_DIFFUSE = 0,
 };
 
-RenderMesh::RenderMesh()
-{
-	vbo = 0;
-	ibo = 0;
-}
-
 RenderMesh::~RenderMesh()
 {
 	Destroy();
@@ -68,7 +62,7 @@ void RenderMesh::Init(const Block& block)
 	GLsizei strides[] = { sizeof(MeshVertex) };
 	int shaderId = meshRenderer.GetShaderId();
 	vao = afCreateVAO(elements, dimof(elements), block.indices.size(), verts, strides, ibo);
-	aflog("RenderMesh::Init created vao=%d\n", vao);
+	aflog("RenderMesh::Init created vao=%d\n", vao.x);
 	assert(vao);
 }
 
@@ -79,7 +73,7 @@ void RenderMesh::Draw(int instanceCount) const
 	glBindVertexArray(vao);
 	GLenum r = glGetError();
 	if (r != GL_NO_ERROR) {
-		aflog("glBindVertexArray error! vao=%d\n", vao);
+		aflog("glBindVertexArray error! vao=%d\n", vao.x);
 	}
 	for (auto it : materialMaps) {
 		const Material* mat = meshRenderer.GetMaterial(it.materialId);

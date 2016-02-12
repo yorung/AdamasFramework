@@ -31,12 +31,12 @@ class WaterSurfaceClassic
 	double nextTime;
 	VBOID vbo, vboFullScr;
 	IBOID ibo, iboFullScr;
-	GLuint vao, vaoFullScr;
+	VAOID vao, vaoFullScr;
 	int nIndi;
 	SAMPLERID samplerClamp;
 	SAMPLERID samplerRepeat;
 	SAMPLERID samplerNoMipmap;
-	GLuint texRenderTarget;
+	SRVID texRenderTarget;
 	GLuint framebufferObject;
 	GLuint renderbufferObject;
 	int storedW, storedH;
@@ -50,6 +50,8 @@ public:
 	void Draw();
 	void CreateRipple(Vec2 pos);
 };
+
+
 
 class WaterSurfaceClassicBinder {
 public:
@@ -178,17 +180,7 @@ void WaterSurfaceClassic::UpdateVert(std::vector<WaterVert>& vert)
 
 WaterSurfaceClassic::WaterSurfaceClassic()
 {
-	ibo = 0;
-	vbo = 0;
-	vao = 0;
-	vboFullScr = 0;
-	iboFullScr = 0;
-	vaoFullScr = 0;
-	samplerClamp = 0;
-	samplerRepeat = 0;
-	samplerNoMipmap = 0;
 	ripplesNext = 0;
-	texRenderTarget = 0;
 	framebufferObject = 0;
 	renderbufferObject = 0;
 	storedW = 0;
