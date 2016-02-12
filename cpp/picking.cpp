@@ -149,10 +149,6 @@ void Picking::Update()
 
 void Picking::Draw3D()
 {
-	Vec3 n, f;
-	ScreenPosToRay(systemMisc.GetMousePos(), n, f);
-	fontMan.DrawString(systemMisc.GetMousePos(), 15, SPrintf("near={%f,%f,%f} far={%f,%f,%f}", n.x, n.y, n.z, f.x, f.y, f.z));
-
 	shaderMan.Apply(shader);
 	VBOID vbos[] = {vbo3d};
 	int strides[] = {sizeof(Vertex)};
@@ -181,20 +177,27 @@ void Picking::Draw2D()
 
 	afDrawTriangleStrip(3);
 
+	Vec2 strPos = systemMisc.GetMousePos();
+	auto drawStr = [&](const char* s) {
+		fontMan.DrawString(strPos, 15, s);
+		strPos.y += 16;
+	};
 
+	// make a ray from cursor pos
+	Vec3 n, f;
+	ScreenPosToRay(systemMisc.GetMousePos(), n, f);
+	drawStr(SPrintf("near={%f,%f,%f}", n.x, n.y, n.z));
+	drawStr(SPrintf("far={%f,%f,%f}", f.x, f.y, f.z));
 
-
-	// test
-	ivec2 scrSize = systemMisc.GetScreenSize();
-	float f = 1000;
-	float n = 1;
-	float aspect = (float)scrSize.x / scrSize.y;
-	Mat proj = perspectiveLH(45.0f * (float)M_PI / 180.0f, aspect, n, f);
-
-	Vec3 v1 = { 0, 0, 1 };
-	Vec3 v2 = { 0, 0, 1000 };
-	Vec3 v1trans = transform(v1, proj);
-	Vec3 v2trans = transform(v2, proj);
-	Vec4 v1m = transform(Vec4(v1.x, v1.y, v1.z, 1), proj);
-	Vec4 v2m = transform(Vec4(v2.x, v2.y, v2.z, 1), proj);
+	// ray-grid intersection
+	Vec3 planeCenter = {0, 0, 0};
+	Vec3 planeNormal = {0, 1, 0};
+	float nDotPlane = dot(n, planeNormal);
+	float fDotPlane = dot(f, planeNormal);
+	if (nDotPlane * fDotPlane < 0) {
+		nDotPlane = abs(nDotPlane);
+		fDotPlane = abs(fDotPlane);
+		Vec3 hitPos = n + (f - n) * nDotPlane / (nDotPlane + fDotPlane);
+		drawStr(SPrintf("hit={%f,%f,%f}", hitPos.x, hitPos.y, hitPos.z));
+	}
 }
