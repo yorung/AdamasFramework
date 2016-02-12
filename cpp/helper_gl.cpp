@@ -229,6 +229,11 @@ void afDrawTriangleStrip(int numVertices, int start)
 	glDrawArrays(GL_TRIANGLE_STRIP, start, numVertices);
 }
 
+void afDrawLineList(int numVertices, int start)
+{
+	glDrawArrays(GL_LINES, start, numVertices);
+}
+
 void afSetVertexAttributes(const InputElement elements[], int numElements, int numBuffers, VBOID const *vertexBufferIds, const GLsizei* strides)
 {
 	for (int i = 0; i < numElements; i++) {

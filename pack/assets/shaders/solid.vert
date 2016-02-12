@@ -6,11 +6,10 @@ in vec3 COLOR;
 out vec3 color;
 
 layout (std140, binding = 0) uniform perDrawCallUBO {
-	mat4 matV;
-	mat4 matP;
+	mat4 matPV;
 };
 
 void main() {
-	gl_Position = matP * matV * vec4(POSITION, 1);
+	gl_Position = matPV * vec4(POSITION, 1);
 	color = COLOR;
 }

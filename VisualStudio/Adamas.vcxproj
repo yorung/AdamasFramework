@@ -20,6 +20,7 @@
     <ClCompile Include="..\cpp\font_man.cpp" />
     <ClCompile Include="..\cpp\fps.cpp" />
     <ClCompile Include="..\cpp\glow.cpp" />
+    <ClCompile Include="..\cpp\grid_renderer.cpp" />
     <ClCompile Include="..\cpp\helper.cpp" />
     <ClCompile Include="..\cpp\helper_dx.cpp" />
     <ClCompile Include="..\cpp\helper_gl.cpp" />
@@ -76,6 +77,7 @@
     <ClInclude Include="..\cpp\font_man.h" />
     <ClInclude Include="..\cpp\fps.h" />
     <ClInclude Include="..\cpp\glow.h" />
+    <ClInclude Include="..\cpp\grid_renderer.h" />
     <ClInclude Include="..\cpp\helper.h" />
     <ClInclude Include="..\cpp\helper_dx.h" />
     <ClInclude Include="..\cpp\helper_gl.h" />

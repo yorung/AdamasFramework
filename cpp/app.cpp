@@ -46,6 +46,7 @@ void App::Draw()
 	}
 	*/
 	luaMan.Draw3D();
+	gridRenderer.Draw();
 	meshRenderer.Flush();
 	skyMan.Draw();
 	luaMan.Draw2D();
@@ -60,7 +61,7 @@ void App::Init()
 #ifdef _MSC_VER
 	GoMyDir();
 #endif
-
+	gridRenderer.Init();
 	meshRenderer.Create();
 	fontMan.Init();
 	spriteRenderer.Init();
@@ -93,6 +94,7 @@ void App::Destroy()
 	meshMan.Destroy();
 	glow.Destroy();
 	skyMan.Destroy();
+	gridRenderer.Destroy();
 	ClearMenu();
 	meshId = MeshMan::INVALID_MMID;
 }

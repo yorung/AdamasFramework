@@ -6,7 +6,7 @@ static float INVALID_POS = -99999.f;
 
 DevCamera::DevCamera()
 {
-	dist = 1;
+	dist = 10;
 	lastX = lastY = INVALID_POS;
 	rotX = rotY = 0;
 	height = 0;

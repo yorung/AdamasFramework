@@ -11,8 +11,7 @@ struct Vertex {
 };
 
 struct PickingUBO {
-	Mat matV;
-	Mat matP;
+	Mat matVP;
 };
 
 class Picking {
@@ -51,7 +50,7 @@ public:
 
 Picking::Picking()
 {
-	ubo = afCreateUBO(sizeof(PickingUBO));
+	ubo = afCreateUBO(sizeof(Mat));
 	vbo2d = afCreateDynamicVertexBuffer(sizeof(Vertex) * 3);
 	vbo3d = afCreateDynamicVertexBuffer(sizeof(Vertex) * 3);
 	shader = shaderMan.Create("solid", elements, dimof(elements), BM_NONE, DSM_DEPTH_ENABLE, CM_DISABLE);
@@ -159,10 +158,11 @@ void Picking::Draw3D()
 	int strides[] = {sizeof(Vertex)};
 	afSetVertexAttributes(elements, dimof(elements), 1, vbos, strides);
 
-	PickingUBO buf;
-	matrixMan.Get(MatrixMan::VIEW, buf.matV);
-	matrixMan.Get(MatrixMan::PROJ, buf.matP);
-	afWriteBuffer(ubo, &buf, sizeof(buf));
+	Mat mView, mProj;
+	matrixMan.Get(MatrixMan::VIEW, mView);
+	matrixMan.Get(MatrixMan::PROJ, mProj);
+	Mat mVP = mView * mProj;
+	afWriteBuffer(ubo, &mVP, sizeof(Mat));
 	afBindBufferToBindingPoint(ubo, 0);
 
 	afDrawTriangleStrip(3);

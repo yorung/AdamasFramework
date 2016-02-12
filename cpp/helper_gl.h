@@ -156,9 +156,10 @@ void afLayoutUBOBindingManually(GLuint program, const GLchar* name, GLuint unifo
 void afBindTextureToBindingPoint(GLuint tex, GLuint textureBindingPoint);
 void afBindCubeMapToBindingPoint(GLuint tex, GLuint textureBindingPoint);
 
-void afDrawIndexedTriangleList(int numIndices, int start = 0);
 void afDrawIndexedTriangleStrip(int numIndices, int start = 0);
+void afDrawIndexedTriangleList(int numIndices, int start = 0);
 void afDrawTriangleStrip(int numVertices, int start = 0);
+void afDrawLineList(int numVertices, int start = 0);
 
 enum CullMode {
 	CM_DISABLE,
