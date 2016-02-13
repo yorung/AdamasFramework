@@ -20,13 +20,13 @@ local function WrapDrawer(drawer)
 end
 
 local DrawJiji = WrapDrawer(function()
-	matrixStack:Scale(1 / 2, 1 / 3, 1 / 2)
-	matrixStack:RotateY(180)
+	matrixStack:Scale(1 / 2, 1 / 5, 1 / 2)
 	jiji:Draw(matrixStack, 0, 0)
 end)
 
 local DrawNori = WrapDrawer(function()
-	matrixStack:Scale(1 / 2, 1 / 3, 1 / 2)
+	matrixStack:Scale(1 / 2, 1 / 5, 1 / 2)
+	matrixStack:RotateY(180)
 	nori:Draw(matrixStack, 0, 0)
 end)
 
@@ -35,6 +35,12 @@ end)
 
 local DrawRange = WrapDrawer(function()
 end)
+
+function MoveToBoard(grid)
+	local numGrid = grid.GetNumGrid()
+	local go = -numGrid / 2 + 0.5
+	matrixStack:Translate(go, 0, go)
+end
 
 return {
 	GetMousePosInBoard = function(grid)
@@ -50,11 +56,12 @@ return {
 	Draw2D = function(grid, pathGrid)
 		local numGrid = grid.GetNumGrid()
 		matrixStack:Push()
+		MoveToBoard(grid)
 		for x, y in gridTools.GridForeach(numGrid) do
 			if grid[y][x] == 0 then
-				DrawJiji(x, 0, y)
-			elseif grid[y][x] == 1 then
 				DrawNori(x, 0, y)
+			elseif grid[y][x] == 1 then
+				DrawJiji(x, 0, y)
 			elseif pathGrid and pathGrid[y][x] ~= -1 then
 				DrawRange(x, 0, y)
 			else

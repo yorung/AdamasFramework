@@ -61,7 +61,7 @@ void App::Init()
 #ifdef _MSC_VER
 	GoMyDir();
 #endif
-	gridRenderer.Init();
+	gridRenderer.Create(9, 1.f);
 	meshRenderer.Create();
 	fontMan.Init();
 	spriteRenderer.Init();
