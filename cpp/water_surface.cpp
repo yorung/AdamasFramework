@@ -125,14 +125,14 @@ void WaterSurface::Init()
 {
 	Destroy();
 	for (auto& it : renderTarget) {
-		it.Init(min(ivec2(1024, 1024), systemMisc.GetScreenSize()), AFDT_R8G8B8A8_UNORM, AFDT_INVALID);
+		it.Init(min(IVec2(1024, 1024), systemMisc.GetScreenSize()), AFDT_R8G8B8A8_UNORM, AFDT_INVALID);
 		it.BeginRenderToThis();	// clear textures
 	}
 	for (auto& it : heightMap) {
-		it.Init(ivec2(HEIGHT_MAP_W, HEIGHT_MAP_H), AFDT_R16G16B16A16_FLOAT, AFDT_INVALID);
+		it.Init(IVec2(HEIGHT_MAP_W, HEIGHT_MAP_H), AFDT_R16G16B16A16_FLOAT, AFDT_INVALID);
 		it.BeginRenderToThis();	// clear textures
 	}
-	normalMap.Init(ivec2(HEIGHT_MAP_W, HEIGHT_MAP_H), AFDT_R8G8B8A8_UNORM, AFDT_INVALID);
+	normalMap.Init(IVec2(HEIGHT_MAP_W, HEIGHT_MAP_H), AFDT_R8G8B8A8_UNORM, AFDT_INVALID);
 	normalMap.BeginRenderToThis();	// clear textures
 
 	V(glBindFramebuffer(GL_FRAMEBUFFER, 0));
@@ -192,7 +192,7 @@ void WaterSurface::UpdateTime()
 
 void WaterSurface::Update()
 {
-	ivec2 scrSize = systemMisc.GetScreenSize();
+	IVec2 scrSize = systemMisc.GetScreenSize();
 	float offset = 0.5f;
 	float aspect = (float)scrSize.x / scrSize.y;
 	if (aspect > 1) {
@@ -244,7 +244,7 @@ void WaterSurface::UpdateNormalMap()
 
 void WaterSurface::RenderWater(const UniformBuffer& hmub)
 {
-	ivec2 scrSize = systemMisc.GetScreenSize();
+	IVec2 scrSize = systemMisc.GetScreenSize();
 	glViewport(0, 0, scrSize.x, scrSize.y);
 
 	shaderMan.Apply(shaderWaterLastPass);

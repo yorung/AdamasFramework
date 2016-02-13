@@ -11,8 +11,8 @@ const char* StrMessageBox(const char* txt, const char* type);
 void ClearMenu();
 void AddMenu(const char *name, const char *cmd);
 void PostCommand(const char* cmdString);
-bool LoadImageViaGdiPlus(const char* name, ivec2& size, std::vector<uint32_t>& col);
-SRVID LoadTextureViaOS(const char* name, ivec2& size);
+bool LoadImageViaGdiPlus(const char* name, IVec2& size, std::vector<uint32_t>& col);
+SRVID LoadTextureViaOS(const char* name, IVec2& size);
 
 template <class T> inline void SAFE_DELETE(T& p)
 {
@@ -32,7 +32,7 @@ IBOID afCreateTiledPlaneIBO(int numTiles, int* numIndies = nullptr);
 VBOID afCreateTiledPlaneVBO(int numTiles);
 
 struct TexDesc {
-	ivec2 size;
+	IVec2 size;
 	int arraySize = 1;
 	bool isCubeMap = false;
 };

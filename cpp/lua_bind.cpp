@@ -29,7 +29,7 @@ static int LLookAt(lua_State* L)
 	return 0;
 }
 
-static ivec2 GetScreenPos(lua_State* L, const MatrixStack* ms)
+static IVec2 GetScreenPos(lua_State* L, const MatrixStack* ms)
 {
 	Mat mW, mV, mP;
 	mW = ms ? ms->Get() : Mat();
@@ -37,10 +37,10 @@ static ivec2 GetScreenPos(lua_State* L, const MatrixStack* ms)
 	matrixMan.Get(MatrixMan::PROJ, mP);
 	Mat mViewport = makeViewportMatrix(systemMisc.GetScreenSize());
 	Mat m = mW * mV * mP * mViewport;
-	return ivec2((int)(m._41 / m._44), (int)(m._42 / m._44));
+	return IVec2((int)(m._41 / m._44), (int)(m._42 / m._44));
 }
 
-static void PushPoint(lua_State* L, const ivec2& pt)
+static void PushPoint(lua_State* L, const IVec2& pt)
 {
 	lua_newtable(L);
 	lua_pushstring(L, "x");
@@ -461,7 +461,7 @@ static void BindVec4(lua_State* L)
 
 static void ShareVariables(lua_State* L)
 {
-	ivec2 sz = systemMisc.GetScreenSize();
+	IVec2 sz = systemMisc.GetScreenSize();
 	lua_pushinteger(L, sz.x);
 	lua_setglobal(L, "SCR_W");
 	lua_pushinteger(L, sz.y);

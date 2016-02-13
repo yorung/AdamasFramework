@@ -127,9 +127,9 @@ enum AFDTFormat
 	AFDT_BC2_UNORM = 0x83F2,	// GL_COMPRESSED_RGBA_S3TC_DXT3_EXT
 	AFDT_BC3_UNORM = 0x83F3,	// GL_COMPRESSED_RGBA_S3TC_DXT5_EXT,
 };
-SRVID afCreateTexture2D(AFDTFormat format, const ivec2& size, void *image);
+SRVID afCreateTexture2D(AFDTFormat format, const IVec2& size, void *image);
 SRVID afCreateTexture2D(AFDTFormat format, const struct TexDesc& desc, int mipCount, const AFTexSubresourceData datas[]);
-SRVID afCreateDynamicTexture(AFDTFormat format, const ivec2& size);
+SRVID afCreateDynamicTexture(AFDTFormat format, const IVec2& size);
 
 void afWriteTexture(SRVID srv, const TexDesc& desc, const void* buf);
 
@@ -189,14 +189,14 @@ void afDumpIsEnabled();
 
 class AFRenderTarget
 {
-	ivec2 texSize;
+	IVec2 texSize;
 	SRVID texColor;
 	SRVID texDepth;
 	GLuint framebufferObject = 0;
 	GLuint renderbufferObject = 0;
 public:
 	void InitForDefaultRenderTarget();
-	void Init(ivec2 size, AFDTFormat colorFormat, AFDTFormat depthStencilFormat);
+	void Init(IVec2 size, AFDTFormat colorFormat, AFDTFormat depthStencilFormat);
 	void Destroy();
 	void BeginRenderToThis();
 	GLuint GetTexture() { return texColor; }
@@ -225,7 +225,7 @@ inline void afSafeDeleteSampler(SAMPLERID& s)
 		s.x = 0;
 	}
 }
-ivec2 afGetTextureSize(GLuint tex);
-ivec2 afGetRenderbufferSize(GLuint renderbuffer);
+IVec2 afGetTextureSize(GLuint tex);
+IVec2 afGetRenderbufferSize(GLuint renderbuffer);
 
 #endif

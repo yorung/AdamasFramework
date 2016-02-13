@@ -1,14 +1,14 @@
 class SystemMisc
 {
 public:
-	ivec2 screenSize;
-	ivec2 mousePos;
+	IVec2 screenSize;
+	IVec2 mousePos;
 	bool mouseDown;
 	double lastUpdateTime;
-	void SetScreenSize(ivec2 size) { screenSize = size; }
-	const ivec2& GetScreenSize() { return screenSize; }
-	void SetMousePos(ivec2 pos) { mousePos = pos; }
-	const ivec2& GetMousePos() { return mousePos; }
+	void SetScreenSize(IVec2 size) { screenSize = size; }
+	const IVec2& GetScreenSize() { return screenSize; }
+	void SetMousePos(IVec2 pos) { mousePos = pos; }
+	const IVec2& GetMousePos() { return mousePos; }
 	double GetLastUpdateTime() { return lastUpdateTime; }
 };
 extern SystemMisc systemMisc;

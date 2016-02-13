@@ -25,7 +25,7 @@ void App::Draw()
 	afDepthStencilMode(DSM_DEPTH_ENABLE);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	ivec2 scrSize = systemMisc.GetScreenSize();
+	IVec2 scrSize = systemMisc.GetScreenSize();
 	glViewport(0, 0, scrSize.x, scrSize.y);
 
 	float f = 1000;

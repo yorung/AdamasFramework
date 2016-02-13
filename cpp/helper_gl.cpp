@@ -107,7 +107,7 @@ void afWriteTexture(SRVID srv, const TexDesc& desc, const void* buf)
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-SRVID afCreateDynamicTexture(AFDTFormat format, const ivec2& size)
+SRVID afCreateDynamicTexture(AFDTFormat format, const IVec2& size)
 {
 	SRVID texture;
 	glGenTextures(1, &texture.x);
@@ -159,7 +159,7 @@ SRVID afCreateDynamicTexture(AFDTFormat format, const ivec2& size)
 	return texture;
 }
 
-SRVID afCreateTexture2D(AFDTFormat format, const ivec2& size, void *image)
+SRVID afCreateTexture2D(AFDTFormat format, const IVec2& size, void *image)
 {
 	assert(format == AFDT_R8G8B8A8_UNORM);
 	SRVID texture;
@@ -490,7 +490,7 @@ void AFRenderTarget::InitForDefaultRenderTarget()
 	texSize = systemMisc.GetScreenSize();
 }
 
-void AFRenderTarget::Init(ivec2 size, AFDTFormat colorFormat, AFDTFormat depthStencilFormat = AFDT_DEPTH_STENCIL)
+void AFRenderTarget::Init(IVec2 size, AFDTFormat colorFormat, AFDTFormat depthStencilFormat = AFDT_DEPTH_STENCIL)
 {
 	Destroy();
 	texSize = size;
@@ -523,23 +523,23 @@ void AFRenderTarget::BeginRenderToThis()
 }
 
 #ifdef AF_GLES31
-ivec2 afGetTextureSize(GLuint tex)
+IVec2 afGetTextureSize(GLuint tex)
 {
 	GLint w, h;
 	glBindTexture(GL_TEXTURE_2D, tex);
 	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &w);
 	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &h);
 	glBindTexture(GL_TEXTURE_2D, 0);
-	return ivec2(w, h);
+	return IVec2(w, h);
 }
 
-ivec2 afGetRenderbufferSize(GLuint renderbuffer)
+IVec2 afGetRenderbufferSize(GLuint renderbuffer)
 {
 	GLint w, h;
 	glBindRenderbuffer(GL_RENDERBUFFER, renderbuffer);
 	glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &w);
 	glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &h);
-	return ivec2(w, h);
+	return IVec2(w, h);
 }
 
 #endif

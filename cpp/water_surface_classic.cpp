@@ -288,7 +288,7 @@ void WaterSurfaceClassic::Init()
 	samplerRepeat = afCreateSampler(SF_MIPMAP, SW_REPEAT);
 	samplerClamp = afCreateSampler(SF_MIPMAP, SW_CLAMP);
 	samplerNoMipmap = afCreateSampler(SF_LINEAR, SW_CLAMP);
-	texRenderTarget = afCreateDynamicTexture(AFDT_R5G6B5_UINT, ivec2(512, 512));
+	texRenderTarget = afCreateDynamicTexture(AFDT_R5G6B5_UINT, IVec2(512, 512));
 
 	glGenRenderbuffers(1, &renderbufferObject);
 	glBindRenderbuffer(GL_RENDERBUFFER, renderbufferObject);
@@ -335,7 +335,7 @@ void WaterSurfaceClassic::Update()
 		return;
 	}
 
-	ivec2 scrSize = systemMisc.GetScreenSize();
+	IVec2 scrSize = systemMisc.GetScreenSize();
 	float offset = 0.5f;
 	float aspect = (float)scrSize.y / scrSize.x;
 	if (aspect < 1) {
