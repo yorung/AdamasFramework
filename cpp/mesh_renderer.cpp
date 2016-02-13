@@ -118,6 +118,8 @@ void MeshRenderer::Destroy()
 	afSafeDeleteBuffer(ssboForBoneMatrices);
 	afSafeDeleteBuffer(ssboForMaterials);
 	afSafeDeleteBuffer(uboForPerDrawCall);
+
+	nStoredCommands = 0;
 }
 
 MRID MeshRenderer::CreateRenderMesh(const Block& block)
