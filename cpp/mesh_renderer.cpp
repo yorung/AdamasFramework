@@ -25,10 +25,6 @@ enum UBOBindingPoints {
 	UBP_PER_INSTANCE_DATAS = 1,
 };
 
-enum SamplerBindingPoints {
-	SBP_DIFFUSE = 0,
-};
-
 RenderMesh::~RenderMesh()
 {
 	Destroy();
@@ -69,29 +65,17 @@ void RenderMesh::Init(const Block& block)
 void RenderMesh::Draw(int instanceCount) const
 {
 	assert(vao);
-	afHandleGLError(glActiveTexture(GL_TEXTURE0 + SBP_DIFFUSE));
-	glBindVertexArray(vao);
-	GLenum r = glGetError();
-	if (r != GL_NO_ERROR) {
-		aflog("glBindVertexArray error! vao=%d\n", vao.x);
-	}
+	afBindVAO(vao);
 	for (auto it : materialMaps) {
 		const Material* mat = meshRenderer.GetMaterial(it.materialId);
 		assert(mat);
-		afHandleGLError(glBindTexture(GL_TEXTURE_2D, mat->tmid));
-
+		afBindTextureToBindingPoint(mat->tmid, 0);
 		GLuint count = it.faces * 3;
 		GLuint start = it.faceStartIndex * 3 * sizeof(AFIndex);
-		DrawElementsIndirectCommand cmd = { count, (GLuint)instanceCount, start, 0, 0 };
-		afHandleGLError(glDrawElementsInstanced/*BaseVertex*/(GL_TRIANGLES,
-			cmd.count,
-			AFIndexTypeToDevice,
-			(void*)cmd.firstIndex,
-			cmd.instanceCount/*, cmd.baseVertex*/));
+		afDrawIndexedInstancedTriangleList(instanceCount, count, start);
 	}
-
-	afHandleGLError(glBindTexture(GL_TEXTURE_2D, 0));
-	afHandleGLError(glBindVertexArray(0));
+	afBindTextureToBindingPoint(0, 0);
+	afBindVAO(0);
 }
 
 MeshRenderer::MeshRenderer()
@@ -197,10 +181,10 @@ void MeshRenderer::Flush()
 	if (!nStoredCommands) {
 		return;
 	}
-	afHandleGLError(afWriteBuffer(ssboForBoneMatrices, &renderBoneMatrices[0], sizeof(Mat) * renderBoneMatrices.size()));
+	afWriteBuffer(ssboForBoneMatrices, &renderBoneMatrices[0], sizeof(Mat) * renderBoneMatrices.size());
 	matrixMan.Get(MatrixMan::VIEW, perDrawCallUBO.matV);
 	matrixMan.Get(MatrixMan::PROJ, perDrawCallUBO.matP);
-	afHandleGLError(afWriteBuffer(uboForPerDrawCall, &perDrawCallUBO, sizeof(PerDrawCallUBO)));
+	afWriteBuffer(uboForPerDrawCall, &perDrawCallUBO, sizeof(PerDrawCallUBO));
 
 	shaderMan.Apply(shaderId);
 

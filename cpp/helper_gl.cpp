@@ -234,6 +234,13 @@ void afDrawLineList(int numVertices, int start)
 	glDrawArrays(GL_LINES, start, numVertices);
 }
 
+#ifdef AF_GLES31
+void afDrawIndexedInstancedTriangleList(int instanceCount, int numIndices, int start)
+{
+	afHandleGLError(glDrawElementsInstanced/*BaseVertex*/(GL_TRIANGLES, numIndices, AFIndexTypeToDevice, (void*)start, instanceCount/*, cmd.baseVertex*/));
+}
+#endif
+
 void afSetVertexAttributes(const InputElement elements[], int numElements, int numBuffers, VBOID const *vertexBufferIds, const GLsizei* strides)
 {
 	for (int i = 0; i < numElements; i++) {

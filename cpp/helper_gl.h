@@ -88,7 +88,7 @@ void afWriteBuffer(BufName bufName, const void* buf, int size)
 {
 	afHandleGLError(glBindBuffer(BufName::bufType, bufName));
 	afHandleGLError(glBufferSubData(BufName::bufType, 0, size, buf));
-	glBindBuffer(BufName::bufType, 0);
+	afHandleGLError(glBindBuffer(BufName::bufType, 0));
 }
 
 template <class BufName>
@@ -163,6 +163,9 @@ void afDrawIndexedTriangleStrip(int numIndices, int start = 0);
 void afDrawIndexedTriangleList(int numIndices, int start = 0);
 void afDrawTriangleStrip(int numVertices, int start = 0);
 void afDrawLineList(int numVertices, int start = 0);
+#ifdef AF_GLES31
+void afDrawIndexedInstancedTriangleList(int instanceCount, int numIndices, int start = 0);
+#endif
 
 enum CullMode {
 	CM_DISABLE,
@@ -181,8 +184,8 @@ enum DepthStencilMode {
 	DSM_DEPTH_CLOSEREQUAL_READONLY,
 };
 void afDepthStencilMode(DepthStencilMode mode);
-#define afBindVAO glBindVertexArray
-#define afBindSamplerToBindingPoint(samp,pnt) glBindSampler(pnt, samp)
+#define afBindVAO(vao) afHandleGLError(glBindVertexArray(vao))
+#define afBindSamplerToBindingPoint(samp,pnt) afHandleGLError(glBindSampler(pnt, samp))
 
 void afDumpCaps();
 void afDumpIsEnabled();
