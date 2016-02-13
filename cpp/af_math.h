@@ -5,18 +5,6 @@ typedef float affloat;
 
 inline affloat clamp(affloat x, affloat mi, affloat ma) { return std::max(std::min(x, ma), mi); }
 
-template <class VEC3> inline VEC3 cross(const VEC3& l, const VEC3& r)
-{
-#define _(u,v) (l.u * r.v - l.v * r.u)
-	return VEC3(_(y,z), _(z,x), _(x,y));
-#undef _
-}
-
-template <class VEC2> inline affloat cross2d(const VEC2& l, const VEC2& r)
-{
-	return l.x * r.y - l.y * r.x;
-}
-
 struct Vec2
 {
 	affloat x, y;
@@ -108,6 +96,18 @@ inline affloat dot(const Vec3& l, const Vec3& r)
 inline affloat dot(const Vec2& l, const Vec2& r)
 {
 	return l.x * r.x + l.y * r.y;
+}
+
+inline Vec3 cross(const Vec3& l, const Vec3& r)
+{
+#define _(u,v) (l.u * r.v - l.v * r.u)
+	return Vec3(_(y, z), _(z, x), _(x, y));
+#undef _
+}
+
+inline affloat cross(const Vec2& l, const Vec2& r)
+{
+	return l.x * r.y - l.y * r.x;
 }
 
 inline float frac(float v)
