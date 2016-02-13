@@ -1,89 +1,11 @@
-local gridTools = dofile("lua/hasami_shogi/grid_tools.lua")
+local gridTools = require("lua/hasami_shogi/grid_tools")
 local commonTools = dofile("lua/hasami_shogi/common_tools.lua")
-
-local matrixStack = MatrixStack()
-
-local jiji = Image("jiji.dds")
-jiji:SetCell(0, {left = 0, top = 0, right = 256, bottom = 256})
-
-local board = Image("delaymap.png")
-board:SetCell(0, {left = 0, top = 0, right = 64, bottom = 64})
-
-local function WrapDrawer(drawer)
-	return function(x, y, z)
-		x = x or 0
-		y = y or 0
-		z = z or 0
-		matrixStack:Push()
-		matrixStack:Translate(x, y, z)
-		drawer()
-		matrixStack:Pop()
-	end
-end
-
-local DrawJiji = WrapDrawer(function()
-	matrixStack:Scale(1 / 256, 1 / 256, 1)
-	jiji:DrawCell(matrixStack, 0)
-end)
-
-local DrawReverseJiji = WrapDrawer(function()
-	matrixStack:Translate(1, 1, 0)
-	matrixStack:Scale(1 / 256, 1 / 256, 1)
-	matrixStack:RotateZ(180)
-	jiji:DrawCell(matrixStack, 0)
-end)
-
-local DrawBoard = WrapDrawer(function()
-	matrixStack:Scale(1 / 64, 1 / 64, 1)
-	board:DrawCell(matrixStack, 0)
-end)
-
-local DrawRange = WrapDrawer(function()
-	matrixStack:Translate(1, 1, 0)
-	matrixStack:Scale(1 / 64, 1 / 64, 1)
-	matrixStack:RotateZ(180)
-	board:DrawCell(matrixStack, 0)
-end)
-
---[[
-local chips = {}
-for i = 0, 15 do
-	local img = Image(string.format("chip/chip%02d.png", i))
-	img:SetCell(0, {left = 0, top = 0, right = 64, bottom = 64})
-	chips[i] = {
-		Draw = WrapDrawer(function()
-			matrixStack:Scale(1 / 64, 1 / 64, 1)
-			img:DrawCell(matrixStack, 0)
-		end)
-	}
-end]]
+local renderer = dofile("lua/hasami_shogi/renderer3d.lua")
 
 local numGrid = 9
 
-
 local globalGrid = gridTools.CreateGrid(numGrid, function(x, y) return y == 0 and 1 or y == numGrid - 1 and 0 or -1 end)
 local pathGrid
-
-local smallerSize = math.min(SCR_W, SCR_H)
-local function MoveToBoard()
-	matrixStack:Translate(SCR_W / 2, SCR_H / 2, 0)
-	matrixStack:Scale(smallerSize, smallerSize, 1)
-	matrixStack:Translate(-0.5, -0.5, 0)
-end
-
-local boardLT = {x = SCR_W / 2 - smallerSize * 0.5, y = SCR_H / 2 - smallerSize * 0.5}
-local boardRB = {x = SCR_W / 2 + smallerSize * 0.5, y = SCR_H / 2 + smallerSize * 0.5}
-
-local function GetMousePosInBoard()
-	local p = GetMousePos()
-	local x = math.floor((p.x - boardLT.x) / (boardRB.x - boardLT.x) * numGrid)
-	local y = math.floor((p.y - boardLT.y) / (boardRB.y - boardLT.y) * numGrid)
-	if not globalGrid.IsValidPos(x, y) then
-		print(string.format("invalid pos %d %d", x, y))
-		return
-	end
-	return {x = x, y = y}
-end
 
 local function FindBest(grid, myFaction, evaluator, depth)
 	local maxVal = -10000
@@ -147,7 +69,7 @@ local co = coroutine.create(function()
 
 	local function MoveUnit(grid, currentTurn)
 		WaitClickLeft()
-		local from = GetMousePosInBoard()
+		local from = renderer.GetMousePosInBoard(grid)
 		if not from then print("invalid pos") return end
 		if grid[from.y][from.x] ~= currentTurn then
 			print(string.format("my units not found at pos %d %d", from.x, from.y))
@@ -155,7 +77,7 @@ local co = coroutine.create(function()
 		end
 		pathGrid = gridTools.FindPath(grid, from)
 		WaitClickLeft()
-		local to = GetMousePosInBoard()
+		local to = renderer.GetMousePosInBoard(grid)
 		if not to then
 			print("invalid pos to move! reason: out of board")
 			pathGrid = nil
@@ -196,29 +118,12 @@ function Update()
 end
 
 function Draw2D()
-	matrixStack:Push()
-	MoveToBoard()
-	matrixStack:Scale(1 / numGrid, 1 / numGrid, 1)
-	for x, y in gridTools.GridForeach(numGrid) do
-		if globalGrid[y][x] == 0 then
-			DrawJiji(x, y, 2)
-		elseif globalGrid[y][x] == 1 then
-			DrawReverseJiji(x, y, 2)
-		elseif pathGrid and pathGrid[y][x] ~= -1 then
-			DrawRange(x, y, 1)
-		else
-			DrawBoard(x, y, 1)
-		end
-	end
-	matrixStack:Pop()
+	renderer.Draw2D(globalGrid, pathGrid)
 end
-
-
 
 function Draw3D()
 end
 
-LoadSkyBox("hakodate.jpg", "sky_photosphere")
 
 --[[
 local tbl = {
