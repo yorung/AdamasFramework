@@ -68,14 +68,15 @@ void PostCommand(const char* cmdString)
 
 }
 
-GLuint LoadTextureViaOS(const char* name, ivec2& size)
+SRVID LoadTextureViaOS(const char* name, IVec2& size)
 {
 	jclass myview = jniEnv->FindClass(boundJavaClass);
 	jmethodID method = jniEnv->GetStaticMethodID(myview, "loadTexture", "(Ljava/lang/String;)I");
 	if (method == 0) {
-		return 0;
+		return SRVID();
 	}
-	GLuint id = jniEnv->CallStaticIntMethod(myview, method, jniEnv->NewStringUTF(name));
+	SRVID id;
+	id.x = jniEnv->CallStaticIntMethod(myview, method, jniEnv->NewStringUTF(name));
 
 	glBindTexture(GL_TEXTURE_2D, id);
 	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &size.x);

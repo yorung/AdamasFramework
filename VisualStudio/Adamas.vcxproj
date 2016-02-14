@@ -22,6 +22,10 @@
     <ClCompile Include="..\cpp\glow.cpp" />
     <ClCompile Include="..\cpp\grid_renderer.cpp" />
     <ClCompile Include="..\cpp\helper.cpp" />
+    <ClCompile Include="..\cpp\helper_android.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\cpp\helper_dx.cpp" />
     <ClCompile Include="..\cpp\helper_gl.cpp" />
     <ClCompile Include="..\cpp\helper_win.cpp" />

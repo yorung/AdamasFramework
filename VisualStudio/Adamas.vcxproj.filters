@@ -130,6 +130,9 @@
     <ClCompile Include="device_man_wgl.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
+    <ClCompile Include="..\cpp\helper_android.cpp">
+      <Filter>Android</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="wgl_grabber_gen.h">
