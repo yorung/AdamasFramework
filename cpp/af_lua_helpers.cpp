@@ -141,3 +141,14 @@ void aflPushIVec2(lua_State* L, const IVec2& pt)
 	lua_pushinteger(L, pt.y);
 	lua_rawset(L, -3);
 }
+
+void aflPushVec2(lua_State* L, const Vec2& pt)
+{
+	lua_newtable(L);
+	lua_pushstring(L, "x");
+	lua_pushnumber(L, pt.x);
+	lua_rawset(L, -3);
+	lua_pushstring(L, "y");
+	lua_pushnumber(L, pt.y);
+	lua_rawset(L, -3);
+}

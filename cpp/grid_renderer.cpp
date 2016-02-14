@@ -14,7 +14,7 @@ public:
 	GridRenderer(int numGrid, float pitch);
 	~GridRenderer();
 	void Draw();
-	IVec2 GetMousePosInGrid();
+	bool GetMousePosInGrid(Vec2& v);
 };
 
 #define GET_GR \
@@ -29,7 +29,14 @@ public:
 		GetLuaBindFuncContainer().push_back([](lua_State* L) {
 			static luaL_Reg methods[] = {
 				{ "Draw", [](lua_State* L) { GET_GR p->Draw(); return 0; } },
-				{ "GetMousePosInGrid", [](lua_State* L) { GET_GR aflPushIVec2(L, p->GetMousePosInGrid()); return 1; } },
+				{ "GetMousePosInGrid", [](lua_State* L) {
+					GET_GR
+					Vec2 v;
+					if (p->GetMousePosInGrid(v)) {
+						aflPushVec2(L, v);
+						return 1;
+					}
+					return 0; } },
 				{ nullptr, nullptr },
 			};
 			aflBindClass(L, "GridRenderer", methods, [](lua_State* L) { void* u = lua_newuserdata(L, sizeof(GridRenderer)); new (u) GridRenderer((int)lua_tointeger(L, 1), (float)lua_tonumber(L, 2)); return 1; });
@@ -108,23 +115,21 @@ void GridRenderer::Draw()
 	afBindVAO(vao);
 	afDrawLineList(lines * 2);
 	afBindVAO(0);
+#ifndef NDEBUG
+	Vec2 v;
+	if (GetMousePosInGrid(v)) {
+		fontMan.DrawString(systemMisc.GetMousePos(), 15, SPrintf("hit={%f,%f}", v.x, v.y));
+	}
+#endif
 }
 
 void ScreenPosToRay(const Vec2& scrPos, Vec3& nearPos, Vec3& farPos);
 
-IVec2 GridRenderer::GetMousePosInGrid()
+bool GridRenderer::GetMousePosInGrid(Vec2& v)
 {
-	Vec2 strPos = systemMisc.GetMousePos();
-	auto drawStr = [&](const char* s) {
-		fontMan.DrawString(strPos, 15, s);
-		strPos.y += 16;
-	};
-
 	// make a ray from cursor pos
 	Vec3 n, f;
 	ScreenPosToRay(systemMisc.GetMousePos(), n, f);
-	drawStr(SPrintf("near={%f,%f,%f}", n.x, n.y, n.z));
-	drawStr(SPrintf("far={%f,%f,%f}", f.x, f.y, f.z));
 
 	// ray-grid intersection
 	Vec3 planeCenter = { 0, 0, 0 };
@@ -135,9 +140,9 @@ IVec2 GridRenderer::GetMousePosInGrid()
 		nDotPlane = abs(nDotPlane);
 		fDotPlane = abs(fDotPlane);
 		Vec3 hitPos = n + (f - n) * nDotPlane / (nDotPlane + fDotPlane);
-		drawStr(SPrintf("hit={%f,%f,%f}", hitPos.x, hitPos.y, hitPos.z));
 		float half = pitch * numGrid / 2;
-		return IVec2((int)((hitPos.x + half) / pitch), (int)((hitPos.z + half) / pitch));
+		v = Vec2(dot(hitPos, Vec3(1, 0, 0)), dot(hitPos, Vec3(0, 0, 1)));
+		return true;
 	}
-	return IVec2();
+	return false;
 }

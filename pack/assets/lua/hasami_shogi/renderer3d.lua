@@ -24,12 +24,12 @@ end
 
 local DrawJiji = WrapDrawer(function()
 	matrixStack:Scale(1 / 2, 1 / 10, 1 / 2)
-	matrixStack:RotateY(180)
 	jiji:Draw(matrixStack, 0, 0)
 end)
 
 local DrawNori = WrapDrawer(function()
 	matrixStack:Scale(1 / 2, 1 / 10, 1 / 2)
+	matrixStack:RotateY(180)
 	nori:Draw(matrixStack, 0, 0)
 end)
 
@@ -44,14 +44,16 @@ end)
 function MoveToBoard(grid)
 	local numGrid = grid.GetNumGrid()
 	local go = -numGrid / 2 + 0.5
-	matrixStack:Translate(go, 0, go)
+	matrixStack:Translate(go, 0, -go)
 end
 
 return {
 	GetMousePosInBoard = function(grid)
+		local numGrid = grid.GetNumGrid()
 		local pos = gridRenderer:GetMousePosInGrid()
-		local x = pos.x
-		local y = pos.y
+		if not pos then return end
+		local x = math.floor(pos.x + numGrid / 2)
+		local y = math.floor(-pos.y + numGrid / 2)
 		if not grid.IsValidPos(x, y) then
 			print(string.format("invalid pos %d %d", x, y))
 			return
@@ -66,13 +68,13 @@ return {
 		MoveToBoard(grid)
 		for x, y in gridTools.GridForeach(numGrid) do
 			if grid[y][x] == 0 then
-				DrawJiji(x, 0, y)
+				DrawJiji(x, 0, -y)
 			elseif grid[y][x] == 1 then
-				DrawNori(x, 0, y)
+				DrawNori(x, 0, -y)
 			elseif pathGrid and pathGrid[y][x] ~= -1 then
-				DrawRange(x, 0, y)
+				DrawRange(x, 0, -y)
 			else
-				DrawBoard(x, 0, y)
+				DrawBoard(x, 0, -y)
 			end
 		end
 		matrixStack:Pop()

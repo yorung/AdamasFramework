@@ -13,3 +13,4 @@ bool aflDoFile(lua_State* L, const char* fileName);
 int aflDoFileForReplace(lua_State* L);
 
 void aflPushIVec2(lua_State* L, const IVec2& pt);
+void aflPushVec2(lua_State* L, const Vec2& pt);
