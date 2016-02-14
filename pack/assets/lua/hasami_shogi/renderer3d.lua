@@ -8,6 +8,7 @@ local matrixStack = MatrixStack()
 
 local jiji = Mesh("models/jiji.x")
 local nori = Mesh("models/nori.x")
+local pointer = Mesh("models/enemy.x")
 
 local function WrapDrawer(drawer)
 	return function(x, y, z)
@@ -36,6 +37,8 @@ local DrawBoard = WrapDrawer(function()
 end)
 
 local DrawRange = WrapDrawer(function()
+	matrixStack:Scale(1 / 8, 1 / 8, 1 / 8)
+	pointer:Draw(matrixStack, 0, 0)
 end)
 
 function MoveToBoard(grid)
