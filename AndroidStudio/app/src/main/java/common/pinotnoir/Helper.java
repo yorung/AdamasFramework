@@ -71,9 +71,8 @@ public class Helper {
     public static byte[] makeFontBitmap(String font, String code, int size, float[] arrayOfPos) {
         Canvas c = new Canvas();
         Paint p = new Paint();
-        float density = context.getResources().getDisplayMetrics().density;
 //        Log.v(TAG, String.format("makeFontBitmap called(Java): font=%s code=%s density=%f", font, code, density));
-        p.setTextSize((float)size * density);
+        p.setTextSize((float)size);
         p.setAntiAlias(true);
 
         Rect textBounds = new Rect();
