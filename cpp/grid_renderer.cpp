@@ -115,12 +115,14 @@ void GridRenderer::Draw()
 	afBindVAO(vao);
 	afDrawLineList(lines * 2);
 	afBindVAO(0);
-#ifndef NDEBUG
+//#ifndef NDEBUG
 	Vec2 v;
 	if (GetMousePosInGrid(v)) {
 		fontMan.DrawString(systemMisc.GetMousePos(), 15, SPrintf("hit={%f,%f}", v.x, v.y));
 	}
-#endif
+	fontMan.DrawString(IVec2(5, 70), 15, SPrintf("scr pos={%d,%d}", systemMisc.GetMousePos().x, systemMisc.GetMousePos().y));
+	fontMan.DrawString(IVec2(5, 90), 15, SPrintf("scr size={%d,%d}", systemMisc.GetScreenSize().x, systemMisc.GetScreenSize().y));
+	//#endif
 }
 
 void ScreenPosToRay(const Vec2& scrPos, Vec3& nearPos, Vec3& farPos);

@@ -75,6 +75,7 @@ local co = coroutine.create(function()
 			print(string.format("my units not found at pos %d %d", from.x, from.y))
 			return
 		end
+		print(string.format("my unit selected at pos %d %d", from.x, from.y))
 		pathGrid = gridTools.FindPath(grid, from)
 		WaitClickLeft()
 		local to = renderer.GetMousePosInBoard(grid)
@@ -84,7 +85,7 @@ local co = coroutine.create(function()
 			return
 		end
 		if pathGrid[to.y][to.x] == -1 then
-			print("invalid pos to move! reason: pathGrid")
+			print(string.format("invalid pos to move! %d %d reason: pathGrid", to.x, to.y))
 			pathGrid = nil
 			return
 		end

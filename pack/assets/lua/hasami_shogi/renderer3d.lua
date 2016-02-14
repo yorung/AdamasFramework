@@ -54,6 +54,7 @@ return {
 		if not pos then return end
 		local x = math.floor(pos.x + numGrid / 2)
 		local y = math.floor(-pos.y + numGrid / 2)
+		print(string.format("pos %f %f => %d %d", pos.x, pos.y, x, y))
 		if not grid.IsValidPos(x, y) then
 			print(string.format("invalid pos %d %d", x, y))
 			return
@@ -62,6 +63,7 @@ return {
 	end,
 	Draw2D = function() end,
 	Draw3D = function(grid, pathGrid)
+		LookAt(Vec3(6, 2, -8), Vec3(0, 0, 0))
 		gridRenderer:Draw()
 		local numGrid = grid.GetNumGrid()
 		matrixStack:Push()
