@@ -1,4 +1,4 @@
-local mesh = Mesh("jiji.x")
+local mesh = Mesh("models/jiji.x")
 local deg = 0
 local elapsed = 0
 

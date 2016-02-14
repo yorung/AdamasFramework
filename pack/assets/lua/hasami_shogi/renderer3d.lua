@@ -6,8 +6,8 @@ LoadSkyBox("hakodate.jpg", "sky_photosphere")
 
 local matrixStack = MatrixStack()
 
-local jiji = Mesh("jiji.x")
-local nori = Mesh("nori.x")
+local jiji = Mesh("models/jiji.x")
+local nori = Mesh("models/nori.x")
 
 local function WrapDrawer(drawer)
 	return function(x, y, z)

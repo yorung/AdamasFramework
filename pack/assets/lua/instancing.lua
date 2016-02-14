@@ -18,15 +18,15 @@ end
 
 local meshTbl =
 {
-	ScaledMesh("jiji.x", 0.60),
+	ScaledMesh("models/jiji.x", 0.60),
 };
 
 local meshFileNames =
 {
-	"jiji.x",
-	"jiji.x",
-	"jiji.x",
-	"jiji.x",
+	"models/jiji.x",
+	"models/jiji.x",
+	"models/nori.x",
+	"models/jiji.x",
 }
 
 local blocks = {}
