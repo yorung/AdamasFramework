@@ -176,28 +176,4 @@ void Picking::Draw2D()
 	afBindBufferToBindingPoint(ubo, 0);
 
 	afDrawTriangleStrip(3);
-
-	Vec2 strPos = systemMisc.GetMousePos();
-	auto drawStr = [&](const char* s) {
-		fontMan.DrawString(strPos, 15, s);
-		strPos.y += 16;
-	};
-
-	// make a ray from cursor pos
-	Vec3 n, f;
-	ScreenPosToRay(systemMisc.GetMousePos(), n, f);
-	drawStr(SPrintf("near={%f,%f,%f}", n.x, n.y, n.z));
-	drawStr(SPrintf("far={%f,%f,%f}", f.x, f.y, f.z));
-
-	// ray-grid intersection
-	Vec3 planeCenter = {0, 0, 0};
-	Vec3 planeNormal = {0, 1, 0};
-	float nDotPlane = dot(n, planeNormal);
-	float fDotPlane = dot(f, planeNormal);
-	if (nDotPlane * fDotPlane < 0) {
-		nDotPlane = abs(nDotPlane);
-		fDotPlane = abs(fDotPlane);
-		Vec3 hitPos = n + (f - n) * nDotPlane / (nDotPlane + fDotPlane);
-		drawStr(SPrintf("hit={%f,%f,%f}", hitPos.x, hitPos.y, hitPos.z));
-	}
 }

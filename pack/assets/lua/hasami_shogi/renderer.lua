@@ -99,4 +99,5 @@ return {
 		end
 		matrixStack:Pop()
 	end,
+	Draw3D = function() end,
 }

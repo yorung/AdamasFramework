@@ -11,3 +11,5 @@ void aflBindClass(lua_State* L, const char* className, luaL_Reg methods[], lua_C
 void aflBindNamespace(lua_State* L, const char* nameSpace, luaL_Reg methods[]);
 bool aflDoFile(lua_State* L, const char* fileName);
 int aflDoFileForReplace(lua_State* L);
+
+void aflPushIVec2(lua_State* L, const IVec2& pt);

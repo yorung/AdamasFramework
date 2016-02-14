@@ -130,3 +130,14 @@ int aflDoFileForReplace(lua_State* L)
 	}
 	return lua_gettop(L) - 1;
 }
+
+void aflPushIVec2(lua_State* L, const IVec2& pt)
+{
+	lua_newtable(L);
+	lua_pushstring(L, "x");
+	lua_pushinteger(L, pt.x);
+	lua_rawset(L, -3);
+	lua_pushstring(L, "y");
+	lua_pushinteger(L, pt.y);
+	lua_rawset(L, -3);
+}

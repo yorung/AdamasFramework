@@ -18,5 +18,5 @@ AddMenu("Instancing", "dofile('lua/instancing.lua')")
 
 LoadSkyBox("hakodate.jpg", "sky_photosphere")
 
---dofile('lua/hasami_shogi/main.lua')
-dofile('lua/picking.lua')
+dofile('lua/hasami_shogi/main.lua')
+--dofile('lua/picking.lua')

@@ -51,25 +51,19 @@ public:
 	void CreateRipple(Vec2 pos);
 };
 
-
+#define GET_WSC \
+	WaterSurfaceClassic* p = (WaterSurfaceClassic*)luaL_checkudata(L, 1, "WaterSurfaceClassic");	\
+	if (!p) {	\
+		return 0;	\
+	}
 
 class WaterSurfaceClassicBinder {
 public:
 	WaterSurfaceClassicBinder() {
 		GetLuaBindFuncContainer().push_back([](lua_State* L) {
 			static luaL_Reg methods[] = {
-				{ "Update", [](lua_State* L) {
-					WaterSurfaceClassic* p = (WaterSurfaceClassic*)luaL_checkudata(L, 1, "WaterSurfaceClassic");
-					if (p) {
-						p->Update();
-					}
-					return 0; } },
-				{ "Draw", [](lua_State* L) {
-					WaterSurfaceClassic* p = (WaterSurfaceClassic*)luaL_checkudata(L, 1, "WaterSurfaceClassic");
-					if (p) {
-						p->Draw();
-					}
-					return 0; } },
+				{ "Update", [](lua_State* L) { GET_WSC p->Update(); return 0; } },
+				{ "Draw", [](lua_State* L) { GET_WSC p->Draw(); return 0; }},
 				{ nullptr, nullptr },
 			};
 			aflBindClass(L, "WaterSurfaceClassic", methods, [](lua_State* L) { void* u = lua_newuserdata(L, sizeof(WaterSurfaceClassic)); new (u) WaterSurfaceClassic(); return 1; });

@@ -40,17 +40,6 @@ static IVec2 GetScreenPos(lua_State* L, const MatrixStack* ms)
 	return IVec2((int)(m._41 / m._44), (int)(m._42 / m._44));
 }
 
-static void PushPoint(lua_State* L, const IVec2& pt)
-{
-	lua_newtable(L);
-	lua_pushstring(L, "x");
-	lua_pushinteger(L, pt.x);
-	lua_rawset(L, -3);
-	lua_pushstring(L, "y");
-	lua_pushinteger(L, pt.y);
-	lua_rawset(L, -3);
-}
-
 #define GET_RECT \
 	RECT* r = (RECT*)luaL_checkudata(L, 1, rectClassName); \
 	if (!r) {	\
@@ -319,8 +308,8 @@ static void BindGlobalFuncs(lua_State* L)
 		{ "GetKeyCount", [](lua_State* L) { lua_pushinteger(L, inputMan.GetInputCount((int)lua_tointeger(L, -1))); return 1; } },
 		{ "LookAt", LLookAt },
 		{ "LoadSkyBox", [](lua_State* L) { skyMan.Create(lua_tostring(L, 1), lua_tostring(L, 2)); return 0; } },
-		{ "GetMousePos", [](lua_State* L) { PushPoint(L, systemMisc.GetMousePos()); return 1; } },
-		{ "GetScreenPos", [](lua_State* L) { PushPoint(L, GetScreenPos(L, (MatrixStack*)luaL_testudata(L, 1, matrixStackClassName))); return 1; } },
+		{ "GetMousePos", [](lua_State* L) { aflPushIVec2(L, systemMisc.GetMousePos()); return 1; } },
+		{ "GetScreenPos", [](lua_State* L) { aflPushIVec2(L, GetScreenPos(L, (MatrixStack*)luaL_testudata(L, 1, matrixStackClassName))); return 1; } },
 		{ "MessageBox", [](lua_State* L) { lua_pushstring(L, StrMessageBox(lua_tostring(L, -2), lua_tostring(L, -1))); return 1; } },
 		{ "PostCommand", [](lua_State* L) { PostCommand(lua_tostring(L, -1)); return 0; } },
 		{ nullptr, nullptr },

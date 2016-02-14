@@ -122,6 +122,7 @@ function Draw2D()
 end
 
 function Draw3D()
+	renderer.Draw3D(globalGrid, pathGrid)
 end
 
 
