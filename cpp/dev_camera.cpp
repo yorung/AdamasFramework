@@ -9,7 +9,7 @@ DevCamera::DevCamera()
 	dist = 10;
 	lastX = lastY = INVALID_POS;
 	rotX = rotY = 0;
-	height = 0;
+	height = -1.8f;
 }
 
 void DevCamera::SetDistance(float dist_)
