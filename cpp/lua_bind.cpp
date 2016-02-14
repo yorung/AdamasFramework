@@ -461,6 +461,7 @@ static void ShareVariables(lua_State* L)
 
 static void ReplaceLuaStandardLibraryFunctions(lua_State* L)
 {
+	lua_register(L, "print", aflPrintForReplace);
 	lua_register(L, "dofile", aflDoFileForReplace);
 	luaL_dostring(L, "function require(m)\n"
 		"package.loaded[m] = package.loaded[m] or dofile(m..'.lua') or true\n"

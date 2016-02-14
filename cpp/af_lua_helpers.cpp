@@ -131,6 +131,21 @@ int aflDoFileForReplace(lua_State* L)
 	return lua_gettop(L) - 1;
 }
 
+int aflPrintForReplace(lua_State* L)
+{
+	int top = lua_gettop(L);
+	std::string s;
+	for (int i = 1; i <= top; i++) {
+		if (!s.empty()) {
+			s += "\t";
+		}
+		s += lua_tostring(L, i);
+	}
+	s += "\n";
+	aflog("%s", s.c_str());
+	return 0;
+}
+
 void aflPushIVec2(lua_State* L, const IVec2& pt)
 {
 	lua_newtable(L);
