@@ -17,6 +17,25 @@ public:
 	bool GetMousePosInGrid(Vec2& v);
 };
 
+static void PrintViewMat()
+{
+	Mat m;
+	auto put = [&]() {
+		aflog("v: %.2f %.2f %.2f %.2f / %.2f %.2f %.2f %.2f / %.2f %.2f %.2f %.2f / %.2f %.2f %.2f %.2f\n",
+			m._11, m._12, m._13, m._14,
+			m._21, m._22, m._23, m._24,
+			m._31, m._32, m._33, m._34,
+			m._41, m._42, m._43, m._44);
+	};
+	matrixMan.Get(MatrixMan::VIEW, m);
+	put();
+	matrixMan.Get(MatrixMan::PROJ, m);
+	put();
+	m = makeViewportMatrix(systemMisc.GetScreenSize());
+	put();
+}
+
+
 #define GET_GR \
 	GridRenderer* p = (GridRenderer*)luaL_checkudata(L, 1, "GridRenderer");	\
 	if (!p) {	\
@@ -31,6 +50,7 @@ public:
 				{ "Draw", [](lua_State* L) { GET_GR p->Draw(); return 0; } },
 				{ "GetMousePosInGrid", [](lua_State* L) {
 					GET_GR
+					PrintViewMat();
 					Vec2 v;
 					if (p->GetMousePosInGrid(v)) {
 						aflPushVec2(L, v);
