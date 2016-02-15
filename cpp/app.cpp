@@ -99,7 +99,7 @@ void App::Destroy()
 void App::Update()
 {
 	inputMan.Update();
-//	matrixMan.Set(MatrixMan::VIEW, devCamera.CalcViewMatrix());
+	matrixMan.Set(MatrixMan::VIEW, devCamera.CalcViewMatrix());
 	luaMan.Update();
 	fps.Update();
 	fontMan.DrawString(Vec2(20, 40), 20, SPrintf("FPS: %f", fps.Get()));

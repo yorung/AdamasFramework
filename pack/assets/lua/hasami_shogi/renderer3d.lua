@@ -63,7 +63,6 @@ return {
 	end,
 	Draw2D = function() end,
 	Draw3D = function(grid, pathGrid)
-		LookAt(Vec3(6, 2, -8), Vec3(0, 0, 0))
 		gridRenderer:Draw()
 		local numGrid = grid.GetNumGrid()
 		matrixStack:Push()
