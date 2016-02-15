@@ -11,7 +11,6 @@ local function FindBest(grid, myFaction, evaluator, depth)
 	local maxVal = -10000
 	local maxFrom
 	local maxTo
---	print(string.format("FindBest numGrid[%d] myFaction[%d] depth[%d]", numGrid, myFaction, depth))
 	for from in gridTools.ValForeach(grid, function(v) return v == myFaction end) do
 		local pathGrid = gridTools.FindPath(grid, from)
 		for to in gridTools.ValForeach(pathGrid, function(v) return v ~= -1 end) do
@@ -20,10 +19,7 @@ local function FindBest(grid, myFaction, evaluator, depth)
 			local val = evaluator(gridTmp, myFaction, depth + 1)
 			if depth == 0 then
 				print(string.format("depth[%d] from[%d %d] to[%d %d] val[%f]", depth, from.x, from.y, to.x, to.y, val))
-			--[[	if from.x == 2 and from.y == 0 and to.x == 2 and to.y == 1 then
-					print(string.format("Dump for FindBest evaluator numGrid[%d] myFaction[%d] depth[%d]", numGrid, myFaction, depth))
-					commonTools.Dump(gridTmp)
-				end]]
+				coroutine.yield()
 			end
 			if maxVal < val then
 				maxVal = val
