@@ -21,7 +21,7 @@ static void PrintViewMat()
 {
 	Mat m;
 	auto put = [&]() {
-		aflog("v: %.2f %.2f %.2f %.2f / %.2f %.2f %.2f %.2f / %.2f %.2f %.2f %.2f / %.2f %.2f %.2f %.2f\n",
+		aflog("v: %.2f %.2f %.2f %.2f / %.2f %.2f %.2f %.2f / %.2f %.2f %.5f %.2f / %.2f %.2f %.5f %.2f\n",
 			m._11, m._12, m._13, m._14,
 			m._21, m._22, m._23, m._24,
 			m._31, m._32, m._33, m._34,
@@ -147,6 +147,30 @@ void GridRenderer::Draw()
 
 void ScreenPosToRay(const Vec2& scrPos, Vec3& nearPos, Vec3& farPos);
 
+bool GetMousePosInGridTest(Vec2& v, const Vec2 curPos)
+{
+	// make a ray from cursor pos
+	Vec3 n, f;
+	ScreenPosToRay(curPos, n, f);
+	int numGrid = 9;
+	float pitch = 1.f; 
+
+	// ray-grid intersection
+	Vec3 planeCenter = { 0, 0, 0 };
+	Vec3 planeNormal = { 0, 1, 0 };
+	float nDotPlane = dot(n, planeNormal);
+	float fDotPlane = dot(f, planeNormal);
+	if (nDotPlane * fDotPlane < 0) {
+		nDotPlane = abs(nDotPlane);
+		fDotPlane = abs(fDotPlane);
+		Vec3 hitPos = n + (f - n) * nDotPlane / (nDotPlane + fDotPlane);
+		float half = pitch * numGrid / 2;
+		v = Vec2(dot(hitPos, Vec3(1, 0, 0)), dot(hitPos, Vec3(0, 0, 1)));
+		return true;
+	}
+	return false;
+}
+
 bool GridRenderer::GetMousePosInGrid(Vec2& v)
 {
 	// make a ray from cursor pos
@@ -168,3 +192,31 @@ bool GridRenderer::GetMousePosInGrid(Vec2& v)
 	}
 	return false;
 }
+
+class Test {
+public:
+	Test();
+};
+
+Test::Test()
+{
+	float w = 1794;
+	float h = 1080;
+	float aspect = w / h;
+	Vec3 eye(6, 2, -8);
+	Vec3 at;
+	Vec3 up(0, 1, 0);
+	Mat view = lookatLH(eye, at, up);
+	float f = 1000;
+	float n = 1;
+	Mat proj = perspectiveLH(45.0f * (float)M_PI / 180.0f, aspect, n, f);
+	systemMisc.SetScreenSize(IVec2(1794, 1080));
+
+	matrixMan.Set(MatrixMan::VIEW, view);
+	matrixMan.Set(MatrixMan::PROJ, proj);
+	Vec2 v;
+	GetMousePosInGridTest(v, Vec2(1199, 904));
+	aflog("Grid intersection test: %f, %f\n", v.x, v.y);
+}
+
+Test test;
