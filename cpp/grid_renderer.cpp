@@ -17,28 +17,6 @@ public:
 	bool GetMousePosInGrid(Vec2& v);
 };
 
-static void PrintMat(const Mat& m, const char* name)
-{
-	aflog("%s: %.2f %.2f %.2f %.2f / %.2f %.2f %.2f %.2f / %.2f %.2f %.5f %.2f / %.2f %.2f %.5f %.2f\n",
-		name,
-		m._11, m._12, m._13, m._14,
-		m._21, m._22, m._23, m._24,
-		m._31, m._32, m._33, m._34,
-		m._41, m._42, m._43, m._44);
-};
-
-static void PrintViewMat()
-{
-	Mat m;
-	matrixMan.Get(MatrixMan::VIEW, m);
-	PrintMat(m, "view");
-	matrixMan.Get(MatrixMan::PROJ, m);
-	PrintMat(m, "proj");
-	m = makeViewportMatrix(systemMisc.GetScreenSize());
-	PrintMat(m, "viewport");
-}
-
-
 #define GET_GR \
 	GridRenderer* p = (GridRenderer*)luaL_checkudata(L, 1, "GridRenderer");	\
 	if (!p) {	\
@@ -53,7 +31,6 @@ public:
 				{ "Draw", [](lua_State* L) { GET_GR p->Draw(); return 0; } },
 				{ "GetMousePosInGrid", [](lua_State* L) {
 					GET_GR
-					PrintViewMat();
 					Vec2 v;
 					if (p->GetMousePosInGrid(v)) {
 						aflPushVec2(L, v);
@@ -138,41 +115,17 @@ void GridRenderer::Draw()
 	afBindVAO(vao);
 	afDrawLineList(lines * 2);
 	afBindVAO(0);
-//#ifndef NDEBUG
+#ifndef NDEBUG
 	Vec2 v;
 	if (GetMousePosInGrid(v)) {
 		fontMan.DrawString(systemMisc.GetMousePos(), 15, SPrintf("hit={%f,%f}", v.x, v.y));
 	}
 	fontMan.DrawString(IVec2(5, 70), 15, SPrintf("scr pos={%d,%d}", systemMisc.GetMousePos().x, systemMisc.GetMousePos().y));
 	fontMan.DrawString(IVec2(5, 90), 15, SPrintf("scr size={%d,%d}", systemMisc.GetScreenSize().x, systemMisc.GetScreenSize().y));
-	//#endif
+#endif
 }
 
 void ScreenPosToRay(const Vec2& scrPos, Vec3& nearPos, Vec3& farPos);
-
-bool GetMousePosInGridTest(Vec2& v, const Vec2 curPos)
-{
-	// make a ray from cursor pos
-	Vec3 n, f;
-	ScreenPosToRay(curPos, n, f);
-	int numGrid = 9;
-	float pitch = 1.f; 
-
-	// ray-grid intersection
-	Vec3 planeCenter = { 0, 0, 0 };
-	Vec3 planeNormal = { 0, 1, 0 };
-	float nDotPlane = dot(n, planeNormal);
-	float fDotPlane = dot(f, planeNormal);
-	if (nDotPlane * fDotPlane < 0) {
-		nDotPlane = std::abs(nDotPlane);
-		fDotPlane = std::abs(fDotPlane);
-		Vec3 hitPos = n + (f - n) * nDotPlane / (nDotPlane + fDotPlane);
-		float half = pitch * numGrid / 2;
-		v = Vec2(dot(hitPos, Vec3(1, 0, 0)), dot(hitPos, Vec3(0, 0, 1)));
-		return true;
-	}
-	return false;
-}
 
 bool GridRenderer::GetMousePosInGrid(Vec2& v)
 {
@@ -195,47 +148,3 @@ bool GridRenderer::GetMousePosInGrid(Vec2& v)
 	}
 	return false;
 }
-
-class Test {
-public:
-	Test();
-};
-
-Test::Test()
-{
-	float w = 1794;
-	float h = 1080;
-	float aspect = w / h;
-	Vec3 eye(6, 2, -8);
-	Vec3 at;
-	Vec3 up(0, 1, 0);
-	Mat view = lookatLH(eye, at, up);
-	float f = 1000;
-	float n = 1;
-	IVec2 screenSize = IVec2(1794, 1080);
-	Mat proj = perspectiveLH(45.0f * (float)M_PI / 180.0f, aspect, n, f);
-	systemMisc.SetScreenSize(screenSize);
-
-	matrixMan.Set(MatrixMan::VIEW, view);
-	matrixMan.Set(MatrixMan::PROJ, proj);
-	Vec2 curPos(1199, 904);
-	Vec2 v;
-	GetMousePosInGridTest(v, curPos);
-	aflog("Grid intersection test: %f, %f\n", v.x, v.y);
-
-	Mat vpvp = view * proj * makeViewportMatrix(screenSize);
-	PrintMat(vpvp, "vpvp");
-	PrintMat(inv(vpvp), "inv(vpvp)");
-
-	{
-		Vec3 n, f;
-		ScreenPosToRay(curPos, n, f);
-		aflog("near:%f,%f,%f far:%f,%f,%f\n", n.x, n.y, n.z, f.x, f.y, f.z);
-	}
-
-	float abs13 = abs(1.3f);
-	float stdabs13 = std::abs(1.3f);
-	aflog("abs=%f, std::abs=%f\n", abs13, stdabs13);
-}
-
-Test test;
