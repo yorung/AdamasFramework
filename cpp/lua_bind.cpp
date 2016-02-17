@@ -304,6 +304,7 @@ void BindWin(lua_State *L)
 static void BindGlobalFuncs(lua_State* L)
 {
 	static luaL_Reg globalFuncs[] = {
+		{ "PlayBgm", [](lua_State* L) { PlayBgm(lua_tostring(L, 1)); return 0; } },
 		{ "AddMenu", [](lua_State* L) { AddMenu(lua_tostring(L, -2), lua_tostring(L, -1)); return 0; } },
 		{ "GetKeyCount", [](lua_State* L) { lua_pushinteger(L, inputMan.GetInputCount((int)lua_tointeger(L, -1))); return 1; } },
 		{ "LookAt", LLookAt },

@@ -2,6 +2,12 @@ local gridTools = require("lua/hasami_shogi/grid_tools")
 local commonTools = dofile("lua/hasami_shogi/common_tools.lua")
 local renderer = dofile("lua/hasami_shogi/renderer3d.lua")
 
+local sndAttack = Voice("sound/attack.wav")
+local sndMove1 = Voice("sound/move1.wav")
+local sndMove2 = Voice("sound/move2.wav")
+
+PlayBgm("sound/background.mp3")
+
 local numGrid = 9
 
 local globalGrid = gridTools.CreateGrid(numGrid, function(x, y) return y == 0 and 1 or y == numGrid - 1 and 0 or -1 end)
@@ -43,6 +49,21 @@ local function Evaluate(grid, myFaction, depth)
 	return myCnt - eneCnt + math.random() * 0.1
 end
 
+local function JudgeAndSound(grid, from, to)
+	if gridTools.Judge(grid, from, to) > 0 then
+		sndAttack:Stop()
+		sndAttack:Play()
+	else
+		if math.random() < 0.5 then
+			sndMove1:Stop()
+			sndMove1:Play()
+		else
+			sndMove2:Stop()
+			sndMove2:Play()
+		end
+	end
+end
+
 local co = coroutine.create(function()
 	local function Sleep(f) for i=1, f do coroutine.yield() end end
 	local function WaitClickLeft()
@@ -58,7 +79,7 @@ local co = coroutine.create(function()
 			pathGrid = gridTools.FindPath(grid, from)
 			print(string.format("move units from[%d %d] to[%d %d] val[%f]", from.x, from.y, to.x, to.y, val))
 			Sleep(15)
-			gridTools.Judge(grid, from, to)
+			JudgeAndSound(grid, from, to)
 			pathGrid = nil
 		end
 	end
@@ -91,7 +112,7 @@ local co = coroutine.create(function()
 			print("grid occupied")
 			return
 		end
-		gridTools.Judge(grid, from, to)
+		JudgeAndSound(grid, from, to)
 		return true
 	end
 

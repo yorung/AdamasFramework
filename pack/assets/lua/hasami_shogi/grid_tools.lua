@@ -92,6 +92,7 @@ local function ValForeach(grid, func)
 end
 
 local function Judge(grid, from, to)
+	local beatCnt = 0
 	local myFaction = grid[from.y][from.x]
 	grid[to.y][to.x] = myFaction
 	grid[from.y][from.x] = -1
@@ -103,6 +104,7 @@ local function Judge(grid, from, to)
 		if t == myFaction then return true end
 		if t == enemyFaction and TryFlank(x, y, dx, dy) then
 			grid[y][x] = -1
+			beatCnt = beatCnt + 1
 			return true
 		end
 	end
@@ -120,6 +122,7 @@ local function Judge(grid, from, to)
 		local t = grid.GetGridSafe(x, y)
 		if t == enemyFaction then
 			grid[y][x] = -1
+			beatCnt = beatCnt + 1
 			KillSurroundTroop(x + 1, y)
 			KillSurroundTroop(x - 1, y)
 			KillSurroundTroop(x, y + 1)
@@ -136,6 +139,7 @@ local function Judge(grid, from, to)
 	TryKill(-1, 0)
 	TryKill(0, 1)
 	TryKill(0, -1)
+	return beatCnt
 end
 
 return {
