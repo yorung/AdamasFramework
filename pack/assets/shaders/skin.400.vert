@@ -33,11 +33,11 @@ layout (std140, binding = 1) uniform perDrawCallUBO {
 	mat4 matP;
 	RenderCommand renderCommands[10];
 };
-layout (std430, binding = 0) buffer materialSSBO {
-	Material materials[];
+layout (std140, binding = 2) uniform materialUBO {
+	Material materials[100];
 };
-layout (std430, binding = 1) buffer boneSSBO {
-	mat4 bonesSSBO[];
+layout (std140, binding = 3) uniform boneSSBO {
+	mat4 bonesBuffer[100];
 };
 
 void main() {
@@ -46,10 +46,10 @@ void main() {
 	Material material = materials[materialId];
 
 	mat4 comb =
-		bonesSSBO[boneStartIndex + vBlendIndices.x] * vBlendWeights.x +
-		bonesSSBO[boneStartIndex + vBlendIndices.y] * vBlendWeights.y +
-		bonesSSBO[boneStartIndex + vBlendIndices.z] * vBlendWeights.z +
-		bonesSSBO[boneStartIndex + vBlendIndices.w] * (1.0 - vBlendWeights.x - vBlendWeights.y - vBlendWeights.z);
+		bonesBuffer[boneStartIndex + vBlendIndices.x] * vBlendWeights.x +
+		bonesBuffer[boneStartIndex + vBlendIndices.y] * vBlendWeights.y +
+		bonesBuffer[boneStartIndex + vBlendIndices.z] * vBlendWeights.z +
+		bonesBuffer[boneStartIndex + vBlendIndices.w] * (1.0 - vBlendWeights.x - vBlendWeights.y - vBlendWeights.z);
 
 	vec3 pos = POSITION.xyz;
 

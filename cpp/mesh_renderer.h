@@ -57,8 +57,8 @@ public:
 	int nStoredCommands = 0;
 	std::vector<Mat> renderBoneMatrices;
 	std::vector<Material> materials;
-	SSBOID ssboForBoneMatrices;
-	SSBOID ssboForMaterials;
+	UBOID uboForBoneMatrices;
+	UBOID uboForMaterials;
 	UBOID uboForPerDrawCall;
 	RenderMesh* GetMeshByMRID(MRID id);
 public:

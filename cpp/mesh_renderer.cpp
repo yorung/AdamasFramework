@@ -4,7 +4,7 @@ MeshRenderer meshRenderer;
 
 static const size_t MAX_MATERIALS = 100;
 static const size_t MAX_BONE_SSBOS = 100;
-static const size_t MATERIAL_SSBO_SIZE = sizeof(Material) * MAX_MATERIALS;
+static const size_t MATERIAL_UBO_SIZE = sizeof(Material) * MAX_MATERIALS;
 
 static const InputElement elements[] = {
 	CInputElement("POSITION", SF_R32G32B32_FLOAT, 0),
@@ -16,13 +16,10 @@ static const InputElement elements[] = {
 	CInputElement("materialId", SF_R32_UINT, 52),
 };
 
-enum SSBOBindingPoints {
-	SBP_MATERIALS = 0,
-	SBP_BONES = 1,
-};
-
 enum UBOBindingPoints {
+	UBP_MATERIALS = 2,
 	UBP_PER_INSTANCE_DATAS = 1,
+	UBP_BONES = 3,
 };
 
 RenderMesh::~RenderMesh()
@@ -91,17 +88,13 @@ void MeshRenderer::Create()
 {
 	Destroy();
 
-	ssboForBoneMatrices = afCreateSSBO(sizeof(Mat) * MAX_BONE_SSBOS);
+	uboForBoneMatrices = afCreateUBO(sizeof(Mat) * MAX_BONE_SSBOS);
 	uboForPerDrawCall = afCreateUBO(sizeof(PerDrawCallUBO));
-	ssboForMaterials = afCreateSSBO(MATERIAL_SSBO_SIZE);
+	uboForMaterials = afCreateUBO(MATERIAL_UBO_SIZE);
 	shaderId = shaderMan.Create("skin.400", elements, dimof(elements), BM_NONE, DSM_DEPTH_ENABLE, CM_CW);
 	assert(shaderId);
 
 	shaderMan.Apply(shaderId);
-
-	afBindBufferToBindingPoint(ssboForBoneMatrices, SBP_BONES);
-	afBindBufferToBindingPoint(ssboForMaterials, SBP_MATERIALS);
-	afBindBufferToBindingPoint(uboForPerDrawCall, UBP_PER_INSTANCE_DATAS);
 }
 
 void MeshRenderer::Destroy()
@@ -115,8 +108,8 @@ void MeshRenderer::Destroy()
 	materials.clear();
 	materials.push_back(Material());	// make id 0 invalid
 
-	afSafeDeleteBuffer(ssboForBoneMatrices);
-	afSafeDeleteBuffer(ssboForMaterials);
+	afSafeDeleteBuffer(uboForBoneMatrices);
+	afSafeDeleteBuffer(uboForMaterials);
 	afSafeDeleteBuffer(uboForPerDrawCall);
 
 	nStoredCommands = 0;
@@ -180,10 +173,14 @@ void MeshRenderer::DrawRenderMesh(MRID id, const Mat& worldMat, const Mat BoneMa
 
 void MeshRenderer::Flush()
 {
+	afBindBufferToBindingPoint(uboForBoneMatrices, UBP_BONES);
+	afBindBufferToBindingPoint(uboForMaterials, UBP_MATERIALS);
+	afBindBufferToBindingPoint(uboForPerDrawCall, UBP_PER_INSTANCE_DATAS);
+
 	if (!nStoredCommands) {
 		return;
 	}
-	afWriteBuffer(ssboForBoneMatrices, &renderBoneMatrices[0], sizeof(Mat) * renderBoneMatrices.size());
+	afWriteBuffer(uboForBoneMatrices, &renderBoneMatrices[0], sizeof(Mat) * renderBoneMatrices.size());
 	matrixMan.Get(MatrixMan::VIEW, perDrawCallUBO.matV);
 	matrixMan.Get(MatrixMan::PROJ, perDrawCallUBO.matP);
 	afWriteBuffer(uboForPerDrawCall, &perDrawCallUBO, sizeof(PerDrawCallUBO));
@@ -198,6 +195,10 @@ void MeshRenderer::Flush()
 	r->Draw(nStoredCommands);
 	renderBoneMatrices.clear();
 	nStoredCommands = 0;
+
+	afBindBufferToBindingPoint(UBOID(), UBP_BONES);
+	afBindBufferToBindingPoint(UBOID(), UBP_MATERIALS);
+	afBindBufferToBindingPoint(UBOID(), UBP_PER_INSTANCE_DATAS);
 }
 
 MMID MeshRenderer::CreateMaterial(const Material& mat)
@@ -210,7 +211,7 @@ MMID MeshRenderer::CreateMaterial(const Material& mat)
 	materials.push_back(mat);
 
 	assert(materials.size() <= MAX_MATERIALS);
-	afWriteBuffer(ssboForMaterials, &materials[0], sizeof(materials[0]) * materials.size());
+	afWriteBuffer(uboForMaterials, &materials[0], sizeof(materials[0]) * materials.size());
 
 	return materials.size() - 1;
 }
