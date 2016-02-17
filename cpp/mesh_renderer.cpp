@@ -69,7 +69,7 @@ void RenderMesh::Draw(int instanceCount) const
 	for (auto it : materialMaps) {
 		const Material* mat = meshRenderer.GetMaterial(it.materialId);
 		assert(mat);
-		afBindTextureToBindingPoint(mat->tmid, 0);
+		afBindTextureToBindingPoint(mat->texture, 0);
 		GLuint count = it.faces * 3;
 		GLuint start = it.faceStartIndex * 3 * sizeof(AFIndex);
 		afDrawIndexedInstancedTriangleList(instanceCount, count, start);

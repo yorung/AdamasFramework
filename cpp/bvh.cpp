@@ -357,7 +357,7 @@ void Bvh::CreateBoneMesh()
 	mat.emissive.x = 0.4f;
 	mat.emissive.y = 0.4f;
 	mat.emissive.z = 0.4f;
-	mat.tmid = texMan.CreateWhiteTexture();
+	mat.texture = texMan.CreateWhiteTexture();
 
 	MaterialMap map;
 	map.materialId = meshRenderer.CreateMaterial(mat);

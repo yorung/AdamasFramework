@@ -8,7 +8,6 @@ typedef unsigned int MRID;
 static const MRID INVALID_MRID = 0;
 
 typedef int MMID;
-//static int INVALID_MMID = 0;
 
 struct Material
 {
@@ -17,7 +16,7 @@ struct Material
 	Vec3 specular;
 	float power;
 	Vec3 emissive;
-	SRVID tmid;
+	SRVID texture;
 	bool operator==(const Material& r) const;
 };
 
