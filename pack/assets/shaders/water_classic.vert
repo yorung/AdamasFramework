@@ -1,12 +1,12 @@
-#version 100
+#version 310 es
 
 precision mediump float;
-attribute vec3 vPosition;
-attribute vec3 vNormal;
-varying vec2 texcoord;
-varying vec2 position;
-varying vec3 normal;
-varying vec4 color;
+in vec3 vPosition;
+in vec3 vNormal;
+out vec2 texcoord;
+out vec2 position;
+out vec3 normal;
+out vec4 color;
 uniform mat4 matW;
 uniform mat4 matV;
 uniform mat4 matP;

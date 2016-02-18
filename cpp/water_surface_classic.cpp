@@ -245,8 +245,8 @@ void WaterSurfaceClassic::Init()
 
 	shaderId = shaderMan.Create("water_classic", elements, dimof(elements), BM_NONE, DSM_DISABLE, CM_DISABLE);
 
-//	const char* shaderName = "vivid";
-	const char* shaderName = "letterbox";
+	const char* shaderName = "vivid";
+//	const char* shaderName = "letterbox";
 	shaderIdFullScr = shaderMan.Create(shaderName, elementsFullScr, dimof(elementsFullScr), BM_NONE, DSM_DISABLE, CM_DISABLE);
 
 	texIds.resize(dimof(texFiles));
@@ -319,12 +319,6 @@ void WaterSurfaceClassic::Draw()
 		afBindTextureToBindingPoint(texIds[i], i);
 		afBindSamplerToBindingPoint(texFiles[i].clamp ? samplerClamp : samplerRepeat, i);
 	}
-	glUniform1i(glGetUniformLocation(shaderId, "sampler0"), 0);
-	glUniform1i(glGetUniformLocation(shaderId, "sampler1"), 1);
-	glUniform1i(glGetUniformLocation(shaderId, "sampler2"), 2);
-	glUniform1i(glGetUniformLocation(shaderId, "sampler3"), 3);
-	glUniform1i(glGetUniformLocation(shaderId, "sampler4"), 4);
-	glUniform1i(glGetUniformLocation(shaderId, "sampler5"), 5);
 	double dummy;
 	glUniform1f(glGetUniformLocation(shaderId, "time"), (float)modf(elapsedTime * (1.0f / loopTime), &dummy) * loopTime);
 	Mat matW = q2m(Quat(Vec3(1,0,0), (float)M_PI / 180 * -90));
@@ -341,7 +335,6 @@ void WaterSurfaceClassic::Draw()
 	rtDefault.BeginRenderToThis();
 	afClear();
 	shaderMan.Apply(shaderIdFullScr);
-	glUniform1i(glGetUniformLocation(shaderIdFullScr, "sampler"), 0);
 	afBindTextureToBindingPoint(rt.GetTexture(), 0);
 	afBindSamplerToBindingPoint(samplerNoMipmap, 0);
 	afBindVAO(vaoFullScr);

@@ -1,6 +1,8 @@
-attribute vec2 POSITION;
-varying vec2 texcoord;
-varying vec2 position;
+#version 310 es
+
+in vec2 POSITION;
+out vec2 texcoord;
+out vec2 position;
 
 void main() {
 	gl_Position = vec4(POSITION.xy, 0, 1);
