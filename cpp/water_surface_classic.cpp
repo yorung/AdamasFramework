@@ -16,9 +16,14 @@ struct WaterRipple
 	Vec2 centerPos;
 };
 
+struct WaterSurfaceClassicUBO {
+	Mat matW, matV, matP;
+	float time;
+};
+
 class WaterSurfaceClassic
 {
-	Mat matProj, matView;
+	WaterSurfaceClassicUBO uboBuf;
 	ShaderMan::SMID shaderId;
 	ShaderMan::SMID shaderIdFullScr;
 	int lines;
@@ -32,6 +37,7 @@ class WaterSurfaceClassic
 	VBOID vbo, vboFullScr;
 	IBOID ibo, iboFullScr;
 	VAOID vao, vaoFullScr;
+	UBOID ubo;
 	int nIndi;
 	SAMPLERID samplerClamp;
 	SAMPLERID samplerRepeat;
@@ -101,7 +107,7 @@ static Vec3 MakePos(int x, int z, float hmap[vertMax][vertMax])
 
 void WaterSurfaceClassic::CreateRipple(Vec2 scrPos)
 {
-	Vec3 surfacePos = transform(Vec3(scrPos.x, scrPos.y, 0), inv(matView * matProj));
+	Vec3 surfacePos = transform(Vec3(scrPos.x, scrPos.y, 0), inv(uboBuf.matV * uboBuf.matP));
 
 	WaterRipple r;
 	r.generatedTime = elapsedTime;
@@ -182,6 +188,7 @@ WaterSurfaceClassic::~WaterSurfaceClassic()
 
 void WaterSurfaceClassic::Destroy()
 {
+	afSafeDeleteBuffer(ubo);
 	afSafeDeleteBuffer(vbo);
 	afSafeDeleteBuffer(ibo);
 	afSafeDeleteBuffer(vboFullScr);
@@ -211,6 +218,8 @@ void WaterSurfaceClassic::Init()
 	Destroy();
 
 	lastTime = GetTime();
+
+	ubo = afCreateUBO(sizeof(WaterSurfaceClassicUBO));
 
 	std::vector<AFIndex> indi;
 	std::vector<WaterVert> vert;
@@ -294,20 +303,23 @@ void WaterSurfaceClassic::Update()
 	float offset = 0.5f;
 	float aspect = (float)scrSize.y / scrSize.x;
 	if (aspect < 1) {
-		matView = fastInv(translate(0, 0.5f * (1 - aspect), 0));
-		matProj = Mat(
+		uboBuf.matV = fastInv(translate(0, 0.5f * (1 - aspect), 0));
+		uboBuf.matP = Mat(
 			1, 0, 0, 0,
 			0, 1 / aspect, 0, 0,
 			0, 0, 1, 0,
 			0, 0, 0, 1);
 	} else {
-		matView = fastInv(translate(offset * (1 - 1 / aspect), 0, 0));
-		matProj = Mat(
+		uboBuf.matV = fastInv(translate(offset * (1 - 1 / aspect), 0, 0));
+		uboBuf.matP = Mat(
 			aspect, 0, 0, 0,
 			0, 1, 0, 0,
 			0, 0, 1, 0,
 			0, 0, 0, 1);
 	}
+	uboBuf.matW = q2m(Quat(Vec3(1, 0, 0), (float)M_PI / 180 * -90));
+	double dummy;
+	uboBuf.time = (float)modf(elapsedTime * (1.0f / loopTime), &dummy) * loopTime;
 }
 
 void WaterSurfaceClassic::Draw()
@@ -319,12 +331,8 @@ void WaterSurfaceClassic::Draw()
 		afBindTextureToBindingPoint(texIds[i], i);
 		afBindSamplerToBindingPoint(texFiles[i].clamp ? samplerClamp : samplerRepeat, i);
 	}
-	double dummy;
-	glUniform1f(glGetUniformLocation(shaderId, "time"), (float)modf(elapsedTime * (1.0f / loopTime), &dummy) * loopTime);
-	Mat matW = q2m(Quat(Vec3(1,0,0), (float)M_PI / 180 * -90));
-	glUniformMatrix4fv(glGetUniformLocation(shaderId, "matW"), 1, GL_FALSE, &matW.m[0][0]);
-	glUniformMatrix4fv(glGetUniformLocation(shaderId, "matV"), 1, GL_FALSE, &matView.m[0][0]);
-	glUniformMatrix4fv(glGetUniformLocation(shaderId, "matP"), 1, GL_FALSE, &matProj.m[0][0]);
+	afWriteBuffer(ubo, &uboBuf, sizeof(uboBuf));
+	afBindBufferToBindingPoint(ubo, 0);
 	rt.BeginRenderToThis();
 	afClear();
 	afBindVAO(vao);

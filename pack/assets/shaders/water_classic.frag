@@ -11,7 +11,13 @@ layout (binding = 2) uniform sampler2D sampler2;
 layout (binding = 3) uniform sampler2D sampler3;
 layout (binding = 4) uniform sampler2D sampler4;
 layout (binding = 5) uniform sampler2D sampler5;
-uniform float time;
+
+layout (std140, binding = 0) uniform matrices {
+	mat4 matW;
+	mat4 matV;
+	mat4 matP;
+	float time;
+};
 
 const float loopTime = 20.0;
 const float PI2 = 3.1415926 * 2.0;

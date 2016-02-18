@@ -7,17 +7,21 @@ out vec2 texcoord;
 out vec2 position;
 out vec3 normal;
 out vec4 color;
-uniform mat4 matW;
-uniform mat4 matV;
-uniform mat4 matP;
+
+layout (std140, binding = 0) uniform matrices {
+	mat4 matW;
+	mat4 matV;
+	mat4 matP;
+	float time;
+};
 
 const float airToWater = 1.0 / 1.33333;
 const vec3 camDir = vec3(0, 0, -1);
 const float waterDepth = 0.2;
 
 void main() {
-	mat4 matWV = matV * matW;
-	gl_Position = matWV * vec4(vPosition.xyz, 1) * matP;
+	mat4 matWVP = matP * matV * matW;
+	gl_Position = matWVP * vec4(vPosition.xyz, 1);
 	normal = normalize(vNormal) * mat3(matW);
 
 	vec3 rayDir = refract(camDir, normal, airToWater);
