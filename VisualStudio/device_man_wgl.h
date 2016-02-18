@@ -10,3 +10,4 @@ public:
 };
 
 extern DeviceManWgl deviceManWgl;
+#define deviceMan deviceManWgl

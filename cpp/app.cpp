@@ -23,11 +23,11 @@ App::App()
 void App::Draw()
 {
 	afDepthStencilMode(DSM_DEPTH_ENABLE);
-	afClear();
+	AFRenderTarget rtDefault;
+	rtDefault.InitForDefaultRenderTarget();
+	rtDefault.BeginRenderToThis();
 
 	IVec2 scrSize = systemMisc.GetScreenSize();
-	glViewport(0, 0, scrSize.x, scrSize.y);
-
 	float f = 1000;
 	float n = 1;
 	float aspect = (float)scrSize.x / scrSize.y;
@@ -54,9 +54,6 @@ void App::Draw()
 
 void App::Init()
 {
-	glClearColor(0.0f, 0.0f, 0.5f, 1.0f);
-	glClearDepthf(0);
-
 #ifdef _MSC_VER
 	GoMyDir();
 #endif

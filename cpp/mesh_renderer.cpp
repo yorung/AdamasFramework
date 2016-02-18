@@ -52,10 +52,12 @@ void RenderMesh::Init(const Block& block)
 
 	materialMaps = block.materialMaps;
 	VBOID verts[] = { vbo };
-	GLsizei strides[] = { sizeof(MeshVertex) };
+	int strides[] = { sizeof(MeshVertex) };
 	int shaderId = meshRenderer.GetShaderId();
 	vao = afCreateVAO(elements, dimof(elements), block.indices.size(), verts, strides, ibo);
+#ifdef GL_TRUE
 	aflog("RenderMesh::Init created vao=%d\n", vao.x);
+#endif
 	assert(vao);
 }
 
@@ -67,8 +69,8 @@ void RenderMesh::Draw(int instanceCount) const
 		const Material* mat = meshRenderer.GetMaterial(it.materialId);
 		assert(mat);
 		afBindTextureToBindingPoint(mat->texture, 0);
-		GLuint count = it.faces * 3;
-		GLuint start = it.faceStartIndex * 3 * sizeof(AFIndex);
+		int count = it.faces * 3;
+		int start = it.faceStartIndex * 3 * sizeof(AFIndex);
 		afDrawIndexedInstancedTriangleList(instanceCount, count, start);
 	}
 	afBindTextureToBindingPoint(0, 0);

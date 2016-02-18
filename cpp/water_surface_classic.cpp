@@ -269,11 +269,11 @@ void WaterSurfaceClassic::Init()
 	rt.Init(systemMisc.GetScreenSize(), AFDT_R5G6B5_UINT);
 
 	VBOID vertexBufferIds[] = { vbo };
-	GLsizei strides[] = { sizeof(WaterVert) };
+	int strides[] = { sizeof(WaterVert) };
 	vao = afCreateVAO(elements, dimof(elements), 1, vertexBufferIds, strides, ibo);
 
 	VBOID vertexBufferIdsFullScr[] = { vboFullScr };
-	GLsizei stridesFullScr[] = { sizeof(Vec2) };
+	int stridesFullScr[] = { sizeof(Vec2) };
 	vaoFullScr = afCreateVAO(elementsFullScr, dimof(elementsFullScr), 1, vertexBufferIdsFullScr, stridesFullScr, iboFullScr);
 }
 
@@ -334,14 +334,12 @@ void WaterSurfaceClassic::Draw()
 	afWriteBuffer(ubo, &uboBuf, sizeof(uboBuf));
 	afBindBufferToBindingPoint(ubo, 0);
 	rt.BeginRenderToThis();
-	afClear();
 	afBindVAO(vao);
 	afDrawIndexedTriangleStrip(nIndi);
 
 	AFRenderTarget rtDefault;
 	rtDefault.InitForDefaultRenderTarget();
 	rtDefault.BeginRenderToThis();
-	afClear();
 	shaderMan.Apply(shaderIdFullScr);
 	afBindTextureToBindingPoint(rt.GetTexture(), 0);
 	afBindSamplerToBindingPoint(samplerNoMipmap, 0);

@@ -134,7 +134,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE,
 
 	hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_ADAMAS));
 
-	deviceManWgl.Create(hWnd);
+	deviceMan.Create(hWnd);
 
 	int lastW = 0;
 	int lastH = 0;
@@ -156,7 +156,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE,
 			hub.Init();
 		}
 		hub.Update();
-		deviceManWgl.Present();
+		deviceMan.Present();
 		Sleep(1);
 	}
 	return 0;
@@ -268,7 +268,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_CLOSE:
 		hub.Destroy();
-		deviceManWgl.Destroy();
+		deviceMan.Destroy();
 		DestroyWindow(hWnd);
 		return 0;
 	case WM_DROPFILES:

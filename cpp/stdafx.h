@@ -8,6 +8,13 @@
 #include "wgl_grabber_gen.h"
 #endif
 
+#ifdef AF_DX11
+#include <d3d11.h>
+#include <D3Dcompiler.h>
+#include <wrl.h>	// ComPtr
+using Microsoft::WRL::ComPtr;
+#endif
+
 #else
 #include <jni.h>
 #include <android/log.h>

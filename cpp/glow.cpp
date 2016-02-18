@@ -48,7 +48,7 @@ void Glow::Destroy()
 	shaderGlowLastPass = 0;
 }
 
-void Glow::MakeGlow(AFRenderTarget& target, GLuint srcTex)
+void Glow::MakeGlow(AFRenderTarget& target, SRVID srcTex)
 {
 	LazyInit();
 	glBindSampler(0, stockObjects.GetClampSampler());

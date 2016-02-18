@@ -80,7 +80,7 @@ typedef TBufName<GL_ARRAY_BUFFER> VBOID;
 typedef AFGLName SAMPLERID;
 typedef AFGLName SRVID;
 
-void afSetVertexAttributes(const InputElement elements[], int numElements, int numBuffers, VBOID const *vertexBufferIds, const GLsizei* strides);
+void afSetVertexAttributes(const InputElement elements[], int numElements, int numBuffers, VBOID const *vertexBufferIds, const int* strides);
 
 
 template <class BufName>
@@ -202,7 +202,7 @@ public:
 	void Init(IVec2 size, AFDTFormat colorFormat, AFDTFormat depthStencilFormat = AFDT_INVALID);
 	void Destroy();
 	void BeginRenderToThis();
-	GLuint GetTexture() { return texColor; }
+	SRVID GetTexture() { return texColor; }
 };
 
 #ifdef AF_GLES31
@@ -213,7 +213,7 @@ SSBOID afCreateSSBO(int size);
 UBOID afCreateUBO(int size);
 void afBindBufferToBindingPoint(SSBOID ssbo, GLuint storageBlockBinding);
 void afBindBufferToBindingPoint(UBOID ubo, GLuint uniformBlockBinding);
-VAOID afCreateVAO(const InputElement elements[], int numElements, int numBuffers, VBOID const *vertexBufferIds, const GLsizei* strides, IBOID ibo);
+VAOID afCreateVAO(const InputElement elements[], int numElements, int numBuffers, VBOID const *vertexBufferIds, const int* strides, IBOID ibo);
 inline void afSafeDeleteVAO(VAOID& vao)
 {
 	if (vao != 0) {

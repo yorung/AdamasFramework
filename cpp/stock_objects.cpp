@@ -15,7 +15,7 @@ void StockObjects::CreateFullScreenVAO()
 	iboFullScr = afCreateIndexBuffer(&iboFullScrSrc[0], dimof(iboFullScrSrc));
 
 	VBOID vertexBufferIdsFullScr[] = { vboFullScr };
-	GLsizei stridesFullScr[] = { sizeof(Vec2) };
+	int stridesFullScr[] = { sizeof(Vec2) };
 
 	vaoFullScr = afCreateVAO(elements, dimof(elements), 1, vertexBufferIdsFullScr, stridesFullScr, iboFullScr);
 }
@@ -46,7 +46,7 @@ void StockObjects::Destroy()
 
 void StockObjects::ApplyFullScreenVAO() const
 {
-	afHandleGLError(afBindVAO(vaoFullScr));
+	afBindVAO(vaoFullScr);
 }
 
 const InputElement* StockObjects::GetFullScreenInputElements(int& numElements) const

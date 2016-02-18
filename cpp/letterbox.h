@@ -1,9 +1,9 @@
 class LetterBox
 {
-	GLuint shader = 0;
+	ShaderMan::SMID shader = 0;
 	void LazyInit();
 public:
-	void Draw(AFRenderTarget& target, GLuint srcTex);
+	void Draw(AFRenderTarget& target, SRVID srcTex);
 	void Destroy();
 };
 

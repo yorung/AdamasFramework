@@ -241,7 +241,7 @@ void afDrawIndexedInstancedTriangleList(int instanceCount, int numIndices, int s
 }
 #endif
 
-void afSetVertexAttributes(const InputElement elements[], int numElements, int numBuffers, VBOID const *vertexBufferIds, const GLsizei* strides)
+void afSetVertexAttributes(const InputElement elements[], int numElements, int numBuffers, VBOID const *vertexBufferIds, const int* strides)
 {
 	for (int i = 0; i < numElements; i++) {
 		const InputElement& d = elements[i];
@@ -314,7 +314,7 @@ void afSetVertexAttributes(const InputElement elements[], int numElements, int n
 }
 
 #ifdef AF_GLES31
-VAOID afCreateVAO(const InputElement elements[], int numElements, int numBuffers, VBOID const *vertexBufferIds, const GLsizei* strides, IBOID ibo)
+VAOID afCreateVAO(const InputElement elements[], int numElements, int numBuffers, VBOID const *vertexBufferIds, const int* strides, IBOID ibo)
 {
 	VAOID vao;
 	afHandleGLError(glGenVertexArrays(1, &vao.x));

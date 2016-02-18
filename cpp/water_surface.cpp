@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#ifdef AF_GLES31
 
 class WaterSurface
 {
@@ -310,7 +311,7 @@ void WaterSurface::Draw()
 		num = (num + 1) % 9;
 	}
 
-	GLuint srcTex = 0;
+	SRVID srcTex;
 	switch (num) {
 	case 0:
 		srcTex = renderTarget[0].GetTexture();
@@ -348,3 +349,4 @@ void WaterSurface::Draw()
 
 	afBindVAO(0);
 }
+#endif

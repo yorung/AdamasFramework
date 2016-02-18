@@ -118,9 +118,6 @@
     <ClCompile Include="..\cpp\grid_renderer.cpp">
       <Filter>PlatformIndipendent</Filter>
     </ClCompile>
-    <ClCompile Include="device_man_wgl.cpp">
-      <Filter>Windows</Filter>
-    </ClCompile>
     <ClCompile Include="..\cpp\helper_android.cpp">
       <Filter>Android</Filter>
     </ClCompile>
@@ -138,6 +135,9 @@
     </ClCompile>
     <ClCompile Include="..\cpp\device_man_dx11.cpp">
       <Filter>DX11</Filter>
+    </ClCompile>
+    <ClCompile Include="device_man_wgl.cpp">
+      <Filter>GL</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -237,9 +237,6 @@
     <ClInclude Include="..\cpp\grid_renderer.h">
       <Filter>PlatformIndipendent</Filter>
     </ClInclude>
-    <ClInclude Include="device_man_wgl.h">
-      <Filter>Windows</Filter>
-    </ClInclude>
     <ClInclude Include="..\cpp\helper_gl.h">
       <Filter>GL</Filter>
     </ClInclude>
@@ -254,6 +251,9 @@
     </ClInclude>
     <ClInclude Include="..\cpp\device_man_dx11.h">
       <Filter>DX11</Filter>
+    </ClInclude>
+    <ClInclude Include="device_man_wgl.h">
+      <Filter>GL</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

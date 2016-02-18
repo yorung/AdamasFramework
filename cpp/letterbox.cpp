@@ -14,7 +14,7 @@ void LetterBox::LazyInit()
 	afLayoutSamplerBindingManually(shader, "sampler", 0);
 }
 
-void LetterBox::Draw(AFRenderTarget& target, GLuint srcTex)
+void LetterBox::Draw(AFRenderTarget& target, SRVID srcTex)
 {
 	LazyInit();
 
