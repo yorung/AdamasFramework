@@ -231,4 +231,6 @@ inline void afSafeDeleteSampler(SAMPLERID& s)
 IVec2 afGetTextureSize(GLuint tex);
 IVec2 afGetRenderbufferSize(GLuint renderbuffer);
 
+void afClear();
+
 #endif

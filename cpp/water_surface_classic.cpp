@@ -315,12 +315,10 @@ void WaterSurfaceClassic::Draw()
 	UpdateRipple();
 
 	shaderMan.Apply(shaderId);
-
 	for (int i = 0; i < (int)dimof(texFiles); i++) {
 		afBindTextureToBindingPoint(texIds[i], i);
 		afBindSamplerToBindingPoint(texFiles[i].clamp ? samplerClamp : samplerRepeat, i);
 	}
-
 	glUniform1i(glGetUniformLocation(shaderId, "sampler0"), 0);
 	glUniform1i(glGetUniformLocation(shaderId, "sampler1"), 1);
 	glUniform1i(glGetUniformLocation(shaderId, "sampler2"), 2);
@@ -329,28 +327,23 @@ void WaterSurfaceClassic::Draw()
 	glUniform1i(glGetUniformLocation(shaderId, "sampler5"), 5);
 	double dummy;
 	glUniform1f(glGetUniformLocation(shaderId, "time"), (float)modf(elapsedTime * (1.0f / loopTime), &dummy) * loopTime);
-
 	Mat matW = q2m(Quat(Vec3(1,0,0), (float)M_PI / 180 * -90));
 	glUniformMatrix4fv(glGetUniformLocation(shaderId, "matW"), 1, GL_FALSE, &matW.m[0][0]);
 	glUniformMatrix4fv(glGetUniformLocation(shaderId, "matV"), 1, GL_FALSE, &matView.m[0][0]);
 	glUniformMatrix4fv(glGetUniformLocation(shaderId, "matP"), 1, GL_FALSE, &matProj.m[0][0]);
-
 	rt.BeginRenderToThis();
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	afClear();
 	afBindVAO(vao);
 	afDrawIndexedTriangleStrip(nIndi);
 
 	AFRenderTarget rtDefault;
 	rtDefault.InitForDefaultRenderTarget();
 	rtDefault.BeginRenderToThis();
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+	afClear();
 	shaderMan.Apply(shaderIdFullScr);
 	glUniform1i(glGetUniformLocation(shaderIdFullScr, "sampler"), 0);
-
 	afBindTextureToBindingPoint(rt.GetTexture(), 0);
 	afBindSamplerToBindingPoint(samplerNoMipmap, 0);
-
 	afBindVAO(vaoFullScr);
 	afDrawIndexedTriangleStrip(4);
 
