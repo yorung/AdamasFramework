@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "device_man_wgl.h"
 
 #pragma comment(lib, "opengl32.lib")
 

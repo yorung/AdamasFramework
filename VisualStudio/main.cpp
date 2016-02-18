@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "resource.h"
-#include "device_man_wgl.h"
 
 #define MAX_LOADSTRING 100
 

@@ -3,7 +3,11 @@
 #ifdef _MSC_VER
 #define NOMINMAX
 #include <Windows.h>
+
+#ifdef AF_GLES31
 #include "wgl_grabber_gen.h"
+#endif
+
 #else
 #include <jni.h>
 #include <android/log.h>
@@ -34,19 +38,35 @@ extern const char* boundJavaClass;
 
 static const int BONE_MAX = 50;
 
-#define AF_GLES31
-
 #include "af_math.h"
 #include "af_lua_helpers.h"
 #include "system_misc.h"
 #include "hub.h"
+
+#ifdef AF_GLES31
+#include "device_man_wgl.h"
 #include "helper_gl.h"
+#endif
+
+#ifdef AF_DX11
+#include "device_man_dx11.h"
+#include "helper_dx11.h"
+#endif
+
 #include "helper.h"
 #include "helper_text.h"
 #include "matrix_man.h"
 #include "matrix_stack.h"
 #include "tex_man.h"
-#include "shader_man.h"
+
+#ifdef AF_GLES31
+#include "shader_man_gl.h"
+#endif
+
+#ifdef AF_DX11
+#include "shader_man_dx11.h"
+#endif
+
 #include "dib.h"
 #include "fps.h"
 #include "font_man.h"
