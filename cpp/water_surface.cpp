@@ -135,7 +135,9 @@ void WaterSurface::Init()
 	normalMap.Init(IVec2(HEIGHT_MAP_W, HEIGHT_MAP_H), AFDT_R8G8B8A8_UNORM, AFDT_INVALID);
 	normalMap.BeginRenderToThis();	// clear textures
 
-	V(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+	AFRenderTarget rt;
+	rt.InitForDefaultRenderTarget();
+	rt.BeginRenderToThis();
 
 	lastTime = GetTime();
 
@@ -218,7 +220,7 @@ void WaterSurface::UpdateHeightMap(const UniformBuffer& hmub)
 	auto& heightR = heightMap[heightCurrentWriteTarget];
 	heightCurrentWriteTarget ^= 1;
 	auto& heightW = heightMap[heightCurrentWriteTarget];
-	afHandleGLError(afBindTextureToBindingPoint(heightR.GetTexture(), 0));
+	afBindTextureToBindingPoint(heightR.GetTexture(), 0);
 	heightW.BeginRenderToThis();
 
 	shaderMan.Apply(shaderHeightMap);
@@ -234,7 +236,7 @@ void WaterSurface::UpdateHeightMap(const UniformBuffer& hmub)
 void WaterSurface::UpdateNormalMap()
 {
 	auto& heightR = heightMap[heightCurrentWriteTarget];
-	afHandleGLError(afBindTextureToBindingPoint(heightR.GetTexture(), 0));
+	afBindTextureToBindingPoint(heightR.GetTexture(), 0);
 	normalMap.BeginRenderToThis();
 	shaderMan.Apply(shaderNormalMap);
 	stockObjects.ApplyFullScreenVAO();
@@ -244,14 +246,11 @@ void WaterSurface::UpdateNormalMap()
 
 void WaterSurface::RenderWater(const UniformBuffer& hmub)
 {
-	IVec2 scrSize = systemMisc.GetScreenSize();
-	glViewport(0, 0, scrSize.x, scrSize.y);
-
 	shaderMan.Apply(shaderWaterLastPass);
 
 	for (int i = 0; i < (int)dimof(texFiles); i++) {
 		afBindTextureToBindingPoint(texId[i], i);
-		glBindSampler(i, texFiles[i].clamp ? stockObjects.GetClampSampler() : stockObjects.GetRepeatSampler());
+		afBindSamplerToBindingPoint(texFiles[i].clamp ? stockObjects.GetClampSampler() : stockObjects.GetRepeatSampler(), i);
 	}
 
 	auto& curHeightMap = heightMap[heightCurrentWriteTarget];
@@ -347,5 +346,5 @@ void WaterSurface::Draw()
 
 	letterBox.Draw(rt, srcTex);
 
-	afHandleGLError(glBindVertexArray(0));
+	afBindVAO(0);
 }
