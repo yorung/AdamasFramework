@@ -77,11 +77,6 @@ SRVID LoadTextureViaOS(const char* name, IVec2& size)
 	}
 	SRVID id;
 	id.x = jniEnv->CallStaticIntMethod(myview, method, jniEnv->NewStringUTF(name));
-
-	glBindTexture(GL_TEXTURE_2D, id);
-	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &size.x);
-	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &size.y);
-	glBindTexture(GL_TEXTURE_2D, 0);
-
+	size = afGetTextureSize(id);
 	return id;
 }

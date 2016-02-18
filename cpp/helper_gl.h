@@ -199,7 +199,7 @@ class AFRenderTarget
 	GLuint renderbufferObject = 0;
 public:
 	void InitForDefaultRenderTarget();
-	void Init(IVec2 size, AFDTFormat colorFormat, AFDTFormat depthStencilFormat);
+	void Init(IVec2 size, AFDTFormat colorFormat, AFDTFormat depthStencilFormat = AFDT_INVALID);
 	void Destroy();
 	void BeginRenderToThis();
 	GLuint GetTexture() { return texColor; }

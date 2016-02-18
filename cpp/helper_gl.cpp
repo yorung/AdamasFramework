@@ -497,7 +497,7 @@ void AFRenderTarget::InitForDefaultRenderTarget()
 	texSize = systemMisc.GetScreenSize();
 }
 
-void AFRenderTarget::Init(IVec2 size, AFDTFormat colorFormat, AFDTFormat depthStencilFormat = AFDT_DEPTH_STENCIL)
+void AFRenderTarget::Init(IVec2 size, AFDTFormat colorFormat, AFDTFormat depthStencilFormat)
 {
 	Destroy();
 	texSize = size;
