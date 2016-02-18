@@ -67,7 +67,7 @@ void Puzzle::Update()
 {
 	cmds.clear();
 	SpriteCommand cmd;
-	cmd.tex = texMan.Create("jiji.dds");
+	cmd.tex = texMan.Create("models/jiji.dds");
 
 	const float pitch = 0.25f;
 	const float sprW = 64;
