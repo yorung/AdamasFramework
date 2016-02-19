@@ -168,6 +168,12 @@ void afDrawLineList(int numVertices, int start)
 	deviceMan11.GetContext()->Draw(numVertices, start);
 }
 
+void afDrawIndexedInstancedTriangleList(int instanceCount, int numIndices, int start)
+{
+	deviceMan11.GetContext()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	deviceMan11.GetContext()->DrawIndexedInstanced(numIndices, instanceCount, start, 0, 0);
+}
+
 void afCullMode(CullMode cullMode)
 {
 	ID3D11RasterizerState* rs;
@@ -248,8 +254,10 @@ void AFRenderTarget::InitForDefaultRenderTarget()
 	depthStencilView->AddRef();
 }
 
-void AFRenderTarget::Init(IVec2 size, DXGI_FORMAT colorFormat)
+void AFRenderTarget::Init(IVec2 size, DXGI_FORMAT colorFormat, DXGI_FORMAT depthStencilFormat)
 {
+	(void)depthStencilFormat;
+
 	Destroy();
 	texSize = size;
 	CD3D11_TEXTURE2D_DESC tDesc(colorFormat, size.x, size.y, 1, 1, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS);

@@ -60,6 +60,7 @@ void afDrawIndexedTriangleStrip(int numIndices, int start = 0);
 void afDrawIndexedTriangleList(int numIndices, int start = 0);
 void afDrawTriangleStrip(int numVertices, int start = 0);
 void afDrawLineList(int numVertices, int start = 0);
+void afDrawIndexedInstancedTriangleList(int instanceCount, int numIndices, int start = 0);
 
 enum CullMode {
 	CM_DISABLE,
@@ -106,7 +107,7 @@ class AFRenderTarget
 public:
 	~AFRenderTarget() { Destroy(); }
 	void InitForDefaultRenderTarget();
-	void Init(IVec2 size, DXGI_FORMAT colorFormat);
+	void Init(IVec2 size, AFDTFormat colorFormat, AFDTFormat depthStencilFormat = AFDT_INVALID);
 	void Destroy();
 	void BeginRenderToThis();
 	ID3D11ShaderResourceView* GetTexture() { return shaderResourceView; }

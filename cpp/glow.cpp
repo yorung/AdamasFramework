@@ -51,7 +51,7 @@ void Glow::Destroy()
 void Glow::MakeGlow(AFRenderTarget& target, SRVID srcTex)
 {
 	LazyInit();
-	glBindSampler(0, stockObjects.GetClampSampler());
+	afBindSamplerToBindingPoint(stockObjects.GetClampSampler(), 0);
 	stockObjects.ApplyFullScreenVAO();
 
 	shaderMan.Apply(shaderGlowExtraction);
