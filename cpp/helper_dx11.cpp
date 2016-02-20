@@ -238,6 +238,20 @@ void afDepthStencilMode(DepthStencilMode mode)
 	deviceMan11.GetContext()->OMSetDepthStencilState(ds.Get(), 1);
 }
 
+IVec2 afGetTextureSize(SRVID srv)
+{
+	ComPtr<ID3D11Resource> res;
+	srv->GetResource(&res);
+	assert(res);
+	ComPtr<ID3D11Texture2D> tx;
+	res.As(&tx);
+	assert(tx);
+
+	D3D11_TEXTURE2D_DESC desc;
+	tx->GetDesc(&desc);
+	return IVec2((int)desc.Width, (int)desc.Height);
+}
+
 VAOID afCreateVAO(const InputElement elements[], int numElements, int numBuffers, VBOID* const vertexBufferIds, const int* strides, IBOID ibo)
 {
 	(void)elements;

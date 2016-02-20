@@ -530,7 +530,7 @@ void AFRenderTarget::BeginRenderToThis()
 }
 
 #ifdef AF_GLES31
-IVec2 afGetTextureSize(GLuint tex)
+IVec2 afGetTextureSize(SRVID tex)
 {
 	GLint w, h;
 	glBindTexture(GL_TEXTURE_2D, tex);

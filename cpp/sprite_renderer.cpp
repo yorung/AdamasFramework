@@ -93,16 +93,16 @@ void SpriteRenderer::Draw(const SpriteCommands& sprites)
 		if (numStoredSprites == 0) {
 			curTex = it.tex;
 		}
-		const TexDesc* desc = texMan.GetTexDesc(it.tex);
+		IVec2 size = afGetTextureSize(it.tex);
 		StoreVertices(
 			v[numStoredSprites++],
 			float(it.quad.z - it.quad.x),
 			float(it.quad.w - it.quad.y),
 			it.color,
-			it.quad.x / (float)desc->size.x,
-			it.quad.y / (float)desc->size.y,
-			it.quad.z / (float)desc->size.x,
-			it.quad.w / (float)desc->size.y,
+			it.quad.x / (float)size.x,
+			it.quad.y / (float)size.y,
+			it.quad.z / (float)size.x,
+			it.quad.w / (float)size.y,
 			it.matW
 		);
 	}

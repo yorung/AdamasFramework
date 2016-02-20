@@ -228,7 +228,7 @@ inline void afSafeDeleteSampler(SAMPLERID& s)
 		s.x = 0;
 	}
 }
-IVec2 afGetTextureSize(GLuint tex);
+IVec2 afGetTextureSize(SRVID tex);
 IVec2 afGetRenderbufferSize(GLuint renderbuffer);
 
 void afClear();

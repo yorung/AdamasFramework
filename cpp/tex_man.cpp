@@ -10,53 +10,27 @@ TexMan::~TexMan()
 SRVID TexMan::Create(const char *name)
 {
 	auto it = nameToId.find(name);
-	if (it != nameToId.end())
-	{
+	if (it != nameToId.end()) {
 		return it->second;
 	}
-	TexDesc desc;
-	SRVID id = nameToId[name] = afLoadTexture(name, desc);
-	StoreTexState(id, desc);
-	return id;
+	return nameToId[name] = afLoadTexture(name, TexDesc());
 }
 
 SRVID TexMan::CreateWhiteTexture()
 {
 	const std::string name = "$WHITE";
 	auto it = nameToId.find(name);
-	if (it != nameToId.end())
-	{
+	if (it != nameToId.end()) {
 		return it->second;
 	}
 	uint32_t white = 0xffffffff;
-	SRVID id = nameToId[name] = afCreateTexture2D(AFDT_R8G8B8A8_UNORM, IVec2(1, 1), &white);
-	TexDesc desc;
-	desc.size.x = desc.size.y = 1;
-	StoreTexState(id, desc);
-	return id;
+	return nameToId[name] = afCreateTexture2D(AFDT_R8G8B8A8_UNORM, IVec2(1, 1), &white);
 }
 
 void TexMan::Destroy()
 {
-	for (NameToId::iterator it = nameToId.begin(); it != nameToId.end(); ++it)
-	{
-		afSafeDeleteTexture(it->second);
+	for (auto& it : nameToId) {
+		afSafeDeleteTexture(it.second);
 	}
 	nameToId.clear();
-}
-
-void TexMan::StoreTexState(SRVID id, const TexDesc& v)
-{
-	if (id >= texDescs.size() ) {
-		texDescs.resize(id + 1);
-	}
-	texDescs[id] = v;
-}
-
-const TexDesc* TexMan::GetTexDesc(SRVID id)
-{
-	if (id >= texDescs.size()) {
-		return nullptr;
-	}
-	return &texDescs[id];
 }
