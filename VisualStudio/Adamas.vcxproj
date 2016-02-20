@@ -98,6 +98,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DX11Debug|Win32'">NotUsing</PrecompiledHeader>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DX11Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -156,7 +157,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DX11Debug|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Resource.h" />
-    <ClInclude Include="wgl_grabber_gen.h" />
+    <ClInclude Include="wgl_grabber_gen.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DX11Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource.rc" />

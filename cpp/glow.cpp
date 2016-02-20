@@ -26,16 +26,6 @@ void Glow::LazyInit()
 	assert(shaderGlowCopy);
 	shaderGlowLastPass = shaderMan.Create("glow_lastpass", elements, numElements, BM_NONE, DSM_DISABLE, CM_DISABLE);
 	assert(shaderGlowLastPass);
-
-	afLayoutSamplerBindingManually(shaderGlowExtraction, "sourceMap", 0);
-	afLayoutSamplerBindingManually(shaderGlowCopy, "sourceMap", 0);
-	afLayoutSamplerBindingManually(shaderGlowLastPass, "glow0", 0);
-	afLayoutSamplerBindingManually(shaderGlowLastPass, "glow1", 1);
-	afLayoutSamplerBindingManually(shaderGlowLastPass, "glow2", 2);
-	afLayoutSamplerBindingManually(shaderGlowLastPass, "glow3", 3);
-	afLayoutSamplerBindingManually(shaderGlowLastPass, "glow4", 4);
-	afLayoutSamplerBindingManually(shaderGlowLastPass, "glow5", 5);
-	afLayoutSamplerBindingManually(shaderGlowLastPass, "org", 6);
 }
 
 void Glow::Destroy()

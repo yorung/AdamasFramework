@@ -1,15 +1,17 @@
-precision highp float;
-varying vec2 vfPosition;
-varying vec2 vfCoord;
+#version 310 es
 
-uniform sampler2D sourceMap;
+precision highp float;
+in vec2 vfPosition;
+in vec2 vfCoord;
+
+layout (binding = 0) uniform sampler2D sampler;
+
+layout (location = 0) out vec4 fragColor;
+
 
 void main()
 {
-	vec4 src = texture2D(sourceMap, vfCoord);
+	vec4 src = texture(sampler, vfCoord);
 	float result = src.w;
-	gl_FragColor = vec4(result);
-//	fragColor = src;
-//	fragColor = vec4(vfCoord, 1.0, 1.0);
-//	fragColor = vec4(vfPosition, 1.0, 1.0);
+	fragColor = vec4(result);
 }

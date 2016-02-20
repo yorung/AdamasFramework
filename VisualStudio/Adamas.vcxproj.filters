@@ -4,9 +4,6 @@
     <ClCompile Include="main.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
-    <ClCompile Include="wgl_grabber_gen.cpp">
-      <Filter>Windows</Filter>
-    </ClCompile>
     <ClCompile Include="..\cpp\helper.cpp">
       <Filter>PlatformIndipendent</Filter>
     </ClCompile>
@@ -139,11 +136,11 @@
     <ClCompile Include="device_man_wgl.cpp">
       <Filter>GL</Filter>
     </ClCompile>
+    <ClCompile Include="wgl_grabber_gen.cpp">
+      <Filter>GL</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="wgl_grabber_gen.h">
-      <Filter>Windows</Filter>
-    </ClInclude>
     <ClInclude Include="Resource.h">
       <Filter>Windows</Filter>
     </ClInclude>
@@ -253,6 +250,9 @@
       <Filter>DX11</Filter>
     </ClInclude>
     <ClInclude Include="device_man_wgl.h">
+      <Filter>GL</Filter>
+    </ClInclude>
+    <ClInclude Include="wgl_grabber_gen.h">
       <Filter>GL</Filter>
     </ClInclude>
   </ItemGroup>

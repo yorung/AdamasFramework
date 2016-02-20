@@ -1,25 +1,29 @@
-precision highp float;
-varying vec2 vfPosition;
-varying vec2 vfCoord;
+#version 310 es
 
-uniform sampler2D glow0;
-uniform sampler2D glow1;
-uniform sampler2D glow2;
-uniform sampler2D glow3;
-uniform sampler2D glow4;
-uniform sampler2D glow5;
-uniform sampler2D org;
+precision highp float;
+in vec2 vfPosition;
+in vec2 vfCoord;
+
+layout (binding = 0) uniform sampler2D glow0;
+layout (binding = 1) uniform sampler2D glow1;
+layout (binding = 2) uniform sampler2D glow2;
+layout (binding = 3) uniform sampler2D glow3;
+layout (binding = 4) uniform sampler2D glow4;
+layout (binding = 5) uniform sampler2D glow5;
+layout (binding = 6) uniform sampler2D org;
+
+layout (location = 0) out vec4 fragColor;
 
 void main() {
-	vec4 o = texture2D(org, vfCoord);
-	vec4 g0 = texture2D(glow0, vfCoord);
-	vec4 g1 = texture2D(glow1, vfCoord);
-	vec4 g2 = texture2D(glow2, vfCoord);
-	vec4 g3 = texture2D(glow3, vfCoord);
-	vec4 g4 = texture2D(glow4, vfCoord);
-	vec4 g5 = texture2D(glow5, vfCoord);
+	vec4 o = texture(org, vfCoord);
+	vec4 g0 = texture(glow0, vfCoord);
+	vec4 g1 = texture(glow1, vfCoord);
+	vec4 g2 = texture(glow2, vfCoord);
+	vec4 g3 = texture(glow3, vfCoord);
+	vec4 g4 = texture(glow4, vfCoord);
+	vec4 g5 = texture(glow5, vfCoord);
 //	float result = src.w;
 //	fragColor = vec4(result);
 
-	gl_FragColor = o + g0 + g1 + g2 + g3 + g4 + g5;
+	fragColor = o + g0 + g1 + g2 + g3 + g4 + g5;
 }
