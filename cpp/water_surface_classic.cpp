@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#ifdef AF_GLES31
 
 struct WaterVert
 {
@@ -36,7 +37,7 @@ class WaterSurfaceClassic
 	double nextTime;
 	VBOID vbo, vboFullScr;
 	IBOID ibo, iboFullScr;
-	VAOID vao = 0, vaoFullScr = 0;
+	VAOID vao, vaoFullScr;
 	UBOID ubo;
 	int nIndi;
 	SAMPLERID samplerClamp;
@@ -65,6 +66,7 @@ public:
 	WaterSurfaceClassicBinder() {
 		GetLuaBindFuncContainer().push_back([](lua_State* L) {
 			static luaL_Reg methods[] = {
+				{ "__gc", [](lua_State* L) { GET_WSC p->~WaterSurfaceClassic(); return 0; } },
 				{ "Update", [](lua_State* L) { GET_WSC p->Update(); return 0; } },
 				{ "Draw", [](lua_State* L) { GET_WSC p->Draw(); return 0; }},
 				{ nullptr, nullptr },
@@ -348,3 +350,5 @@ void WaterSurfaceClassic::Draw()
 
 	afBindVAO(0);
 }
+
+#endif

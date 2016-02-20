@@ -9,15 +9,18 @@ static const MRID INVALID_MRID = 0;
 
 typedef int MMID;
 
-struct Material
+class Material
 {
-	Material() { memset(this, 0, sizeof(*this)); }
+public:
+	Material() {}
+	Material(const Material& r) { *this = r; }
+	const Material& operator=(const Material& r);
+	bool operator==(const Material& r) const;
 	Vec4 faceColor;
 	Vec3 specular;
-	float power;
+	float power = 0;
 	Vec3 emissive;
 	SRVID texture;
-	bool operator==(const Material& r) const;
 };
 
 struct RenderCommand

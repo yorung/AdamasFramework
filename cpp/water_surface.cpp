@@ -38,24 +38,23 @@ public:
 	void Draw();
 };
 
+
+static const char* waterSurfaceClassName = "WaterSurface";
+#define GET_WS \
+	WaterSurface* p = (WaterSurface*)luaL_checkudata(L, 1, waterSurfaceClassName); \
+	if (!p) {	\
+		return 0;	\
+	} \
+
 class WaterSurfaceBinder {
 public:
 	WaterSurfaceBinder() {
 		GetLuaBindFuncContainer().push_back([](lua_State* L) {
 			static luaL_Reg methods[] = {
-				{ "Update", [](lua_State* L) {
-				WaterSurface* p = (WaterSurface*)luaL_checkudata(L, 1, "WaterSurface");
-				if (p) {
-					p->Update();
-				}
-				return 0; } },
-				{ "Draw", [](lua_State* L) {
-					WaterSurface* p = (WaterSurface*)luaL_checkudata(L, 1, "WaterSurface");
-					if (p) {
-						p->Draw();
-					}
-					return 0; } },
-					{ nullptr, nullptr },
+				{ "__gc", [](lua_State* L) { GET_WS p->~WaterSurface(); return 0; } },
+				{ "Update", [](lua_State* L) { GET_WS p->Update(); return 0; } },
+				{ "Draw", [](lua_State* L) { GET_WS p->Draw(); return 0; } },
+				{ nullptr, nullptr },
 			};
 			aflBindClass(L, "WaterSurface", methods, [](lua_State* L) { void* u = lua_newuserdata(L, sizeof(WaterSurface)); new (u) WaterSurface(); return 1; });
 		});

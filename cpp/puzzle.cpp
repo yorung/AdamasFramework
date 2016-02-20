@@ -11,23 +11,21 @@ public:
 	void Draw();
 };
 
+static const char* puzzleClassName = "Puzzle";
+#define GET_PZL \
+	Puzzle* p = (Puzzle*)luaL_checkudata(L, 1, puzzleClassName); \
+	if (!p) {	\
+		return 0;	\
+	} \
+
 class PuzzleBinder {
 public:
 	PuzzleBinder() {
 		GetLuaBindFuncContainer().push_back([](lua_State* L) {
 			static luaL_Reg methods[] = {
-				{ "Update", [](lua_State* L) {
-					Puzzle* p = (Puzzle*)luaL_checkudata(L, 1, "Puzzle");
-					if (p) {
-						p->Update();
-					}
-					return 0; } },
-				{ "Draw", [](lua_State* L) {
-					Puzzle* p = (Puzzle*)luaL_checkudata(L, 1, "Puzzle");
-					if (p) {
-						p->Draw();
-					}
-					return 0; } },
+				{ "Update", [](lua_State* L) { GET_PZL p->Update(); return 0; } },
+				{ "Draw", [](lua_State* L) { GET_PZL p->Draw(); return 0; } },
+				{ "__gc", [](lua_State* L) { GET_PZL p->~Puzzle(); return 0; } },
 				{ nullptr, nullptr },
 			};
 			aflBindClass(L, "Puzzle", methods, [](lua_State* L) { void* u = lua_newuserdata(L, sizeof(Puzzle)); new (u) Puzzle(); return 1; });

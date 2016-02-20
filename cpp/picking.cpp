@@ -41,6 +41,7 @@ public:
 				{ "Update", [](lua_State* L) { GET_PICKING p->Update(); return 0; } },
 				{ "Draw2D", [](lua_State* L) { GET_PICKING p->Draw2D(); return 0; } },
 				{ "Draw3D", [](lua_State* L) { GET_PICKING p->Draw3D(); return 0; } },
+				{ "__gc", [](lua_State* L) { GET_PICKING p->~Picking(); return 0; } },
 				{ nullptr, nullptr },
 			};
 			aflBindClass(L, CLASSNAME, methods, [](lua_State* L) { void* u = lua_newuserdata(L, sizeof(Picking)); new (u) Picking(); return 1; });

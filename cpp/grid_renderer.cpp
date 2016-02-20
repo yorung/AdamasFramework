@@ -28,6 +28,7 @@ public:
 	GridRendererBinder() {
 		GetLuaBindFuncContainer().push_back([](lua_State* L) {
 			static luaL_Reg methods[] = {
+				{ "__gc", [](lua_State* L) { GET_GR p->~GridRenderer(); return 0; } },
 				{ "Draw", [](lua_State* L) { GET_GR p->Draw(); return 0; } },
 				{ "GetMousePosInGrid", [](lua_State* L) {
 					GET_GR

@@ -47,6 +47,7 @@ struct Vec3
 	Vec3 operator-=(const Vec3& r) { return *this = *this - r; }
 	Vec3 operator+=(const Vec3& r) { return *this = *this + r; }
 	Vec3 operator*=(affloat r) { return *this = *this * r; }
+	bool operator==(const Vec3& r) const { return x == r.x && y == r.y && z == r.z; }
 };
 
 struct Vec4
@@ -57,6 +58,7 @@ struct Vec4
 #ifdef USE_SIMPLE_MATH
 	Vec4(const Vector4& v) : Vec4(v.x, v.y, v.z, v.w) {}
 #endif
+	bool operator==(const Vec4& r) const { return x == r.x && y == r.y && z == r.z && w == r.w; }
 };
 
 struct IVec2

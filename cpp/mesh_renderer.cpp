@@ -242,7 +242,17 @@ const Material* MeshRenderer::GetMaterial(MMID id)
 	return nullptr;
 }
 
+const Material& Material::operator=(const Material& r)
+{
+	faceColor = r.faceColor;
+	power = r.power;
+	specular = r.specular;
+	emissive = r.emissive;
+	texture = r.texture;
+	return *this;
+}
+
 bool Material::operator==(const Material& r) const
 {
-	return !memcmp(this, &r, sizeof(Material));
+	return faceColor == r.faceColor && power == r.power && specular == r.specular && emissive == r.emissive && texture == r.texture;
 }

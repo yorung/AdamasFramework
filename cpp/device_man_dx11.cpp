@@ -74,6 +74,10 @@ void DeviceMan11::Destroy()
 		int cnt;
 		cnt = pDevice->Release();
 		if (cnt) {
+			ComPtr<ID3D11Debug> dbg;
+			pDevice->QueryInterface(IID_PPV_ARGS(&dbg));
+			dbg->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+			dbg.Reset();
 			MessageBoxA(GetActiveWindow(), SPrintf("%d DX11 interface leak detected.", cnt), "DX11 leaks", MB_OK);
 		}
 		pDevice = nullptr;
