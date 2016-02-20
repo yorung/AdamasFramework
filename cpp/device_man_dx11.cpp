@@ -73,7 +73,9 @@ void DeviceMan11::Destroy()
 	if (pDevice) {
 		int cnt;
 		cnt = pDevice->Release();
-		assert(!cnt);
+		if (cnt) {
+			MessageBoxA(GetActiveWindow(), SPrintf("%d DX11 interface leak detected.", cnt), "DX11 leaks", MB_OK);
+		}
 		pDevice = nullptr;
 	}
 }

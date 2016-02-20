@@ -53,6 +53,9 @@ void LuaMan::Destroy()
 
 void LuaMan::CallGlobal(const char* func)
 {
+	if (!L) {
+		return;
+	}
 	lua_getglobal(L, func);
 	//	aflDumpStack();
 	if (lua_pcall(L, 0, LUA_MULTRET, 0)) {

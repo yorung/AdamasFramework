@@ -36,7 +36,7 @@ class WaterSurfaceClassic
 	double nextTime;
 	VBOID vbo, vboFullScr;
 	IBOID ibo, iboFullScr;
-	VAOID vao, vaoFullScr;
+	VAOID vao = 0, vaoFullScr = 0;
 	UBOID ubo;
 	int nIndi;
 	SAMPLERID samplerClamp;

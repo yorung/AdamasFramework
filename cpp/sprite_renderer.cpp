@@ -66,6 +66,9 @@ static void StoreVertices(SpriteVertex v[4], float width, float height, uint32_t
 
 void SpriteRenderer::Draw(const SpriteCommands& sprites)
 {
+	if (!vao) {
+		return;
+	}
 	Vec2 scrSize = systemMisc.GetScreenSize();
 	Mat proj = ortho(0, scrSize.x, scrSize.y, 0, -1000, 1000);
 

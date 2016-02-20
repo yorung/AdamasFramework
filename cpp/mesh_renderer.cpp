@@ -153,6 +153,9 @@ RenderMesh* MeshRenderer::GetMeshByMRID(MRID id)
 
 void MeshRenderer::DrawRenderMesh(MRID id, const Mat& worldMat, const Mat BoneMatrices[], int nBones, const Block& block)
 {
+	if (!sampler) {
+		return;
+	}
 	assert(GetMeshByMRID(id));
 	assert(!block.materialMaps.empty());
 
@@ -178,6 +181,9 @@ void MeshRenderer::DrawRenderMesh(MRID id, const Mat& worldMat, const Mat BoneMa
 
 void MeshRenderer::Flush()
 {
+	if (!sampler) {
+		return;
+	}
 	afBindBufferToBindingPoint(uboForBoneMatrices, UBP_BONES);
 	afBindBufferToBindingPoint(uboForMaterials, UBP_MATERIALS);
 	afBindBufferToBindingPoint(uboForPerDrawCall, UBP_PER_INSTANCE_DATAS);
@@ -210,6 +216,9 @@ void MeshRenderer::Flush()
 
 MMID MeshRenderer::CreateMaterial(const Material& mat)
 {
+	if (!uboForMaterials) {
+		return 0;
+	}
 	auto it = std::find_if(materials.begin(), materials.end(), [&mat](const Material& m) { return m == mat; });
 	if (it != materials.end()) {
 		int n = (int)std::distance(materials.begin(), it);

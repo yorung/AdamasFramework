@@ -97,6 +97,7 @@ void afBindSamplerToBindingPoint(SAMPLERID sampler, UINT textureBindingPoint)
 
 void afWriteBuffer(const IBOID p, const void* buf, int size)
 {
+	assert(p);
 #ifdef _DEBUG
 	D3D11_BUFFER_DESC desc;
 	p->GetDesc(&desc);
