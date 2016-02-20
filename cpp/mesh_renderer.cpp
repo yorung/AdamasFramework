@@ -97,6 +97,8 @@ void MeshRenderer::Create()
 	assert(shaderId);
 
 	shaderMan.Apply(shaderId);
+
+	sampler = afCreateSampler(SF_MIPMAP, SW_REPEAT);
 }
 
 void MeshRenderer::Destroy()
@@ -113,6 +115,7 @@ void MeshRenderer::Destroy()
 	afSafeDeleteBuffer(uboForBoneMatrices);
 	afSafeDeleteBuffer(uboForMaterials);
 	afSafeDeleteBuffer(uboForPerDrawCall);
+	afSafeDeleteSampler(sampler);
 
 	nStoredCommands = 0;
 }
@@ -178,6 +181,7 @@ void MeshRenderer::Flush()
 	afBindBufferToBindingPoint(uboForBoneMatrices, UBP_BONES);
 	afBindBufferToBindingPoint(uboForMaterials, UBP_MATERIALS);
 	afBindBufferToBindingPoint(uboForPerDrawCall, UBP_PER_INSTANCE_DATAS);
+	afBindSamplerToBindingPoint(sampler, 0);
 
 	if (!nStoredCommands) {
 		return;
@@ -201,6 +205,7 @@ void MeshRenderer::Flush()
 	afBindBufferToBindingPoint(UBOID(), UBP_BONES);
 	afBindBufferToBindingPoint(UBOID(), UBP_MATERIALS);
 	afBindBufferToBindingPoint(UBOID(), UBP_PER_INSTANCE_DATAS);
+	afBindSamplerToBindingPoint(0, 0);
 }
 
 MMID MeshRenderer::CreateMaterial(const Material& mat)
