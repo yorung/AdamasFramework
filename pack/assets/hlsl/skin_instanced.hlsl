@@ -1,0 +1,86 @@
+struct VS_INPUT {
+	float3 POSITION : POSITION;
+	float3 NORMAL : NORMAL;
+	float2 vTexcoord : vTexcoord;
+	float4 vColor : vColor;
+	float3 vBlendWeights : vBlendWeights;
+	uint4 vBlendIndices : vBlendIndices;
+	uint materialId : materialId;
+};
+
+struct VS_OUTPUT {
+	float4 position : position;
+	float2 texcoord : texcoord;
+	float4 diffuse : diffuse;
+	float3 emissive : emmisive;
+	float3 normal : normal;
+};
+
+struct RenderCommand {
+	matrix matWorld;
+	int meshId;
+	uint boneStartIndex;
+	int nBones;
+	int padding;
+};
+
+struct Material {
+	float4 faceColor;
+	float3 specular;
+	float power;
+	float3 emissive;
+	int tmid;
+};
+
+cbuffer perDrawCallUBO : register(b1) {
+	matrix matV;
+	matrix matP;
+	RenderCommand renderCommands[10];
+};
+cbuffer materialUBO : register(b2) {
+	Material materials[100];
+};
+cbuffer boneUBO : register(b3) {
+	matrix bonesBuffer[100];
+};
+
+VS_OUTPUT mainVS(VS_INPUT _In, uint instanceId : SV_InstanceID)
+{
+	RenderCommand cmd = renderCommands[instanceId];
+	uint boneStartIndex = cmd.boneStartIndex;
+	Material material = materials[_In.materialId];
+
+	matrix comb =
+		mul(bonesBuffer[boneStartIndex + _In.vBlendIndices.x], _In.vBlendWeights.x) +
+		mul(bonesBuffer[boneStartIndex + _In.vBlendIndices.y], _In.vBlendWeights.y) +
+		mul(bonesBuffer[boneStartIndex + _In.vBlendIndices.z], _In.vBlendWeights.z) +
+		mul(bonesBuffer[boneStartIndex + _In.vBlendIndices.w], 1.0 - _In.vBlendWeights.x - _In.vBlendWeights.y - _In.vBlendWeights.z);
+
+	float3 pos = _In.POSITION.xyz;
+
+	VS_OUTPUT Out = (VS_OUTPUT)0;
+
+	matrix matWC = mul(cmd.matWorld, comb);	
+	Out.position = mul(mul(mul(matP, matV), matWC), float4(pos, 1.0));
+	Out.texcoord = _In.vTexcoord;
+	Out.diffuse = _In.vColor * float4(material.faceColor.xyz, 1.0);
+	Out.emissive = material.emissive.xyz;
+	Out.normal = mul((float3x3)matWC, _In.NORMAL);
+
+	return Out;
+}
+
+float4 CalcColor(VS_OUTPUT _In)
+{
+	float4 d;
+	d.xyz = _In.emissive.xyz + saturate(dot(normalize(_In.normal), normalize(float3(0,1,-1)))) * _In.diffuse.xyz;
+	d.w = 1.0f;
+	return d;
+}
+
+SamplerState gSampler : register(s0);
+Texture2D gTexture : register(t0);
+float4 mainPS(VS_OUTPUT _In) : SV_TARGET
+{
+	return gTexture.Sample(gSampler, _In.texcoord) * CalcColor(_In);
+}

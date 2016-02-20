@@ -93,7 +93,7 @@ void MeshRenderer::Create()
 	uboForBoneMatrices = afCreateUBO(sizeof(Mat) * MAX_BONE_SSBOS);
 	uboForPerDrawCall = afCreateUBO(sizeof(PerDrawCallUBO));
 	uboForMaterials = afCreateUBO(MATERIAL_UBO_SIZE);
-	shaderId = shaderMan.Create("skin.400", elements, dimof(elements), BM_NONE, DSM_DEPTH_ENABLE, CM_CW);
+	shaderId = shaderMan.Create("skin_instanced", elements, dimof(elements), BM_NONE, DSM_DEPTH_ENABLE, CM_CW);
 	assert(shaderId);
 
 	shaderMan.Apply(shaderId);

@@ -263,9 +263,6 @@
     <Filter Include="PlatformIndipendent">
       <UniqueIdentifier>{4a920d4b-d9c9-44e6-ab42-5e42e684f4a6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="shaders">
-      <UniqueIdentifier>{e8de3368-1a62-4c1b-a6da-7f288e0bc3a1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Android">
       <UniqueIdentifier>{16972e84-0729-469a-b622-d14adc924279}</UniqueIdentifier>
     </Filter>
@@ -283,103 +280,5 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="icon.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\pack\assets\shaders\font.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\pack\assets\shaders\font.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\pack\assets\shaders\glow_copy.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\pack\assets\shaders\glow_copy.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\pack\assets\shaders\glow_extraction.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\pack\assets\shaders\glow_extraction.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\pack\assets\shaders\glow_lastpass.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\pack\assets\shaders\glow_lastpass.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\pack\assets\shaders\letterbox.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\pack\assets\shaders\letterbox.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\pack\assets\shaders\skin.400.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\pack\assets\shaders\skin.400.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\pack\assets\shaders\skin.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\pack\assets\shaders\skin.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\pack\assets\shaders\sky_cubemap.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\pack\assets\shaders\sky_cubemap.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\pack\assets\shaders\sky_photosphere.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\pack\assets\shaders\sky_photosphere.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\pack\assets\shaders\sprite.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\pack\assets\shaders\sprite.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\pack\assets\shaders\vivid.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\pack\assets\shaders\vivid.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\pack\assets\shaders\water_classic.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\pack\assets\shaders\water_classic.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\pack\assets\shaders\water_heightmap.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\pack\assets\shaders\water_heightmap.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\pack\assets\shaders\water_lastpass.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\pack\assets\shaders\water_lastpass.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\pack\assets\shaders\water_normal.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\pack\assets\shaders\water_normal.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\pack\assets\shaders\solid.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\pack\assets\shaders\solid.frag">
-      <Filter>shaders</Filter>
-    </None>
   </ItemGroup>
 </Project>
