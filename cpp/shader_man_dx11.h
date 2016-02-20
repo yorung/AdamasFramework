@@ -28,26 +28,5 @@ public:
 	void Apply(SMID id);
 };
 
-class FakeVAO
-{
-	std::vector<VBOID> vbos;
-	std::vector<ID3D11Buffer*> d3dBuffers;
-	std::vector<UINT> offsets;
-	std::vector<UINT> strides;
-	ComPtr<ID3D11Buffer> ibo;
-public:
-	FakeVAO(int numBuffers, VBOID* const buffers, const int strides[], const UINT offsets[], IBOID ibo);
-	void Apply();
-};
-typedef FakeVAO* VAOID;
-
 extern ShaderMan11 shaderMan;
 typedef ShaderMan11 ShaderMan;
-
-VAOID afCreateVAO(const InputElement elements[], int numElements, int numBuffers, VBOID* const vertexBufferIds, const int* strides, IBOID ibo);
-inline void afBindVAO(VAOID vao)
-{
-	if (vao) {
-		vao->Apply();
-	}
-}

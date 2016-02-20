@@ -35,6 +35,7 @@ extern const char* boundJavaClass;
 #include <chrono>
 #include <random>
 #include <functional>
+#include <memory>
 
 #include <assert.h>
 #include <time.h>

@@ -257,7 +257,15 @@ VAOID afCreateVAO(const InputElement elements[], int numElements, int numBuffers
 {
 	(void)elements;
 	(void)numElements;
-	return new FakeVAO(numBuffers, vertexBufferIds, strides, nullptr, ibo);
+	VAOID p(new FakeVAO(numBuffers, vertexBufferIds, strides, nullptr, ibo));
+	return p;
+}
+
+void afBindVAO(const VAOID& vao)
+{
+	if (vao) {
+		vao->Apply();
+	}
 }
 
 void AFRenderTarget::InitForDefaultRenderTarget()

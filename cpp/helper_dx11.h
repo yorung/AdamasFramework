@@ -29,7 +29,6 @@ typedef ComPtr<ID3D11ShaderResourceView> SRVID;
 inline void afSafeDeleteBuffer(ComPtr<ID3D11Buffer>& p) { p.Reset(); }
 inline void afSafeDeleteSampler(SAMPLERID& p) { p.Reset(); }
 inline void afSafeDeleteTexture(SRVID& p) { p.Reset(); }
-#define afSafeDeleteVAO SAFE_DELETE
 
 void afWriteBuffer(const IBOID p, const void* buf, int size);
 void afWriteTexture(SRVID srv, const struct TexDesc& desc, const void* buf);
@@ -97,6 +96,23 @@ SRVID afCreateTexture2D(AFDTFormat format, const IVec2& size, void *image);
 SRVID afCreateTexture2D(AFDTFormat format, const struct TexDesc& desc, int mipCount, const AFTexSubresourceData datas[]);
 SRVID afCreateDynamicTexture(AFDTFormat format, const IVec2& size);
 IVec2 afGetTextureSize(SRVID tex);
+
+class FakeVAO
+{
+	std::vector<VBOID> vbos;
+	std::vector<ID3D11Buffer*> d3dBuffers;
+	std::vector<UINT> offsets;
+	std::vector<UINT> strides;
+	ComPtr<ID3D11Buffer> ibo;
+public:
+	FakeVAO(int numBuffers, VBOID* const buffers, const int strides[], const UINT offsets[], IBOID ibo);
+	void Apply();
+};
+
+typedef std::unique_ptr<FakeVAO> VAOID;
+VAOID afCreateVAO(const InputElement elements[], int numElements, int numBuffers, VBOID* const vertexBufferIds, const int* strides, IBOID ibo);
+void afBindVAO(const VAOID& vao);
+inline void afSafeDeleteVAO(VAOID& p) { p.reset(); }
 
 class AFRenderTarget
 {

@@ -24,7 +24,7 @@ class SpriteRenderer
 	SAMPLERID sampler;
 	VBOID vbo;
 	IBOID ibo;
-	VAOID vao = 0;
+	VAOID vao;
 	UBOID ubo;
 public:
 	SpriteRenderer();
