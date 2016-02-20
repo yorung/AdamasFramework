@@ -152,8 +152,15 @@ void Picking::Draw3D()
 	shaderMan.Apply(shader);
 	VBOID vbos[] = {vbo3d};
 	int strides[] = {sizeof(Vertex)};
+#ifdef GL_TRUE
 	afSetVertexAttributes(elements, dimof(elements), 1, vbos, strides);
-
+#endif
+#ifdef __d3d11_h__
+	ID3D11Buffer* d11Bufs[] = { vbo3d.Get() };
+	UINT uStrides[] = { sizeof(Vertex) };
+	UINT offsets[] = {0};
+	deviceMan11.GetContext()->IASetVertexBuffers(0, dimof(d11Bufs), d11Bufs, uStrides, offsets);
+#endif
 	Mat mView, mProj;
 	matrixMan.Get(MatrixMan::VIEW, mView);
 	matrixMan.Get(MatrixMan::PROJ, mProj);
@@ -169,7 +176,15 @@ void Picking::Draw2D()
 	shaderMan.Apply(shader);
 	VBOID vbos[] = {vbo2d};
 	int strides[] = {sizeof(Vertex)};
+#ifdef GL_TRUE
 	afSetVertexAttributes(elements, dimof(elements), 1, vbos, strides);
+#endif
+#ifdef __d3d11_h__
+	ID3D11Buffer* d11Bufs[] = { vbo2d.Get() };
+	UINT uStrides[] = { sizeof(Vertex) };
+	UINT offsets[] = { 0 };
+	deviceMan11.GetContext()->IASetVertexBuffers(0, dimof(d11Bufs), d11Bufs, uStrides, offsets);
+#endif
 
 	PickingUBO buf;
 	afWriteBuffer(ubo, &buf, sizeof(buf));
