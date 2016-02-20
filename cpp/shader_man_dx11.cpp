@@ -73,6 +73,7 @@ void ShaderMan11::Destroy()
 	}
 	m_effects.clear();
 	m_nameToId.clear();
+	m_effects.push_back(Effect());	// make ID 0 invalid
 }
 
 void ShaderMan11::Reload()
@@ -104,16 +105,6 @@ void ShaderMan11::Apply(SMID id)
 		afDepthStencilMode(it.depthStencilMode);
 		afCullMode(it.cullMode);
 	}
-}
-
-ID3DBlob* ShaderMan11::GetVSBlob(SMID id)
-{
-	if (id >= 0 && id < (SMID)m_effects.size())
-	{
-		Effect& it = m_effects[id];
-		return it.pBlobVS;
-	}
-	return nullptr;
 }
 
 FakeVAO::FakeVAO(int numBuffers, VBOID* const vbos_, const int strides_[], const UINT offsets_[], IBOID ibo_)

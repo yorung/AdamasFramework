@@ -44,8 +44,9 @@ void SpriteRenderer::Init()
 	ubo = afCreateUBO(sizeof(Mat));
 	ibo = afCreateQuadListIndexBuffer(MAX_SPRITES_IN_ONE_DRAW_CALL);
 
+	VBOID vbos[] = { vbo };
 	int strides[] = { sizeof(SpriteVertex) };
-	vao = afCreateVAO(layout, dimof(layout), 1, &vbo, strides, ibo);
+	vao = afCreateVAO(layout, dimof(layout), 1, vbos, strides, ibo);
 }
 
 static void StoreVertices(SpriteVertex v[4], float width, float height, uint32_t color, float uLeft, float vTop, float uRight, float vBottom, const Mat& matW)
