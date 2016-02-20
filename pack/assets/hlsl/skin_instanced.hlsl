@@ -9,7 +9,7 @@ struct VS_INPUT {
 };
 
 struct VS_OUTPUT {
-	float4 position : position;
+	float4 position : SV_POSITION;
 	float2 texcoord : texcoord;
 	float4 diffuse : diffuse;
 	float3 emissive : emmisive;
