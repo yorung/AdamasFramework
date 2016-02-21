@@ -28,6 +28,7 @@ void DeviceMan11::Create(HWND hWnd)
 	sd.OutputWindow = hWnd;
 	sd.SampleDesc.Count = 1;
 	sd.Windowed = TRUE;
+	sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 	sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
 	D3D_FEATURE_LEVEL featureLevels[] = { D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_0, D3D_FEATURE_LEVEL_9_3 };
@@ -57,7 +58,7 @@ void DeviceMan11::Create(HWND hWnd)
 
 void DeviceMan11::Present()
 {
-	pSwapChain->Present(0, 0);
+	pSwapChain->Present(1, 0);
 }
 
 void DeviceMan11::Destroy()
