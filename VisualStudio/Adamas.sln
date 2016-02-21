@@ -18,23 +18,28 @@ Global
 		SharedLua.vcxitems*{45d41acc-2c3c-43d2-bc10-02aa73ffc7c7}*SharedItemsImports = 9
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Win32 = Debug|Win32
 		DX11Debug|Win32 = DX11Debug|Win32
-		Release|Win32 = Release|Win32
+		DX11Release|Win32 = DX11Release|Win32
+		ES31Debug|Win32 = ES31Debug|Win32
+		ES31Release|Win32 = ES31Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{D13F848D-7701-43BA-B781-1481A54FE77D}.Debug|Win32.ActiveCfg = Debug|Win32
-		{D13F848D-7701-43BA-B781-1481A54FE77D}.Debug|Win32.Build.0 = Debug|Win32
 		{D13F848D-7701-43BA-B781-1481A54FE77D}.DX11Debug|Win32.ActiveCfg = DX11Debug|Win32
 		{D13F848D-7701-43BA-B781-1481A54FE77D}.DX11Debug|Win32.Build.0 = DX11Debug|Win32
-		{D13F848D-7701-43BA-B781-1481A54FE77D}.Release|Win32.ActiveCfg = Release|Win32
-		{D13F848D-7701-43BA-B781-1481A54FE77D}.Release|Win32.Build.0 = Release|Win32
-		{B9510AE9-6611-42BB-ABC3-73FCABF768D1}.Debug|Win32.ActiveCfg = Debug|Win32
-		{B9510AE9-6611-42BB-ABC3-73FCABF768D1}.Debug|Win32.Build.0 = Debug|Win32
+		{D13F848D-7701-43BA-B781-1481A54FE77D}.DX11Release|Win32.ActiveCfg = DX11Release|Win32
+		{D13F848D-7701-43BA-B781-1481A54FE77D}.DX11Release|Win32.Build.0 = DX11Release|Win32
+		{D13F848D-7701-43BA-B781-1481A54FE77D}.ES31Debug|Win32.ActiveCfg = Debug|Win32
+		{D13F848D-7701-43BA-B781-1481A54FE77D}.ES31Debug|Win32.Build.0 = Debug|Win32
+		{D13F848D-7701-43BA-B781-1481A54FE77D}.ES31Release|Win32.ActiveCfg = Release|Win32
+		{D13F848D-7701-43BA-B781-1481A54FE77D}.ES31Release|Win32.Build.0 = Release|Win32
 		{B9510AE9-6611-42BB-ABC3-73FCABF768D1}.DX11Debug|Win32.ActiveCfg = DX11Debug|Win32
 		{B9510AE9-6611-42BB-ABC3-73FCABF768D1}.DX11Debug|Win32.Build.0 = DX11Debug|Win32
-		{B9510AE9-6611-42BB-ABC3-73FCABF768D1}.Release|Win32.ActiveCfg = Release|Win32
-		{B9510AE9-6611-42BB-ABC3-73FCABF768D1}.Release|Win32.Build.0 = Release|Win32
+		{B9510AE9-6611-42BB-ABC3-73FCABF768D1}.DX11Release|Win32.ActiveCfg = DX11Release|Win32
+		{B9510AE9-6611-42BB-ABC3-73FCABF768D1}.DX11Release|Win32.Build.0 = DX11Release|Win32
+		{B9510AE9-6611-42BB-ABC3-73FCABF768D1}.ES31Debug|Win32.ActiveCfg = Debug|Win32
+		{B9510AE9-6611-42BB-ABC3-73FCABF768D1}.ES31Debug|Win32.Build.0 = Debug|Win32
+		{B9510AE9-6611-42BB-ABC3-73FCABF768D1}.ES31Release|Win32.ActiveCfg = Release|Win32
+		{B9510AE9-6611-42BB-ABC3-73FCABF768D1}.ES31Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
