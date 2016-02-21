@@ -70,7 +70,7 @@ void RenderMesh::Draw(int instanceCount) const
 		assert(mat);
 		afBindTextureToBindingPoint(mat->texture, 0);
 		int count = it.faces * 3;
-		int start = it.faceStartIndex * 3 * sizeof(AFIndex);
+		int start = it.faceStartIndex * 3;
 		afDrawIndexedInstancedTriangleList(instanceCount, count, start);
 	}
 	afBindTextureToBindingPoint(0, 0);

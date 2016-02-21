@@ -216,28 +216,28 @@ SRVID afCreateTexture2D(AFDTFormat format, const TexDesc& desc, int mipCount, co
 
 void afDrawIndexedTriangleList(int numIndices, int start)
 {
-	glDrawElements(GL_TRIANGLES, numIndices, AFIndexTypeToDevice, (void*)(start));
+	glDrawElements(GL_TRIANGLES, numIndices, AFIndexTypeToDevice, (void*)(start * sizeof(AFIndex)));
 }
 
 void afDrawIndexedTriangleStrip(int numIndices, int start)
 {
-	glDrawElements(GL_TRIANGLE_STRIP, numIndices, AFIndexTypeToDevice, (void*)(start));
+	glDrawElements(GL_TRIANGLE_STRIP, numIndices, AFIndexTypeToDevice, (void*)(start * sizeof(AFIndex)));
 }
 
 void afDrawTriangleStrip(int numVertices, int start)
 {
-	glDrawArrays(GL_TRIANGLE_STRIP, start, numVertices);
+	glDrawArrays(GL_TRIANGLE_STRIP, start * sizeof(AFIndex), numVertices);
 }
 
 void afDrawLineList(int numVertices, int start)
 {
-	glDrawArrays(GL_LINES, start, numVertices);
+	glDrawArrays(GL_LINES, start * sizeof(AFIndex), numVertices);
 }
 
 #ifdef AF_GLES31
 void afDrawIndexedInstancedTriangleList(int instanceCount, int numIndices, int start)
 {
-	afHandleGLError(glDrawElementsInstanced/*BaseVertex*/(GL_TRIANGLES, numIndices, AFIndexTypeToDevice, (void*)start, instanceCount/*, cmd.baseVertex*/));
+	afHandleGLError(glDrawElementsInstanced/*BaseVertex*/(GL_TRIANGLES, numIndices, AFIndexTypeToDevice, (void*)(start * sizeof(AFIndex)), instanceCount/*, cmd.baseVertex*/));
 }
 #endif
 
