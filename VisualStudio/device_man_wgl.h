@@ -1,3 +1,5 @@
+#include <functional>
+
 class DeviceManWgl
 {
 	HGLRC hglrc;

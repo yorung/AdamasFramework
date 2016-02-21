@@ -17,7 +17,7 @@ android {
         versionName "1.0"
         ndk {
             moduleName 'AdamasNative'
-            cFlags "-std=c++1y"
+            cFlags "-std=c++1y -DAF_GLES31"
             ldLibs "log"
             ldLibs "GLESv3"
             ldLibs "OpenSLES"

@@ -13,7 +13,8 @@ SRVID TexMan::Create(const char *name)
 	if (it != nameToId.end()) {
 		return it->second;
 	}
-	return nameToId[name] = afLoadTexture(name, TexDesc());
+	TexDesc dummy;
+	return nameToId[name] = afLoadTexture(name, dummy);
 }
 
 SRVID TexMan::CreateWhiteTexture()

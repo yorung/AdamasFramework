@@ -2,10 +2,12 @@
 
 #ifdef _MSC_VER
 #define NOMINMAX
+#define _USE_MATH_DEFINES
 #include <Windows.h>
 
 #ifdef AF_GLES31
 #include "wgl_grabber_gen.h"
+#include "device_man_wgl.h"
 #endif
 
 #ifdef AF_DX11
@@ -23,7 +25,6 @@ extern const char* boundJavaClass;
 #include <gles3/gl31.h>
 #endif
 
-#define _USE_MATH_DEFINES
 #include <cmath>
 
 #include <vector>
@@ -34,7 +35,6 @@ extern const char* boundJavaClass;
 #include <stack>
 #include <chrono>
 #include <random>
-#include <functional>
 #include <memory>
 
 #include <assert.h>
@@ -52,7 +52,6 @@ static const int BONE_MAX = 50;
 #include "hub.h"
 
 #ifdef AF_GLES31
-#include "device_man_wgl.h"
 #include "helper_gl.h"
 #endif
 
