@@ -57,6 +57,10 @@ void App::Init()
 #ifdef _MSC_VER
 	GoMyDir();
 #endif
+#ifdef GL_TRUE
+	glClearColor(0.0f, 0.0f, 0.5f, 1.0f);
+	glClearDepthf(0);	// for left-handed coordinate
+#endif
 	meshRenderer.Create();
 	fontMan.Init();
 	spriteRenderer.Init();

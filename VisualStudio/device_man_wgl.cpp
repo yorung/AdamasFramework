@@ -107,9 +107,6 @@ void DeviceManWgl::Create(HWND hWnd)
 		assert(r == 1);
 	};
 	CreateWGLInternal(hdc);
-
-	glClearColor(0.0f, 0.0f, 0.5f, 1.0f);
-	glClearDepthf(0);	// for left-handed coordinate
 }
 
 void DeviceManWgl::Destroy()
