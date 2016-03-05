@@ -9,13 +9,11 @@ private:
 		ID3D11InputLayout* pInputLayout;
 		ID3D11VertexShader* pVertexShader;
 		ID3D11PixelShader* pPixelShader;
-		ID3DBlob* pBlobVS;
 		const D3D11_INPUT_ELEMENT_DESC *elements;
 		int numElements;
 		BlendMode blendMode;
 		DepthStencilMode depthStencilMode;
 		CullMode cullMode;
-		Effect() { memset(this, 0, sizeof(*this)); }
 	};
 	std::map<std::string, SMID> m_nameToId;
 	std::vector<Effect> m_effects;

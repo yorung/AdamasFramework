@@ -4,20 +4,23 @@
 
 ShaderMan11 shaderMan;
 
-static void Compile(const char* name, bool ps, ID3DBlob*& blob)
+static ComPtr<ID3DBlob> CompileShader(const char* name, const char* entryPoint, const char* target)
 {
 	char path[MAX_PATH];
 	sprintf_s(path, sizeof(path), "hlsl/%s.hlsl", name);
-
-	blob = nullptr;
-	ID3DBlob* err = 0;
+#ifdef _DEBUG
+	UINT flags = D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
+#else
+	UINT flags = D3DCOMPILE_ENABLE_STRICTNESS;
+#endif
+	ComPtr<ID3DBlob> blob, err;
 	WCHAR wname[MAX_PATH];
 	MultiByteToWideChar(CP_ACP, 0, path, -1, wname, dimof(wname));
-	D3DCompileFromFile(wname, nullptr, nullptr, ps ? "mainPS" : "mainVS", ps ? "ps_5_0" : "vs_5_0", D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_PACK_MATRIX_COLUMN_MAJOR, 0, &blob, &err);
-	if(err) {
+	D3DCompileFromFile(wname, nullptr, nullptr, entryPoint, target, flags, 0, &blob, &err);
+	if (err) {
 		MessageBoxA(nullptr, (const char*)err->GetBufferPointer(), name, MB_OK | MB_ICONERROR);
-		SAFE_RELEASE(err);
 	}
+	return blob;
 }
 
 ShaderMan11::ShaderMan11()
@@ -33,25 +36,20 @@ ShaderMan11::~ShaderMan11()
 ShaderMan11::SMID ShaderMan11::Create(const char *name, const D3D11_INPUT_ELEMENT_DESC elements[], int numElements, BlendMode blendMode, DepthStencilMode depthStencilMode, CullMode cullMode)
 {
 	auto it = m_nameToId.find(name);
-	if (it != m_nameToId.end())
-	{
+	if (it != m_nameToId.end())	{
 		return it->second;
 	}
 
-	Effect effect;
-	memset(&effect, 0, sizeof(effect));
-
-	ID3DBlob* pBlobPS;
-	Compile(name, false, effect.pBlobVS);
-	Compile(name, true, pBlobPS);
-	HRESULT hr = deviceMan11.GetDevice()->CreateVertexShader(effect.pBlobVS->GetBufferPointer(), effect.pBlobVS->GetBufferSize(), nullptr, &effect.pVertexShader);
-	hr = deviceMan11.GetDevice()->CreatePixelShader(pBlobPS->GetBufferPointer(), pBlobPS->GetBufferSize(), nullptr, &effect.pPixelShader);
+	ComPtr<ID3DBlob> vs = CompileShader(name, "mainVS", "vs_5_0");
+	ComPtr<ID3DBlob> ps = CompileShader(name, "mainPS", "ps_5_0");
+	Effect effect = {};
+	HRESULT hr = deviceMan11.GetDevice()->CreateVertexShader(vs->GetBufferPointer(), vs->GetBufferSize(), nullptr, &effect.pVertexShader);
+	hr = deviceMan11.GetDevice()->CreatePixelShader(ps->GetBufferPointer(), ps->GetBufferSize(), nullptr, &effect.pPixelShader);
 
 	if (elements) {
-		hr = deviceMan11.GetDevice()->CreateInputLayout(elements, numElements, effect.pBlobVS->GetBufferPointer(), effect.pBlobVS->GetBufferSize(), &effect.pInputLayout);
+		hr = deviceMan11.GetDevice()->CreateInputLayout(elements, numElements, vs->GetBufferPointer(), vs->GetBufferSize(), &effect.pInputLayout);
 	//	assert(!hr);
 	}
-	SAFE_RELEASE(pBlobPS);
 
 	effect.elements = elements;
 	effect.numElements = numElements;
@@ -69,7 +67,6 @@ void ShaderMan11::Destroy()
 		SAFE_RELEASE(it->pInputLayout);
 		SAFE_RELEASE(it->pVertexShader);
 		SAFE_RELEASE(it->pPixelShader);
-		SAFE_RELEASE(it->pBlobVS);
 	}
 	m_effects.clear();
 	m_nameToId.clear();
