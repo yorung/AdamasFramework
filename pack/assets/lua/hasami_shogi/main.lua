@@ -39,7 +39,7 @@ local co = coroutine.create(function()
 	local function Think(grid, myFaction)
 		Sleep(1)
 	--	print(string.format("Think numGrid[%d] myFaction[%d]", numGrid, myFaction))
-		local from, to, val = ai.FindBest(grid, myFaction, 0)
+		local val, from, to = ai.FindBest(grid, myFaction)
 		if from ~= nil and to ~= nil then
 			pathGrid = gridTools.FindPath(grid, from)
 			print(string.format("move units from[%d %d] to[%d %d] val[%f]", from.x, from.y, to.x, to.y, val))

@@ -1,6 +1,10 @@
 local gridTools = require("lua/hasami_shogi/grid_tools")
 
-local Evaluate
+local function Evaluate(grid, myFaction)
+	local myCnt = grid.Count(myFaction)
+	local eneCnt = grid.Count(1 - myFaction)
+	return myCnt - eneCnt + math.random() * 0.1
+end
 
 local function FindBest(grid, myFaction, depth)
 	local maxVal = -10000
@@ -11,7 +15,13 @@ local function FindBest(grid, myFaction, depth)
 		for to in gridTools.ValForeach(pathGrid, function(v) return v ~= -1 end) do
 			local gridTmp = gridTools.DuplicateGrid(grid)
 			gridTools.Judge(gridTmp, from, to)
-			local val = Evaluate(gridTmp, myFaction, depth + 1)
+			local val
+			if depth < 1 then
+				val = -FindBest(gridTmp, 1 - myFaction, depth + 1)
+			else
+				val = Evaluate(gridTmp, myFaction)
+			end
+
 			if depth == 0 then
 				print(string.format("depth[%d] from[%d %d] to[%d %d] val[%f]", depth, from.x, from.y, to.x, to.y, val))
 				coroutine.yield()
@@ -23,21 +33,11 @@ local function FindBest(grid, myFaction, depth)
 			end
 		end
 	end
-	return maxFrom, maxTo, maxVal
-end
-
-Evaluate = function(grid, myFaction, depth)
---	print(string.format("Evaluate numGrid[%d] myFaction[%d] depth[%d]", numGrid, myFaction, depth))
-	if depth < 2 then
-		local enemyFaction = 1 - myFaction
-		local from, to, val = FindBest(grid, enemyFaction, depth)
-		return -val
-	end
-	local myCnt = grid.Count(myFaction)
-	local eneCnt = grid.Count(1 - myFaction)
-	return myCnt - eneCnt + math.random() * 0.1
+	return maxVal, maxFrom, maxTo
 end
 
 return {
-	FindBest = FindBest
+	FindBest = function(grid, myFaction)
+		return FindBest(grid, myFaction, 0)
+	end,
 }
