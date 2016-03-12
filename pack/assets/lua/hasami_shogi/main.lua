@@ -1,6 +1,7 @@
 local gridTools = require("lua/hasami_shogi/grid_tools")
 local commonTools = dofile("lua/hasami_shogi/common_tools.lua")
 local renderer = dofile("lua/hasami_shogi/renderer3d.lua")
+local ai = dofile("lua/hasami_shogi/ai.lua")
 
 local sndAttack = Voice("sound/attack.wav")
 local sndMove1 = Voice("sound/move1.wav")
@@ -12,42 +13,6 @@ local numGrid = 9
 
 local globalGrid = gridTools.CreateGrid(numGrid, function(x, y) return y == 0 and 1 or y == numGrid - 1 and 0 or -1 end)
 local pathGrid
-
-local function FindBest(grid, myFaction, evaluator, depth)
-	local maxVal = -10000
-	local maxFrom
-	local maxTo
-	for from in gridTools.ValForeach(grid, function(v) return v == myFaction end) do
-		local pathGrid = gridTools.FindPath(grid, from)
-		for to in gridTools.ValForeach(pathGrid, function(v) return v ~= -1 end) do
-			local gridTmp = gridTools.DuplicateGrid(grid)
-			gridTools.Judge(gridTmp, from, to)
-			local val = evaluator(gridTmp, myFaction, depth + 1)
-			if depth == 0 then
-				print(string.format("depth[%d] from[%d %d] to[%d %d] val[%f]", depth, from.x, from.y, to.x, to.y, val))
-				coroutine.yield()
-			end
-			if maxVal < val then
-				maxVal = val
-				maxFrom = from
-				maxTo = to
-			end
-		end
-	end
-	return maxFrom, maxTo, maxVal
-end
-
-local function Evaluate(grid, myFaction, depth)
---	print(string.format("Evaluate numGrid[%d] myFaction[%d] depth[%d]", numGrid, myFaction, depth))
-	if depth < 2 then
-		local enemyFaction = 1 - myFaction
-		local from, to, val = FindBest(grid, enemyFaction, Evaluate, depth)
-		return -val
-	end
-	local myCnt = grid.Count(myFaction)
-	local eneCnt = grid.Count(1 - myFaction)
-	return myCnt - eneCnt + math.random() * 0.1
-end
 
 local function JudgeAndSound(grid, from, to)
 	if gridTools.Judge(grid, from, to) > 0 then
@@ -74,7 +39,7 @@ local co = coroutine.create(function()
 	local function Think(grid, myFaction)
 		Sleep(1)
 	--	print(string.format("Think numGrid[%d] myFaction[%d]", numGrid, myFaction))
-		local from, to, val = FindBest(grid, myFaction, Evaluate, 0)
+		local from, to, val = ai.FindBest(grid, myFaction, 0)
 		if from ~= nil and to ~= nil then
 			pathGrid = gridTools.FindPath(grid, from)
 			print(string.format("move units from[%d %d] to[%d %d] val[%f]", from.x, from.y, to.x, to.y, val))
