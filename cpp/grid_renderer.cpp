@@ -114,7 +114,7 @@ void GridRenderer::Draw()
 	afWriteBuffer(ubo, &matVP, sizeof(Mat));
 	afBindBufferToBindingPoint(ubo, 0);
 	afBindVAO(vao);
-	afDrawLineList(lines * 2);
+	afDraw(PT_LINELIST, lines * 2);
 	afBindVAO(0);
 #ifndef NDEBUG
 	Vec2 v;

@@ -22,7 +22,7 @@ void LetterBox::Draw(AFRenderTarget& target, SRVID srcTex)
 	afBindSamplerToBindingPoint(stockObjects.GetNoMipmapSampler(), 0);
 	shaderMan.Apply(shader);
 	stockObjects.ApplyFullScreenVAO();
-	afDrawTriangleStrip(4);
+	afDraw(PT_TRIANGLESTRIP, 4);
 }
 
 void LetterBox::Destroy()

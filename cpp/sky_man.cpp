@@ -44,7 +44,7 @@ void SkyMan::Draw()
 	(texDesc.isCubeMap ? afBindCubeMapToBindingPoint : afBindTextureToBindingPoint)(texId, 0);
 
 	afBindSamplerToBindingPoint(sampler, 0);
-	afDrawTriangleStrip(4);
+	afDraw(PT_TRIANGLESTRIP, 4);
 	afBindTextureToBindingPoint(0, 0);
 }
 

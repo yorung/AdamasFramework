@@ -337,7 +337,7 @@ void WaterSurfaceClassic::Draw()
 	afBindBufferToBindingPoint(ubo, 0);
 	rt.BeginRenderToThis();
 	afBindVAO(vao);
-	afDrawIndexedTriangleStrip(nIndi);
+	afDrawIndexed(PT_TRIANGLESTRIP, nIndi);
 
 	AFRenderTarget rtDefault;
 	rtDefault.InitForDefaultRenderTarget();
@@ -346,7 +346,7 @@ void WaterSurfaceClassic::Draw()
 	afBindTextureToBindingPoint(rt.GetTexture(), 0);
 	afBindSamplerToBindingPoint(samplerNoMipmap, 0);
 	afBindVAO(vaoFullScr);
-	afDrawIndexedTriangleStrip(4);
+	afDrawIndexed(PT_TRIANGLESTRIP, 4);
 
 	afBindVAO(0);
 }

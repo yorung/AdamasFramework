@@ -86,7 +86,7 @@ void SpriteRenderer::Draw(const SpriteCommands& sprites)
 		if (numStoredSprites > 0) {
 			afBindTextureToBindingPoint(curTex, 0);
 			afWriteBuffer(vbo, v, sizeof(SpriteVertex) * 4 * numStoredSprites);
-			afDrawIndexedTriangleList(6 * numStoredSprites, 0);
+			afDrawIndexed(PT_TRIANGLELIST, 6 * numStoredSprites, 0);
 			numStoredSprites = 0;
 		}
 	};

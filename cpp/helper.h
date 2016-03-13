@@ -39,9 +39,3 @@ struct TexDesc {
 };
 
 SRVID afLoadTexture(const char* name, TexDesc& desc);
-
-inline void afDrawIndexedTriangleStrip(int numIndices, int start = 0) { afDrawIndexed(PT_TRIANGLESTRIP, numIndices, start); }
-inline void afDrawIndexedTriangleList(int numIndices, int start = 0) { afDrawIndexed(PT_TRIANGLELIST, numIndices, start); }
-inline void afDrawTriangleStrip(int numVertices, int start = 0) { afDraw(PT_TRIANGLESTRIP, numVertices, start); }
-inline void afDrawLineList(int numVertices, int start = 0) { afDraw(PT_LINELIST, numVertices, start); }
-inline void afDrawIndexedInstancedTriangleList(int instanceCount, int numIndices, int start = 0) { afDrawIndexed(PT_TRIANGLELIST, numIndices, start, instanceCount); }

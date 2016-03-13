@@ -169,7 +169,7 @@ void Picking::Draw3D()
 	afWriteBuffer(ubo, &mVP, sizeof(Mat));
 	afBindBufferToBindingPoint(ubo, 0);
 
-	afDrawTriangleStrip(3);
+	afDraw(PT_TRIANGLESTRIP, 3);
 }
 
 void Picking::Draw2D()
@@ -191,5 +191,5 @@ void Picking::Draw2D()
 	afWriteBuffer(ubo, &buf, sizeof(buf));
 	afBindBufferToBindingPoint(ubo, 0);
 
-	afDrawTriangleStrip(3);
+	afDraw(PT_TRIANGLESTRIP, 3);
 }

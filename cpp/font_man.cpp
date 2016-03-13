@@ -308,7 +308,7 @@ void FontMan::Render()
 	afBindVAO(vao);
 	afBindSamplerToBindingPoint(sampler, 0);
 	afBindTextureToBindingPoint(texture, 0);
-	afDrawIndexedTriangleList(numSprites * 6);
+	afDrawIndexed(PT_TRIANGLELIST, numSprites * 6);
 	afBindVAO(0);
 	numSprites = 0;
 }
