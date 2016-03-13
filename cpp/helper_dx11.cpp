@@ -129,34 +129,16 @@ void afWriteTexture(SRVID srv, const TexDesc& desc, const void* buf)
 	deviceMan11.GetContext()->Unmap(tx.Get(), 0);
 }
 
-void afDrawIndexedTriangleStrip(int numIndices, int start)
+void afDrawIndexed(PrimitiveTopology pt, int numIndices, int start, int instanceCount)
 {
-	deviceMan11.GetContext()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-	deviceMan11.GetContext()->DrawIndexed(numIndices, start, 0);
-}
-
-void afDrawIndexedTriangleList(int numIndices, int start)
-{
-	deviceMan11.GetContext()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	deviceMan11.GetContext()->DrawIndexed(numIndices, start, 0);
-}
-
-void afDrawTriangleStrip(int numVertices, int start)
-{
-	deviceMan11.GetContext()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-	deviceMan11.GetContext()->Draw(numVertices, start);
-}
-
-void afDrawLineList(int numVertices, int start)
-{
-	deviceMan11.GetContext()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
-	deviceMan11.GetContext()->Draw(numVertices, start);
-}
-
-void afDrawIndexedInstancedTriangleList(int instanceCount, int numIndices, int start)
-{
-	deviceMan11.GetContext()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	deviceMan11.GetContext()->IASetPrimitiveTopology(pt);
 	deviceMan11.GetContext()->DrawIndexedInstanced(numIndices, instanceCount, start, 0, 0);
+}
+
+void afDraw(PrimitiveTopology pt, int numVertices, int start, int instanceCount)
+{
+	deviceMan11.GetContext()->IASetPrimitiveTopology(pt);
+	deviceMan11.GetContext()->DrawInstanced(numVertices, instanceCount, start, 0);
 }
 
 void afCullMode(CullMode cullMode)

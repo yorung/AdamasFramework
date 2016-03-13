@@ -158,13 +158,14 @@ void afLayoutUBOBindingManually(GLuint program, const GLchar* name, GLuint unifo
 void afBindTextureToBindingPoint(GLuint tex, GLuint textureBindingPoint);
 void afBindCubeMapToBindingPoint(GLuint tex, GLuint textureBindingPoint);
 
-void afDrawIndexedTriangleStrip(int numIndices, int start = 0);
-void afDrawIndexedTriangleList(int numIndices, int start = 0);
-void afDrawTriangleStrip(int numVertices, int start = 0);
-void afDrawLineList(int numVertices, int start = 0);
-#ifdef AF_GLES31
-void afDrawIndexedInstancedTriangleList(int instanceCount, int numIndices, int start = 0);
-#endif
+enum PrimitiveTopology {
+	PT_TRIANGLESTRIP = GL_TRIANGLE_STRIP,
+	PT_TRIANGLELIST = GL_TRIANGLES,
+	PT_LINELIST = GL_LINES,
+};
+
+void afDrawIndexed(PrimitiveTopology pt, int numIndices, int start = 0, int instanceCount = 1);
+void afDraw(PrimitiveTopology pt, int numVertices, int start = 0, int instanceCount = 1);
 
 enum CullMode {
 	CM_DISABLE,

@@ -54,11 +54,13 @@ void afBindTextureToBindingPoint(SRVID srv, UINT textureBindingPoint);
 #define afBindCubeMapToBindingPoint afBindTextureToBindingPoint
 void afBindSamplerToBindingPoint(SAMPLERID sampler, UINT textureBindingPoint);
 
-void afDrawIndexedTriangleStrip(int numIndices, int start = 0);
-void afDrawIndexedTriangleList(int numIndices, int start = 0);
-void afDrawTriangleStrip(int numVertices, int start = 0);
-void afDrawLineList(int numVertices, int start = 0);
-void afDrawIndexedInstancedTriangleList(int instanceCount, int numIndices, int start = 0);
+#define PrimitiveTopology D3D_PRIMITIVE_TOPOLOGY
+#define PT_TRIANGLESTRIP D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP
+#define PT_TRIANGLELIST D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST
+#define PT_LINELIST D3D_PRIMITIVE_TOPOLOGY_LINELIST
+
+void afDrawIndexed(PrimitiveTopology pt, int numIndices, int start = 0, int instanceCount = 1);
+void afDraw(PrimitiveTopology pt, int numVertices, int start = 0, int instanceCount = 1);
 
 enum CullMode {
 	CM_DISABLE,
