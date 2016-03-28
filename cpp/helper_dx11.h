@@ -111,7 +111,7 @@ public:
 };
 
 typedef std::unique_ptr<FakeVAO> VAOID;
-VAOID afCreateVAO(const InputElement elements[], int numElements, int numBuffers, VBOID* const vertexBufferIds, const int* strides, IBOID ibo);
+VAOID afCreateVAO(const InputElement elements[], int numElements, int numBuffers, VBOID const vertexBufferIds[], const int strides[], IBOID ibo);
 void afBindVAO(const VAOID& vao);
 inline void afSafeDeleteVAO(VAOID& p) { p.reset(); }
 

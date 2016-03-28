@@ -219,7 +219,7 @@ IVec2 afGetTextureSize(SRVID srv)
 	return IVec2((int)desc.Width, (int)desc.Height);
 }
 
-VAOID afCreateVAO(const InputElement elements[], int numElements, int numBuffers, VBOID* const vertexBufferIds, const int* strides, IBOID ibo)
+VAOID afCreateVAO(const InputElement elements[], int numElements, int numBuffers, VBOID const vertexBufferIds[], const int strides[], IBOID ibo)
 {
 	(void)elements;
 	(void)numElements;

@@ -80,7 +80,7 @@ typedef TBufName<GL_ARRAY_BUFFER> VBOID;
 typedef AFGLName SAMPLERID;
 typedef AFGLName SRVID;
 
-void afSetVertexAttributes(const InputElement elements[], int numElements, int numBuffers, VBOID const *vertexBufferIds, const int* strides);
+void afSetVertexAttributes(const InputElement elements[], int numElements, int numBuffers, VBOID const vertexBufferIds[], const int strides[]);
 
 
 template <class BufName>

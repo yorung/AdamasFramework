@@ -234,7 +234,7 @@ void afDraw(PrimitiveTopology pt, int numVertices, int start, int instanceCount)
 #endif
 }
 
-void afSetVertexAttributes(const InputElement elements[], int numElements, int numBuffers, VBOID const *vertexBufferIds, const int* strides)
+void afSetVertexAttributes(const InputElement elements[], int numElements, int numBuffers, VBOID const vertexBufferIds[], const int strides[])
 {
 	for (int i = 0; i < numElements; i++) {
 		const InputElement& d = elements[i];
@@ -307,7 +307,7 @@ void afSetVertexAttributes(const InputElement elements[], int numElements, int n
 }
 
 #ifdef AF_GLES31
-VAOID afCreateVAO(const InputElement elements[], int numElements, int numBuffers, VBOID const *vertexBufferIds, const int* strides, IBOID ibo)
+VAOID afCreateVAO(const InputElement elements[], int numElements, int numBuffers, VBOID const vertexBufferIds[], const int strides[], IBOID ibo)
 {
 	VAOID vao;
 	afHandleGLError(glGenVertexArrays(1, &vao.x));
