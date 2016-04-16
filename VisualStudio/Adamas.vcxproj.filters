@@ -231,9 +231,6 @@
     <ClInclude Include="..\cpp\system_misc.h">
       <Filter>PlatformIndipendent</Filter>
     </ClInclude>
-    <ClInclude Include="..\cpp\grid_renderer.h">
-      <Filter>PlatformIndipendent</Filter>
-    </ClInclude>
     <ClInclude Include="..\cpp\helper_gl.h">
       <Filter>GL</Filter>
     </ClInclude>

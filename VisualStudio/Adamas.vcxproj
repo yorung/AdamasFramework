@@ -134,7 +134,6 @@
     <ClInclude Include="..\cpp\font_man.h" />
     <ClInclude Include="..\cpp\fps.h" />
     <ClInclude Include="..\cpp\glow.h" />
-    <ClInclude Include="..\cpp\grid_renderer.h" />
     <ClInclude Include="..\cpp\helper.h" />
     <ClInclude Include="..\cpp\helper_dx11.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
