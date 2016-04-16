@@ -1,6 +1,4 @@
-following extension headers are available on https://www.opengl.org/registry/
+Please download following OpenGL extension header files from https://www.opengl.org/registry/ and place them this directory.
 
 - glcorearb.h
-- glext.h
-- glxext.h
 - wglext.h
