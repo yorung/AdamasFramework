@@ -106,7 +106,7 @@ class FakeVAO
 	std::vector<UINT> strides;
 	ComPtr<ID3D11Buffer> ibo;
 public:
-	FakeVAO(int numBuffers, VBOID* const buffers, const int strides[], const UINT offsets[], IBOID ibo);
+	FakeVAO(int numBuffers, const VBOID buffers[], const int strides[], const UINT offsets[], IBOID ibo);
 	void Apply();
 };
 

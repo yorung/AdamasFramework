@@ -104,7 +104,7 @@ void ShaderMan11::Apply(SMID id)
 	}
 }
 
-FakeVAO::FakeVAO(int numBuffers, VBOID* const vbos_, const int strides_[], const UINT offsets_[], IBOID ibo_)
+FakeVAO::FakeVAO(int numBuffers, const VBOID vbos_[], const int strides_[], const UINT offsets_[], IBOID ibo_)
 {
 	ibo = ibo_;
 	vbos.resize(numBuffers);
