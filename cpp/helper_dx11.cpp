@@ -65,8 +65,7 @@ SRVID afCreateDynamicTexture(AFDTFormat format, const IVec2& size)
 
 SAMPLERID afCreateSampler(SamplerFilter filter, SamplerWrap wrap)
 {
-	D3D11_SAMPLER_DESC  desc;
-	ZeroMemory(&desc, sizeof(desc));
+	D3D11_SAMPLER_DESC desc = {};
 	desc.AddressU = wrap;
 	desc.AddressV = wrap;
 	desc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
