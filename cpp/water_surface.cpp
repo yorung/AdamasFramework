@@ -13,6 +13,7 @@ class WaterSurface
 	};
 
 	Mat matProj, matView;
+	AFRenderStates renderStates;
 	ShaderMan::SMID shaderHeightMap = 0;
 	ShaderMan::SMID shaderNormalMap = 0;
 	ShaderMan::SMID shaderWaterLastPass = 0;
@@ -141,15 +142,16 @@ void WaterSurface::Init()
 
 	lastTime = GetTime();
 
-	shaderWaterLastPass = shaderMan.Create("water_lastpass", nullptr, 0, BM_NONE, DSM_DISABLE, CM_DISABLE);
+	renderStates.Init(BM_NONE, DSM_DISABLE, CM_DISABLE);
+	shaderWaterLastPass = shaderMan.Create("water_lastpass", nullptr, 0);
 	assert(shaderWaterLastPass);
-	shaderHeightMap = shaderMan.Create("water_heightmap", nullptr, 0, BM_NONE, DSM_DISABLE, CM_DISABLE);
+	shaderHeightMap = shaderMan.Create("water_heightmap", nullptr, 0);
 	assert(shaderHeightMap);
 
 	{
 		int numElements = 0;
 		const InputElement* elements = stockObjects.GetFullScreenInputElements(numElements);
-		shaderNormalMap = shaderMan.Create("water_normal", elements, numElements, BM_NONE, DSM_DISABLE, CM_DISABLE);
+		shaderNormalMap = shaderMan.Create("water_normal", elements, numElements);
 	}
 	afLayoutSamplerBindingManually(shaderWaterLastPass, "waterHeightmap", 0);
 	assert(shaderNormalMap);
@@ -271,6 +273,7 @@ void WaterSurface::RenderWater(const UniformBuffer& hmub)
 void WaterSurface::Draw()
 {
 	UpdateTime();
+	renderStates.Apply();
 
 	bool mouseEdge = !lastMouseDown && systemMisc.mouseDown;
 	lastMouseDown = systemMisc.mouseDown;

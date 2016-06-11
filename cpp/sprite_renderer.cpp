@@ -37,7 +37,8 @@ void SpriteRenderer::Init()
 		CInputElement("COLOR", SF_R8G8B8A8_UNORM, 12),
 		CInputElement("TEXCOORD", SF_R32G32_FLOAT, 16),
 	};
-	shaderId = shaderMan.Create("sprite", layout, dimof(layout), BM_ALPHA, DSM_DISABLE, CM_DISABLE);
+	shaderId = shaderMan.Create("sprite", layout, dimof(layout));
+	renderStates.Init(BM_ALPHA, DSM_DISABLE, CM_DISABLE);
 
 	sampler = afCreateSampler(SF_LINEAR, SW_CLAMP);
 	vbo = afCreateDynamicVertexBuffer(sizeof(SpriteVertex) * MAX_SPRITES_IN_ONE_DRAW_CALL * 6);
@@ -73,6 +74,7 @@ void SpriteRenderer::Draw(const SpriteCommands& sprites)
 	Mat proj = ortho(0, scrSize.x, scrSize.y, 0, -1000, 1000);
 
 	shaderMan.Apply(shaderId);
+	renderStates.Apply();
 
 	afWriteBuffer(ubo, &proj, sizeof(Mat));
 	afBindBufferToBindingPoint(ubo, 0);

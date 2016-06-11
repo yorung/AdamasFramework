@@ -27,6 +27,7 @@ class WaterSurfaceClassic
 	WaterSurfaceClassicUBO uboBuf;
 	ShaderMan::SMID shaderId;
 	ShaderMan::SMID shaderIdFullScr;
+	AFRenderStates renderStates;
 	int lines;
 	void UpdateVert(std::vector<WaterVert>& vert);
 	void UpdateRipple();
@@ -254,11 +255,12 @@ void WaterSurfaceClassic::Init()
 	vboFullScr = afCreateVertexBuffer(sizeof(vboFullScrSrc), &vboFullScrSrc[0]);
 	iboFullScr = afCreateIndexBuffer(&iboFullScrSrc[0], dimof(iboFullScrSrc));
 
-	shaderId = shaderMan.Create("water_classic", elements, dimof(elements), BM_NONE, DSM_DISABLE, CM_DISABLE);
+	shaderId = shaderMan.Create("water_classic", elements, dimof(elements));
+	renderStates.Init(BM_NONE, DSM_DISABLE, CM_DISABLE);
 
 	const char* shaderName = "vivid";
 //	const char* shaderName = "letterbox";
-	shaderIdFullScr = shaderMan.Create(shaderName, elementsFullScr, dimof(elementsFullScr), BM_NONE, DSM_DISABLE, CM_DISABLE);
+	shaderIdFullScr = shaderMan.Create(shaderName, elementsFullScr, dimof(elementsFullScr));
 
 	texIds.resize(dimof(texFiles));
 	for (int i = 0; i < (int)dimof(texFiles); i++) {
@@ -328,6 +330,7 @@ void WaterSurfaceClassic::Draw()
 {
 	UpdateRipple();
 
+	renderStates.Apply();
 	shaderMan.Apply(shaderId);
 	for (int i = 0; i < (int)dimof(texFiles); i++) {
 		afBindTextureToBindingPoint(texIds[i], i);

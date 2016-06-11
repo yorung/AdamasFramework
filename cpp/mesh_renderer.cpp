@@ -93,7 +93,8 @@ void MeshRenderer::Create()
 	uboForBoneMatrices = afCreateUBO(sizeof(Mat) * MAX_BONE_SSBOS);
 	uboForPerDrawCall = afCreateUBO(sizeof(PerDrawCallUBO));
 	uboForMaterials = afCreateUBO(MATERIAL_UBO_SIZE);
-	shaderId = shaderMan.Create("skin_instanced", elements, dimof(elements), BM_NONE, DSM_DEPTH_ENABLE, CM_CW);
+	shaderId = shaderMan.Create("skin_instanced", elements, dimof(elements));
+	renderStates.Init(BM_NONE, DSM_DEPTH_ENABLE, CM_CW);
 	assert(shaderId);
 
 	shaderMan.Apply(shaderId);
@@ -198,6 +199,7 @@ void MeshRenderer::Flush()
 	afWriteBuffer(uboForPerDrawCall, &perDrawCallUBO, sizeof(PerDrawCallUBO));
 
 	shaderMan.Apply(shaderId);
+	renderStates.Apply();
 
 //	aflog("ubo pos = %d %d\n", glGetUniformLocation(shaderId, "matV"), glGetUniformLocation(shaderId, "matP"));
 

@@ -33,7 +33,7 @@ ShaderMan11::~ShaderMan11()
 	Destroy();
 }
 
-ShaderMan11::SMID ShaderMan11::Create(const char *name, const D3D11_INPUT_ELEMENT_DESC elements[], int numElements, BlendMode blendMode, DepthStencilMode depthStencilMode, CullMode cullMode)
+ShaderMan11::SMID ShaderMan11::Create(const char *name, const D3D11_INPUT_ELEMENT_DESC elements[], int numElements)
 {
 	auto it = m_nameToId.find(name);
 	if (it != m_nameToId.end())	{
@@ -53,9 +53,6 @@ ShaderMan11::SMID ShaderMan11::Create(const char *name, const D3D11_INPUT_ELEMEN
 
 	effect.elements = elements;
 	effect.numElements = numElements;
-	effect.blendMode = blendMode;
-	effect.depthStencilMode = depthStencilMode;
-	effect.cullMode = cullMode;
 	m_effects.push_back(effect);
 	return m_nameToId[name] = m_effects.size() - 1;
 }
@@ -98,9 +95,6 @@ void ShaderMan11::Apply(SMID id)
 		deviceMan11.GetContext()->IASetInputLayout(it.pInputLayout);
 		deviceMan11.GetContext()->VSSetShader(it.pVertexShader, nullptr, 0);
 		deviceMan11.GetContext()->PSSetShader(it.pPixelShader, nullptr, 0);
-		afBlendMode(it.blendMode);
-		afDepthStencilMode(it.depthStencilMode);
-		afCullMode(it.cullMode);
 	}
 }
 

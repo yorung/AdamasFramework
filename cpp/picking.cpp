@@ -18,6 +18,7 @@ class Picking {
 	VBOID vbo2d, vbo3d;
 	UBOID ubo;
 	ShaderMan::SMID shader;
+	AFRenderStates renderStates;
 public:
 	Picking();
 	~Picking();
@@ -54,7 +55,8 @@ Picking::Picking()
 	ubo = afCreateUBO(sizeof(Mat));
 	vbo2d = afCreateDynamicVertexBuffer(sizeof(Vertex) * 3);
 	vbo3d = afCreateDynamicVertexBuffer(sizeof(Vertex) * 3);
-	shader = shaderMan.Create("solid", elements, dimof(elements), BM_NONE, DSM_DEPTH_ENABLE, CM_DISABLE);
+	shader = shaderMan.Create("solid", elements, dimof(elements));
+	renderStates.Init(BM_NONE, DSM_DEPTH_ENABLE, CM_DISABLE);
 	Update();
 }
 
@@ -150,6 +152,7 @@ void Picking::Update()
 
 void Picking::Draw3D()
 {
+	renderStates.Apply();
 	shaderMan.Apply(shader);
 	VBOID vbos[] = {vbo3d};
 	int strides[] = {sizeof(Vertex)};
@@ -174,6 +177,7 @@ void Picking::Draw3D()
 
 void Picking::Draw2D()
 {
+	renderStates.Apply();
 	shaderMan.Apply(shader);
 	VBOID vbos[] = {vbo2d};
 	int strides[] = {sizeof(Vertex)};

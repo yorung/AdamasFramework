@@ -20,12 +20,14 @@ void Glow::LazyInit()
 
 	int numElements = 0;
 	const InputElement* elements = stockObjects.GetFullScreenInputElements(numElements);
-	shaderGlowExtraction = shaderMan.Create("glow_extraction", elements, numElements, BM_NONE, DSM_DISABLE, CM_DISABLE);
+	shaderGlowExtraction = shaderMan.Create("glow_extraction", elements, numElements);
 	assert(shaderGlowExtraction);
-	shaderGlowCopy = shaderMan.Create("glow_copy", elements, numElements, BM_NONE, DSM_DISABLE, CM_DISABLE);
+	shaderGlowCopy = shaderMan.Create("glow_copy", elements, numElements);
 	assert(shaderGlowCopy);
-	shaderGlowLastPass = shaderMan.Create("glow_lastpass", elements, numElements, BM_NONE, DSM_DISABLE, CM_DISABLE);
+	shaderGlowLastPass = shaderMan.Create("glow_lastpass", elements, numElements);
 	assert(shaderGlowLastPass);
+
+	renderStates.Init(BM_NONE, DSM_DISABLE, CM_DISABLE);
 }
 
 void Glow::Destroy()
@@ -43,6 +45,8 @@ void Glow::MakeGlow(AFRenderTarget& target, SRVID srcTex)
 	LazyInit();
 	afBindSamplerToBindingPoint(stockObjects.GetClampSampler(), 0);
 	stockObjects.ApplyFullScreenVAO();
+
+	renderStates.Apply();
 
 	shaderMan.Apply(shaderGlowExtraction);
 	glowMap[0].BeginRenderToThis();

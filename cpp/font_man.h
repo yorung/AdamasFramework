@@ -28,6 +28,7 @@ class FontMan
 	CharSprite charSprites[SPRITE_MAX];
 	int numSprites;
 	ShaderMan::SMID shader = ShaderMan::INVALID_SMID;
+	AFRenderStates renderStates;
 	IBOID ibo;
 	VBOID vbo;
 	VAOID vao;

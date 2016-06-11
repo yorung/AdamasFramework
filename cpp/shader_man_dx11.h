@@ -11,16 +11,13 @@ private:
 		ID3D11PixelShader* pPixelShader;
 		const D3D11_INPUT_ELEMENT_DESC *elements;
 		int numElements;
-		BlendMode blendMode;
-		DepthStencilMode depthStencilMode;
-		CullMode cullMode;
 	};
 	std::map<std::string, SMID> m_nameToId;
 	std::vector<Effect> m_effects;
 public:
 	ShaderMan11();
 	~ShaderMan11();
-	SMID Create(const char *name, const D3D11_INPUT_ELEMENT_DESC elements[], int numElements, BlendMode blendMode, DepthStencilMode depthStencilMode, CullMode cullMode);
+	SMID Create(const char *name, const D3D11_INPUT_ELEMENT_DESC elements[], int numElements);
 	void Destroy();
 	void Reload();
 	void Apply(SMID id);

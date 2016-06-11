@@ -21,6 +21,7 @@ typedef std::vector<SpriteCommand> SpriteCommands;
 class SpriteRenderer
 {
 	ShaderMan::SMID shaderId;
+	AFRenderStates renderStates;
 	SAMPLERID sampler;
 	VBOID vbo;
 	IBOID ibo;

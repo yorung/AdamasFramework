@@ -7,6 +7,7 @@ class GridRenderer
 	IBOID ibo;
 	VAOID vao;
 	ShaderMan::SMID shaderId;
+	AFRenderStates renderStates;
 	int lines;
 	int numGrid;
 	float pitch;
@@ -93,7 +94,8 @@ GridRenderer::GridRenderer(int numGrid_, float pitch_)
 		CInputElement("POSITION", SF_R32G32B32_FLOAT, 0),
 		CInputElement("COLOR", SF_R32G32B32_FLOAT, 12),
 	};
-	shaderId = shaderMan.Create("solid", layout, dimof(layout), BM_NONE, DSM_DEPTH_ENABLE, CM_DISABLE);
+	shaderId = shaderMan.Create("solid", layout, dimof(layout));
+	renderStates.Init(BM_NONE, DSM_DEPTH_ENABLE, CM_DISABLE);
 
 	vbo = afCreateVertexBuffer(sizeVertices, &vert[0]);
 	ibo = afCreateIndexBuffer(&indi[0], indi.size());
@@ -106,6 +108,7 @@ GridRenderer::GridRenderer(int numGrid_, float pitch_)
 
 void GridRenderer::Draw()
 {
+	renderStates.Apply();
 	shaderMan.Apply(shaderId);
 	Mat matView, matProj;
 	matrixMan.Get(MatrixMan::VIEW, matView);

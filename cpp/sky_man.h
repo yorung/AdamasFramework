@@ -3,6 +3,7 @@ class SkyMan
 	SRVID texId;
 	TexDesc texDesc;
 	ShaderMan::SMID shaderId = ShaderMan::INVALID_SMID;
+	AFRenderStates renderStates;
 	UBOID uboId;
 	SAMPLERID sampler;
 public:

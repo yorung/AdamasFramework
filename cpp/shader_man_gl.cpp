@@ -75,22 +75,14 @@ static GLuint CreateProgram(const char* name, const InputElement elements[], int
 	return program;
 }
 
-ShaderMan::SMID ShaderMan::Create(const char *name, const InputElement elements[], int numElements, BlendMode blendMode, DepthStencilMode depthStencilMode, CullMode cullMode)
+ShaderMan::SMID ShaderMan::Create(const char *name, const InputElement elements[], int numElements)
 {
 	NameToId::iterator it = nameToId.find(name);
 	if (it != nameToId.end())
 	{
 		return it->second;
 	}
-	SMID id = nameToId[name] = CreateProgram(name, elements, numElements);
-	if (id != 0) {
-		Effect e;
-		e.blendMode = blendMode;
-		e.depthStencilMode = depthStencilMode;
-		e.cullMode = cullMode;
-		effects[id] = e;
-	}
-	return id;
+	return nameToId[name] = CreateProgram(name, elements, numElements);
 }
 
 void ShaderMan::Destroy()
@@ -105,11 +97,5 @@ void ShaderMan::Destroy()
 void ShaderMan::Apply(SMID id)
 {
 	assert(id);
-	auto it = effects.find(id);
-	if (it != effects.end()) {
-		afDepthStencilMode(it->second.depthStencilMode);
-		afBlendMode(it->second.blendMode);
-		afCullMode(it->second.cullMode);
-		afHandleGLError(glUseProgram(id));
-	}
+	afHandleGLError(glUseProgram(id));
 }

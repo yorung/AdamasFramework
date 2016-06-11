@@ -3,6 +3,7 @@ class Glow
 	ShaderMan::SMID shaderGlowExtraction = 0;
 	ShaderMan::SMID shaderGlowCopy = 0;
 	ShaderMan::SMID shaderGlowLastPass = 0;
+	AFRenderStates renderStates;
 	void LazyInit();
 public:
 	void Destroy();

@@ -55,6 +55,7 @@ class MeshRenderer
 {
 public:
 	ShaderMan::SMID shaderId;
+	AFRenderStates renderStates;
 	std::vector<RenderMesh*> renderMeshes;
 	PerDrawCallUBO perDrawCallUBO;
 	int nStoredCommands = 0;
