@@ -23,9 +23,9 @@ class WaterSurfaceES3
 	AFRenderTarget normalMap;
 	int heightCurrentWriteTarget = 0;
 
-	double elapsedTime;
-	double lastTime;
-	bool lastMouseDown;
+	double elapsedTime = 0;
+	double lastTime = 0;
+	bool lastMouseDown = false;
 	void UpdateTime();
 	void UpdateHeightMap(const UniformBuffer&);
 	void UpdateNormalMap();
@@ -102,7 +102,6 @@ static TexFiles texFiles[] = {
 
 WaterSurfaceES3::WaterSurfaceES3()
 {
-	lastMouseDown = false;
 	Init();
 }
 
