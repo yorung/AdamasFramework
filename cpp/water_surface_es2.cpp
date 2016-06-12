@@ -22,7 +22,7 @@ struct WaterSurfaceClassicUBO {
 	float time;
 };
 
-class WaterSurfaceClassic
+class WaterSurfaceES2
 {
 	WaterSurfaceClassicUBO uboBuf;
 	ShaderMan::SMID shaderId;
@@ -47,8 +47,8 @@ class WaterSurfaceClassic
 	AFRenderTarget rt;
 	std::vector<SRVID> texIds;
 public:
-	WaterSurfaceClassic();
-	~WaterSurfaceClassic();
+	WaterSurfaceES2();
+	~WaterSurfaceES2();
 	void Destroy();
 	void Init();
 	void Update();
@@ -56,8 +56,9 @@ public:
 	void CreateRipple(Vec2 pos);
 };
 
+static const char* waterSurfaceClassName = "WaterSurfaceES2";
 #define GET_WSC \
-	WaterSurfaceClassic* p = (WaterSurfaceClassic*)luaL_checkudata(L, 1, "WaterSurfaceClassic");	\
+	WaterSurfaceES2* p = (WaterSurfaceES2*)luaL_checkudata(L, 1, waterSurfaceClassName);	\
 	if (!p) {	\
 		return 0;	\
 	}
@@ -67,12 +68,12 @@ public:
 	WaterSurfaceClassicBinder() {
 		GetLuaBindFuncContainer().push_back([](lua_State* L) {
 			static luaL_Reg methods[] = {
-				{ "__gc", [](lua_State* L) { GET_WSC p->~WaterSurfaceClassic(); return 0; } },
+				{ "__gc", [](lua_State* L) { GET_WSC p->~WaterSurfaceES2(); return 0; } },
 				{ "Update", [](lua_State* L) { GET_WSC p->Update(); return 0; } },
 				{ "Draw", [](lua_State* L) { GET_WSC p->Draw(); return 0; }},
 				{ nullptr, nullptr },
 			};
-			aflBindClass(L, "WaterSurfaceClassic", methods, [](lua_State* L) { void* u = lua_newuserdata(L, sizeof(WaterSurfaceClassic)); new (u) WaterSurfaceClassic(); return 1; });
+			aflBindClass(L, waterSurfaceClassName, methods, [](lua_State* L) { void* u = lua_newuserdata(L, sizeof(WaterSurfaceES2)); new (u) WaterSurfaceES2(); return 1; });
 		});
 	}
 } static waterSurfaceClassicBinder;
@@ -108,7 +109,7 @@ static Vec3 MakePos(int x, int z, float hmap[vertMax][vertMax])
 	return Vec3(((float)x - tileMax / 2) * pitch, height, ((float)z - tileMax / 2) * pitch);
 }
 
-void WaterSurfaceClassic::CreateRipple(Vec2 scrPos)
+void WaterSurfaceES2::CreateRipple(Vec2 scrPos)
 {
 	Vec3 surfacePos = transform(Vec3(scrPos.x, scrPos.y, 0), inv(uboBuf.matV * uboBuf.matP));
 
@@ -119,7 +120,7 @@ void WaterSurfaceClassic::CreateRipple(Vec2 scrPos)
 	ripplesNext %= dimof(ripples);
 }
 
-void WaterSurfaceClassic::UpdateVert(std::vector<WaterVert>& vert)
+void WaterSurfaceES2::UpdateVert(std::vector<WaterVert>& vert)
 {
 	struct RandWave {
 		float degreePerSec;
@@ -178,18 +179,18 @@ void WaterSurfaceClassic::UpdateVert(std::vector<WaterVert>& vert)
 	}
 }
 
-WaterSurfaceClassic::WaterSurfaceClassic()
+WaterSurfaceES2::WaterSurfaceES2()
 {
 	ripplesNext = 0;
 	Init();
 }
 
-WaterSurfaceClassic::~WaterSurfaceClassic()
+WaterSurfaceES2::~WaterSurfaceES2()
 {
 	Destroy();
 }
 
-void WaterSurfaceClassic::Destroy()
+void WaterSurfaceES2::Destroy()
 {
 	afSafeDeleteBuffer(ubo);
 	afSafeDeleteBuffer(vbo);
@@ -216,7 +217,7 @@ static const InputElement elementsFullScr[] = {
 	CInputElement("POSITION", SF_R32G32_FLOAT, 0),
 };
 
-void WaterSurfaceClassic::Init()
+void WaterSurfaceES2::Init()
 {
 	Destroy();
 
@@ -281,7 +282,7 @@ void WaterSurfaceClassic::Init()
 	vaoFullScr = afCreateVAO(elementsFullScr, dimof(elementsFullScr), 1, vertexBufferIdsFullScr, stridesFullScr, iboFullScr);
 }
 
-void WaterSurfaceClassic::UpdateRipple()
+void WaterSurfaceES2::UpdateRipple()
 {
 	double now = GetTime();
 	elapsedTime += now - lastTime;
@@ -297,7 +298,7 @@ void WaterSurfaceClassic::UpdateRipple()
 	afWriteBuffer(vbo, &vert[0], vert.size() * sizeof(WaterVert));
 }
 
-void WaterSurfaceClassic::Update()
+void WaterSurfaceES2::Update()
 {
 	if (!shaderId) {
 		return;
@@ -326,7 +327,7 @@ void WaterSurfaceClassic::Update()
 	uboBuf.time = (float)modf(elapsedTime * (1.0f / loopTime), &dummy) * loopTime;
 }
 
-void WaterSurfaceClassic::Draw()
+void WaterSurfaceES2::Draw()
 {
 	UpdateRipple();
 

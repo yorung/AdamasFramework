@@ -100,8 +100,8 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DX11Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\cpp\water_surface.cpp" />
-    <ClCompile Include="..\cpp\water_surface_classic.cpp" />
+    <ClCompile Include="..\cpp\water_surface_es3.cpp" />
+    <ClCompile Include="..\cpp\water_surface_es2.cpp" />
     <ClCompile Include="device_man_wgl.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DX11Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DX11Release|Win32'">true</ExcludedFromBuild>

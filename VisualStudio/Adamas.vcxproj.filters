@@ -22,9 +22,6 @@
     <ClCompile Include="..\cpp\tex_man.cpp">
       <Filter>PlatformIndipendent</Filter>
     </ClCompile>
-    <ClCompile Include="..\cpp\water_surface.cpp">
-      <Filter>PlatformIndipendent</Filter>
-    </ClCompile>
     <ClCompile Include="..\cpp\dib.cpp">
       <Filter>PlatformIndipendent</Filter>
     </ClCompile>
@@ -74,9 +71,6 @@
       <Filter>PlatformIndipendent</Filter>
     </ClCompile>
     <ClCompile Include="..\cpp\input_man.cpp">
-      <Filter>PlatformIndipendent</Filter>
-    </ClCompile>
-    <ClCompile Include="..\cpp\water_surface_classic.cpp">
       <Filter>PlatformIndipendent</Filter>
     </ClCompile>
     <ClCompile Include="..\cpp\stock_objects.cpp">
@@ -138,6 +132,12 @@
     </ClCompile>
     <ClCompile Include="wgl_grabber_gen.cpp">
       <Filter>GL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cpp\water_surface_es3.cpp">
+      <Filter>PlatformIndipendent</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cpp\water_surface_es2.cpp">
+      <Filter>PlatformIndipendent</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

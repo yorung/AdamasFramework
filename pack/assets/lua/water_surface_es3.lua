@@ -1,4 +1,4 @@
-local w = WaterSurface()
+local w = WaterSurfaceES3()
 function Update()
 	w:Update()
 	LookAt(Vec3(10, 10, 10), Vec3(0, 0, 0))

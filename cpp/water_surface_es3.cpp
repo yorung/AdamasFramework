@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #ifdef AF_GLES31
 
-class WaterSurface
+class WaterSurfaceES3
 {
 	struct UniformBuffer {
 		Vec2 mousePos;
@@ -33,16 +33,16 @@ class WaterSurface
 	void Init();
 	void Destroy();
 public:
-	WaterSurface();
-	~WaterSurface();
+	WaterSurfaceES3();
+	~WaterSurfaceES3();
 	void Update();
 	void Draw();
 };
 
 
-static const char* waterSurfaceClassName = "WaterSurface";
+static const char* waterSurfaceClassName = "WaterSurfaceES3";
 #define GET_WS \
-	WaterSurface* p = (WaterSurface*)luaL_checkudata(L, 1, waterSurfaceClassName); \
+	WaterSurfaceES3* p = (WaterSurfaceES3*)luaL_checkudata(L, 1, waterSurfaceClassName); \
 	if (!p) {	\
 		return 0;	\
 	} \
@@ -52,12 +52,12 @@ public:
 	WaterSurfaceBinder() {
 		GetLuaBindFuncContainer().push_back([](lua_State* L) {
 			static luaL_Reg methods[] = {
-				{ "__gc", [](lua_State* L) { GET_WS p->~WaterSurface(); return 0; } },
+				{ "__gc", [](lua_State* L) { GET_WS p->~WaterSurfaceES3(); return 0; } },
 				{ "Update", [](lua_State* L) { GET_WS p->Update(); return 0; } },
 				{ "Draw", [](lua_State* L) { GET_WS p->Draw(); return 0; } },
 				{ nullptr, nullptr },
 			};
-			aflBindClass(L, "WaterSurface", methods, [](lua_State* L) { void* u = lua_newuserdata(L, sizeof(WaterSurface)); new (u) WaterSurface(); return 1; });
+			aflBindClass(L, waterSurfaceClassName, methods, [](lua_State* L) { void* u = lua_newuserdata(L, sizeof(WaterSurfaceES3)); new (u) WaterSurfaceES3(); return 1; });
 		});
 	}
 } static waterSurfaceClassicBinder;
@@ -100,18 +100,18 @@ static TexFiles texFiles[] = {
 #endif
 
 
-WaterSurface::WaterSurface()
+WaterSurfaceES3::WaterSurfaceES3()
 {
 	lastMouseDown = false;
 	Init();
 }
 
-WaterSurface::~WaterSurface()
+WaterSurfaceES3::~WaterSurfaceES3()
 {
 	Destroy();
 }
 
-void WaterSurface::Destroy()
+void WaterSurfaceES3::Destroy()
 {
 	for (auto& it : renderTarget) {
 		it.Destroy();
@@ -122,7 +122,7 @@ void WaterSurface::Destroy()
 	normalMap.Destroy();
 }
 
-void WaterSurface::Init()
+void WaterSurfaceES3::Init()
 {
 	Destroy();
 	for (auto& it : renderTarget) {
@@ -187,14 +187,14 @@ void WaterSurface::Init()
 	aflog("WaterSurface::Init finished!\n");
 }
 
-void WaterSurface::UpdateTime()
+void WaterSurfaceES3::UpdateTime()
 {
 	double now = GetTime();
 	elapsedTime += now - lastTime;
 	lastTime = now;
 }
 
-void WaterSurface::Update()
+void WaterSurfaceES3::Update()
 {
 	IVec2 scrSize = systemMisc.GetScreenSize();
 	float offset = 0.5f;
@@ -217,7 +217,7 @@ void WaterSurface::Update()
 	}
 }
 
-void WaterSurface::UpdateHeightMap(const UniformBuffer& hmub)
+void WaterSurfaceES3::UpdateHeightMap(const UniformBuffer& hmub)
 {
 	auto& heightR = heightMap[heightCurrentWriteTarget];
 	heightCurrentWriteTarget ^= 1;
@@ -235,7 +235,7 @@ void WaterSurface::UpdateHeightMap(const UniformBuffer& hmub)
 	afBindVAO(0);
 }
 
-void WaterSurface::UpdateNormalMap()
+void WaterSurfaceES3::UpdateNormalMap()
 {
 	auto& heightR = heightMap[heightCurrentWriteTarget];
 	afBindTextureToBindingPoint(heightR.GetTexture(), 0);
@@ -246,7 +246,7 @@ void WaterSurface::UpdateNormalMap()
 	afBindVAO(0);
 }
 
-void WaterSurface::RenderWater(const UniformBuffer& hmub)
+void WaterSurfaceES3::RenderWater(const UniformBuffer& hmub)
 {
 	shaderMan.Apply(shaderWaterLastPass);
 
@@ -270,7 +270,7 @@ void WaterSurface::RenderWater(const UniformBuffer& hmub)
 	afBindVAO(0);
 }
 
-void WaterSurface::Draw()
+void WaterSurfaceES3::Draw()
 {
 	UpdateTime();
 	renderStates.Apply();
