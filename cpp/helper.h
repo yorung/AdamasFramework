@@ -50,7 +50,7 @@ public:
 		depthStencilMode = depthStencilMode_;
 		cullMode = cullMode_;
 	}
-	void Apply() {
+	void Apply() const {
 		afBlendMode(blendMode);
 		afDepthStencilMode(depthStencilMode);
 		afCullMode(cullMode);

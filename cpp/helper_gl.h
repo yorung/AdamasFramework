@@ -147,7 +147,23 @@ enum SamplerFilter {
 	SF_LINEAR,
 	SF_MIPMAP,
 };
+
+#ifdef AF_GLES31
 SAMPLERID afCreateSampler(SamplerFilter samplerFilter, SamplerWrap wrap);
+#define afBindSamplerToBindingPoint(samp,pnt) afHandleGLError(glBindSampler(pnt, samp))
+inline void afSafeDeleteSampler(SAMPLERID& s)
+{
+	if (s != 0) {
+		glDeleteSamplers(1, &s.x);
+		s.x = 0;
+	}
+}
+#else
+inline SAMPLERID afCreateSampler(SamplerFilter, SamplerWrap) { return SAMPLERID(); }
+#define afBindSamplerToBindingPoint(samp,pnt)
+#define afSafeDeleteSampler(s)
+#endif
+
 
  // without "binding" Layout Qualifier
 void afLayoutSamplerBindingManually(GLuint program, const GLchar* name, GLuint samplerBinding);
@@ -184,8 +200,10 @@ enum DepthStencilMode {
 	DSM_DEPTH_CLOSEREQUAL_READONLY,
 };
 void afDepthStencilMode(DepthStencilMode mode);
+
+#ifdef AF_GLES31
 #define afBindVAO(vao) afHandleGLError(glBindVertexArray(vao))
-#define afBindSamplerToBindingPoint(samp,pnt) afHandleGLError(glBindSampler(pnt, samp))
+#endif
 
 void afDumpCaps();
 void afDumpIsEnabled();
@@ -219,13 +237,6 @@ inline void afSafeDeleteVAO(VAOID& vao)
 	if (vao != 0) {
 		glDeleteVertexArrays(1, &vao.x);
 		vao.x = 0;
-	}
-}
-inline void afSafeDeleteSampler(SAMPLERID& s)
-{
-	if (s != 0) {
-		glDeleteSamplers(1, &s.x);
-		s.x = 0;
 	}
 }
 IVec2 afGetTextureSize(SRVID tex);

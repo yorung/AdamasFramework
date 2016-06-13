@@ -372,6 +372,7 @@ void afCullMode(CullMode cullMode)
 	}
 }
 
+#ifdef AF_GLES31
 SAMPLERID afCreateSampler(SamplerFilter filter, SamplerWrap wrap)
 {
 	SAMPLERID id;
@@ -393,6 +394,7 @@ SAMPLERID afCreateSampler(SamplerFilter filter, SamplerWrap wrap)
 	}
 	return id;
 }
+#endif
 
 GLenum _afHandleGLError(const char* file, const char* func, int line, const char* command)
 {
