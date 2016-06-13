@@ -142,15 +142,15 @@ void WaterSurfaceES3::Init()
 	lastTime = GetTime();
 
 	renderStates.Init(BM_NONE, DSM_DISABLE, CM_DISABLE);
-	shaderWaterLastPass = shaderMan.Create("water_lastpass", nullptr, 0);
+	shaderWaterLastPass = shaderMan.Create("water_es3_lastpass", nullptr, 0);
 	assert(shaderWaterLastPass);
-	shaderHeightMap = shaderMan.Create("water_heightmap", nullptr, 0);
+	shaderHeightMap = shaderMan.Create("water_es3_heightmap", nullptr, 0);
 	assert(shaderHeightMap);
 
 	{
 		int numElements = 0;
 		const InputElement* elements = stockObjects.GetFullScreenInputElements(numElements);
-		shaderNormalMap = shaderMan.Create("water_normal", elements, numElements);
+		shaderNormalMap = shaderMan.Create("water_es3_normal", elements, numElements);
 	}
 	afLayoutSamplerBindingManually(shaderWaterLastPass, "waterHeightmap", 0);
 	assert(shaderNormalMap);

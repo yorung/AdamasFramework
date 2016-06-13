@@ -256,7 +256,7 @@ void WaterSurfaceES2::Init()
 	vboFullScr = afCreateVertexBuffer(sizeof(vboFullScrSrc), &vboFullScrSrc[0]);
 	iboFullScr = afCreateIndexBuffer(&iboFullScrSrc[0], dimof(iboFullScrSrc));
 
-	shaderId = shaderMan.Create("water_classic", elements, dimof(elements));
+	shaderId = shaderMan.Create("water_es2", elements, dimof(elements));
 	renderStates.Init(BM_NONE, DSM_DISABLE, CM_DISABLE);
 
 	const char* shaderName = "vivid";
