@@ -83,7 +83,7 @@ void ShaderMan11::Reload()
 	Destroy();
 	for (int i = 0; i < (int)names.size(); i++) {
 		auto& ef = effs[i];
-		Create(names[i].c_str(), ef.elements, ef.numElements, ef.blendMode, ef.depthStencilMode, ef.cullMode);
+		Create(names[i].c_str(), ef.elements, ef.numElements);
 	}
 }
 
