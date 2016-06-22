@@ -107,21 +107,19 @@ void afWriteTexture(SRVID srv, const TexDesc& desc, const void* buf)
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-SRVID afCreateDynamicTexture(AFDTFormat format, const IVec2& size)
+static void CreateTextureInternal(AFDTFormat format, const IVec2& size, void* img)
 {
-	SRVID texture;
-	glGenTextures(1, &texture.x);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	auto gen = [=](GLint internalFormat, GLint format, GLenum type) {
-		afHandleGLError(glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, size.x, size.y, 0, format, type, nullptr));
+		afHandleGLError(glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, size.x, size.y, 0, format, type, img));
 	};
 	switch (format) {
 	case AFDT_R8G8B8A8_UNORM:
 		gen(GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE);
+		break;
+	case AFDT_R8G8B8A8_UNORM_SRGB:
+#ifdef AF_GLES31
+		gen(GL_SRGB8_ALPHA8, GL_RGBA, GL_UNSIGNED_BYTE);
+#endif
 		break;
 	case AFDT_R5G6B5_UINT:
 		gen(GL_RGB, GL_RGB, GL_UNSIGNED_SHORT_5_6_5);
@@ -155,13 +153,24 @@ SRVID afCreateDynamicTexture(AFDTFormat format, const IVec2& size)
 		assert(0);
 		break;
 	}
+}
+
+SRVID afCreateDynamicTexture(AFDTFormat format, const IVec2& size)
+{
+	SRVID texture;
+	glGenTextures(1, &texture.x);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	CreateTextureInternal(format, size, nullptr);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	return texture;
 }
 
 SRVID afCreateTexture2D(AFDTFormat format, const IVec2& size, void *image)
 {
-	assert(format == AFDT_R8G8B8A8_UNORM);
 	SRVID texture;
 	glGenTextures(1, &texture.x);
 	glBindTexture(GL_TEXTURE_2D, texture);
@@ -169,8 +178,7 @@ SRVID afCreateTexture2D(AFDTFormat format, const IVec2& size, void *image)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size.x, size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
+	CreateTextureInternal(format, size, image);
 	glGenerateMipmap(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	return texture;
