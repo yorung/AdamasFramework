@@ -62,7 +62,7 @@ static void afVerify(bool ok) {
 }
 
 #ifndef _MSC_VER
-void FontMan::MakeFontBitmap(const char* fontName, const CharSignature& sig, DIB& dib, CharCache& cache) const
+void FontMan::MakeFontBitmap(const char* fontName, const CharSignature& sig, DIB& dib, CharDesc& cache)
 {
 	int code = sig.code;
 
@@ -166,7 +166,7 @@ void FontMan::Destroy()
 }
 
 #ifdef _MSC_VER
-void FontMan::MakeFontBitmap(const char* fontName, const CharSignature& sig, DIB& dib, CharCache& cache) const
+void FontMan::MakeFontBitmap(const char* fontName, const CharSignature& sig, DIB& dib, CharDesc& cache)
 {
 	bool result = false;
 
@@ -175,7 +175,7 @@ void FontMan::MakeFontBitmap(const char* fontName, const CharSignature& sig, DIB
 
 	dib.Clear();
 	wchar_t buf[] = { sig.code, '\0' };
-	HDC hdc = texSrc.getDC();
+	HDC hdc = GetDC(nullptr);
 	assert(hdc);
 	HFONT oldFont = (HFONT)SelectObject(hdc, font);
 	const MAT2 mat = { {0,1}, {0,0}, {0,0}, {0,1} };
@@ -204,7 +204,7 @@ void FontMan::MakeFontBitmap(const char* fontName, const CharSignature& sig, DIB
 	//	SetTextColor(hdc, RGB(255, 255, 255));
 	//	SetBkColor(hdc, RGB(0, 0, 0));
 	//	TextOutW(hdc, 0, 0, buf, wcslen(buf));
-		dib3.Blt(dib.getDC(), 0, 0, dib3.getW(), dib3.getH());
+		dib3.Blt(dib.GetHDC(), 0, 0, dib3.getW(), dib3.getH());
 	//	dib.Save(SPrintf("../ScreenShot/%04x.bmp", sig.code));
 		dib.DibToDXFont();
 	}
@@ -212,8 +212,8 @@ void FontMan::MakeFontBitmap(const char* fontName, const CharSignature& sig, DIB
 	if (font) {
 		DeleteObject(font);
 	}
+	ReleaseDC(nullptr, hdc);
 
-	cache.srcPos = Vec2((float)curX, (float)curY);
 	cache.srcWidth = Vec2((float)met.gmBlackBoxX, (float)met.gmBlackBoxY);
 	cache.step = (float)met.gmCellIncX;
 	cache.distDelta = Vec2((float)met.gmptGlyphOrigin.x, (float)-met.gmptGlyphOrigin.y);
@@ -224,7 +224,7 @@ bool FontMan::Build(const CharSignature& signature)
 {
 	DIB	dib;
 	CharCache cache;
-	MakeFontBitmap("Gulim", signature, dib, cache);
+	MakeFontBitmap("Gulim", signature, dib, cache.desc);
 	int remainX = texSrc.getW() - curX;
 	if (remainX < dib.getW()) {
 		curX = 0;
@@ -249,7 +249,7 @@ bool FontMan::Build(const CharSignature& signature)
 	//snprintf(codestr, dimof(codestr), "%04x %c", signature.code, signature.code < 0x80 ? signature.code : 0x20);
 	//aflog("FontMan::Build() curX=%d curY=%d dib.getW()=%d dib.getH()=%d code=%s\n", curX, curY, dib.getW(), dib.getH(), codestr);
 
-	curX += (int)std::ceil(cache.srcWidth.x);
+	curX += (int)std::ceil(cache.desc.srcWidth.x);
 	caches[signature] = cache;
 	return true;
 }
@@ -299,8 +299,8 @@ void FontMan::Render()
 		}
 		const CharCache& cc = it->second;
 		for (int j = 0; j < (int)dimof(fontVertAlign); j++) {
-			verts[i * 4 + j].pos = (((cs.pos + cc.distDelta + fontVertAlign[j] * cc.srcWidth)) * Vec2(2, -2)) / scrSize + Vec2(-1, 1);
-			verts[i * 4 + j].coord = (cc.srcPos + fontVertAlign[j] * cc.srcWidth) / Vec2(TEX_W, TEX_H);
+			verts[i * 4 + j].pos = (((cs.pos + cc.desc.distDelta + fontVertAlign[j] * cc.desc.srcWidth)) * Vec2(2, -2)) / scrSize + Vec2(-1, 1);
+			verts[i * 4 + j].coord = (cc.srcPos + fontVertAlign[j] * cc.desc.srcWidth) / Vec2(TEX_W, TEX_H);
 		}
 	}
 	afWriteBuffer(vbo, verts, 4 * numSprites * sizeof(FontVertex));
@@ -334,7 +334,7 @@ void FontMan::DrawChar(Vec2& pos, const CharSignature& sig)
 
 	Caches::iterator it = caches.find(sig);
 	if (it != caches.end()) {
-		pos.x += it->second.step;
+		pos.x += it->second.desc.step;
 	}
 }
 
@@ -351,9 +351,9 @@ Vec2 FontMan::MeasureString(int fontSize, const char *text)
 		Cache(sig);
 		Caches::iterator it = caches.find(sig);
 		if (it != caches.end()) {
-			size.y = std::max(size.y, it->second.srcWidth.y);
-			size.x = pos.x + it->second.distDelta.x + it->second.srcWidth.x;
-			pos.x += it->second.step;
+			size.y = std::max(size.y, it->second.desc.srcWidth.y);
+			size.x = pos.x + it->second.desc.distDelta.x + it->second.desc.srcWidth.x;
+			pos.x += it->second.desc.step;
 		}
 	}
 	return size;

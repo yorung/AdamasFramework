@@ -7,11 +7,14 @@ class FontMan
 		bool operator < (const CharSignature& r) const { return GetOrder() < r.GetOrder(); }
 		bool operator == (const CharSignature& r) const { return GetOrder() == r.GetOrder(); }
 	};
-	struct CharCache {
-		Vec2 srcPos;
+	struct CharDesc {
 		Vec2 srcWidth;
 		Vec2 distDelta;
 		float step;
+	};
+	struct CharCache {
+		Vec2 srcPos;
+		CharDesc desc;
 	};
 	struct CharSprite {
 		Vec2 pos;
@@ -38,7 +41,7 @@ class FontMan
 	bool Cache(const CharSignature& code);
 	void DrawChar(Vec2& pos, const CharSignature& sig);
 	void ClearCache();
-	void MakeFontBitmap(const char* fontName, const CharSignature& code, DIB& dib, CharCache& cache) const;
+	static void MakeFontBitmap(const char* fontName, const CharSignature& code, DIB& dib, CharDesc& desc);
 public:
 	FontMan();
 	~FontMan();
