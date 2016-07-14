@@ -2,7 +2,6 @@
 
 class GridRenderer
 {
-	UBOID ubo;
 	VBOID vbo;
 	IBOID ibo;
 	VAOID vao;
@@ -53,12 +52,10 @@ struct GridVert {
 
 GridRenderer::~GridRenderer()
 {
-	afSafeDeleteBuffer(ubo);
 	afSafeDeleteBuffer(ibo);
 	afSafeDeleteBuffer(vbo);
 	afSafeDeleteVAO(vao);
 
-	assert(!ubo);
 	assert(!vbo);
 	assert(!ibo);
 	assert(!vao);
@@ -99,7 +96,6 @@ GridRenderer::GridRenderer(int numGrid_, float pitch_)
 
 	vbo = afCreateVertexBuffer(sizeVertices, &vert[0]);
 	ibo = afCreateIndexBuffer(&indi[0], indi.size());
-	ubo = afCreateUBO(sizeof(Mat));
 
 	int strides[] = {sizeof(GridVert)};
 	VBOID vbos[] = {vbo};
@@ -114,11 +110,13 @@ void GridRenderer::Draw()
 	matrixMan.Get(MatrixMan::VIEW, matView);
 	matrixMan.Get(MatrixMan::PROJ, matProj);
 	Mat matVP = matView * matProj;
+	UBOID ubo = afCreateUBO(sizeof(Mat));
 	afWriteBuffer(ubo, &matVP, sizeof(Mat));
 	afBindBufferToBindingPoint(ubo, 0);
 	afBindVAO(vao);
 	afDraw(PT_LINELIST, lines * 2);
 	afBindVAO(0);
+	afSafeDeleteBuffer(ubo);
 #ifndef NDEBUG
 	Vec2 v;
 	if (GetMousePosInGrid(v)) {
