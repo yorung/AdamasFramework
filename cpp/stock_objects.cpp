@@ -22,9 +22,9 @@ void StockObjects::CreateFullScreenVAO()
 
 void StockObjects::CreateSamplers()
 {
-	samplerRepeat = afCreateSampler(SF_MIPMAP, SW_REPEAT);
-	samplerClamp = afCreateSampler(SF_MIPMAP, SW_CLAMP);
-	samplerNoMipmap = afCreateSampler(SF_LINEAR, SW_CLAMP);
+	samplerRepeat = afCreateSampler(AFST_MIPMAP_WRAP);
+	samplerClamp = afCreateSampler(AFST_MIPMAP_CLAMP);
+	samplerNoMipmap = afCreateSampler(AFST_LINEAR_CLAMP);
 }
 
 void StockObjects::Init()

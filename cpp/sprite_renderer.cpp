@@ -40,7 +40,7 @@ void SpriteRenderer::Init()
 	shaderId = shaderMan.Create("sprite", layout, dimof(layout));
 	renderStates.Init(BM_ALPHA, DSM_DISABLE, CM_DISABLE);
 
-	sampler = afCreateSampler(SF_LINEAR, SW_CLAMP);
+	sampler = afCreateSampler(AFST_LINEAR_CLAMP);
 	vbo = afCreateDynamicVertexBuffer(sizeof(SpriteVertex) * MAX_SPRITES_IN_ONE_DRAW_CALL * 6);
 	ubo = afCreateUBO(sizeof(Mat));
 	ibo = afCreateQuadListIndexBuffer(MAX_SPRITES_IN_ONE_DRAW_CALL);

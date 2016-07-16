@@ -381,21 +381,24 @@ void afCullMode(CullMode cullMode)
 }
 
 #ifdef AF_GLES31
-SAMPLERID afCreateSampler(SamplerFilter filter, SamplerWrap wrap)
+SAMPLERID afCreateSampler(SamplerType type)
 {
+	GLint wrap = (type & 0x01) ? GL_CLAMP_TO_EDGE : GL_REPEAT;
+	int filter = type >> 1;
 	SAMPLERID id;
 	glGenSamplers(1, &id.x);
 	glSamplerParameteri(id, GL_TEXTURE_WRAP_S, wrap);
 	glSamplerParameteri(id, GL_TEXTURE_WRAP_T, wrap);
 	switch(filter) {
-	case SF_MIPMAP:
+	case 2:	// mipmap
 		glSamplerParameteri(id, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glSamplerParameteri(id, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	case SF_LINEAR:
+		break;
+	case 1:	// linear
 		glSamplerParameteri(id, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glSamplerParameteri(id, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		break;
-	case SF_POINT:
+	case 0:	// point
 		glSamplerParameteri(id, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glSamplerParameteri(id, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		break;

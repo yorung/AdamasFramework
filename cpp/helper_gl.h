@@ -138,20 +138,12 @@ IBOID afCreateIndexBuffer(const AFIndex* indi, int numIndi);
 VBOID afCreateVertexBuffer(int size, const void* buf);
 VBOID afCreateDynamicVertexBuffer(int size);
 
-enum SamplerWrap {
-	SW_REPEAT = GL_REPEAT,
-	SW_CLAMP = GL_CLAMP_TO_EDGE,
-};
-
-enum SamplerFilter {
-	SF_POINT,
-	SF_LINEAR,
-	SF_MIPMAP,
-};
-
 #ifdef AF_GLES31
-SAMPLERID afCreateSampler(SamplerFilter samplerFilter, SamplerWrap wrap);
-#define afBindSamplerToBindingPoint(samp,pnt) afHandleGLError(glBindSampler(pnt, samp))
+inline void afBindSamplerToBindingPoint(SAMPLERID samp, int pnt)
+{
+	afHandleGLError(glBindSampler(pnt, samp));
+}
+
 inline void afSafeDeleteSampler(SAMPLERID& s)
 {
 	if (s != 0) {
@@ -159,10 +151,6 @@ inline void afSafeDeleteSampler(SAMPLERID& s)
 		s.x = 0;
 	}
 }
-#else
-inline SAMPLERID afCreateSampler(SamplerFilter, SamplerWrap) { return SAMPLERID(); }
-#define afBindSamplerToBindingPoint(samp,pnt)
-#define afSafeDeleteSampler(s)
 #endif
 
 

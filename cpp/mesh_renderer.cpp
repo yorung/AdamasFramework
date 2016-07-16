@@ -99,7 +99,7 @@ void MeshRenderer::Create()
 
 	shaderMan.Apply(shaderId);
 
-	sampler = afCreateSampler(SF_MIPMAP, SW_REPEAT);
+	sampler = afCreateSampler(AFST_MIPMAP_WRAP);
 }
 
 void MeshRenderer::Destroy()
@@ -213,7 +213,7 @@ void MeshRenderer::Flush()
 	afBindBufferToBindingPoint(UBOID(), UBP_BONES);
 	afBindBufferToBindingPoint(UBOID(), UBP_MATERIALS);
 	afBindBufferToBindingPoint(UBOID(), UBP_PER_INSTANCE_DATAS);
-	afBindSamplerToBindingPoint(0, 0);
+	afBindSamplerToBindingPoint(SAMPLERID(), 0);
 }
 
 MMID MeshRenderer::CreateMaterial(const Material& mat)

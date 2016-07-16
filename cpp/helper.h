@@ -71,4 +71,15 @@ struct CharDesc {
 };
 void MakeFontBitmap(const char* fontName, const CharSignature& code, class DIB& dib, CharDesc& desc);
 
+enum SamplerType {
+	AFST_POINT_WRAP,
+	AFST_POINT_CLAMP,
+	AFST_LINEAR_WRAP,
+	AFST_LINEAR_CLAMP,
+	AFST_MIPMAP_WRAP,
+	AFST_MIPMAP_CLAMP,
+};
+
+SAMPLERID afCreateSampler(SamplerType type);
+
 void afVerify(bool ok);

@@ -54,7 +54,7 @@ bool FontMan::Init()
 	int stride = sizeof(FontVertex);
 	VBOID vboIds[] = {vbo};
 	vao = afCreateVAO(elements, dimof(elements), 1, vboIds, &stride, ibo);
-	sampler = afCreateSampler(SF_POINT, SW_CLAMP);
+	sampler = afCreateSampler(AFST_POINT_CLAMP);
 	return true;
 }
 

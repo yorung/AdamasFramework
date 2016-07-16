@@ -267,9 +267,9 @@ void WaterSurfaceES2::Init()
 	for (int i = 0; i < (int)dimof(texFiles); i++) {
 		texIds[i] = texMan.Create(texFiles[i].name);
 	}
-	samplerRepeat = afCreateSampler(SF_MIPMAP, SW_REPEAT);
-	samplerClamp = afCreateSampler(SF_MIPMAP, SW_CLAMP);
-	samplerNoMipmap = afCreateSampler(SF_LINEAR, SW_CLAMP);
+	samplerRepeat = afCreateSampler(AFST_MIPMAP_WRAP);
+	samplerClamp = afCreateSampler(AFST_MIPMAP_CLAMP);
+	samplerNoMipmap = afCreateSampler(AFST_LINEAR_CLAMP);
 
 	rt.Init(systemMisc.GetScreenSize(), AFDT_R5G6B5_UINT);
 

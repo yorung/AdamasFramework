@@ -14,7 +14,7 @@ void SkyMan::Create(const char *texFileName, const char* shader)
 	texId = afLoadTexture(texFileName, texDesc);
 	shaderId = shaderMan.Create(shader, nullptr, 0);
 	renderStates.Init(BM_NONE, DSM_DEPTH_CLOSEREQUAL_READONLY, CM_DISABLE);
-	sampler = afCreateSampler(SF_LINEAR, SW_REPEAT);
+	sampler = afCreateSampler(AFST_LINEAR_WRAP);
 }
 
 void SkyMan::Draw()

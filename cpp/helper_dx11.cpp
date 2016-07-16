@@ -63,16 +63,28 @@ SRVID afCreateDynamicTexture(AFDTFormat format, const IVec2& size)
 	return srv;
 }
 
-SAMPLERID afCreateSampler(SamplerFilter filter, SamplerWrap wrap)
+SAMPLERID afCreateSampler(SamplerType type)
 {
+	D3D11_TEXTURE_ADDRESS_MODE wrap = (type & 0x01) ? D3D11_TEXTURE_ADDRESS_CLAMP : D3D11_TEXTURE_ADDRESS_WRAP;
+	int filter = type >> 1;
 	D3D11_SAMPLER_DESC desc = {};
 	desc.AddressU = wrap;
 	desc.AddressV = wrap;
 	desc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
 	desc.MaxAnisotropy = 1;
-	desc.Filter = filter;
 	desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 	desc.MaxLOD = D3D11_FLOAT32_MAX;
+	switch (filter) {
+	case 2:	// mipmap
+		desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+		break;
+	case 1:	// linear
+		desc.Filter = D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
+		break;
+	case 0:	// point
+		desc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+		break;
+	}
 	ComPtr<ID3D11SamplerState> sampler;
 	deviceMan11.GetDevice()->CreateSamplerState(&desc, &sampler);
 	return sampler;
