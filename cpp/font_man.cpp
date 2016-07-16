@@ -194,7 +194,7 @@ void FontMan::DrawChar(Vec2& pos, const CharSignature& sig)
 
 Vec2 FontMan::MeasureString(int fontSize, const char *text)
 {
-	int len = strlen(text);
+	int len = (int)strlen(text);
 	Vec2 pos(0, 0);
 	Vec2 size(0, 0);
 	for (int i = 0; i < len; i++)
@@ -215,7 +215,7 @@ Vec2 FontMan::MeasureString(int fontSize, const char *text)
 
 void FontMan::DrawString(Vec2 pos, int fontSize, const wchar_t *text)
 {
-	int len = wcslen(text);
+	int len = (int)wcslen(text);
 	for (int i = 0; i < len; i++)
 	{
 		CharSignature sig;
@@ -227,7 +227,7 @@ void FontMan::DrawString(Vec2 pos, int fontSize, const wchar_t *text)
 
 void FontMan::DrawString(Vec2 pos, int fontSize, const char *text)
 {
-	int len = strlen(text);
+	int len = (int)strlen(text);
 	for (int i = 0; i < len; i++)
 	{
 		CharSignature sig;

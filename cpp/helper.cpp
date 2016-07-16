@@ -34,10 +34,10 @@ IBOID afCreateTiledPlaneIBO(int numTiles, int* numIndies)
 	}
 
 	if (numIndies) {
-		*numIndies = indi.size();
+		*numIndies = (int)indi.size();
 	}
 
-	return afCreateIndexBuffer(&indi[0], indi.size());
+	return afCreateIndexBuffer(&indi[0], (int)indi.size());
 }
 
 VBOID afCreateTiledPlaneVBO(int numTiles)
@@ -48,7 +48,7 @@ VBOID afCreateTiledPlaneVBO(int numTiles)
 			v.push_back((Vec2)IVec2(x, y) / (float)numTiles * 2 - Vec2(1, 1));
 		}
 	}
-	return afCreateVertexBuffer(v.size() * sizeof(v[0]), &v[0]);
+	return afCreateVertexBuffer((int)v.size() * sizeof(v[0]), &v[0]);
 }
 
 struct DDSHeader {
@@ -151,7 +151,7 @@ static SRVID LoadDDSTexture(const char* name, TexDesc& texDesc)
 
 SRVID afLoadTexture(const char* name, TexDesc& desc)
 {
-	int len = strlen(name);
+	size_t len = strlen(name);
 	if (len > 4 && !stricmp(name + len - 4, ".dds")) {
 		return LoadDDSTexture(name, desc);
 	} else {
