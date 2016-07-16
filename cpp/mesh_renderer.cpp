@@ -98,8 +98,6 @@ void MeshRenderer::Create()
 	assert(shaderId);
 
 	shaderMan.Apply(shaderId);
-
-	sampler = afCreateSampler(AFST_MIPMAP_WRAP);
 }
 
 void MeshRenderer::Destroy()
@@ -116,7 +114,6 @@ void MeshRenderer::Destroy()
 	afSafeDeleteBuffer(uboForBoneMatrices);
 	afSafeDeleteBuffer(uboForMaterials);
 	afSafeDeleteBuffer(uboForPerDrawCall);
-	afSafeDeleteSampler(sampler);
 
 	nStoredCommands = 0;
 }
@@ -154,7 +151,7 @@ RenderMesh* MeshRenderer::GetMeshByMRID(MRID id)
 
 void MeshRenderer::DrawRenderMesh(MRID id, const Mat& worldMat, const Mat BoneMatrices[], int nBones, const Block& block)
 {
-	if (!sampler) {
+	if (!uboForBoneMatrices) {
 		return;
 	}
 	assert(GetMeshByMRID(id));
@@ -182,17 +179,17 @@ void MeshRenderer::DrawRenderMesh(MRID id, const Mat& worldMat, const Mat BoneMa
 
 void MeshRenderer::Flush()
 {
-	if (!sampler) {
+	if (!uboForBoneMatrices) {
 		return;
 	}
-	afBindBufferToBindingPoint(uboForBoneMatrices, UBP_BONES);
-	afBindBufferToBindingPoint(uboForMaterials, UBP_MATERIALS);
-	afBindBufferToBindingPoint(uboForPerDrawCall, UBP_PER_INSTANCE_DATAS);
-	afBindSamplerToBindingPoint(sampler, 0);
-
 	if (!nStoredCommands) {
 		return;
 	}
+
+	afBindBufferToBindingPoint(uboForBoneMatrices, UBP_BONES);
+	afBindBufferToBindingPoint(uboForMaterials, UBP_MATERIALS);
+	afBindBufferToBindingPoint(uboForPerDrawCall, UBP_PER_INSTANCE_DATAS);
+
 	afWriteBuffer(uboForBoneMatrices, &renderBoneMatrices[0], sizeof(Mat) * renderBoneMatrices.size());
 	matrixMan.Get(MatrixMan::VIEW, perDrawCallUBO.matV);
 	matrixMan.Get(MatrixMan::PROJ, perDrawCallUBO.matP);
@@ -206,7 +203,11 @@ void MeshRenderer::Flush()
 	const RenderCommand& c = perDrawCallUBO.commands[0];
 	RenderMesh* r = GetMeshByMRID(c.meshId);
 	assert(r);
+
+	SAMPLERID sampler = afCreateSampler(AFST_MIPMAP_WRAP);
+	afBindSamplerToBindingPoint(sampler, 0);
 	r->Draw(nStoredCommands);
+	afSafeDeleteSampler(sampler);
 	renderBoneMatrices.clear();
 	nStoredCommands = 0;
 

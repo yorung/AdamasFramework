@@ -64,7 +64,6 @@ public:
 	UBOID uboForBoneMatrices;
 	UBOID uboForMaterials;
 	UBOID uboForPerDrawCall;
-	SAMPLERID sampler;
 	RenderMesh* GetMeshByMRID(MRID id);
 public:
 	MeshRenderer();
