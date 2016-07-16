@@ -43,7 +43,6 @@ void Glow::Destroy()
 void Glow::MakeGlow(AFRenderTarget& target, SRVID srcTex)
 {
 	LazyInit();
-	afBindSamplerToBindingPoint(stockObjects.GetClampSampler(), 0);
 	stockObjects.ApplyFullScreenVAO();
 
 	renderStates.Apply();
@@ -51,6 +50,7 @@ void Glow::MakeGlow(AFRenderTarget& target, SRVID srcTex)
 	shaderMan.Apply(shaderGlowExtraction);
 	glowMap[0].BeginRenderToThis();
 	afBindTextureToBindingPoint(srcTex, 0);
+	afSetSampler(AFST_LINEAR_CLAMP, 0);
 	afDraw(PT_TRIANGLESTRIP, 4);
 
 	shaderMan.Apply(shaderGlowCopy);

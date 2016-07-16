@@ -20,17 +20,13 @@ void StockObjects::CreateFullScreenVAO()
 	vaoFullScr = afCreateVAO(elements, dimof(elements), 1, vertexBufferIdsFullScr, stridesFullScr, iboFullScr);
 }
 
-void StockObjects::CreateSamplers()
-{
-	samplerRepeat = afCreateSampler(AFST_MIPMAP_WRAP);
-	samplerClamp = afCreateSampler(AFST_MIPMAP_CLAMP);
-	samplerNoMipmap = afCreateSampler(AFST_LINEAR_CLAMP);
-}
-
 void StockObjects::Init()
 {
 	CreateFullScreenVAO();
-	CreateSamplers();
+	for (int i = 0; i < AFST_MAX; i++)
+	{
+		builtInSamplers[i] = afCreateSampler((SamplerType)i);
+	}
 }
 
 void StockObjects::Destroy()
@@ -38,10 +34,10 @@ void StockObjects::Destroy()
 	afSafeDeleteBuffer(vboFullScr);
 	afSafeDeleteBuffer(iboFullScr);
 	afSafeDeleteVAO(vaoFullScr);
-
-	afSafeDeleteSampler(samplerRepeat);
-	afSafeDeleteSampler(samplerClamp);
-	afSafeDeleteSampler(samplerNoMipmap);
+	for (SAMPLERID& sampler : builtInSamplers)
+	{
+		afSafeDeleteSampler(sampler);
+	}
 }
 
 void StockObjects::ApplyFullScreenVAO() const

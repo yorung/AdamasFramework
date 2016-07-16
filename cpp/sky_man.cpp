@@ -5,7 +5,6 @@ SkyMan skyMan;
 SkyMan::~SkyMan()
 {
 	assert(!texId);
-	assert(!sampler);
 }
 
 void SkyMan::Create(const char *texFileName, const char* shader)
@@ -14,7 +13,6 @@ void SkyMan::Create(const char *texFileName, const char* shader)
 	texId = afLoadTexture(texFileName, texDesc);
 	shaderId = shaderMan.Create(shader, nullptr, 0);
 	renderStates.Init(BM_NONE, DSM_DEPTH_CLOSEREQUAL_READONLY, CM_DISABLE);
-	sampler = afCreateSampler(AFST_LINEAR_WRAP);
 }
 
 void SkyMan::Draw()
@@ -39,7 +37,7 @@ void SkyMan::Draw()
 	afBindBufferToBindingPoint(uboId, 0);
 	(texDesc.isCubeMap ? afBindCubeMapToBindingPoint : afBindTextureToBindingPoint)(texId, 0);
 
-	afBindSamplerToBindingPoint(sampler, 0);
+	afSetSampler(AFST_LINEAR_WRAP, 0);
 	afDraw(PT_TRIANGLESTRIP, 4);
 	afBindTextureToBindingPoint(0, 0);
 	afSafeDeleteBuffer(uboId);
@@ -48,5 +46,4 @@ void SkyMan::Draw()
 void SkyMan::Destroy()
 {
 	afSafeDeleteTexture(texId);
-	afSafeDeleteSampler(sampler);
 }

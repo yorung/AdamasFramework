@@ -41,9 +41,6 @@ class WaterSurfaceES2
 	VAOID vao, vaoFullScr;
 	UBOID ubo;
 	int nIndi;
-	SAMPLERID samplerClamp;
-	SAMPLERID samplerRepeat;
-	SAMPLERID samplerNoMipmap;
 	AFRenderTarget rt;
 	std::vector<SRVID> texIds;
 public:
@@ -197,9 +194,6 @@ void WaterSurfaceES2::Destroy()
 	afSafeDeleteBuffer(ibo);
 	afSafeDeleteBuffer(vboFullScr);
 	afSafeDeleteBuffer(iboFullScr);
-	afSafeDeleteSampler(samplerRepeat);
-	afSafeDeleteSampler(samplerClamp);
-	afSafeDeleteSampler(samplerNoMipmap);
 	afSafeDeleteVAO(vao);
 	afSafeDeleteVAO(vaoFullScr);
 	for (auto& it : texIds) {
@@ -267,9 +261,6 @@ void WaterSurfaceES2::Init()
 	for (int i = 0; i < (int)dimof(texFiles); i++) {
 		texIds[i] = texMan.Create(texFiles[i].name);
 	}
-	samplerRepeat = afCreateSampler(AFST_MIPMAP_WRAP);
-	samplerClamp = afCreateSampler(AFST_MIPMAP_CLAMP);
-	samplerNoMipmap = afCreateSampler(AFST_LINEAR_CLAMP);
 
 	rt.Init(systemMisc.GetScreenSize(), AFDT_R5G6B5_UINT);
 
@@ -335,7 +326,7 @@ void WaterSurfaceES2::Draw()
 	shaderMan.Apply(shaderId);
 	for (int i = 0; i < (int)dimof(texFiles); i++) {
 		afBindTextureToBindingPoint(texIds[i], i);
-		afBindSamplerToBindingPoint(texFiles[i].clamp ? samplerClamp : samplerRepeat, i);
+		afSetSampler(texFiles[i].clamp ? AFST_LINEAR_CLAMP : AFST_LINEAR_WRAP, i);
 	}
 	afWriteBuffer(ubo, &uboBuf, sizeof(uboBuf));
 	afBindBufferToBindingPoint(ubo, 0);
@@ -348,7 +339,7 @@ void WaterSurfaceES2::Draw()
 	rtDefault.BeginRenderToThis();
 	shaderMan.Apply(shaderIdFullScr);
 	afBindTextureToBindingPoint(rt.GetTexture(), 0);
-	afBindSamplerToBindingPoint(samplerNoMipmap, 0);
+	afSetSampler(AFST_LINEAR_CLAMP, 0);
 	afBindVAO(vaoFullScr);
 	afDrawIndexed(PT_TRIANGLESTRIP, 4);
 

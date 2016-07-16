@@ -96,8 +96,10 @@ enum SamplerType {
 	AFST_LINEAR_CLAMP,
 	AFST_MIPMAP_WRAP,
 	AFST_MIPMAP_CLAMP,
+	AFST_MAX
 };
 
 SAMPLERID afCreateSampler(SamplerType type);
+void afSetSampler(SamplerType type, int slot);
 
 void afVerify(bool ok);

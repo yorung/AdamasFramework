@@ -22,7 +22,6 @@ class SpriteRenderer
 {
 	ShaderMan::SMID shaderId;
 	AFRenderStates renderStates;
-	SAMPLERID sampler;
 	VBOID vbo;
 	IBOID ibo;
 	VAOID vao;

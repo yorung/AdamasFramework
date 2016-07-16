@@ -175,6 +175,11 @@ IBOID afCreateQuadListIndexBuffer(int numQuads)
 	return afCreateIndexBuffer(&indi[0], numIndi);
 }
 
+void afSetSampler(SamplerType type, int slot)
+{
+	afBindSamplerToBindingPoint(stockObjects.GetBuiltInSampler(type), slot);
+}
+
 void afVerify(bool ok)
 {
 	if (ok) {

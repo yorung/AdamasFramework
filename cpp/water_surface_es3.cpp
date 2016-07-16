@@ -251,7 +251,7 @@ void WaterSurfaceES3::RenderWater(const UniformBuffer& hmub)
 
 	for (int i = 0; i < (int)dimof(texFiles); i++) {
 		afBindTextureToBindingPoint(texId[i], i);
-		afBindSamplerToBindingPoint(texFiles[i].clamp ? stockObjects.GetClampSampler() : stockObjects.GetRepeatSampler(), i);
+		afSetSampler(texFiles[i].clamp ? AFST_LINEAR_CLAMP : AFST_LINEAR_WRAP, i);
 	}
 
 	auto& curHeightMap = heightMap[heightCurrentWriteTarget];

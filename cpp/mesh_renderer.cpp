@@ -204,17 +204,14 @@ void MeshRenderer::Flush()
 	RenderMesh* r = GetMeshByMRID(c.meshId);
 	assert(r);
 
-	SAMPLERID sampler = afCreateSampler(AFST_MIPMAP_WRAP);
-	afBindSamplerToBindingPoint(sampler, 0);
+	afSetSampler(AFST_MIPMAP_WRAP, 0);
 	r->Draw(nStoredCommands);
-	afSafeDeleteSampler(sampler);
 	renderBoneMatrices.clear();
 	nStoredCommands = 0;
 
 	afBindBufferToBindingPoint(UBOID(), UBP_BONES);
 	afBindBufferToBindingPoint(UBOID(), UBP_MATERIALS);
 	afBindBufferToBindingPoint(UBOID(), UBP_PER_INSTANCE_DATAS);
-	afBindSamplerToBindingPoint(SAMPLERID(), 0);
 }
 
 MMID MeshRenderer::CreateMaterial(const Material& mat)

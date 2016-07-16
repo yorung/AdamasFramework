@@ -54,7 +54,6 @@ bool FontMan::Init()
 	int stride = sizeof(FontVertex);
 	VBOID vboIds[] = {vbo};
 	vao = afCreateVAO(elements, dimof(elements), 1, vboIds, &stride, ibo);
-	sampler = afCreateSampler(AFST_POINT_CLAMP);
 	return true;
 }
 
@@ -69,7 +68,6 @@ void FontMan::Destroy()
 	afSafeDeleteBuffer(ibo);
 	afSafeDeleteBuffer(vbo);
 	afSafeDeleteVAO(vao);
-	afSafeDeleteSampler(sampler);
 	ClearCache();
 }
 
@@ -161,7 +159,7 @@ void FontMan::Render()
 	renderStates.Apply();
 
 	afBindVAO(vao);
-	afBindSamplerToBindingPoint(sampler, 0);
+	afSetSampler(AFST_POINT_CLAMP, 0);
 	afBindTextureToBindingPoint(texture, 0);
 	afDrawIndexed(PT_TRIANGLELIST, numSprites * 6);
 	afBindVAO(0);

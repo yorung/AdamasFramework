@@ -22,7 +22,6 @@ SpriteRenderer::~SpriteRenderer()
 
 void SpriteRenderer::Destroy()
 {
-	afSafeDeleteSampler(sampler);
 	afSafeDeleteBuffer(vbo);
 	afSafeDeleteBuffer(ibo);
 	afSafeDeleteBuffer(ubo);
@@ -40,7 +39,6 @@ void SpriteRenderer::Init()
 	shaderId = shaderMan.Create("sprite", layout, dimof(layout));
 	renderStates.Init(BM_ALPHA, DSM_DISABLE, CM_DISABLE);
 
-	sampler = afCreateSampler(AFST_LINEAR_CLAMP);
 	vbo = afCreateDynamicVertexBuffer(sizeof(SpriteVertex) * MAX_SPRITES_IN_ONE_DRAW_CALL * 6);
 	ubo = afCreateUBO(sizeof(Mat));
 	ibo = afCreateQuadListIndexBuffer(MAX_SPRITES_IN_ONE_DRAW_CALL);
@@ -78,7 +76,7 @@ void SpriteRenderer::Draw(const SpriteCommands& sprites)
 
 	afWriteBuffer(ubo, &proj, sizeof(Mat));
 	afBindBufferToBindingPoint(ubo, 0);
-	afBindSamplerToBindingPoint(sampler, 0);
+	afSetSampler(AFST_LINEAR_CLAMP, 0);
 	afBindVAO(vao);
 
 	SpriteVertex v[MAX_SPRITES_IN_ONE_DRAW_CALL][4];

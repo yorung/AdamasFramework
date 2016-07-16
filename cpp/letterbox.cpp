@@ -20,7 +20,7 @@ void LetterBox::Draw(AFRenderTarget& target, SRVID srcTex)
 
 	target.BeginRenderToThis();
 	afBindTextureToBindingPoint(srcTex, 0);
-	afBindSamplerToBindingPoint(stockObjects.GetNoMipmapSampler(), 0);
+	afSetSampler(AFST_LINEAR_CLAMP, 0);
 	shaderMan.Apply(shader);
 	renderStates.Apply();
 	stockObjects.ApplyFullScreenVAO();

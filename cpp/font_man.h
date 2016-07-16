@@ -23,7 +23,6 @@ class FontMan
 	IBOID ibo;
 	VBOID vbo;
 	VAOID vao;
-	SAMPLERID sampler;
 	bool dirty = false;
 	bool Build(const CharSignature& signature);
 	bool Cache(const CharSignature& code);
