@@ -172,24 +172,6 @@ enum PrimitiveTopology {
 void afDrawIndexed(PrimitiveTopology pt, int numIndices, int start = 0, int instanceCount = 1);
 void afDraw(PrimitiveTopology pt, int numVertices, int start = 0, int instanceCount = 1);
 
-enum CullMode {
-	CM_DISABLE,
-	CM_CW,
-	CM_CCW,
-};
-void afCullMode(CullMode cullMode);
-enum BlendMode {
-	BM_NONE,
-	BM_ALPHA,
-};
-void afBlendMode(BlendMode mode);
-enum DepthStencilMode {
-	DSM_DISABLE,
-	DSM_DEPTH_ENABLE,
-	DSM_DEPTH_CLOSEREQUAL_READONLY,
-};
-void afDepthStencilMode(DepthStencilMode mode);
-
 #ifdef AF_GLES31
 #define afBindVAO(vao) afHandleGLError(glBindVertexArray(vao))
 #endif

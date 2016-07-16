@@ -40,6 +40,24 @@ struct TexDesc {
 
 SRVID afLoadTexture(const char* name, TexDesc& desc);
 
+enum CullMode {
+	CM_DISABLE,
+	CM_CW,
+	CM_CCW,
+};
+void afCullMode(CullMode cullMode);
+enum BlendMode {
+	BM_NONE,
+	BM_ALPHA,
+};
+void afBlendMode(BlendMode mode);
+enum DepthStencilMode {
+	DSM_DISABLE,
+	DSM_DEPTH_ENABLE,
+	DSM_DEPTH_CLOSEREQUAL_READONLY,
+};
+void afDepthStencilMode(DepthStencilMode mode);
+
 class AFRenderStates {
 	BlendMode blendMode = BM_NONE;
 	DepthStencilMode depthStencilMode = DSM_DISABLE;
