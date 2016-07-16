@@ -2,6 +2,8 @@
 
 SkyMan skyMan;
 
+static const SamplerType samplers[] = { AFST_LINEAR_WRAP };
+
 SkyMan::~SkyMan()
 {
 	assert(!texId);
@@ -12,7 +14,7 @@ void SkyMan::Create(const char *texFileName, const char* shader)
 	Destroy();
 	texId = afLoadTexture(texFileName, texDesc);
 	shaderId = shaderMan.Create(shader, nullptr, 0);
-	renderStates.Init(BM_NONE, DSM_DEPTH_CLOSEREQUAL_READONLY, CM_DISABLE);
+	renderStates.Create(BM_NONE, DSM_DEPTH_CLOSEREQUAL_READONLY, CM_DISABLE, dimof(samplers), samplers);
 }
 
 void SkyMan::Draw()
@@ -37,7 +39,6 @@ void SkyMan::Draw()
 	afBindBufferToBindingPoint(uboId, 0);
 	(texDesc.isCubeMap ? afBindCubeMapToBindingPoint : afBindTextureToBindingPoint)(texId, 0);
 
-	afSetSampler(AFST_LINEAR_WRAP, 0);
 	afDraw(PT_TRIANGLESTRIP, 4);
 	afBindTextureToBindingPoint(0, 0);
 	afSafeDeleteBuffer(uboId);

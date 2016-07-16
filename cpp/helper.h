@@ -58,20 +58,40 @@ enum DepthStencilMode {
 };
 void afDepthStencilMode(DepthStencilMode mode);
 
+enum SamplerType {
+	AFST_POINT_WRAP,
+	AFST_POINT_CLAMP,
+	AFST_LINEAR_WRAP,
+	AFST_LINEAR_CLAMP,
+	AFST_MIPMAP_WRAP,
+	AFST_MIPMAP_CLAMP,
+	AFST_MAX
+};
+
+SAMPLERID afCreateSampler(SamplerType type);
+void afSetSampler(SamplerType type, int slot);
+
 class AFRenderStates {
 	BlendMode blendMode = BM_NONE;
 	DepthStencilMode depthStencilMode = DSM_DISABLE;
 	CullMode cullMode = CM_DISABLE;
+	int numSamplerTypes = 0;
+	const SamplerType* samplerTypes = nullptr;
 public:
-	void Init(BlendMode blendMode_, DepthStencilMode depthStencilMode_, CullMode cullMode_) {
+	void Create(BlendMode blendMode_, DepthStencilMode depthStencilMode_, CullMode cullMode_, int numSamplerTypes_ = 0, const SamplerType samplerTypes_[] = nullptr) {
 		blendMode = blendMode_;
 		depthStencilMode = depthStencilMode_;
 		cullMode = cullMode_;
+		numSamplerTypes = numSamplerTypes_;
+		samplerTypes = samplerTypes_;
 	}
 	void Apply() const {
 		afBlendMode(blendMode);
 		afDepthStencilMode(depthStencilMode);
 		afCullMode(cullMode);
+		for (int i = 0; i < numSamplerTypes; i++) {
+			afSetSampler(samplerTypes[i], i);
+		}
 	}
 };
 
@@ -88,18 +108,5 @@ struct CharDesc {
 	float step;
 };
 void MakeFontBitmap(const char* fontName, const CharSignature& code, class DIB& dib, CharDesc& desc);
-
-enum SamplerType {
-	AFST_POINT_WRAP,
-	AFST_POINT_CLAMP,
-	AFST_LINEAR_WRAP,
-	AFST_LINEAR_CLAMP,
-	AFST_MIPMAP_WRAP,
-	AFST_MIPMAP_CLAMP,
-	AFST_MAX
-};
-
-SAMPLERID afCreateSampler(SamplerType type);
-void afSetSampler(SamplerType type, int slot);
 
 void afVerify(bool ok);

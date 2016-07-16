@@ -2,11 +2,13 @@
 
 Glow glow;
 AFRenderTarget glowMap[6];
+const static SamplerType samplerTypes[] = { AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP };
 
 const int GLOW_WH = 128;
 
 void Glow::LazyInit()
 {
+	assert(dimof(glowMap) + 1 == dimof(samplerTypes));
 	if (shaderGlowExtraction) {
 		return;
 	}
@@ -27,7 +29,7 @@ void Glow::LazyInit()
 	shaderGlowLastPass = shaderMan.Create("glow_lastpass", elements, numElements);
 	assert(shaderGlowLastPass);
 
-	renderStates.Init(BM_NONE, DSM_DISABLE, CM_DISABLE);
+	renderStates.Create(BM_NONE, DSM_DISABLE, CM_DISABLE, dimof(samplerTypes), samplerTypes);
 }
 
 void Glow::Destroy()
@@ -50,7 +52,6 @@ void Glow::MakeGlow(AFRenderTarget& target, SRVID srcTex)
 	shaderMan.Apply(shaderGlowExtraction);
 	glowMap[0].BeginRenderToThis();
 	afBindTextureToBindingPoint(srcTex, 0);
-	afSetSampler(AFST_LINEAR_CLAMP, 0);
 	afDraw(PT_TRIANGLESTRIP, 4);
 
 	shaderMan.Apply(shaderGlowCopy);
@@ -62,7 +63,7 @@ void Glow::MakeGlow(AFRenderTarget& target, SRVID srcTex)
 
 	shaderMan.Apply(shaderGlowLastPass);
 	target.BeginRenderToThis();
-	for (int i = 1; i < (int)dimof(glowMap); i++) {
+	for (int i = 0; i < (int)dimof(glowMap); i++) {
 		afBindTextureToBindingPoint(glowMap[i].GetTexture(), i);
 	}
 	afBindTextureToBindingPoint(srcTex, 6);

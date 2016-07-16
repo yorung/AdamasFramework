@@ -39,6 +39,10 @@ static InputElement elements[] = {
 	CInputElement("TEXCOORD", SF_R32G32_FLOAT, 8),
 };
 
+const static SamplerType samplers[] = {
+	AFST_POINT_CLAMP,
+};
+
 bool FontMan::Init()
 {
 	Destroy();
@@ -47,7 +51,7 @@ bool FontMan::Init()
 	}
 	texture = afCreateDynamicTexture(AFDT_R8G8B8A8_UNORM, IVec2(TEX_W, TEX_H));
 	shader = shaderMan.Create("font", elements, dimof(elements));
-	renderStates.Init(BM_ALPHA, DSM_DISABLE, CM_DISABLE);
+	renderStates.Create(BM_ALPHA, DSM_DISABLE, CM_DISABLE, dimof(samplers), samplers);
 	assert(shader);
 	ibo = afCreateQuadListIndexBuffer(SPRITE_MAX);
 	vbo = afCreateDynamicVertexBuffer(SPRITE_MAX * sizeof(FontVertex) * 4);
@@ -159,7 +163,6 @@ void FontMan::Render()
 	renderStates.Apply();
 
 	afBindVAO(vao);
-	afSetSampler(AFST_POINT_CLAMP, 0);
 	afBindTextureToBindingPoint(texture, 0);
 	afDrawIndexed(PT_TRIANGLELIST, numSprites * 6);
 	afBindVAO(0);

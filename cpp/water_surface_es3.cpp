@@ -141,7 +141,7 @@ void WaterSurfaceES3::Init()
 
 	lastTime = GetTime();
 
-	renderStates.Init(BM_NONE, DSM_DISABLE, CM_DISABLE);
+	renderStates.Create(BM_NONE, DSM_DISABLE, CM_DISABLE);
 	shaderWaterLastPass = shaderMan.Create("water_es3_lastpass", nullptr, 0);
 	assert(shaderWaterLastPass);
 	shaderHeightMap = shaderMan.Create("water_es3_heightmap", nullptr, 0);

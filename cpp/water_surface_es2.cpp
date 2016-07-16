@@ -78,16 +78,15 @@ public:
 struct TexFiles
 {
 	const char *name;
-	bool clamp;
 };
 
 static TexFiles texFiles[] = {
-	{ "rose.jpg", true },
-	{ "autumn.jpg", true },
-	{ "pangyo.jpg", true },
-	{ "timeline.png", false },
-	{ "delaymap.png", true },
-	{ "sphere.jpg", true },
+	{ "rose.jpg" },
+	{ "autumn.jpg" },
+	{ "pangyo.jpg" },
+	{ "timeline.png" },
+	{ "delaymap.png" },
+	{ "sphere.jpg"},
 };
 
 const int tileMax = 50;
@@ -211,8 +210,13 @@ static const InputElement elementsFullScr[] = {
 	CInputElement("POSITION", SF_R32G32_FLOAT, 0),
 };
 
+static const SamplerType samplers[] = {
+	AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP
+};
+
 void WaterSurfaceES2::Init()
 {
+	assert(dimof(samplers) >= dimof(texFiles));
 	Destroy();
 
 	lastTime = GetTime();
@@ -251,7 +255,7 @@ void WaterSurfaceES2::Init()
 	iboFullScr = afCreateIndexBuffer(&iboFullScrSrc[0], dimof(iboFullScrSrc));
 
 	shaderId = shaderMan.Create("water_es2", elements, dimof(elements));
-	renderStates.Init(BM_NONE, DSM_DISABLE, CM_DISABLE);
+	renderStates.Create(BM_NONE, DSM_DISABLE, CM_DISABLE, dimof(samplers), samplers);
 
 	const char* shaderName = "vivid";
 //	const char* shaderName = "letterbox";
@@ -326,7 +330,6 @@ void WaterSurfaceES2::Draw()
 	shaderMan.Apply(shaderId);
 	for (int i = 0; i < (int)dimof(texFiles); i++) {
 		afBindTextureToBindingPoint(texIds[i], i);
-		afSetSampler(texFiles[i].clamp ? AFST_LINEAR_CLAMP : AFST_LINEAR_WRAP, i);
 	}
 	afWriteBuffer(ubo, &uboBuf, sizeof(uboBuf));
 	afBindBufferToBindingPoint(ubo, 0);

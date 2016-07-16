@@ -31,13 +31,14 @@ void SpriteRenderer::Destroy()
 void SpriteRenderer::Init()
 {
 	Destroy();
-	InputElement layout[] = {
+	static InputElement layout[] = {
 		CInputElement("POSITION", SF_R32G32B32_FLOAT, 0),
 		CInputElement("COLOR", SF_R8G8B8A8_UNORM, 12),
 		CInputElement("TEXCOORD", SF_R32G32_FLOAT, 16),
 	};
+	const static SamplerType samplers[] = { AFST_LINEAR_CLAMP };
 	shaderId = shaderMan.Create("sprite", layout, dimof(layout));
-	renderStates.Init(BM_ALPHA, DSM_DISABLE, CM_DISABLE);
+	renderStates.Create(BM_ALPHA, DSM_DISABLE, CM_DISABLE, dimof(samplers), samplers);
 
 	vbo = afCreateDynamicVertexBuffer(sizeof(SpriteVertex) * MAX_SPRITES_IN_ONE_DRAW_CALL * 6);
 	ubo = afCreateUBO(sizeof(Mat));
@@ -76,7 +77,6 @@ void SpriteRenderer::Draw(const SpriteCommands& sprites)
 
 	afWriteBuffer(ubo, &proj, sizeof(Mat));
 	afBindBufferToBindingPoint(ubo, 0);
-	afSetSampler(AFST_LINEAR_CLAMP, 0);
 	afBindVAO(vao);
 
 	SpriteVertex v[MAX_SPRITES_IN_ONE_DRAW_CALL][4];

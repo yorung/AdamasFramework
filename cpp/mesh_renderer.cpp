@@ -16,6 +16,10 @@ static const InputElement elements[] = {
 	CInputElement("materialId", SF_R32_UINT, 52),
 };
 
+static const SamplerType samplers[] = {
+	AFST_MIPMAP_WRAP,
+};
+
 enum UBOBindingPoints {
 	UBP_MATERIALS = 2,
 	UBP_PER_INSTANCE_DATAS = 1,
@@ -94,7 +98,7 @@ void MeshRenderer::Create()
 	uboForPerDrawCall = afCreateUBO(sizeof(PerDrawCallUBO));
 	uboForMaterials = afCreateUBO(MATERIAL_UBO_SIZE);
 	shaderId = shaderMan.Create("skin_instanced", elements, dimof(elements));
-	renderStates.Init(BM_NONE, DSM_DEPTH_ENABLE, CM_CW);
+	renderStates.Create(BM_NONE, DSM_DEPTH_ENABLE, CM_CW, dimof(samplers), samplers);
 	assert(shaderId);
 
 	shaderMan.Apply(shaderId);
@@ -204,7 +208,6 @@ void MeshRenderer::Flush()
 	RenderMesh* r = GetMeshByMRID(c.meshId);
 	assert(r);
 
-	afSetSampler(AFST_MIPMAP_WRAP, 0);
 	r->Draw(nStoredCommands);
 	renderBoneMatrices.clear();
 	nStoredCommands = 0;

@@ -8,10 +8,13 @@ void LetterBox::LazyInit()
 		return;
 	}
 
+	const static SamplerType samplers[] = {
+		AFST_LINEAR_CLAMP,
+	};
 	int numElements = 0;
 	const InputElement* elements = stockObjects.GetFullScreenInputElements(numElements);
 	shader = shaderMan.Create("letterbox", elements, numElements);
-	renderStates.Init(BM_NONE, DSM_DISABLE, CM_DISABLE);
+	renderStates.Create(BM_NONE, DSM_DISABLE, CM_DISABLE, dimof(samplers), samplers);
 }
 
 void LetterBox::Draw(AFRenderTarget& target, SRVID srcTex)
@@ -20,7 +23,6 @@ void LetterBox::Draw(AFRenderTarget& target, SRVID srcTex)
 
 	target.BeginRenderToThis();
 	afBindTextureToBindingPoint(srcTex, 0);
-	afSetSampler(AFST_LINEAR_CLAMP, 0);
 	shaderMan.Apply(shader);
 	renderStates.Apply();
 	stockObjects.ApplyFullScreenVAO();

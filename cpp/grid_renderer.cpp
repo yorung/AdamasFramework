@@ -87,12 +87,12 @@ GridRenderer::GridRenderer(int numGrid_, float pitch_)
 	int sizeVertices = vert.size() * sizeof(GridVert);
 	lines = indi.size() / 2;
 
-	static InputElement layout[] = {
+	const static InputElement layout[] = {
 		CInputElement("POSITION", SF_R32G32B32_FLOAT, 0),
 		CInputElement("COLOR", SF_R32G32B32_FLOAT, 12),
 	};
 	shaderId = shaderMan.Create("solid", layout, dimof(layout));
-	renderStates.Init(BM_NONE, DSM_DEPTH_ENABLE, CM_DISABLE);
+	renderStates.Create(BM_NONE, DSM_DEPTH_ENABLE, CM_DISABLE);
 
 	vbo = afCreateVertexBuffer(sizeVertices, &vert[0]);
 	ibo = afCreateIndexBuffer(&indi[0], indi.size());

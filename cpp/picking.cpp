@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-static InputElement elements[] = {
+const static InputElement elements[] = {
 	CInputElement("POSITION", SF_R32G32B32_FLOAT, 0),
 	CInputElement("COLOR", SF_R32G32B32_FLOAT, 12),
 };
@@ -56,7 +56,7 @@ Picking::Picking()
 	vbo2d = afCreateDynamicVertexBuffer(sizeof(Vertex) * 3);
 	vbo3d = afCreateDynamicVertexBuffer(sizeof(Vertex) * 3);
 	shader = shaderMan.Create("solid", elements, dimof(elements));
-	renderStates.Init(BM_NONE, DSM_DEPTH_ENABLE, CM_DISABLE);
+	renderStates.Create(BM_NONE, DSM_DEPTH_ENABLE, CM_DISABLE);
 	Update();
 }
 
