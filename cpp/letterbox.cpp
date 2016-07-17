@@ -4,7 +4,7 @@ LetterBox letterBox;
 
 void LetterBox::LazyInit()
 {
-	if (shader) {
+	if (renderStates.IsReady()) {
 		return;
 	}
 
@@ -13,8 +13,7 @@ void LetterBox::LazyInit()
 	};
 	int numElements = 0;
 	const InputElement* elements = stockObjects.GetFullScreenInputElements(numElements);
-	shader = shaderMan.Create("letterbox", elements, numElements);
-	renderStates.Create(BM_NONE, DSM_DISABLE, CM_DISABLE, dimof(samplers), samplers);
+	renderStates.Create("letterbox", numElements, elements, BM_NONE, DSM_DISABLE, CM_DISABLE, dimof(samplers), samplers);
 }
 
 void LetterBox::Draw(AFRenderTarget& target, SRVID srcTex)
@@ -23,7 +22,6 @@ void LetterBox::Draw(AFRenderTarget& target, SRVID srcTex)
 
 	target.BeginRenderToThis();
 	afBindTextureToBindingPoint(srcTex, 0);
-	shaderMan.Apply(shader);
 	renderStates.Apply();
 	stockObjects.ApplyFullScreenVAO();
 	afDraw(PT_TRIANGLESTRIP, 4);
@@ -31,5 +29,4 @@ void LetterBox::Draw(AFRenderTarget& target, SRVID srcTex)
 
 void LetterBox::Destroy()
 {
-	shader = 0;
 }

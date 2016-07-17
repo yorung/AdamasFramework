@@ -1,6 +1,5 @@
 class LetterBox
 {
-	ShaderMan::SMID shader = 0;
 	AFRenderStates renderStates;
 	void LazyInit();
 public:

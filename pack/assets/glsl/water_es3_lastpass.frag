@@ -2,14 +2,14 @@
 
 precision highp float;
 in vec2 vfPosition;
-uniform sampler2D sampler0;
-uniform sampler2D sampler1;
-uniform sampler2D sampler2;
-uniform sampler2D sampler3;
-uniform sampler2D sampler4;
-uniform sampler2D sampler5;
-uniform sampler2D waterHeightmap;
-uniform sampler2D waterNormalmap;
+layout (binding = 0) uniform sampler2D sampler0;
+layout (binding = 1) uniform sampler2D sampler1;
+layout (binding = 2) uniform sampler2D sampler2;
+layout (binding = 3) uniform sampler2D sampler3;
+layout (binding = 4) uniform sampler2D sampler4;
+layout (binding = 5) uniform sampler2D sampler5;
+layout (binding = 6) uniform sampler2D waterHeightmap;
+layout (binding = 7) uniform sampler2D waterNormalmap;
 
 layout (location = 0) uniform vec4 fakeUBO[2];
 

@@ -13,10 +13,9 @@ class WaterSurfaceES3
 	};
 
 	Mat matProj, matView;
-	AFRenderStates renderStates;
-	ShaderMan::SMID shaderHeightMap = 0;
-	ShaderMan::SMID shaderNormalMap = 0;
-	ShaderMan::SMID shaderWaterLastPass = 0;
+	AFRenderStates renderStateHeightMap;
+	AFRenderStates renderStateNormalMap;
+	AFRenderStates renderStateWaterLastPass;
 	std::vector<SRVID> texId;
 	AFRenderTarget renderTarget[2];
 	AFRenderTarget heightMap[2];
@@ -141,23 +140,18 @@ void WaterSurfaceES3::Init()
 
 	lastTime = GetTime();
 
-	renderStates.Create(BM_NONE, DSM_DISABLE, CM_DISABLE);
-	shaderWaterLastPass = shaderMan.Create("water_es3_lastpass", nullptr, 0);
-	assert(shaderWaterLastPass);
-	shaderHeightMap = shaderMan.Create("water_es3_heightmap", nullptr, 0);
-	assert(shaderHeightMap);
+	renderStateWaterLastPass.Create("water_es3_lastpass", 0, nullptr, BM_NONE, DSM_DISABLE, CM_DISABLE);
+	renderStateHeightMap.Create("water_es3_heightmap", 0, nullptr, BM_NONE, DSM_DISABLE, CM_DISABLE);
 
 	{
 		int numElements = 0;
 		const InputElement* elements = stockObjects.GetFullScreenInputElements(numElements);
-		shaderNormalMap = shaderMan.Create("water_es3_normal", elements, numElements);
+		renderStateNormalMap.Create("water_es3_normal", numElements, elements, BM_NONE, DSM_DISABLE, CM_DISABLE);
 	}
-	afLayoutSamplerBindingManually(shaderWaterLastPass, "waterHeightmap", 0);
-	assert(shaderNormalMap);
-	shaderMan.Apply(shaderNormalMap);
 
+	shaderMan.Apply(renderStateNormalMap.GetShaderId());
 	Vec2 heightMapSize((float)HEIGHT_MAP_W, (float)HEIGHT_MAP_H);
-	glUniform2fv(glGetUniformLocation(shaderNormalMap, "heightMapSize"), 1, (GLfloat*)&heightMapSize);
+	glUniform2fv(glGetUniformLocation(renderStateNormalMap.GetShaderId(), "heightMapSize"), 1, (GLfloat*)&heightMapSize);
 
 	aflog("WaterSurface::Init shaders are ready!\n");
 
@@ -173,15 +167,6 @@ void WaterSurfaceES3::Init()
             glBindTexture(GL_TEXTURE_2D, 0);
         }
 	}
-
-	afLayoutSamplerBindingManually(shaderWaterLastPass, "sampler0", 0);
-	afLayoutSamplerBindingManually(shaderWaterLastPass, "sampler1", 1);
-	afLayoutSamplerBindingManually(shaderWaterLastPass, "sampler2", 2);
-	afLayoutSamplerBindingManually(shaderWaterLastPass, "sampler3", 3);
-	afLayoutSamplerBindingManually(shaderWaterLastPass, "sampler4", 4);
-	afLayoutSamplerBindingManually(shaderWaterLastPass, "sampler5", 5);
-	afLayoutSamplerBindingManually(shaderWaterLastPass, "waterHeightmap", 6);
-	afLayoutSamplerBindingManually(shaderWaterLastPass, "waterNormalmap", 7);
 
 	aflog("WaterSurface::Init finished!\n");
 }
@@ -224,7 +209,7 @@ void WaterSurfaceES3::UpdateHeightMap(const UniformBuffer& hmub)
 	afBindTextureToBindingPoint(heightR.GetTexture(), 0);
 	heightW.BeginRenderToThis();
 
-	shaderMan.Apply(shaderHeightMap);
+	renderStateHeightMap.Apply();
 //	GLint loc = glGetUniformLocation(shaderHeightMap, "fakeUBO");
 //	aflog("shaderHeightMap loc = %d\n", loc);
 	afHandleGLError(glUniform4fv(0, sizeof(hmub) / (sizeof(GLfloat) * 4), (GLfloat*)&hmub));
@@ -239,7 +224,7 @@ void WaterSurfaceES3::UpdateNormalMap()
 	auto& heightR = heightMap[heightCurrentWriteTarget];
 	afBindTextureToBindingPoint(heightR.GetTexture(), 0);
 	normalMap.BeginRenderToThis();
-	shaderMan.Apply(shaderNormalMap);
+	renderStateNormalMap.Apply();
 	stockObjects.ApplyFullScreenVAO();
 	afDraw(PT_TRIANGLESTRIP, 4);
 	afBindVAO(0);
@@ -247,7 +232,7 @@ void WaterSurfaceES3::UpdateNormalMap()
 
 void WaterSurfaceES3::RenderWater(const UniformBuffer& hmub)
 {
-	shaderMan.Apply(shaderWaterLastPass);
+	renderStateWaterLastPass.Apply();
 
 	for (int i = 0; i < (int)dimof(texFiles); i++) {
 		afBindTextureToBindingPoint(texId[i], i);
@@ -272,7 +257,6 @@ void WaterSurfaceES3::RenderWater(const UniformBuffer& hmub)
 void WaterSurfaceES3::Draw()
 {
 	UpdateTime();
-	renderStates.Apply();
 
 	bool mouseEdge = !lastMouseDown && systemMisc.mouseDown;
 	lastMouseDown = systemMisc.mouseDown;

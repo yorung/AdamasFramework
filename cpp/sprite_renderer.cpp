@@ -10,11 +10,6 @@ struct SpriteVertex {
 	Vec2 uv;
 };
 
-SpriteRenderer::SpriteRenderer()
-{
-	shaderId = ShaderMan::INVALID_SMID;
-}
-
 SpriteRenderer::~SpriteRenderer()
 {
 	Destroy();
@@ -37,8 +32,7 @@ void SpriteRenderer::Init()
 		CInputElement("TEXCOORD", SF_R32G32_FLOAT, 16),
 	};
 	const static SamplerType samplers[] = { AFST_LINEAR_CLAMP };
-	shaderId = shaderMan.Create("sprite", layout, dimof(layout));
-	renderStates.Create(BM_ALPHA, DSM_DISABLE, CM_DISABLE, dimof(samplers), samplers);
+	renderStates.Create("sprite", dimof(layout), layout, BM_ALPHA, DSM_DISABLE, CM_DISABLE, dimof(samplers), samplers);
 
 	vbo = afCreateDynamicVertexBuffer(sizeof(SpriteVertex) * MAX_SPRITES_IN_ONE_DRAW_CALL * 6);
 	ubo = afCreateUBO(sizeof(Mat));
@@ -72,7 +66,6 @@ void SpriteRenderer::Draw(const SpriteCommands& sprites)
 	Vec2 scrSize = systemMisc.GetScreenSize();
 	Mat proj = ortho(0, scrSize.x, scrSize.y, 0, -1000, 1000);
 
-	shaderMan.Apply(shaderId);
 	renderStates.Apply();
 
 	afWriteBuffer(ubo, &proj, sizeof(Mat));

@@ -18,7 +18,6 @@ class FontMan
 	static const int SPRITE_VERTS = SPRITE_MAX * 4;
 	CharSprite charSprites[SPRITE_MAX];
 	int numSprites;
-	ShaderMan::SMID shader = ShaderMan::INVALID_SMID;
 	AFRenderStates renderStates;
 	IBOID ibo;
 	VBOID vbo;

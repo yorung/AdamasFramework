@@ -57,7 +57,6 @@ void RenderMesh::Init(const Block& block)
 	materialMaps = block.materialMaps;
 	VBOID verts[] = { vbo };
 	int strides[] = { sizeof(MeshVertex) };
-	int shaderId = meshRenderer.GetShaderId();
 	vao = afCreateVAO(elements, dimof(elements), dimof(verts), verts, strides, ibo);
 #ifdef GL_TRUE
 	aflog("RenderMesh::Init created vao=%d\n", vao.x);
@@ -93,15 +92,10 @@ MeshRenderer::~MeshRenderer()
 void MeshRenderer::Create()
 {
 	Destroy();
-
 	uboForBoneMatrices = afCreateUBO(sizeof(Mat) * MAX_BONE_SSBOS);
 	uboForPerDrawCall = afCreateUBO(sizeof(PerDrawCallUBO));
 	uboForMaterials = afCreateUBO(MATERIAL_UBO_SIZE);
-	shaderId = shaderMan.Create("skin_instanced", elements, dimof(elements));
-	renderStates.Create(BM_NONE, DSM_DEPTH_ENABLE, CM_CW, dimof(samplers), samplers);
-	assert(shaderId);
-
-	shaderMan.Apply(shaderId);
+	renderStates.Create("skin_instanced", dimof(elements), elements, BM_NONE, DSM_DEPTH_ENABLE, CM_CW, dimof(samplers), samplers);
 }
 
 void MeshRenderer::Destroy()
@@ -199,7 +193,6 @@ void MeshRenderer::Flush()
 	matrixMan.Get(MatrixMan::PROJ, perDrawCallUBO.matP);
 	afWriteBuffer(uboForPerDrawCall, &perDrawCallUBO, sizeof(PerDrawCallUBO));
 
-	shaderMan.Apply(shaderId);
 	renderStates.Apply();
 
 //	aflog("ubo pos = %d %d\n", glGetUniformLocation(shaderId, "matV"), glGetUniformLocation(shaderId, "matP"));

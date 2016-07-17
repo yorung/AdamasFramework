@@ -20,14 +20,12 @@ typedef std::vector<SpriteCommand> SpriteCommands;
 
 class SpriteRenderer
 {
-	ShaderMan::SMID shaderId;
 	AFRenderStates renderStates;
 	VBOID vbo;
 	IBOID ibo;
 	VAOID vao;
 	UBOID ubo;
 public:
-	SpriteRenderer();
 	~SpriteRenderer();
 	void Destroy();
 	void Init();

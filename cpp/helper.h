@@ -77,22 +77,12 @@ class AFRenderStates {
 	CullMode cullMode = CM_DISABLE;
 	int numSamplerTypes = 0;
 	const SamplerType* samplerTypes = nullptr;
+	SMID shaderId = INVALID_SMID;
 public:
-	void Create(BlendMode blendMode_, DepthStencilMode depthStencilMode_, CullMode cullMode_, int numSamplerTypes_ = 0, const SamplerType samplerTypes_[] = nullptr) {
-		blendMode = blendMode_;
-		depthStencilMode = depthStencilMode_;
-		cullMode = cullMode_;
-		numSamplerTypes = numSamplerTypes_;
-		samplerTypes = samplerTypes_;
-	}
-	void Apply() const {
-		afBlendMode(blendMode);
-		afDepthStencilMode(depthStencilMode);
-		afCullMode(cullMode);
-		for (int i = 0; i < numSamplerTypes; i++) {
-			afSetSampler(samplerTypes[i], i);
-		}
-	}
+	SMID GetShaderId() { return shaderId; }
+	bool IsReady() { return shaderId != INVALID_SMID; }
+	void Create(const char* shaderName, int numInputElements, const InputElement* inputElements, BlendMode blendMode_, DepthStencilMode depthStencilMode_, CullMode cullMode_, int numSamplerTypes_ = 0, const SamplerType samplerTypes_[] = nullptr);
+	void Apply() const;
 };
 
 struct CharSignature {

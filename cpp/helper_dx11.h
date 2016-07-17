@@ -19,6 +19,8 @@ public:
 };
 
 typedef unsigned short AFIndex;
+typedef unsigned int SMID;
+static const SMID INVALID_SMID = 0;
 
 #define AFIndexTypeToDevice DXGI_FORMAT_R16_UINT
 typedef ComPtr<ID3D11Buffer> IBOID;

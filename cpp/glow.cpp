@@ -9,7 +9,7 @@ const int GLOW_WH = 128;
 void Glow::LazyInit()
 {
 	assert(dimof(glowMap) + 1 == dimof(samplerTypes));
-	if (shaderGlowExtraction) {
+	if (renderStateGlowExtraction.IsReady()) {
 		return;
 	}
 
@@ -22,14 +22,9 @@ void Glow::LazyInit()
 
 	int numElements = 0;
 	const InputElement* elements = stockObjects.GetFullScreenInputElements(numElements);
-	shaderGlowExtraction = shaderMan.Create("glow_extraction", elements, numElements);
-	assert(shaderGlowExtraction);
-	shaderGlowCopy = shaderMan.Create("glow_copy", elements, numElements);
-	assert(shaderGlowCopy);
-	shaderGlowLastPass = shaderMan.Create("glow_lastpass", elements, numElements);
-	assert(shaderGlowLastPass);
-
-	renderStates.Create(BM_NONE, DSM_DISABLE, CM_DISABLE, dimof(samplerTypes), samplerTypes);
+	renderStateGlowExtraction.Create("glow_extraction", numElements, elements, BM_NONE, DSM_DISABLE, CM_DISABLE, 1, samplerTypes);
+	renderStateGlowCopy.Create("glow_copy", numElements, elements, BM_NONE, DSM_DISABLE, CM_DISABLE, 1, samplerTypes);
+	renderStateGlowLastPass.Create("glow_lastpass", numElements, elements, BM_NONE, DSM_DISABLE, CM_DISABLE, dimof(samplerTypes), samplerTypes);
 }
 
 void Glow::Destroy()
@@ -37,31 +32,25 @@ void Glow::Destroy()
 	for (auto& it : glowMap) {
 		it.Destroy();
 	}
-	shaderGlowExtraction = 0;
-	shaderGlowCopy = 0;
-	shaderGlowLastPass = 0;
 }
 
 void Glow::MakeGlow(AFRenderTarget& target, SRVID srcTex)
 {
 	LazyInit();
 	stockObjects.ApplyFullScreenVAO();
-
-	renderStates.Apply();
-
-	shaderMan.Apply(shaderGlowExtraction);
+	renderStateGlowExtraction.Apply();
 	glowMap[0].BeginRenderToThis();
 	afBindTextureToBindingPoint(srcTex, 0);
 	afDraw(PT_TRIANGLESTRIP, 4);
 
-	shaderMan.Apply(shaderGlowCopy);
+	renderStateGlowCopy.Apply();
 	for (int i = 1; i < (int)dimof(glowMap); i++) {
 		glowMap[i].BeginRenderToThis();
 		afBindTextureToBindingPoint(glowMap[i - 1].GetTexture(), 0);
 		afDraw(PT_TRIANGLESTRIP, 4);
 	}
 
-	shaderMan.Apply(shaderGlowLastPass);
+	renderStateGlowLastPass.Apply();
 	target.BeginRenderToThis();
 	for (int i = 0; i < (int)dimof(glowMap); i++) {
 		afBindTextureToBindingPoint(glowMap[i].GetTexture(), i);

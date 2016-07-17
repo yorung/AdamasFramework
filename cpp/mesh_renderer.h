@@ -54,7 +54,6 @@ struct PerDrawCallUBO {
 class MeshRenderer
 {
 public:
-	ShaderMan::SMID shaderId;
 	AFRenderStates renderStates;
 	std::vector<RenderMesh*> renderMeshes;
 	PerDrawCallUBO perDrawCallUBO;
@@ -70,7 +69,6 @@ public:
 	~MeshRenderer();
 	void Create();
 	void Destroy();
-	ShaderMan::SMID GetShaderId() { return shaderId; }
 	MRID CreateRenderMesh(const Block& block);
 	void SafeDestroyRenderMesh(MRID& id);
 	void DrawRenderMesh(MRID id, const Mat& worldMat, const Mat BoneMatrices[], int nBones, const Block& block);

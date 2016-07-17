@@ -75,7 +75,7 @@ static GLuint CreateProgram(const char* name, const InputElement elements[], int
 	return program;
 }
 
-ShaderMan::SMID ShaderMan::Create(const char *name, const InputElement elements[], int numElements)
+SMID ShaderMan::Create(const char *name, const InputElement elements[], int numElements)
 {
 	NameToId::iterator it = nameToId.find(name);
 	if (it != nameToId.end())

@@ -64,6 +64,9 @@ struct DrawElementsIndirectCommand
 	GLuint baseInstance;
 };
 
+typedef GLuint SMID;
+static const SMID INVALID_SMID = 0;
+
 template <GLenum bufType_>
 struct TBufName {
 	static const GLenum bufType = bufType_;

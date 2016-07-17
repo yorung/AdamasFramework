@@ -1,9 +1,5 @@
 class ShaderMan11
 {
-public:
-	typedef unsigned int SMID;
-	static const SMID INVALID_SMID = 0;
-private:
 	struct Effect
 	{
 		ID3D11InputLayout* pInputLayout;

@@ -25,9 +25,8 @@ struct WaterSurfaceClassicUBO {
 class WaterSurfaceES2
 {
 	WaterSurfaceClassicUBO uboBuf;
-	ShaderMan::SMID shaderId;
-	ShaderMan::SMID shaderIdFullScr;
-	AFRenderStates renderStates;
+	AFRenderStates renderStateWater;
+	AFRenderStates renderStatePostProcess;
 	int lines;
 	void UpdateVert(std::vector<WaterVert>& vert);
 	void UpdateRipple();
@@ -254,12 +253,11 @@ void WaterSurfaceES2::Init()
 	vboFullScr = afCreateVertexBuffer(sizeof(vboFullScrSrc), &vboFullScrSrc[0]);
 	iboFullScr = afCreateIndexBuffer(&iboFullScrSrc[0], dimof(iboFullScrSrc));
 
-	shaderId = shaderMan.Create("water_es2", elements, dimof(elements));
-	renderStates.Create(BM_NONE, DSM_DISABLE, CM_DISABLE, dimof(samplers), samplers);
+	renderStateWater.Create("water_es2", dimof(elements), elements, BM_NONE, DSM_DISABLE, CM_DISABLE, dimof(samplers), samplers);
 
 	const char* shaderName = "vivid";
 //	const char* shaderName = "letterbox";
-	shaderIdFullScr = shaderMan.Create(shaderName, elementsFullScr, dimof(elementsFullScr));
+	renderStatePostProcess.Create(shaderName, dimof(elementsFullScr), elementsFullScr, BM_NONE, DSM_DISABLE, CM_DISABLE, dimof(samplers), samplers);
 
 	texIds.resize(dimof(texFiles));
 	for (int i = 0; i < (int)dimof(texFiles); i++) {
@@ -295,10 +293,6 @@ void WaterSurfaceES2::UpdateRipple()
 
 void WaterSurfaceES2::Update()
 {
-	if (!shaderId) {
-		return;
-	}
-
 	IVec2 scrSize = systemMisc.GetScreenSize();
 	float offset = 0.5f;
 	float aspect = (float)scrSize.y / scrSize.x;
@@ -326,8 +320,7 @@ void WaterSurfaceES2::Draw()
 {
 	UpdateRipple();
 
-	renderStates.Apply();
-	shaderMan.Apply(shaderId);
+	renderStateWater.Apply();
 	for (int i = 0; i < (int)dimof(texFiles); i++) {
 		afBindTextureToBindingPoint(texIds[i], i);
 	}
@@ -340,7 +333,7 @@ void WaterSurfaceES2::Draw()
 	AFRenderTarget rtDefault;
 	rtDefault.InitForDefaultRenderTarget();
 	rtDefault.BeginRenderToThis();
-	shaderMan.Apply(shaderIdFullScr);
+	renderStatePostProcess.Apply();
 	afBindTextureToBindingPoint(rt.GetTexture(), 0);
 	afSetSampler(AFST_LINEAR_CLAMP, 0);
 	afBindVAO(vaoFullScr);
