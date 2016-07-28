@@ -219,3 +219,28 @@ IVec2 afGetRenderbufferSize(GLuint renderbuffer);
 void afClear();
 
 #endif
+
+SRVID LoadTextureViaOS(const char* name, IVec2& size);
+IBOID afCreateTiledPlaneIBO(int numTiles, int* numIndies = nullptr);
+VBOID afCreateTiledPlaneVBO(int numTiles);
+IBOID afCreateQuadListIndexBuffer(int numQuads);
+SRVID afLoadTexture(const char* name, TexDesc& desc);
+void afCullMode(CullMode cullMode);
+void afBlendMode(BlendMode mode);
+void afDepthStencilMode(DepthStencilMode mode);
+SAMPLERID afCreateSampler(SamplerType type);
+void afSetSampler(SamplerType type, int slot);
+
+class AFRenderStates {
+	BlendMode blendMode = BM_NONE;
+	DepthStencilMode depthStencilMode = DSM_DISABLE;
+	CullMode cullMode = CM_DISABLE;
+	int numSamplerTypes = 0;
+	const SamplerType* samplerTypes = nullptr;
+	SMID shaderId = INVALID_SMID;
+public:
+	SMID GetShaderId() { return shaderId; }
+	bool IsReady() { return shaderId != INVALID_SMID; }
+	void Create(const char* shaderName, int numInputElements, const InputElement* inputElements, BlendMode blendMode_, DepthStencilMode depthStencilMode_, CullMode cullMode_, int numSamplerTypes_ = 0, const SamplerType samplerTypes_[] = nullptr);
+	void Apply() const;
+};

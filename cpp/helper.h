@@ -12,7 +12,6 @@ void ClearMenu();
 void AddMenu(const char *name, const char *cmd);
 void PostCommand(const char* cmdString);
 bool LoadImageViaGdiPlus(const char* name, IVec2& size, std::vector<uint32_t>& col);
-SRVID LoadTextureViaOS(const char* name, IVec2& size);
 
 template <class T> inline void SAFE_DELETE(T& p)
 {
@@ -28,35 +27,28 @@ template <class T> inline void SAFE_RELEASE(T& p)
 	}
 }
 
-IBOID afCreateTiledPlaneIBO(int numTiles, int* numIndies = nullptr);
-VBOID afCreateTiledPlaneVBO(int numTiles);
-IBOID afCreateQuadListIndexBuffer(int numQuads);
-
 struct TexDesc {
 	IVec2 size;
 	int arraySize = 1;
 	bool isCubeMap = false;
 };
 
-SRVID afLoadTexture(const char* name, TexDesc& desc);
-
 enum CullMode {
 	CM_DISABLE,
 	CM_CW,
 	CM_CCW,
 };
-void afCullMode(CullMode cullMode);
+
 enum BlendMode {
 	BM_NONE,
 	BM_ALPHA,
 };
-void afBlendMode(BlendMode mode);
+
 enum DepthStencilMode {
 	DSM_DISABLE,
 	DSM_DEPTH_ENABLE,
 	DSM_DEPTH_CLOSEREQUAL_READONLY,
 };
-void afDepthStencilMode(DepthStencilMode mode);
 
 enum SamplerType {
 	AFST_POINT_WRAP,
@@ -66,23 +58,6 @@ enum SamplerType {
 	AFST_MIPMAP_WRAP,
 	AFST_MIPMAP_CLAMP,
 	AFST_MAX
-};
-
-SAMPLERID afCreateSampler(SamplerType type);
-void afSetSampler(SamplerType type, int slot);
-
-class AFRenderStates {
-	BlendMode blendMode = BM_NONE;
-	DepthStencilMode depthStencilMode = DSM_DISABLE;
-	CullMode cullMode = CM_DISABLE;
-	int numSamplerTypes = 0;
-	const SamplerType* samplerTypes = nullptr;
-	SMID shaderId = INVALID_SMID;
-public:
-	SMID GetShaderId() { return shaderId; }
-	bool IsReady() { return shaderId != INVALID_SMID; }
-	void Create(const char* shaderName, int numInputElements, const InputElement* inputElements, BlendMode blendMode_, DepthStencilMode depthStencilMode_, CullMode cullMode_, int numSamplerTypes_ = 0, const SamplerType samplerTypes_[] = nullptr);
-	void Apply() const;
 };
 
 struct CharSignature {

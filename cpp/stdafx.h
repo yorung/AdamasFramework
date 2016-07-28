@@ -49,7 +49,8 @@ static const int BONE_MAX = 50;
 #include "af_math.h"
 #include "af_lua_helpers.h"
 #include "system_misc.h"
-#include "hub.h"
+#include "helper.h"
+#include "helper_text.h"
 
 #ifdef AF_GLES31
 #include "helper_gl.h"
@@ -60,8 +61,6 @@ static const int BONE_MAX = 50;
 #include "helper_dx11.h"
 #endif
 
-#include "helper.h"
-#include "helper_text.h"
 #include "matrix_man.h"
 #include "matrix_stack.h"
 #include "tex_man.h"
@@ -93,4 +92,5 @@ static const int BONE_MAX = 50;
 #include "voice.h"
 #include "lua_man.h"
 #include "lua_bind.h"
+#include "hub.h"
 #include "app.h"
