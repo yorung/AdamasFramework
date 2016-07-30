@@ -93,4 +93,5 @@ void SpriteRenderer::Draw(const SpriteCommands& sprites)
 	}
 	flush();
 	afSafeDeleteBuffer(ubo);
+	afBindVAO(0);
 }
