@@ -21,9 +21,7 @@ typedef std::vector<SpriteCommand> SpriteCommands;
 class SpriteRenderer
 {
 	AFRenderStates renderStates;
-	VBOID vbo;
-	IBOID ibo;
-	VAOID vao;
+	AFDynamicQuadListVertexBuffer quadListVertexBuffer;
 public:
 	~SpriteRenderer();
 	void Destroy();

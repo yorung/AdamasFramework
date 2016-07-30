@@ -130,3 +130,37 @@ public:
 	void Create(const char* shaderName, int numInputElements, const InputElement* inputElements, BlendMode blendMode_, DepthStencilMode depthStencilMode_, CullMode cullMode_, int numSamplerTypes_ = 0, const SamplerType samplerTypes_[] = nullptr);
 	void Apply() const;
 };
+
+class AFDynamicQuadListVertexBuffer {
+	IBOID ibo;
+	VBOID vbo;
+	VAOID vao;
+	int nQuad;
+	int vertexSize;
+	int vertexBufferSize;
+public:
+	~AFDynamicQuadListVertexBuffer() { Destroy(); }
+	void Create(const InputElement elements[], int numElements, int vertexSize_, int nQuad_)
+	{
+		Destroy();
+		nQuad = nQuad_;
+		vertexSize = vertexSize_;
+		vertexBufferSize = nQuad * vertexSize * 4;
+		ibo = afCreateQuadListIndexBuffer(nQuad);
+		vbo = afCreateDynamicVertexBuffer(vertexBufferSize);
+		VBOID vboIds[] = { vbo };
+		vao = afCreateVAO(elements, numElements, 1, vboIds, &vertexSize_, ibo);
+	}
+	void Apply(const void* buf, int size)
+	{
+		assert(size <= vertexBufferSize);
+		afBindVAO(vao);
+		afWriteBuffer(vbo, buf, size);
+	}
+	void Destroy()
+	{
+		afSafeDeleteBuffer(ibo);
+		afSafeDeleteBuffer(vbo);
+		afSafeDeleteVAO(vao);
+	}
+};

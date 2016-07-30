@@ -51,11 +51,7 @@ bool FontMan::Init()
 	}
 	texture = afCreateDynamicTexture(AFDT_R8G8B8A8_UNORM, IVec2(TEX_W, TEX_H));
 	renderStates.Create("font", dimof(elements), elements, BM_ALPHA, DSM_DISABLE, CM_DISABLE, dimof(samplers), samplers);
-	ibo = afCreateQuadListIndexBuffer(SPRITE_MAX);
-	vbo = afCreateDynamicVertexBuffer(SPRITE_MAX * sizeof(FontVertex) * 4);
-	int stride = sizeof(FontVertex);
-	VBOID vboIds[] = {vbo};
-	vao = afCreateVAO(elements, dimof(elements), 1, vboIds, &stride, ibo);
+	quadListVertexBuffer.Create(elements, dimof(elements), sizeof(FontVertex), SPRITE_MAX);
 	return true;
 }
 
@@ -63,9 +59,7 @@ void FontMan::Destroy()
 {
 	afSafeDeleteTexture(texture);
 	texSrc.Destroy();
-	afSafeDeleteBuffer(ibo);
-	afSafeDeleteBuffer(vbo);
-	afSafeDeleteVAO(vao);
+	quadListVertexBuffer.Destroy();
 	ClearCache();
 }
 
@@ -152,19 +146,16 @@ void FontMan::Render()
 			verts[i * 4 + j].coord = (cc.srcPos + fontVertAlign[j] * cc.desc.srcWidth) / Vec2(TEX_W, TEX_H);
 		}
 	}
-	afWriteBuffer(vbo, verts, 4 * numSprites * sizeof(FontVertex));
 	renderStates.Apply();
-
-	afBindVAO(vao);
+	quadListVertexBuffer.Apply(verts, 4 * numSprites * sizeof(FontVertex));
 	afBindTextureToBindingPoint(texture, 0);
 	afDrawIndexed(PT_TRIANGLELIST, numSprites * 6);
-	afBindVAO(0);
 	numSprites = 0;
 }
 
 void FontMan::DrawChar(Vec2& pos, const CharSignature& sig)
 {
-	if (!vao) {
+	if (!texture) {
 		return;
 	}
 

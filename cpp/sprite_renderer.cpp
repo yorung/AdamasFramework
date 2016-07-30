@@ -17,9 +17,7 @@ SpriteRenderer::~SpriteRenderer()
 
 void SpriteRenderer::Destroy()
 {
-	afSafeDeleteBuffer(vbo);
-	afSafeDeleteBuffer(ibo);
-	afSafeDeleteVAO(vao);
+	quadListVertexBuffer.Destroy();
 }
 
 void SpriteRenderer::Init()
@@ -32,13 +30,7 @@ void SpriteRenderer::Init()
 	};
 	const static SamplerType samplers[] = { AFST_LINEAR_CLAMP };
 	renderStates.Create("sprite", dimof(layout), layout, BM_ALPHA, DSM_DISABLE, CM_DISABLE, dimof(samplers), samplers);
-
-	vbo = afCreateDynamicVertexBuffer(sizeof(SpriteVertex) * MAX_SPRITES_IN_ONE_DRAW_CALL * 6);
-	ibo = afCreateQuadListIndexBuffer(MAX_SPRITES_IN_ONE_DRAW_CALL);
-
-	VBOID vbos[] = { vbo };
-	int strides[] = { sizeof(SpriteVertex) };
-	vao = afCreateVAO(layout, dimof(layout), 1, vbos, strides, ibo);
+	quadListVertexBuffer.Create(layout, dimof(layout), sizeof(SpriteVertex), MAX_SPRITES_IN_ONE_DRAW_CALL);
 }
 
 static void StoreVertices(SpriteVertex v[4], float width, float height, uint32_t color, float uLeft, float vTop, float uRight, float vBottom, const Mat& matW)
@@ -58,9 +50,6 @@ static void StoreVertices(SpriteVertex v[4], float width, float height, uint32_t
 
 void SpriteRenderer::Draw(const SpriteCommands& sprites)
 {
-	if (!vao) {
-		return;
-	}
 	Vec2 scrSize = systemMisc.GetScreenSize();
 	Mat proj = ortho(0, scrSize.x, scrSize.y, 0, -1000, 1000);
 
@@ -69,7 +58,6 @@ void SpriteRenderer::Draw(const SpriteCommands& sprites)
 	UBOID ubo = afCreateUBO(sizeof(Mat));
 	afWriteBuffer(ubo, &proj, sizeof(Mat));
 	afBindBufferToBindingPoint(ubo, 0);
-	afBindVAO(vao);
 
 	SpriteVertex v[MAX_SPRITES_IN_ONE_DRAW_CALL][4];
 	int numStoredSprites = 0;
@@ -77,7 +65,7 @@ void SpriteRenderer::Draw(const SpriteCommands& sprites)
 	auto flush = [&] {
 		if (numStoredSprites > 0) {
 			afBindTextureToBindingPoint(curTex, 0);
-			afWriteBuffer(vbo, v, sizeof(SpriteVertex) * 4 * numStoredSprites);
+			quadListVertexBuffer.Apply(v, sizeof(SpriteVertex) * 4 * numStoredSprites);
 			afDrawIndexed(PT_TRIANGLELIST, 6 * numStoredSprites, 0);
 			numStoredSprites = 0;
 		}
