@@ -24,7 +24,6 @@ class SpriteRenderer
 	VBOID vbo;
 	IBOID ibo;
 	VAOID vao;
-	UBOID ubo;
 public:
 	~SpriteRenderer();
 	void Destroy();

@@ -19,7 +19,6 @@ void SpriteRenderer::Destroy()
 {
 	afSafeDeleteBuffer(vbo);
 	afSafeDeleteBuffer(ibo);
-	afSafeDeleteBuffer(ubo);
 	afSafeDeleteVAO(vao);
 }
 
@@ -35,7 +34,6 @@ void SpriteRenderer::Init()
 	renderStates.Create("sprite", dimof(layout), layout, BM_ALPHA, DSM_DISABLE, CM_DISABLE, dimof(samplers), samplers);
 
 	vbo = afCreateDynamicVertexBuffer(sizeof(SpriteVertex) * MAX_SPRITES_IN_ONE_DRAW_CALL * 6);
-	ubo = afCreateUBO(sizeof(Mat));
 	ibo = afCreateQuadListIndexBuffer(MAX_SPRITES_IN_ONE_DRAW_CALL);
 
 	VBOID vbos[] = { vbo };
@@ -68,6 +66,7 @@ void SpriteRenderer::Draw(const SpriteCommands& sprites)
 
 	renderStates.Apply();
 
+	UBOID ubo = afCreateUBO(sizeof(Mat));
 	afWriteBuffer(ubo, &proj, sizeof(Mat));
 	afBindBufferToBindingPoint(ubo, 0);
 	afBindVAO(vao);
@@ -104,4 +103,5 @@ void SpriteRenderer::Draw(const SpriteCommands& sprites)
 		);
 	}
 	flush();
+	afSafeDeleteBuffer(ubo);
 }
