@@ -54,6 +54,7 @@ void SpriteRenderer::Draw(const SpriteCommands& sprites)
 	Mat proj = ortho(0, scrSize.x, scrSize.y, 0, -1000, 1000);
 
 	renderStates.Apply();
+	quadListVertexBuffer.Apply();
 
 	UBOID ubo = afCreateUBO(sizeof(Mat));
 	afWriteBuffer(ubo, &proj, sizeof(Mat));
@@ -65,7 +66,7 @@ void SpriteRenderer::Draw(const SpriteCommands& sprites)
 	auto flush = [&] {
 		if (numStoredSprites > 0) {
 			afBindTextureToBindingPoint(curTex, 0);
-			quadListVertexBuffer.Apply(v, sizeof(SpriteVertex) * 4 * numStoredSprites);
+			quadListVertexBuffer.Write(v, sizeof(SpriteVertex) * 4 * numStoredSprites);
 			afDrawIndexed(PT_TRIANGLELIST, 6 * numStoredSprites, 0);
 			numStoredSprites = 0;
 		}

@@ -151,10 +151,13 @@ public:
 		VBOID vboIds[] = { vbo };
 		vao = afCreateVAO(elements, numElements, 1, vboIds, &vertexSize_, ibo);
 	}
-	void Apply(const void* buf, int size)
+	void Apply()
+	{
+		afBindVAO(vao);
+	}
+	void Write(const void* buf, int size)
 	{
 		assert(size <= vertexBufferSize);
-		afBindVAO(vao);
 		afWriteBuffer(vbo, buf, size);
 	}
 	void Destroy()
