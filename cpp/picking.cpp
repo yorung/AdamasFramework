@@ -168,7 +168,7 @@ void Picking::Draw3D()
 	matrixMan.Get(MatrixMan::PROJ, mProj);
 	Mat mVP = mView * mProj;
 	afWriteBuffer(ubo, &mVP, sizeof(Mat));
-	afBindBufferToBindingPoint(ubo, 0);
+	afBindCbv0(ubo);
 
 	afDraw(PT_TRIANGLESTRIP, 3);
 }
@@ -191,7 +191,7 @@ void Picking::Draw2D()
 
 	PickingUBO buf;
 	afWriteBuffer(ubo, &buf, sizeof(buf));
-	afBindBufferToBindingPoint(ubo, 0);
+	afBindCbv0(ubo);
 
 	afDraw(PT_TRIANGLESTRIP, 3);
 }

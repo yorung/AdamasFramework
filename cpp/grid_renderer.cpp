@@ -109,7 +109,7 @@ void GridRenderer::Draw()
 	Mat matVP = matView * matProj;
 	UBOID ubo = afCreateUBO(sizeof(Mat));
 	afWriteBuffer(ubo, &matVP, sizeof(Mat));
-	afBindBufferToBindingPoint(ubo, 0);
+	afBindCbv0(ubo);
 	afBindVAO(vao);
 	afDraw(PT_LINELIST, lines * 2);
 	afBindVAO(0);

@@ -281,3 +281,13 @@ public:
 		afSafeDeleteVAO(vao);
 	}
 };
+
+inline void afBindCbv0(UBOID ubo)
+{
+	afBindBufferToBindingPoint(ubo, 0);
+}
+
+inline void afBindSrv0(SRVID tex)
+{
+	afBindTextureToBindingPoint(tex, 0);
+}

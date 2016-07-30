@@ -71,12 +71,11 @@ void RenderMesh::Draw(int instanceCount) const
 	for (auto it : materialMaps) {
 		const Material* mat = meshRenderer.GetMaterial(it.materialId);
 		assert(mat);
-		afBindTextureToBindingPoint(mat->texture, 0);
+		afBindSrv0(mat->texture);
 		int count = it.faces * 3;
 		int start = it.faceStartIndex * 3;
 		afDrawIndexed(PT_TRIANGLELIST, count, start, instanceCount);
 	}
-	afBindTextureToBindingPoint(0, 0);
 	afBindVAO(0);
 }
 

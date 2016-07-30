@@ -31,11 +31,10 @@ void SkyMan::Draw()
 
 	UBOID uboId = afCreateUBO(sizeof(Mat));
 	afWriteBuffer(uboId, &invVP, sizeof(invVP));
-	afBindBufferToBindingPoint(uboId, 0);
+	afBindCbv0(uboId);
 	(texDesc.isCubeMap ? afBindCubeMapToBindingPoint : afBindTextureToBindingPoint)(texId, 0);
 
 	afDraw(PT_TRIANGLESTRIP, 4);
-	afBindTextureToBindingPoint(0, 0);
 	afSafeDeleteBuffer(uboId);
 }
 

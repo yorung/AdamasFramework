@@ -40,13 +40,13 @@ void Glow::MakeGlow(AFRenderTarget& target, SRVID srcTex)
 	stockObjects.ApplyFullScreenVAO();
 	renderStateGlowExtraction.Apply();
 	glowMap[0].BeginRenderToThis();
-	afBindTextureToBindingPoint(srcTex, 0);
+	afBindSrv0(srcTex);
 	afDraw(PT_TRIANGLESTRIP, 4);
 
 	renderStateGlowCopy.Apply();
 	for (int i = 1; i < (int)dimof(glowMap); i++) {
 		glowMap[i].BeginRenderToThis();
-		afBindTextureToBindingPoint(glowMap[i - 1].GetTexture(), 0);
+		afBindSrv0(glowMap[i - 1].GetTexture());
 		afDraw(PT_TRIANGLESTRIP, 4);
 	}
 

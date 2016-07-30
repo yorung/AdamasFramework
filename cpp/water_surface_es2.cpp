@@ -325,7 +325,7 @@ void WaterSurfaceES2::Draw()
 		afBindTextureToBindingPoint(texIds[i], i);
 	}
 	afWriteBuffer(ubo, &uboBuf, sizeof(uboBuf));
-	afBindBufferToBindingPoint(ubo, 0);
+	afBindCbv0(ubo);
 	rt.BeginRenderToThis();
 	afBindVAO(vao);
 	afDrawIndexed(PT_TRIANGLESTRIP, nIndi);
@@ -334,7 +334,7 @@ void WaterSurfaceES2::Draw()
 	rtDefault.InitForDefaultRenderTarget();
 	rtDefault.BeginRenderToThis();
 	renderStatePostProcess.Apply();
-	afBindTextureToBindingPoint(rt.GetTexture(), 0);
+	afBindSrv0(rt.GetTexture());
 	afSetSampler(AFST_LINEAR_CLAMP, 0);
 	afBindVAO(vaoFullScr);
 	afDrawIndexed(PT_TRIANGLESTRIP, 4);
