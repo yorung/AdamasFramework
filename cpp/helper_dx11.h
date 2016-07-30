@@ -133,37 +133,32 @@ public:
 
 class AFDynamicQuadListVertexBuffer {
 	IBOID ibo;
-	VBOID vbo;
-	VAOID vao;
-	int nQuad;
-	int vertexSize;
+	UINT stride;
 	int vertexBufferSize;
 public:
 	~AFDynamicQuadListVertexBuffer() { Destroy(); }
-	void Create(const InputElement elements[], int numElements, int vertexSize_, int nQuad_)
+	void Create(const InputElement*, int, int vertexSize_, int nQuad)
 	{
 		Destroy();
-		nQuad = nQuad_;
-		vertexSize = vertexSize_;
-		vertexBufferSize = nQuad * vertexSize * 4;
+		stride = vertexSize_;
+		vertexBufferSize = nQuad * vertexSize_ * 4;
 		ibo = afCreateQuadListIndexBuffer(nQuad);
-		vbo = afCreateDynamicVertexBuffer(vertexBufferSize);
-		VBOID vboIds[] = { vbo };
-		vao = afCreateVAO(elements, numElements, 1, vboIds, &vertexSize_, ibo);
 	}
 	void Apply()
 	{
-		afBindVAO(vao);
+		deviceMan.GetContext()->IASetIndexBuffer(ibo.Get(), AFIndexTypeToDevice, 0);
 	}
 	void Write(const void* buf, int size)
 	{
 		assert(size <= vertexBufferSize);
+		VBOID vbo = afCreateDynamicVertexBuffer(size);
 		afWriteBuffer(vbo, buf, size);
+		ID3D11Buffer* d11Bufs[] = { vbo.Get() };
+		UINT offsets[] = { 0 };
+		deviceMan11.GetContext()->IASetVertexBuffers(0, dimof(d11Bufs), d11Bufs, &stride, offsets);
 	}
 	void Destroy()
 	{
 		afSafeDeleteBuffer(ibo);
-		afSafeDeleteBuffer(vbo);
-		afSafeDeleteVAO(vao);
 	}
 };
