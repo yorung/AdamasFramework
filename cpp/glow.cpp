@@ -32,6 +32,9 @@ void Glow::Destroy()
 	for (auto& it : glowMap) {
 		it.Destroy();
 	}
+	renderStateGlowLastPass.Destroy();
+	renderStateGlowExtraction.Destroy();
+	renderStateGlowCopy.Destroy();
 }
 
 void Glow::MakeGlow(AFRenderTarget& target, SRVID srcTex)
