@@ -66,8 +66,6 @@ MeshRenderer::~MeshRenderer()
 void MeshRenderer::Create()
 {
 	Destroy();
-	uboForBoneMatrices = afCreateUBO(sizeof(Mat) * MAX_BONE_SSBOS);
-	uboForPerDrawCall = afCreateUBO(sizeof(PerDrawCallUBO));
 	uboForMaterials = afCreateUBO(MATERIAL_UBO_SIZE);
 	renderStates.Create("skin_instanced", dimof(elements), elements, BM_NONE, DSM_DEPTH_ENABLE, CM_CW, dimof(samplers), samplers);
 }
@@ -83,9 +81,7 @@ void MeshRenderer::Destroy()
 	materials.clear();
 	materials.push_back(Material());	// make id 0 invalid
 
-	afSafeDeleteBuffer(uboForBoneMatrices);
 	afSafeDeleteBuffer(uboForMaterials);
-	afSafeDeleteBuffer(uboForPerDrawCall);
 
 	nStoredCommands = 0;
 }
@@ -123,7 +119,7 @@ RenderMesh* MeshRenderer::GetMeshByMRID(MRID id)
 
 void MeshRenderer::DrawRenderMesh(MRID id, const Mat& worldMat, const Mat BoneMatrices[], int nBones, const Block& block)
 {
-	if (!uboForBoneMatrices) {
+	if (!uboForMaterials) {
 		return;
 	}
 	assert(GetMeshByMRID(id));
@@ -151,14 +147,18 @@ void MeshRenderer::DrawRenderMesh(MRID id, const Mat& worldMat, const Mat BoneMa
 
 void MeshRenderer::Flush()
 {
-	if (!uboForBoneMatrices) {
+	if (!uboForMaterials) {
 		return;
 	}
 	if (!nStoredCommands) {
 		return;
 	}
 
-	afWriteBuffer(uboForBoneMatrices, &renderBoneMatrices[0], sizeof(Mat) * renderBoneMatrices.size());
+	int boneBufSize = sizeof(Mat) * renderBoneMatrices.size();
+	UBOID uboForBoneMatrices = afCreateUBO(boneBufSize);
+	UBOID uboForPerDrawCall = afCreateUBO(sizeof(PerDrawCallUBO));
+
+	afWriteBuffer(uboForBoneMatrices, &renderBoneMatrices[0], boneBufSize);
 	matrixMan.Get(MatrixMan::VIEW, perDrawCallUBO.matV);
 	matrixMan.Get(MatrixMan::PROJ, perDrawCallUBO.matP);
 	afWriteBuffer(uboForPerDrawCall, &perDrawCallUBO, sizeof(PerDrawCallUBO));
@@ -185,6 +185,9 @@ void MeshRenderer::Flush()
 
 	renderBoneMatrices.clear();
 	nStoredCommands = 0;
+
+	afSafeDeleteBuffer(uboForPerDrawCall);
+	afSafeDeleteBuffer(uboForBoneMatrices);
 }
 
 MMID MeshRenderer::CreateMaterial(const Material& mat)
