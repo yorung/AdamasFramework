@@ -64,25 +64,6 @@ void RenderMesh::Init(const Block& block)
 	assert(vao);
 }
 
-void RenderMesh::Draw(int instanceCount) const
-{
-	assert(vao);
-	afBindVAO(vao);
-	for (auto it : materialMaps) {
-		const Material* mat = meshRenderer.GetMaterial(it.materialId);
-		assert(mat);
-		afBindSrv0(mat->texture);
-		int count = it.faces * 3;
-		int start = it.faceStartIndex * 3;
-		afDrawIndexed(PT_TRIANGLELIST, count, start, instanceCount);
-	}
-	afBindVAO(0);
-}
-
-MeshRenderer::MeshRenderer()
-{
-}
-
 MeshRenderer::~MeshRenderer()
 {
 	assert(renderMeshes.size() == 1);
@@ -200,7 +181,18 @@ void MeshRenderer::Flush()
 	RenderMesh* r = GetMeshByMRID(c.meshId);
 	assert(r);
 
-	r->Draw(nStoredCommands);
+	assert(r->vao);
+	afBindVAO(r->vao);
+	for (auto it : r->materialMaps) {
+		const Material* mat = meshRenderer.GetMaterial(it.materialId);
+		assert(mat);
+		afBindSrv0(mat->texture);
+		int count = it.faces * 3;
+		int start = it.faceStartIndex * 3;
+		afDrawIndexed(PT_TRIANGLELIST, count, start, nStoredCommands);
+	}
+	afBindVAO(0);
+
 	renderBoneMatrices.clear();
 	nStoredCommands = 0;
 

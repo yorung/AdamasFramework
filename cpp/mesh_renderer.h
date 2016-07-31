@@ -34,15 +34,14 @@ struct RenderCommand
 
 class RenderMesh
 {
+public:
 	VAOID vao;
 	VBOID vbo;
 	IBOID ibo;
 	std::vector<MaterialMap> materialMaps;
-public:
 	~RenderMesh();
 	void Destroy();
 	void Init(const Block& block);
-	void Draw(int instanceCount) const;
 };
 
 static const size_t MAX_INSTANCES = 10;
@@ -65,7 +64,6 @@ public:
 	UBOID uboForPerDrawCall;
 	RenderMesh* GetMeshByMRID(MRID id);
 public:
-	MeshRenderer();
 	~MeshRenderer();
 	void Create();
 	void Destroy();
