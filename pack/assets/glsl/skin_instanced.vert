@@ -28,15 +28,15 @@ struct Material {
 };
 
 
-layout (std140, binding = 1) uniform perDrawCallUBO {
+layout (std140, binding = 0) uniform perDrawCallUBO {
 	mat4 matV;
 	mat4 matP;
 	RenderCommand renderCommands[10];
 };
-layout (std140, binding = 2) uniform materialUBO {
+layout (std140, binding = 1) uniform materialUBO {
 	Material materials[100];
 };
-layout (std140, binding = 3) uniform boneSSBO {
+layout (std140, binding = 2) uniform boneSSBO {
 	mat4 bonesBuffer[100];
 };
 

@@ -21,9 +21,9 @@ static const SamplerType samplers[] = {
 };
 
 enum UBOBindingPoints {
-	UBP_MATERIALS = 2,
-	UBP_PER_INSTANCE_DATAS = 1,
-	UBP_BONES = 3,
+	UBP_PER_INSTANCE_DATAS = 0,
+	UBP_MATERIALS = 1,
+	UBP_BONES = 2,
 };
 
 RenderMesh::~RenderMesh()

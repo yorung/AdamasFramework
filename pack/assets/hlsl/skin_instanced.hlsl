@@ -32,15 +32,15 @@ struct Material {
 	int tmid;
 };
 
-cbuffer perDrawCallUBO : register(b1) {
+cbuffer perDrawCallUBO : register(b0) {
 	matrix matV;
 	matrix matP;
 	RenderCommand renderCommands[10];
 };
-cbuffer materialUBO : register(b2) {
+cbuffer materialUBO : register(b1) {
 	Material materials[100];
 };
-cbuffer boneUBO : register(b3) {
+cbuffer boneUBO : register(b2) {
 	matrix bonesBuffer[100];
 };
 
