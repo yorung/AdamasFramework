@@ -164,6 +164,25 @@ public:
 	}
 };
 
+class AFCbvBindToken {
+	UBOID ubo;
+public:
+	~AFCbvBindToken()
+	{
+		afSafeDeleteBuffer(ubo);
+	}
+	void Create(UBOID ubo_)
+	{
+		ubo = ubo_;
+	}
+	void Create(const void* buf, int size)
+	{
+		ubo = afCreateUBO(size);
+		afWriteBuffer(ubo, buf, size);
+	}
+	UBOID Get() { return ubo; }
+};
+
 inline UBOID afBindCbv0(const void* buf, int size)
 {
 	UBOID ubo = afCreateUBO(size);
@@ -177,10 +196,10 @@ inline void afBindSrv0(SRVID tex)
 	afBindTextureToBindingPoint(tex, 0);
 }
 
-inline void afBindCbv012Srv0(UBOID ubo0, UBOID ubo1, UBOID ubo2, SRVID srv)
+inline void afBindCbvsSrv0(AFCbvBindToken cbvs[], int nCbvs, SRVID srv)
 {
-	afBindBufferToBindingPoint(ubo0, 0);
-	afBindBufferToBindingPoint(ubo1, 1);
-	afBindBufferToBindingPoint(ubo2, 2);
+	for (int i = 0; i < nCbvs; i++) {
+		afBindBufferToBindingPoint(cbvs[i].Get(), i);
+	}
 	afBindTextureToBindingPoint(srv, 0);
 }

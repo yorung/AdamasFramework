@@ -154,14 +154,13 @@ void MeshRenderer::Flush()
 		return;
 	}
 
-	int boneBufSize = sizeof(Mat) * renderBoneMatrices.size();
-	UBOID uboForBoneMatrices = afCreateUBO(boneBufSize);
-	UBOID uboForPerDrawCall = afCreateUBO(sizeof(PerDrawCallUBO));
-
-	afWriteBuffer(uboForBoneMatrices, &renderBoneMatrices[0], boneBufSize);
 	matrixMan.Get(MatrixMan::VIEW, perDrawCallUBO.matV);
 	matrixMan.Get(MatrixMan::PROJ, perDrawCallUBO.matP);
-	afWriteBuffer(uboForPerDrawCall, &perDrawCallUBO, sizeof(PerDrawCallUBO));
+
+	AFCbvBindToken cbvs[3];
+	cbvs[0].Create(&perDrawCallUBO, sizeof(PerDrawCallUBO));
+	cbvs[1].Create(uboForMaterials);
+	cbvs[2].Create(&renderBoneMatrices[0], sizeof(Mat) * renderBoneMatrices.size());
 
 	renderStates.Apply();
 
@@ -176,7 +175,7 @@ void MeshRenderer::Flush()
 	for (auto it : r->materialMaps) {
 		const Material* mat = meshRenderer.GetMaterial(it.materialId);
 		assert(mat);
-		afBindCbv012Srv0(uboForPerDrawCall, uboForMaterials, uboForBoneMatrices, mat->texture);
+		afBindCbvsSrv0(cbvs, dimof(cbvs), mat->texture);
 		int count = it.faces * 3;
 		int start = it.faceStartIndex * 3;
 		afDrawIndexed(PT_TRIANGLELIST, count, start, nStoredCommands);
@@ -185,9 +184,6 @@ void MeshRenderer::Flush()
 
 	renderBoneMatrices.clear();
 	nStoredCommands = 0;
-
-	afSafeDeleteBuffer(uboForPerDrawCall);
-	afSafeDeleteBuffer(uboForBoneMatrices);
 }
 
 MMID MeshRenderer::CreateMaterial(const Material& mat)
