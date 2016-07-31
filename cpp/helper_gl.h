@@ -295,3 +295,11 @@ inline void afBindSrv0(SRVID tex)
 {
 	afBindTextureToBindingPoint(tex, 0);
 }
+
+inline void afBindCbv012Srv0(UBOID ubo0, UBOID ubo1, UBOID ubo2, SRVID srv)
+{
+	afBindBufferToBindingPoint(ubo0, 0);
+	afBindBufferToBindingPoint(ubo1, 1);
+	afBindBufferToBindingPoint(ubo2, 2);
+	afBindTextureToBindingPoint(srv, 0);
+}

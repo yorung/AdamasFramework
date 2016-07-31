@@ -20,12 +20,6 @@ static const SamplerType samplers[] = {
 	AFST_MIPMAP_WRAP,
 };
 
-enum UBOBindingPoints {
-	UBP_PER_INSTANCE_DATAS = 0,
-	UBP_MATERIALS = 1,
-	UBP_BONES = 2,
-};
-
 RenderMesh::~RenderMesh()
 {
 	Destroy();
@@ -164,10 +158,6 @@ void MeshRenderer::Flush()
 		return;
 	}
 
-	afBindBufferToBindingPoint(uboForBoneMatrices, UBP_BONES);
-	afBindBufferToBindingPoint(uboForMaterials, UBP_MATERIALS);
-	afBindBufferToBindingPoint(uboForPerDrawCall, UBP_PER_INSTANCE_DATAS);
-
 	afWriteBuffer(uboForBoneMatrices, &renderBoneMatrices[0], sizeof(Mat) * renderBoneMatrices.size());
 	matrixMan.Get(MatrixMan::VIEW, perDrawCallUBO.matV);
 	matrixMan.Get(MatrixMan::PROJ, perDrawCallUBO.matP);
@@ -186,7 +176,7 @@ void MeshRenderer::Flush()
 	for (auto it : r->materialMaps) {
 		const Material* mat = meshRenderer.GetMaterial(it.materialId);
 		assert(mat);
-		afBindSrv0(mat->texture);
+		afBindCbv012Srv0(uboForPerDrawCall, uboForMaterials, uboForBoneMatrices, mat->texture);
 		int count = it.faces * 3;
 		int start = it.faceStartIndex * 3;
 		afDrawIndexed(PT_TRIANGLELIST, count, start, nStoredCommands);
@@ -195,10 +185,6 @@ void MeshRenderer::Flush()
 
 	renderBoneMatrices.clear();
 	nStoredCommands = 0;
-
-	afBindBufferToBindingPoint(UBOID(), UBP_BONES);
-	afBindBufferToBindingPoint(UBOID(), UBP_MATERIALS);
-	afBindBufferToBindingPoint(UBOID(), UBP_PER_INSTANCE_DATAS);
 }
 
 MMID MeshRenderer::CreateMaterial(const Material& mat)
