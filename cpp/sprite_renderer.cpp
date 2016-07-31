@@ -56,9 +56,7 @@ void SpriteRenderer::Draw(const SpriteCommands& sprites)
 	renderStates.Apply();
 	quadListVertexBuffer.Apply();
 
-	UBOID ubo = afCreateUBO(sizeof(Mat));
-	afWriteBuffer(ubo, &proj, sizeof(Mat));
-	afBindCbv0(ubo);
+	UBOID ubo = afBindCbv0(&proj, sizeof(Mat));
 
 	SpriteVertex v[MAX_SPRITES_IN_ONE_DRAW_CALL][4];
 	int numStoredSprites = 0;

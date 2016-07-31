@@ -38,7 +38,6 @@ class WaterSurfaceES2
 	VBOID vbo, vboFullScr;
 	IBOID ibo, iboFullScr;
 	VAOID vao, vaoFullScr;
-	UBOID ubo;
 	int nIndi;
 	AFRenderTarget rt;
 	std::vector<SRVID> texIds;
@@ -187,7 +186,6 @@ WaterSurfaceES2::~WaterSurfaceES2()
 
 void WaterSurfaceES2::Destroy()
 {
-	afSafeDeleteBuffer(ubo);
 	afSafeDeleteBuffer(vbo);
 	afSafeDeleteBuffer(ibo);
 	afSafeDeleteBuffer(vboFullScr);
@@ -219,8 +217,6 @@ void WaterSurfaceES2::Init()
 	Destroy();
 
 	lastTime = GetTime();
-
-	ubo = afCreateUBO(sizeof(WaterSurfaceClassicUBO));
 
 	std::vector<AFIndex> indi;
 	std::vector<WaterVert> vert;
@@ -324,11 +320,12 @@ void WaterSurfaceES2::Draw()
 	for (int i = 0; i < (int)dimof(texFiles); i++) {
 		afBindTextureToBindingPoint(texIds[i], i);
 	}
-	afWriteBuffer(ubo, &uboBuf, sizeof(uboBuf));
-	afBindCbv0(ubo);
 	rt.BeginRenderToThis();
+	UBOID ubo = afBindCbv0(&uboBuf, sizeof(uboBuf));
 	afBindVAO(vao);
 	afDrawIndexed(PT_TRIANGLESTRIP, nIndi);
+	afBindVAO(0);
+	afSafeDeleteBuffer(ubo);
 
 	AFRenderTarget rtDefault;
 	rtDefault.InitForDefaultRenderTarget();
@@ -338,7 +335,6 @@ void WaterSurfaceES2::Draw()
 	afSetSampler(AFST_LINEAR_CLAMP, 0);
 	afBindVAO(vaoFullScr);
 	afDrawIndexed(PT_TRIANGLESTRIP, 4);
-
 	afBindVAO(0);
 }
 

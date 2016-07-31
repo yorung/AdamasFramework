@@ -164,9 +164,12 @@ public:
 	}
 };
 
-inline void afBindCbv0(UBOID ubo)
+inline UBOID afBindCbv0(const void* buf, int size)
 {
+	UBOID ubo = afCreateUBO(size);
+	afWriteBuffer(ubo, buf, size);
 	afBindBufferToBindingPoint(ubo, 0);
+	return ubo;
 }
 
 inline void afBindSrv0(SRVID tex)

@@ -107,9 +107,7 @@ void GridRenderer::Draw()
 	matrixMan.Get(MatrixMan::VIEW, matView);
 	matrixMan.Get(MatrixMan::PROJ, matProj);
 	Mat matVP = matView * matProj;
-	UBOID ubo = afCreateUBO(sizeof(Mat));
-	afWriteBuffer(ubo, &matVP, sizeof(Mat));
-	afBindCbv0(ubo);
+	UBOID ubo = afBindCbv0(&matVP, sizeof(Mat));
 	afBindVAO(vao);
 	afDraw(PT_LINELIST, lines * 2);
 	afBindVAO(0);

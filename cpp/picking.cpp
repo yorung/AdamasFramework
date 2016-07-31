@@ -16,7 +16,6 @@ struct PickingUBO {
 
 class Picking {
 	VBOID vbo2d, vbo3d;
-	UBOID ubo;
 	AFRenderStates renderStates;
 public:
 	Picking();
@@ -51,7 +50,6 @@ public:
 
 Picking::Picking()
 {
-	ubo = afCreateUBO(sizeof(Mat));
 	vbo2d = afCreateDynamicVertexBuffer(sizeof(Vertex) * 3);
 	vbo3d = afCreateDynamicVertexBuffer(sizeof(Vertex) * 3);
 	renderStates.Create("solid", dimof(elements), elements, BM_NONE, DSM_DEPTH_ENABLE, CM_DISABLE);
@@ -60,7 +58,6 @@ Picking::Picking()
 
 Picking::~Picking()
 {
-	afSafeDeleteBuffer(ubo);
 	afSafeDeleteBuffer(vbo2d);
 	afSafeDeleteBuffer(vbo3d);
 }
@@ -154,7 +151,6 @@ void Picking::Draw3D()
 	VBOID vbos[] = {vbo3d};
 	int strides[] = {sizeof(Vertex)};
 #ifdef GL_TRUE
-	afBindVAO(0);
 	afSetVertexAttributes(elements, dimof(elements), 1, vbos, strides);
 #endif
 #ifdef __d3d11_h__
@@ -167,10 +163,9 @@ void Picking::Draw3D()
 	matrixMan.Get(MatrixMan::VIEW, mView);
 	matrixMan.Get(MatrixMan::PROJ, mProj);
 	Mat mVP = mView * mProj;
-	afWriteBuffer(ubo, &mVP, sizeof(Mat));
-	afBindCbv0(ubo);
-
+	UBOID ubo = afBindCbv0(&mVP, sizeof(Mat));
 	afDraw(PT_TRIANGLESTRIP, 3);
+	afSafeDeleteBuffer(ubo);
 }
 
 void Picking::Draw2D()
@@ -179,7 +174,6 @@ void Picking::Draw2D()
 	VBOID vbos[] = {vbo2d};
 	int strides[] = {sizeof(Vertex)};
 #ifdef GL_TRUE
-	afBindVAO(0);
 	afSetVertexAttributes(elements, dimof(elements), 1, vbos, strides);
 #endif
 #ifdef __d3d11_h__
@@ -188,10 +182,11 @@ void Picking::Draw2D()
 	UINT offsets[] = { 0 };
 	deviceMan11.GetContext()->IASetVertexBuffers(0, dimof(d11Bufs), d11Bufs, uStrides, offsets);
 #endif
-
-	PickingUBO buf;
-	afWriteBuffer(ubo, &buf, sizeof(buf));
-	afBindCbv0(ubo);
-
+	Mat mView, mProj;
+	matrixMan.Get(MatrixMan::VIEW, mView);
+	matrixMan.Get(MatrixMan::PROJ, mProj);
+	Mat mVP = mView * mProj;
+	UBOID ubo = afBindCbv0(&mVP, sizeof(Mat));
 	afDraw(PT_TRIANGLESTRIP, 3);
+	afSafeDeleteBuffer(ubo);
 }

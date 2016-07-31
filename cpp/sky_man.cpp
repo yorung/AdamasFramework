@@ -28,14 +28,10 @@ void SkyMan::Draw()
 	matrixMan.Get(MatrixMan::PROJ, matP);
 	matV._41 = matV._42 = matV._43 = 0;
 	Mat invVP = inv(matV * matP);
-
-	UBOID uboId = afCreateUBO(sizeof(Mat));
-	afWriteBuffer(uboId, &invVP, sizeof(invVP));
-	afBindCbv0(uboId);
+	UBOID ubo = afBindCbv0(&invVP, sizeof(invVP));
 	(texDesc.isCubeMap ? afBindCubeMapToBindingPoint : afBindTextureToBindingPoint)(texId, 0);
-
 	afDraw(PT_TRIANGLESTRIP, 4);
-	afSafeDeleteBuffer(uboId);
+	afSafeDeleteBuffer(ubo);
 }
 
 void SkyMan::Destroy()
