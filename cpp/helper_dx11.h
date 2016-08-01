@@ -167,10 +167,6 @@ public:
 class AFCbvBindToken {
 	UBOID ubo;
 public:
-	~AFCbvBindToken()
-	{
-		afSafeDeleteBuffer(ubo);
-	}
 	void Create(UBOID ubo_)
 	{
 		ubo = ubo_;
