@@ -7,6 +7,7 @@ static const SamplerType samplers[] = { AFST_LINEAR_WRAP };
 SkyMan::~SkyMan()
 {
 	assert(!texId);
+	assert(!renderStates.IsReady());
 }
 
 void SkyMan::Create(const char *texFileName, const char* shader)
@@ -18,7 +19,7 @@ void SkyMan::Create(const char *texFileName, const char* shader)
 
 void SkyMan::Draw()
 {
-	if (!texId) {
+	if (!renderStates.IsReady()) {
 		return;
 	}
 	renderStates.Apply();
@@ -37,4 +38,5 @@ void SkyMan::Draw()
 void SkyMan::Destroy()
 {
 	afSafeDeleteTexture(texId);
+	renderStates.Destroy();
 }

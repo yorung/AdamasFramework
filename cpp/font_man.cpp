@@ -58,6 +58,7 @@ bool FontMan::Init()
 void FontMan::Destroy()
 {
 	afSafeDeleteTexture(texture);
+	renderStates.Destroy();
 	texSrc.Destroy();
 	quadListVertexBuffer.Destroy();
 	ClearCache();
@@ -131,7 +132,6 @@ void FontMan::Render()
 	FlushToTexture();
 
 	Vec2 scrSize = systemMisc.GetScreenSize();
-
 	static FontVertex verts[4 * SPRITE_MAX];
 	for (int i = 0; i < numSprites; i++) {
 		CharSprite& cs = charSprites[i];
