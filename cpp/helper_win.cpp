@@ -82,6 +82,7 @@ void GoMyDir()
 }
 
 #pragma comment(lib, "winmm.lib")
+#include <mmsystem.h>
 void PlayBgm(const char* fileName)
 {
 //	PlaySoundA(fileName, NULL, SND_ASYNC | SND_LOOP);
