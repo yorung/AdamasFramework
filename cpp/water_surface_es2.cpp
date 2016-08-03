@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#ifdef AF_GLES31
 
 struct WaterVert
 {
@@ -20,6 +19,7 @@ struct WaterRipple
 struct WaterSurfaceClassicUBO {
 	Mat matW, matV, matP;
 	float time;
+	float padding[3];
 };
 
 class WaterSurfaceES2
@@ -337,5 +337,3 @@ void WaterSurfaceES2::Draw()
 	afDrawIndexed(PT_TRIANGLESTRIP, 4);
 	afBindVAO(0);
 }
-
-#endif

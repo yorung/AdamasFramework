@@ -94,7 +94,7 @@ class AFRenderTarget
 	IVec2 texSize;
 	ID3D11RenderTargetView* renderTargetView = nullptr;
 	ID3D11ShaderResourceView* shaderResourceView = nullptr;
-	ID3D11UnorderedAccessView* unorderedAccessView = nullptr;
+//	ID3D11UnorderedAccessView* unorderedAccessView = nullptr;
 	ID3D11DepthStencilView* depthStencilView = nullptr;
 public:
 	~AFRenderTarget() { Destroy(); }
@@ -103,7 +103,7 @@ public:
 	void Destroy();
 	void BeginRenderToThis();
 	ID3D11ShaderResourceView* GetTexture() { return shaderResourceView; }
-	ID3D11UnorderedAccessView* GetUnorderedAccessView() { return unorderedAccessView; }
+//	ID3D11UnorderedAccessView* GetUnorderedAccessView() { return unorderedAccessView; }
 };
 
 SRVID LoadTextureViaOS(const char* name, IVec2& size);

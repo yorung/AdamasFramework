@@ -43,12 +43,18 @@ SMID ShaderMan11::Create(const char *name, const D3D11_INPUT_ELEMENT_DESC elemen
 	ComPtr<ID3DBlob> vs = CompileShader(name, "mainVS", "vs_5_0");
 	ComPtr<ID3DBlob> ps = CompileShader(name, "mainPS", "ps_5_0");
 	Effect effect = {};
-	HRESULT hr = deviceMan11.GetDevice()->CreateVertexShader(vs->GetBufferPointer(), vs->GetBufferSize(), nullptr, &effect.pVertexShader);
-	hr = deviceMan11.GetDevice()->CreatePixelShader(ps->GetBufferPointer(), ps->GetBufferSize(), nullptr, &effect.pPixelShader);
-
-	if (elements) {
-		hr = deviceMan11.GetDevice()->CreateInputLayout(elements, numElements, vs->GetBufferPointer(), vs->GetBufferSize(), &effect.pInputLayout);
-	//	assert(!hr);
+	HRESULT hr = S_OK;
+	if (ps) {
+		hr = deviceMan11.GetDevice()->CreatePixelShader(ps->GetBufferPointer(), ps->GetBufferSize(), nullptr, &effect.pPixelShader);
+		assert(!hr);
+	}
+	if (vs) {
+		hr = deviceMan11.GetDevice()->CreateVertexShader(vs->GetBufferPointer(), vs->GetBufferSize(), nullptr, &effect.pVertexShader);
+		assert(!hr);
+		if (elements) {
+			hr = deviceMan11.GetDevice()->CreateInputLayout(elements, numElements, vs->GetBufferPointer(), vs->GetBufferSize(), &effect.pInputLayout);
+			assert(!hr);
+		}
 	}
 
 	effect.elements = elements;
