@@ -16,7 +16,8 @@ static ComPtr<ID3DBlob> CompileShader(const char* name, const char* entryPoint, 
 	ComPtr<ID3DBlob> blob, err;
 	WCHAR wname[MAX_PATH];
 	MultiByteToWideChar(CP_ACP, 0, path, -1, wname, dimof(wname));
-	D3DCompileFromFile(wname, nullptr, nullptr, entryPoint, target, flags, 0, &blob, &err);
+	HRESULT hr = D3DCompileFromFile(wname, nullptr, nullptr, entryPoint, target, flags, 0, &blob, &err);
+	assert(!hr);
 	if (err) {
 		MessageBoxA(nullptr, (const char*)err->GetBufferPointer(), name, MB_OK | MB_ICONERROR);
 	}
