@@ -332,7 +332,6 @@ void WaterSurfaceES2::Draw()
 	rtDefault.BeginRenderToThis();
 	renderStatePostProcess.Apply();
 	afBindSrv0(rt.GetTexture());
-	afSetSampler(AFST_LINEAR_CLAMP, 0);
 	afBindVAO(vaoFullScr);
 	afDrawIndexed(PT_TRIANGLESTRIP, 4);
 	afBindVAO(0);
