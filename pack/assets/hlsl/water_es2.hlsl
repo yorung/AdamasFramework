@@ -26,7 +26,7 @@ VsToPs mainVS(VsIn vsIn)
 {
 	VsToPs vsToPs;
 
-	matrix matWVP = matP * matV * matW;
+	matrix matWVP = mul(matP, mul(matV, matW));
 	vsToPs.pos4 = mul(matWVP, float4(vsIn.vPosition.xyz, 1));
 	vsToPs.normal = mul(normalize(vsIn.vNormal), (float3x3)matW);
 
