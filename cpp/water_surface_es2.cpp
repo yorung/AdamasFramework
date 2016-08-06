@@ -307,6 +307,10 @@ void WaterSurfaceES2::Update()
 			0, 0, 1, 0,
 			0, 0, 0, 1);
 	}
+#ifndef GL_TURE
+	uboBuf.matP *= Mat(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, -0.5, 0, 0, 0, 0.5, 1);
+#endif
+
 	uboBuf.matW = q2m(Quat(Vec3(1, 0, 0), (float)M_PI / 180 * -90));
 	double dummy;
 	uboBuf.time = (float)modf(elapsedTime * (1.0f / loopTime), &dummy) * loopTime;
