@@ -17,10 +17,10 @@ static ComPtr<ID3DBlob> CompileShader(const char* name, const char* entryPoint, 
 	WCHAR wname[MAX_PATH];
 	MultiByteToWideChar(CP_ACP, 0, path, -1, wname, dimof(wname));
 	HRESULT hr = D3DCompileFromFile(wname, nullptr, nullptr, entryPoint, target, flags, 0, &blob, &err);
-	assert(!hr);
 	if (err) {
 		MessageBoxA(nullptr, (const char*)err->GetBufferPointer(), name, MB_OK | MB_ICONERROR);
 	}
+	assert(!hr);
 	return blob;
 }
 
