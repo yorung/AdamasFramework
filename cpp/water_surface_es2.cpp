@@ -39,7 +39,6 @@ class WaterSurfaceES2
 	IBOID ibo, iboFullScr;
 	VAOID vao, vaoFullScr;
 	int nIndi;
-	AFRenderTarget rt;
 	std::vector<SRVID> texIds;
 public:
 	WaterSurfaceES2();
@@ -195,7 +194,6 @@ void WaterSurfaceES2::Destroy()
 	for (auto& it : texIds) {
 		afSafeDeleteTexture(it);
 	}
-	rt.Destroy();
 }
 
 static const InputElement elements[] = {
@@ -260,8 +258,6 @@ void WaterSurfaceES2::Init()
 		texIds[i] = texMan.Create(texFiles[i].name);
 	}
 
-	rt.Init(systemMisc.GetScreenSize(), AFDT_R5G6B5_UINT);
-
 	VBOID vertexBufferIds[] = { vbo };
 	int strides[] = { sizeof(WaterVert) };
 	vao = afCreateVAO(elements, dimof(elements), 1, vertexBufferIds, strides, ibo);
@@ -324,7 +320,10 @@ void WaterSurfaceES2::Draw()
 	for (int i = 0; i < (int)dimof(texFiles); i++) {
 		afBindTextureToBindingPoint(texIds[i], i);
 	}
-	rt.BeginRenderToThis();
+
+	AFRenderTarget rtWater;
+	rtWater.Init(systemMisc.GetScreenSize(), AFDT_R5G6B5_UINT);
+	rtWater.BeginRenderToThis();
 	UBOID ubo = afBindCbv0(&uboBuf, sizeof(uboBuf));
 	afBindVAO(vao);
 	afDrawIndexed(PT_TRIANGLESTRIP, nIndi);
@@ -335,7 +334,7 @@ void WaterSurfaceES2::Draw()
 	rtDefault.InitForDefaultRenderTarget();
 	rtDefault.BeginRenderToThis();
 	renderStatePostProcess.Apply();
-	afBindSrv0(rt.GetTexture());
+	afBindSrv0(rtWater.GetTexture());
 	afBindVAO(vaoFullScr);
 	afDrawIndexed(PT_TRIANGLESTRIP, 4);
 	afBindVAO(0);
