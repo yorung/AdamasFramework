@@ -17,5 +17,5 @@ VsToPs mainVS(uint id : SV_VertexID)
 
 float4 mainPS(VsToPs inp) : SV_Target
 {
-	return gTexture.Sample(samplerState, inp.screenPos.xy * 0.5 + 0.5) * 2;
+	return gTexture.Sample(samplerState, inp.screenPos.xy * float2(0.5, -0.5) + 0.5) * 2;
 }
