@@ -140,13 +140,13 @@ void WaterSurfaceES3::Init()
 
 	lastTime = GetTime();
 
-	renderStateWaterLastPass.Create("water_es3_lastpass", 0, nullptr, BM_NONE, DSM_DISABLE, CM_DISABLE);
-	renderStateHeightMap.Create("water_es3_heightmap", 0, nullptr, BM_NONE, DSM_DISABLE, CM_DISABLE);
+	renderStateWaterLastPass.Create(AFDL_NONE, "water_es3_lastpass", 0, nullptr, BM_NONE, DSM_DISABLE, CM_DISABLE);
+	renderStateHeightMap.Create(AFDL_NONE, "water_es3_heightmap", 0, nullptr, BM_NONE, DSM_DISABLE, CM_DISABLE);
 
 	{
 		int numElements = 0;
 		const InputElement* elements = stockObjects.GetFullScreenInputElements(numElements);
-		renderStateNormalMap.Create("water_es3_normal", numElements, elements, BM_NONE, DSM_DISABLE, CM_DISABLE);
+		renderStateNormalMap.Create(AFDL_NONE, "water_es3_normal", numElements, elements, BM_NONE, DSM_DISABLE, CM_DISABLE);
 	}
 
 	shaderMan.Apply(renderStateNormalMap.GetShaderId());

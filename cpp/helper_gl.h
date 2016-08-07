@@ -241,7 +241,7 @@ class AFRenderStates {
 public:
 	SMID GetShaderId() { return shaderId; }
 	bool IsReady() { return shaderId != INVALID_SMID; }
-	void Create(const char* shaderName, int numInputElements, const InputElement* inputElements, BlendMode blendMode_, DepthStencilMode depthStencilMode_, CullMode cullMode_, int numSamplerTypes_ = 0, const SamplerType samplerTypes_[] = nullptr);
+	void Create(DescriptorLayout, const char* shaderName, int numInputElements, const InputElement* inputElements, BlendMode blendMode_, DepthStencilMode depthStencilMode_, CullMode cullMode_, int numSamplerTypes_ = 0, const SamplerType samplerTypes_[] = nullptr);
 	void Apply() const;
 	void Destroy() { shaderId = INVALID_SMID; }
 };

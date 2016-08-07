@@ -66,15 +66,6 @@ public:
 	}
 };
 
-enum DescriptorLayout
-{
-	AFDL_NONE,
-	AFDL_CBV0,
-	AFDL_SRV0,
-	AFDL_CBV0_SRV0,
-	AFDL_CBV012_SRV0,
-};
-
 ComPtr<ID3D12PipelineState> afCreatePSO(const char *shaderName, const InputElement elements[], int numElements, BlendMode blendMode, DepthStencilMode depthStencilMode, CullMode cullMode, ComPtr<ID3D12RootSignature> rootSignature);
 ComPtr<ID3D12RootSignature> afCreateRootSignature(DescriptorLayout descriptorLayout, int numSamplers, const SamplerType samplers[]);
 

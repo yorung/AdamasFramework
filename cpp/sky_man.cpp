@@ -14,11 +14,7 @@ void SkyMan::Create(const char *texFileName, const char* shader)
 {
 	Destroy();
 	texId = afLoadTexture(texFileName, texDesc);
-	renderStates.Create(
-#ifdef AF_DX12
-		AFDL_CBV0_SRV0,
-#endif
-		shader, 0, nullptr, BM_NONE, DSM_DEPTH_CLOSEREQUAL_READONLY, CM_DISABLE, dimof(samplers), samplers);
+	renderStates.Create(AFDL_CBV0_SRV0, shader, 0, nullptr, BM_NONE, DSM_DEPTH_CLOSEREQUAL_READONLY, CM_DISABLE, dimof(samplers), samplers);
 }
 
 void SkyMan::Draw()
@@ -33,16 +29,16 @@ void SkyMan::Draw()
 	matrixMan.Get(MatrixMan::PROJ, matP);
 	matV._41 = matV._42 = matV._43 = 0;
 	Mat invVP = inv(matV * matP);
-#ifdef AF_DX12
-	afBindCbv0Srv0(&invVP, sizeof(invVP), texId);
-#else
-	UBOID ubo = afBindCbv0(&invVP, sizeof(invVP));
+
+	AFCbvBindToken token;
+	token.Create(&invVP, sizeof(invVP));
+#ifdef GL_TRUE
+	afBindCbvs(&token, 1);
 	(texDesc.isCubeMap ? afBindCubeMapToBindingPoint : afBindTextureToBindingPoint)(texId, 0);
+#else
+	afBindCbvsSrv0(&token, 1, texId);
 #endif
 	afDraw(PT_TRIANGLESTRIP, 4);
-#ifndef AF_DX12
-	afSafeDeleteBuffer(ubo);
-#endif
 }
 
 void SkyMan::Destroy()
