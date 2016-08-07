@@ -6,6 +6,7 @@ Currently, this framework supports following platforms.
 * Android - OpenGL ES 3.1
 * Windows - OpenGL ES 3.1
 * Windows - DirectX 11
+* Windows - DirectX 12
 
 # Submodule required
 
