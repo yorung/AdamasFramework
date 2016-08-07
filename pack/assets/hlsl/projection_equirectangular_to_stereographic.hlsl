@@ -12,7 +12,7 @@ struct VsToPs
 	float4 screenPos : POS2;
 };
 
-VsToPs mainVS(uint id : SV_VertexID)
+VsToPs VSMain(uint id : SV_VertexID)
 {
 	VsToPs ret;
 	ret.pos = float4(id & 2 ? 1 : -1, id & 1 ? -1 : 1, 1, 1);
@@ -20,7 +20,7 @@ VsToPs mainVS(uint id : SV_VertexID)
 	return ret;
 }
 
-float4 mainPS(VsToPs inp) : SV_Target
+float4 PSMain(VsToPs inp) : SV_Target
 {
 	float2 scale = float2(4.0f / 3.0f, 1) * 2;	// scale & aspect ratio
 	float2 plane = inp.screenPos.xy * scale;

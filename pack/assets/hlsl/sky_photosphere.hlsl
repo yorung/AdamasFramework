@@ -12,7 +12,7 @@ struct VsToPs
 	float4 pos2 : POS2;
 };
 
-VsToPs mainVS(uint id : SV_VertexID)
+VsToPs VSMain(uint id : SV_VertexID)
 {
 	VsToPs ret;
 	ret.pos = float4(id & 2 ? 1 : -1, id & 1 ? -1 : 1, 1, 1);
@@ -20,7 +20,7 @@ VsToPs mainVS(uint id : SV_VertexID)
 	return ret;
 }
 
-float4 mainPS(VsToPs inp) : SV_Target
+float4 PSMain(VsToPs inp) : SV_Target
 {
 	float3 dir = normalize(mul(inp.pos2, invVP).xyz);
 	float longitude = atan2(dir.x, dir.z) * (180 / 3.14159265f);

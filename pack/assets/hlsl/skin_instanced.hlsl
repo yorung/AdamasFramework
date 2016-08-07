@@ -44,7 +44,7 @@ cbuffer boneUBO : register(b2) {
 	matrix bonesBuffer[100];
 };
 
-VS_OUTPUT mainVS(VS_INPUT _In, uint instanceId : SV_InstanceID)
+VS_OUTPUT VSMain(VS_INPUT _In, uint instanceId : SV_InstanceID)
 {
 	RenderCommand cmd = renderCommands[instanceId];
 	uint boneStartIndex = cmd.boneStartIndex;
@@ -80,7 +80,7 @@ float4 CalcColor(VS_OUTPUT _In)
 
 SamplerState gSampler : register(s0);
 Texture2D gTexture : register(t0);
-float4 mainPS(VS_OUTPUT _In) : SV_TARGET
+float4 PSMain(VS_OUTPUT _In) : SV_TARGET
 {
 	return gTexture.Sample(gSampler, _In.texcoord) * CalcColor(_In);
 }

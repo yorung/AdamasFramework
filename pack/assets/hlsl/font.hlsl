@@ -8,7 +8,7 @@ struct VsToPs {
 	float2 coord : TEXCOORD;
 };
 
-VsToPs mainVS(VsIn vsIn) {
+VsToPs VSMain(VsIn vsIn) {
 	VsToPs vsOut;
 	vsOut.pos = float4(vsIn.pos, 0, 1);
 	vsOut.coord = vsIn.coord;
@@ -17,7 +17,7 @@ VsToPs mainVS(VsIn vsIn) {
 
 SamplerState gSampler : register(s0);
 Texture2D gTexture : register(t0);
-float4 mainPS(VsToPs psIn) : SV_TARGET
+float4 PSMain(VsToPs psIn) : SV_TARGET
 {
 //	return 1;
 	return gTexture.Sample(gSampler, psIn.coord);

@@ -14,7 +14,7 @@ cbuffer matUbo : register(b0) {
 	matrix matProj;
 };
 
-VsToPs mainVS(VertIn _In)
+VsToPs VSMain(VertIn _In)
 {
 	VsToPs o;
 	o.SV_POSITION = mul(matProj, float4(_In.POSITION.xyz, 1));
@@ -26,7 +26,7 @@ VsToPs mainVS(VertIn _In)
 SamplerState psSampler : register(s0);
 Texture2D psTexture : register(t0);
 
-float4 mainPS(VsToPs _In) : SV_TARGET
+float4 PSMain(VsToPs _In) : SV_TARGET
 {
 	return psTexture.Sample(psSampler, _In.texcoord) * _In.color;
 }

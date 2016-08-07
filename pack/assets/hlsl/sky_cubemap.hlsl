@@ -12,7 +12,7 @@ struct VsToPs
 	float3 dir : DIR;
 };
 
-VsToPs mainVS(uint id : SV_VertexID)
+VsToPs VSMain(uint id : SV_VertexID)
 {
 	VsToPs ret;
 	ret.pos = float4(id & 2 ? 1 : -1, id & 1 ? -1 : 1, 1, 1);
@@ -20,7 +20,7 @@ VsToPs mainVS(uint id : SV_VertexID)
 	return ret;
 }
 
-float4 mainPS(VsToPs inp) : SV_Target
+float4 PSMain(VsToPs inp) : SV_Target
 {
 	return texCube.Sample(samplerState, inp.dir);
 }

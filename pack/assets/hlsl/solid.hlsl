@@ -13,7 +13,7 @@ struct VsOutput {
 	float3 col : COLOR;
 };
 
-VsOutput mainVS(VsInput inp)
+VsOutput VSMain(VsInput inp)
 {
 	VsOutput outp;
 	outp.pos = mul(matVP, float4(inp.pos, 1));
@@ -21,7 +21,7 @@ VsOutput mainVS(VsInput inp)
 	return outp;
 }
 
-float4 mainPS(VsOutput inp) : SV_TARGET
+float4 PSMain(VsOutput inp) : SV_TARGET
 {
 	return float4(inp.col, 1);
 }

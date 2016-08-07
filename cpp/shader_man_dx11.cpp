@@ -41,8 +41,8 @@ SMID ShaderMan11::Create(const char *name, const D3D11_INPUT_ELEMENT_DESC elemen
 		return it->second;
 	}
 
-	ComPtr<ID3DBlob> vs = CompileShader(name, "mainVS", "vs_5_0");
-	ComPtr<ID3DBlob> ps = CompileShader(name, "mainPS", "ps_5_0");
+	ComPtr<ID3DBlob> vs = CompileShader(name, "VSMain", "vs_5_0");
+	ComPtr<ID3DBlob> ps = CompileShader(name, "PSMain", "ps_5_0");
 	Effect effect = {};
 	HRESULT hr = S_OK;
 	if (ps) {

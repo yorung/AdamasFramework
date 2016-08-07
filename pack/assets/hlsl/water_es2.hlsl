@@ -22,7 +22,7 @@ static const float airToWater = 1.0 / 1.33333;
 static const float3 camDir = float3(0, 0, -1);
 static const float waterDepth = 0.2;
 
-VsToPs mainVS(VsIn vsIn)
+VsToPs VSMain(VsIn vsIn)
 {
 	VsToPs vsToPs;
 
@@ -59,7 +59,7 @@ Texture2D texture5 : register(t5);
 static const float loopTime = 20.0;
 static const float PI2 = 3.1415926 * 2.0;
 
-float4 mainPS(VsToPs psIn) : SV_TARGET
+float4 PSMain(VsToPs psIn) : SV_TARGET
 {
 	float dist1 = length(psIn.position + float2(0.5, 0.5));
 	float dist2 = length(psIn.position - float2(0.5, 0.5));
