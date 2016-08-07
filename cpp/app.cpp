@@ -22,7 +22,9 @@ App::App()
 
 void App::Draw()
 {
+#ifdef GL_TRUE
 	afDepthStencilMode(DSM_DEPTH_ENABLE);
+#endif
 	AFRenderTarget rtDefault;
 	rtDefault.InitForDefaultRenderTarget();
 	rtDefault.BeginRenderToThis();
@@ -87,12 +89,17 @@ void App::Destroy()
 	stockObjects.Destroy();
 	spriteRenderer.Destroy();
 	texMan.Destroy();
+#ifndef AF_DX12
 	shaderMan.Destroy();
+#endif
 	fontMan.Destroy();
 	meshRenderer.Destroy();
 	meshMan.Destroy();
+#ifndef AF_DX12
 	glow.Destroy();
+#endif
 	skyMan.Destroy();
+	letterBox.Destroy();
 	ClearMenu();
 	meshId = MeshMan::INVALID_MMID;
 }

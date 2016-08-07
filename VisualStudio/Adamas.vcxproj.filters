@@ -139,6 +139,12 @@
     <ClCompile Include="..\cpp\water_surface_es2.cpp">
       <Filter>PlatformIndipendent</Filter>
     </ClCompile>
+    <ClCompile Include="..\cpp\device_man_dx12.cpp">
+      <Filter>DX12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cpp\helper_dx12.cpp">
+      <Filter>DX12</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resource.h">
@@ -252,6 +258,12 @@
     <ClInclude Include="wgl_grabber_gen.h">
       <Filter>GL</Filter>
     </ClInclude>
+    <ClInclude Include="..\cpp\device_man_dx12.h">
+      <Filter>DX12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cpp\helper_dx12.h">
+      <Filter>DX12</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Windows">
@@ -268,6 +280,9 @@
     </Filter>
     <Filter Include="DX11">
       <UniqueIdentifier>{6bf003c5-fa11-406c-9814-ff5d58a18f6f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DX12">
+      <UniqueIdentifier>{3ad9077a-d1f0-4c15-8ace-0907d7a2f25d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

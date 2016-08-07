@@ -2,6 +2,8 @@ Release/
 Debug/
 DX11Release/
 DX11Debug/
+DX12Release/
+DX12Debug/
 ipch/
 bin/
 /VisualStudio/Tmp

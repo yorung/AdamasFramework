@@ -17,6 +17,14 @@
 using Microsoft::WRL::ComPtr;
 #endif
 
+#ifdef AF_DX12
+#include <d3d12.h>
+#include <dxgi1_4.h>
+#include <d3dcompiler.h>
+#include <wrl.h>
+using Microsoft::WRL::ComPtr;
+#endif
+
 #else
 #include <jni.h>
 #include <android/log.h>
@@ -59,6 +67,11 @@ static const int BONE_MAX = 50;
 #ifdef AF_DX11
 #include "device_man_dx11.h"
 #include "helper_dx11.h"
+#endif
+
+#ifdef AF_DX12
+#include "device_man_dx12.h"
+#include "helper_dx12.h"
 #endif
 
 #include "matrix_man.h"

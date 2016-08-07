@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#ifndef AF_DX12
+
 Glow glow;
 AFRenderTarget glowMap[6];
 const static SamplerType samplerTypes[] = { AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP };
@@ -62,3 +64,5 @@ void Glow::MakeGlow(AFRenderTarget& target, SRVID srcTex)
 	afDraw(PT_TRIANGLESTRIP, 4);
 	afBindVAO(0);
 }
+
+#endif

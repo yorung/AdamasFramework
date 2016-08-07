@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#ifndef AF_DX12
+
 struct WaterVert
 {
 	Vec3 pos;
@@ -339,3 +341,5 @@ void WaterSurfaceES2::Draw()
 	afDrawIndexed(PT_TRIANGLESTRIP, 4);
 	afBindVAO(0);
 }
+
+#endif

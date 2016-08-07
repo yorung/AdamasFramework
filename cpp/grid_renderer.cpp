@@ -51,6 +51,7 @@ struct GridVert {
 
 GridRenderer::~GridRenderer()
 {
+	renderStates.Destroy();
 	afSafeDeleteBuffer(ibo);
 	afSafeDeleteBuffer(vbo);
 	afSafeDeleteVAO(vao);
@@ -90,7 +91,11 @@ GridRenderer::GridRenderer(int numGrid_, float pitch_)
 		CInputElement("POSITION", SF_R32G32B32_FLOAT, 0),
 		CInputElement("COLOR", SF_R32G32B32_FLOAT, 12),
 	};
-	renderStates.Create("solid", dimof(layout), layout, BM_NONE, DSM_DEPTH_ENABLE, CM_DISABLE);
+	renderStates.Create(
+#ifdef AF_DX12
+		AFDL_CBV0,
+#endif
+		"solid", dimof(layout), layout, BM_NONE, DSM_DEPTH_ENABLE, CM_DISABLE);
 
 	vbo = afCreateVertexBuffer(sizeVertices, &vert[0]);
 	ibo = afCreateIndexBuffer(&indi[0], indi.size());
@@ -107,11 +112,12 @@ void GridRenderer::Draw()
 	matrixMan.Get(MatrixMan::VIEW, matView);
 	matrixMan.Get(MatrixMan::PROJ, matProj);
 	Mat matVP = matView * matProj;
-	UBOID ubo = afBindCbv0(&matVP, sizeof(Mat));
+	AFCbvBindToken token;
+	token.Create(&matVP, sizeof(Mat));
+	afBindCbvs(&token, 1);
 	afBindVAO(vao);
 	afDraw(PT_LINELIST, lines * 2);
 	afBindVAO(0);
-	afSafeDeleteBuffer(ubo);
 #ifndef NDEBUG
 	Vec2 v;
 	if (GetMousePosInGrid(v)) {

@@ -23,10 +23,12 @@ void StockObjects::CreateFullScreenVAO()
 void StockObjects::Init()
 {
 	CreateFullScreenVAO();
+#ifndef AF_DX12
 	for (int i = 0; i < AFST_MAX; i++)
 	{
 		builtInSamplers[i] = afCreateSampler((SamplerType)i);
 	}
+#endif
 }
 
 void StockObjects::Destroy()
@@ -34,10 +36,12 @@ void StockObjects::Destroy()
 	afSafeDeleteBuffer(vboFullScr);
 	afSafeDeleteBuffer(iboFullScr);
 	afSafeDeleteVAO(vaoFullScr);
+#ifndef AF_DX12
 	for (SAMPLERID& sampler : builtInSamplers)
 	{
 		afSafeDeleteSampler(sampler);
 	}
+#endif
 }
 
 void StockObjects::ApplyFullScreenVAO() const

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Adamas", "Adamas.vcxproj", "{D13F848D-7701-43BA-B781-1481A54FE77D}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -20,6 +20,8 @@ Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		DX11Debug|Win32 = DX11Debug|Win32
 		DX11Release|Win32 = DX11Release|Win32
+		DX12Debug|Win32 = DX12Debug|Win32
+		DX12Release|Win32 = DX12Release|Win32
 		ES31Debug|Win32 = ES31Debug|Win32
 		ES31Release|Win32 = ES31Release|Win32
 	EndGlobalSection
@@ -28,6 +30,10 @@ Global
 		{D13F848D-7701-43BA-B781-1481A54FE77D}.DX11Debug|Win32.Build.0 = DX11Debug|Win32
 		{D13F848D-7701-43BA-B781-1481A54FE77D}.DX11Release|Win32.ActiveCfg = DX11Release|Win32
 		{D13F848D-7701-43BA-B781-1481A54FE77D}.DX11Release|Win32.Build.0 = DX11Release|Win32
+		{D13F848D-7701-43BA-B781-1481A54FE77D}.DX12Debug|Win32.ActiveCfg = DX12Debug|Win32
+		{D13F848D-7701-43BA-B781-1481A54FE77D}.DX12Debug|Win32.Build.0 = DX12Debug|Win32
+		{D13F848D-7701-43BA-B781-1481A54FE77D}.DX12Release|Win32.ActiveCfg = DX12Release|Win32
+		{D13F848D-7701-43BA-B781-1481A54FE77D}.DX12Release|Win32.Build.0 = DX12Release|Win32
 		{D13F848D-7701-43BA-B781-1481A54FE77D}.ES31Debug|Win32.ActiveCfg = Debug|Win32
 		{D13F848D-7701-43BA-B781-1481A54FE77D}.ES31Debug|Win32.Build.0 = Debug|Win32
 		{D13F848D-7701-43BA-B781-1481A54FE77D}.ES31Release|Win32.ActiveCfg = Release|Win32
@@ -36,6 +42,10 @@ Global
 		{B9510AE9-6611-42BB-ABC3-73FCABF768D1}.DX11Debug|Win32.Build.0 = DX11Debug|Win32
 		{B9510AE9-6611-42BB-ABC3-73FCABF768D1}.DX11Release|Win32.ActiveCfg = DX11Release|Win32
 		{B9510AE9-6611-42BB-ABC3-73FCABF768D1}.DX11Release|Win32.Build.0 = DX11Release|Win32
+		{B9510AE9-6611-42BB-ABC3-73FCABF768D1}.DX12Debug|Win32.ActiveCfg = DX12Debug|Win32
+		{B9510AE9-6611-42BB-ABC3-73FCABF768D1}.DX12Debug|Win32.Build.0 = DX12Debug|Win32
+		{B9510AE9-6611-42BB-ABC3-73FCABF768D1}.DX12Release|Win32.ActiveCfg = DX12Release|Win32
+		{B9510AE9-6611-42BB-ABC3-73FCABF768D1}.DX12Release|Win32.Build.0 = DX12Release|Win32
 		{B9510AE9-6611-42BB-ABC3-73FCABF768D1}.ES31Debug|Win32.ActiveCfg = Debug|Win32
 		{B9510AE9-6611-42BB-ABC3-73FCABF768D1}.ES31Debug|Win32.Build.0 = Debug|Win32
 		{B9510AE9-6611-42BB-ABC3-73FCABF768D1}.ES31Release|Win32.ActiveCfg = Release|Win32

@@ -18,6 +18,7 @@ SpriteRenderer::~SpriteRenderer()
 void SpriteRenderer::Destroy()
 {
 	quadListVertexBuffer.Destroy();
+	renderStates.Destroy();
 }
 
 void SpriteRenderer::Init()
@@ -29,7 +30,11 @@ void SpriteRenderer::Init()
 		CInputElement("TEXCOORD", SF_R32G32_FLOAT, 16),
 	};
 	const static SamplerType samplers[] = { AFST_LINEAR_CLAMP };
-	renderStates.Create("sprite", dimof(layout), layout, BM_ALPHA, DSM_DISABLE, CM_DISABLE, dimof(samplers), samplers);
+	renderStates.Create(
+#ifdef AF_DX12
+		AFDL_CBV0_SRV0,
+#endif
+		"sprite", dimof(layout), layout, BM_ALPHA, DSM_DISABLE, CM_DISABLE, dimof(samplers), samplers);
 	quadListVertexBuffer.Create(layout, dimof(layout), sizeof(SpriteVertex), MAX_SPRITES_IN_ONE_DRAW_CALL);
 }
 
@@ -56,14 +61,20 @@ void SpriteRenderer::Draw(const SpriteCommands& sprites)
 	renderStates.Apply();
 	quadListVertexBuffer.Apply();
 
+#ifndef AF_DX12
 	UBOID ubo = afBindCbv0(&proj, sizeof(Mat));
+#endif
 
 	SpriteVertex v[MAX_SPRITES_IN_ONE_DRAW_CALL][4];
 	int numStoredSprites = 0;
 	SRVID curTex;
 	auto flush = [&] {
 		if (numStoredSprites > 0) {
+#ifdef AF_DX12
+			afBindCbv0Srv0(&proj, sizeof(Mat), curTex);
+#else
 			afBindSrv0(curTex);
+#endif
 			quadListVertexBuffer.Write(v, sizeof(SpriteVertex) * 4 * numStoredSprites);
 			afDrawIndexed(PT_TRIANGLELIST, 6 * numStoredSprites, 0);
 			numStoredSprites = 0;
@@ -90,6 +101,8 @@ void SpriteRenderer::Draw(const SpriteCommands& sprites)
 		);
 	}
 	flush();
+#ifndef AF_DX12
 	afSafeDeleteBuffer(ubo);
+#endif
 	afBindVAO(0);
 }

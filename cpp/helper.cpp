@@ -175,11 +175,6 @@ IBOID afCreateQuadListIndexBuffer(int numQuads)
 	return afCreateIndexBuffer(&indi[0], numIndi);
 }
 
-void afSetSampler(SamplerType type, int slot)
-{
-	afBindSamplerToBindingPoint(stockObjects.GetBuiltInSampler(type), slot);
-}
-
 void afVerify(bool ok)
 {
 	if (ok) {
@@ -187,24 +182,5 @@ void afVerify(bool ok)
 	}
 	aflog("afVerify: Fatal");
 	while (strlen(" ")) {
-	}
-}
-
-void AFRenderStates::Create(const char* shaderName, int numInputElements, const InputElement* inputElements, BlendMode blendMode_, DepthStencilMode depthStencilMode_, CullMode cullMode_, int numSamplerTypes_, const SamplerType samplerTypes_[]) {
-	shaderId = shaderMan.Create(shaderName, inputElements, numInputElements);
-	blendMode = blendMode_;
-	depthStencilMode = depthStencilMode_;
-	cullMode = cullMode_;
-	numSamplerTypes = numSamplerTypes_;
-	samplerTypes = samplerTypes_;
-}
-
-void AFRenderStates::Apply() const {
-	shaderMan.Apply(shaderId);
-	afBlendMode(blendMode);
-	afDepthStencilMode(depthStencilMode);
-	afCullMode(cullMode);
-	for (int i = 0; i < numSamplerTypes; i++) {
-		afSetSampler(samplerTypes[i], i);
 	}
 }

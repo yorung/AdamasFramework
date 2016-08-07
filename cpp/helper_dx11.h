@@ -192,10 +192,15 @@ inline void afBindSrv0(SRVID tex)
 	afBindTextureToBindingPoint(tex, 0);
 }
 
-inline void afBindCbvsSrv0(AFCbvBindToken cbvs[], int nCbvs, SRVID srv)
+inline void afBindCbvs(AFCbvBindToken cbvs[], int nCbvs)
 {
 	for (int i = 0; i < nCbvs; i++) {
 		afBindBufferToBindingPoint(cbvs[i].Get(), i);
 	}
+}
+
+inline void afBindCbvsSrv0(AFCbvBindToken cbvs[], int nCbvs, SRVID srv)
+{
+	afBindCbvs(cbvs, nCbvs);
 	afBindTextureToBindingPoint(srv, 0);
 }

@@ -67,7 +67,11 @@ void MeshRenderer::Create()
 {
 	Destroy();
 	uboForMaterials = afCreateUBO(MATERIAL_UBO_SIZE);
-	renderStates.Create("skin_instanced", dimof(elements), elements, BM_NONE, DSM_DEPTH_ENABLE, CM_CW, dimof(samplers), samplers);
+	renderStates.Create(
+#ifdef AF_DX12
+		AFDL_CBV012_SRV0,
+#endif
+		"skin_instanced", dimof(elements), elements, BM_NONE, DSM_DEPTH_ENABLE, CM_CW, dimof(samplers), samplers);
 }
 
 void MeshRenderer::Destroy()
@@ -80,8 +84,8 @@ void MeshRenderer::Destroy()
 	renderMeshes.push_back(nullptr);	// render mesh ID must not be 0
 	materials.clear();
 	materials.push_back(Material());	// make id 0 invalid
-
 	afSafeDeleteBuffer(uboForMaterials);
+	renderStates.Destroy();
 
 	nStoredCommands = 0;
 }
