@@ -10,12 +10,9 @@ struct Vertex {
 	Vec3 color;
 };
 
-struct PickingUBO {
-	Mat matVP;
-};
-
 class Picking {
 	VBOID vbo2d, vbo3d;
+	VAOID vao2d, vao3d;
 	AFRenderStates renderStates;
 public:
 	Picking();
@@ -51,13 +48,20 @@ public:
 Picking::Picking()
 {
 	vbo2d = afCreateDynamicVertexBuffer(sizeof(Vertex) * 3);
+	int strides = sizeof(Vertex);
+	VBOID vboIds2d[] = { vbo2d };
+	vao2d = afCreateVAO(elements, dimof(elements), 1, vboIds2d, &strides, IBOID());
 	vbo3d = afCreateDynamicVertexBuffer(sizeof(Vertex) * 3);
+	VBOID vboIds3d[] = { vbo3d };
+	vao3d = afCreateVAO(elements, dimof(elements), 1, vboIds3d, &strides, IBOID());
 	renderStates.Create("solid", dimof(elements), elements, BM_NONE, DSM_DEPTH_ENABLE, CM_DISABLE);
 	Update();
 }
 
 Picking::~Picking()
 {
+	afSafeDeleteVAO(vao2d);
+	afSafeDeleteVAO(vao3d);
 	afSafeDeleteBuffer(vbo2d);
 	afSafeDeleteBuffer(vbo3d);
 }
@@ -148,17 +152,7 @@ void Picking::Update()
 void Picking::Draw3D()
 {
 	renderStates.Apply();
-	VBOID vbos[] = {vbo3d};
-	int strides[] = {sizeof(Vertex)};
-#ifdef GL_TRUE
-	afSetVertexAttributes(elements, dimof(elements), 1, vbos, strides);
-#endif
-#ifdef __d3d11_h__
-	ID3D11Buffer* d11Bufs[] = { vbo3d.Get() };
-	UINT uStrides[] = { sizeof(Vertex) };
-	UINT offsets[] = {0};
-	deviceMan11.GetContext()->IASetVertexBuffers(0, dimof(d11Bufs), d11Bufs, uStrides, offsets);
-#endif
+	afBindVAO(vao3d);
 	Mat mView, mProj;
 	matrixMan.Get(MatrixMan::VIEW, mView);
 	matrixMan.Get(MatrixMan::PROJ, mProj);
@@ -166,27 +160,16 @@ void Picking::Draw3D()
 	UBOID ubo = afBindCbv0(&mVP, sizeof(Mat));
 	afDraw(PT_TRIANGLESTRIP, 3);
 	afSafeDeleteBuffer(ubo);
+	afBindVAO(0);
 }
 
 void Picking::Draw2D()
 {
 	renderStates.Apply();
-	VBOID vbos[] = {vbo2d};
-	int strides[] = {sizeof(Vertex)};
-#ifdef GL_TRUE
-	afSetVertexAttributes(elements, dimof(elements), 1, vbos, strides);
-#endif
-#ifdef __d3d11_h__
-	ID3D11Buffer* d11Bufs[] = { vbo2d.Get() };
-	UINT uStrides[] = { sizeof(Vertex) };
-	UINT offsets[] = { 0 };
-	deviceMan11.GetContext()->IASetVertexBuffers(0, dimof(d11Bufs), d11Bufs, uStrides, offsets);
-#endif
-	Mat mView, mProj;
-	matrixMan.Get(MatrixMan::VIEW, mView);
-	matrixMan.Get(MatrixMan::PROJ, mProj);
-	Mat mVP = mView * mProj;
-	UBOID ubo = afBindCbv0(&mVP, sizeof(Mat));
+	afBindVAO(vao2d);
+	Mat matIdentity;
+	UBOID ubo = afBindCbv0(&matIdentity, sizeof(Mat));
 	afDraw(PT_TRIANGLESTRIP, 3);
 	afSafeDeleteBuffer(ubo);
+	afBindVAO(0);
 }
