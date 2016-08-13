@@ -64,9 +64,6 @@ struct DrawElementsIndirectCommand
 	GLuint baseInstance;
 };
 
-typedef GLuint SMID;
-static const SMID INVALID_SMID = 0;
-
 template <GLenum bufType_>
 struct TBufName {
 	static const GLenum bufType = bufType_;
@@ -237,13 +234,13 @@ class AFRenderStates {
 	CullMode cullMode = CM_DISABLE;
 	int numSamplerTypes = 0;
 	const SamplerType* samplerTypes = nullptr;
-	SMID shaderId = INVALID_SMID;
+	ShaderMan::SMID shaderId = ShaderMan::INVALID_SMID;
 public:
-	SMID GetShaderId() { return shaderId; }
-	bool IsReady() { return shaderId != INVALID_SMID; }
+	ShaderMan::SMID GetShaderId() { return shaderId; }
+	bool IsReady() { return shaderId != ShaderMan::INVALID_SMID; }
 	void Create(DescriptorLayout, const char* shaderName, int numInputElements, const InputElement* inputElements, BlendMode blendMode_, DepthStencilMode depthStencilMode_, CullMode cullMode_, int numSamplerTypes_ = 0, const SamplerType samplerTypes_[] = nullptr);
 	void Apply() const;
-	void Destroy() { shaderId = INVALID_SMID; }
+	void Destroy() { shaderId = ShaderMan::INVALID_SMID; }
 };
 
 class AFDynamicQuadListVertexBuffer {

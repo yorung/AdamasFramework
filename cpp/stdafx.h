@@ -60,10 +60,12 @@ static const int BONE_MAX = 50;
 #include "helper_win.h"
 
 #ifdef AF_GLES31
+#include "shader_man_gl.h"
 #include "helper_gl.h"
 #endif
 
 #ifdef AF_DX11
+#include "shader_man_dx11.h"
 #include "device_man_dx11.h"
 #include "helper_dx11.h"
 #endif
@@ -77,15 +79,6 @@ static const int BONE_MAX = 50;
 #include "matrix_man.h"
 #include "matrix_stack.h"
 #include "tex_man.h"
-
-#ifdef AF_GLES31
-#include "shader_man_gl.h"
-#endif
-
-#ifdef AF_DX11
-#include "shader_man_dx11.h"
-#endif
-
 #include "dib.h"
 #include "fps.h"
 #include "font_man.h"
