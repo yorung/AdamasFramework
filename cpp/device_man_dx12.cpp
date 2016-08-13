@@ -19,7 +19,6 @@ DeviceManDX12::FrameResources::~FrameResources()
 
 DeviceManDX12::~DeviceManDX12()
 {
-	assert(!factory);
 	assert(!device);
 	assert(!commandQueue);
 	assert(!commandList);
@@ -50,7 +49,6 @@ void DeviceManDX12::Destroy()
 	rtvHeap.Reset();
 	depthStencil.Reset();
 	dsvHeap.Reset();
-	factory.Reset();
 	fence.Reset();
 	fenceValue = 1;
 	frameIndex = 0;
@@ -253,6 +251,7 @@ void DeviceManDX12::Create(HWND hWnd)
 		debug->EnableDebugLayer();
 	}
 #endif
+	ComPtr<IDXGIFactory4> factory;
 	if (S_OK != CreateDXGIFactory1(IID_PPV_ARGS(&factory))) {
 		Destroy();
 		return;
