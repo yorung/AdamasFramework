@@ -85,6 +85,9 @@ void App::LoadMesh(const char* fileName)
 
 void App::Destroy()
 {
+#ifdef AF_DX12
+	deviceMan.Flush();
+#endif
 	luaMan.Destroy();
 	stockObjects.Destroy();
 	spriteRenderer.Destroy();
