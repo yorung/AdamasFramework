@@ -112,6 +112,7 @@ VBOID afCreateVertexBuffer(int size, const void* buf)
 		ComPtr<ID3D12Resource> intermediateBuffer = afCreateBuffer(size, buf);
 		deviceMan.GetCommandList()->CopyBufferRegion(o.Get(), 0, intermediateBuffer.Get(), 0, size);
 		deviceMan.AddIntermediateCommandlistDependentResource(intermediateBuffer);
+		deviceMan.AddIntermediateCommandlistDependentResource(o);
 	}
 	return o;
 }
@@ -128,6 +129,7 @@ IBOID afCreateIndexBuffer(const AFIndex* indi, int numIndi)
 		ComPtr<ID3D12Resource> intermediateBuffer = afCreateBuffer(size, indi);
 		deviceMan.GetCommandList()->CopyBufferRegion(o.Get(), 0, intermediateBuffer.Get(), 0, size);
 		deviceMan.AddIntermediateCommandlistDependentResource(intermediateBuffer);
+		deviceMan.AddIntermediateCommandlistDependentResource(o);
 	}
 	return o;
 }
@@ -181,6 +183,8 @@ void afWriteTexture(SRVID id, const TexDesc& desc, int mipCount, const AFTexSubr
 
 		deviceMan.AddIntermediateCommandlistDependentResource(uploadBuf);
 	}
+
+	deviceMan.AddIntermediateCommandlistDependentResource(id);
 }
 
 void afWriteTexture(SRVID id, const TexDesc& desc, const void* buf)
