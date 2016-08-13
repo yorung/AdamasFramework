@@ -12,7 +12,6 @@
 
 #ifdef AF_DX11
 #include <d3d11.h>
-#include <D3Dcompiler.h>
 #include <wrl.h>	// ComPtr
 using Microsoft::WRL::ComPtr;
 #endif
@@ -20,7 +19,6 @@ using Microsoft::WRL::ComPtr;
 #ifdef AF_DX12
 #include <d3d12.h>
 #include <dxgi1_4.h>
-#include <d3dcompiler.h>
 #include <wrl.h>
 using Microsoft::WRL::ComPtr;
 #endif
@@ -59,6 +57,7 @@ static const int BONE_MAX = 50;
 #include "system_misc.h"
 #include "helper.h"
 #include "helper_text.h"
+#include "helper_win.h"
 
 #ifdef AF_GLES31
 #include "helper_gl.h"
@@ -70,6 +69,7 @@ static const int BONE_MAX = 50;
 #endif
 
 #ifdef AF_DX12
+#include "helper_win.h"
 #include "device_man_dx12.h"
 #include "helper_dx12.h"
 #endif

@@ -4,26 +4,6 @@
 
 ShaderMan11 shaderMan;
 
-static ComPtr<ID3DBlob> CompileShader(const char* name, const char* entryPoint, const char* target)
-{
-	char path[MAX_PATH];
-	sprintf_s(path, sizeof(path), "hlsl/%s.hlsl", name);
-#ifdef _DEBUG
-	UINT flags = D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
-#else
-	UINT flags = D3DCOMPILE_ENABLE_STRICTNESS;
-#endif
-	ComPtr<ID3DBlob> blob, err;
-	WCHAR wname[MAX_PATH];
-	MultiByteToWideChar(CP_ACP, 0, path, -1, wname, dimof(wname));
-	HRESULT hr = D3DCompileFromFile(wname, nullptr, nullptr, entryPoint, target, flags, 0, &blob, &err);
-	if (err) {
-		MessageBoxA(nullptr, (const char*)err->GetBufferPointer(), name, MB_OK | MB_ICONERROR);
-	}
-	assert(!hr);
-	return blob;
-}
-
 ShaderMan11::ShaderMan11()
 {
 	m_effects.push_back(Effect());	// make ID 0 invalid
@@ -41,8 +21,8 @@ SMID ShaderMan11::Create(const char *name, const D3D11_INPUT_ELEMENT_DESC elemen
 		return it->second;
 	}
 
-	ComPtr<ID3DBlob> vs = CompileShader(name, "VSMain", "vs_5_0");
-	ComPtr<ID3DBlob> ps = CompileShader(name, "PSMain", "ps_5_0");
+	ComPtr<ID3DBlob> vs = afCompileHLSL(name, "VSMain", "vs_5_0");
+	ComPtr<ID3DBlob> ps = afCompileHLSL(name, "PSMain", "ps_5_0");
 	Effect effect = {};
 	HRESULT hr = S_OK;
 	if (ps) {

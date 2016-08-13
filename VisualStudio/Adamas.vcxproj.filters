@@ -264,6 +264,9 @@
     <ClInclude Include="..\cpp\helper_dx12.h">
       <Filter>DX12</Filter>
     </ClInclude>
+    <ClInclude Include="..\cpp\helper_win.h">
+      <Filter>Windows</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Windows">

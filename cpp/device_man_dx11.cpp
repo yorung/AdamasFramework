@@ -3,7 +3,6 @@
 #ifdef __d3d11_h__
 
 #pragma comment(lib, "d3d11.lib")
-#pragma comment(lib, "D3dcompiler.lib")
 
 DeviceMan11 deviceMan11;
 

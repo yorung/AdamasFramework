@@ -6,25 +6,6 @@ static const D3D12_HEAP_PROPERTIES defaultHeapProperties = { D3D12_HEAP_TYPE_DEF
 static const D3D12_HEAP_PROPERTIES uploadHeapProperties = { D3D12_HEAP_TYPE_UPLOAD, D3D12_CPU_PAGE_PROPERTY_UNKNOWN, D3D12_MEMORY_POOL_UNKNOWN, 1, 1 };
 static const float clearColor[] = { 0.0f, 0.2f, 0.3f, 1.0f };
 
-ComPtr<ID3DBlob> afCompileShader(const char* name, const char* entryPoint, const char* target)
-{
-	char path[MAX_PATH];
-	sprintf_s(path, sizeof(path), "hlsl/%s.hlsl", name);
-#ifdef _DEBUG
-	UINT flags = D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
-#else
-	UINT flags = D3DCOMPILE_ENABLE_STRICTNESS;
-#endif
-	ComPtr<ID3DBlob> blob, err;
-	WCHAR wname[MAX_PATH];
-	MultiByteToWideChar(CP_ACP, 0, path, -1, wname, dimof(wname));
-	HRESULT hr = D3DCompileFromFile(wname, nullptr, nullptr, entryPoint, target, flags, 0, &blob, &err);
-	if (err) {
-		MessageBoxA(nullptr, (const char*)err->GetBufferPointer(), name, MB_OK | MB_ICONERROR);
-	}
-	return blob;
-}
-
 void afSetPipeline(ComPtr<ID3D12PipelineState> ps, ComPtr<ID3D12RootSignature> rs)
 {
 	ID3D12GraphicsCommandList* list = deviceMan.GetCommandList();
@@ -274,8 +255,8 @@ void afDraw(PrimitiveTopology pt, int numVertices, int start, int instanceCount)
 
 ComPtr<ID3D12PipelineState> afCreatePSO(const char *shaderName, const InputElement elements[], int numElements, BlendMode blendMode, DepthStencilMode depthStencilMode, CullMode cullMode, ComPtr<ID3D12RootSignature> rootSignature, D3D12_PRIMITIVE_TOPOLOGY_TYPE primitiveTopology)
 {
-	ComPtr<ID3DBlob> vertexShader = afCompileShader(shaderName, "VSMain", "vs_5_0");
-	ComPtr<ID3DBlob> pixelShader = afCompileShader(shaderName, "PSMain", "ps_5_0");
+	ComPtr<ID3DBlob> vertexShader = afCompileHLSL(shaderName, "VSMain", "vs_5_0");
+	ComPtr<ID3DBlob> pixelShader = afCompileHLSL(shaderName, "PSMain", "ps_5_0");
 
 	static D3D12_RENDER_TARGET_BLEND_DESC solid = {
 		FALSE, FALSE,
