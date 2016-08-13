@@ -1,6 +1,10 @@
 #include "stdafx.h"
 
 #ifdef __d3d11_h__
+
+#include <D3DCommon.h>
+#pragma comment(lib, "dxguid.lib")
+
 IBOID afCreateIndexBuffer(const AFIndex* indi, int numIndi)
 {
 	IBOID indexBuffer;
@@ -228,6 +232,17 @@ IVec2 afGetTextureSize(SRVID srv)
 	D3D11_TEXTURE2D_DESC desc;
 	tx->GetDesc(&desc);
 	return IVec2((int)desc.Width, (int)desc.Height);
+}
+
+void afSetTextureName(SRVID tex, const char* name)
+{
+	ComPtr<ID3D11Resource> res;
+	tex->GetResource(&res);
+	assert(res);
+	if (res)
+	{
+		res->SetPrivateData(WKPDID_D3DDebugObjectName, strlen(name), name);
+	}
 }
 
 VAOID afCreateVAO(const InputElement elements[], int numElements, int numBuffers, VBOID const vertexBufferIds[], const int strides[], IBOID ibo)

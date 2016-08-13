@@ -152,6 +152,7 @@ void afWriteTexture(SRVID id, const TexDesc& desc, int mipCount, const AFTexSubr
 			}
 			uploadBuf->Unmap(0, nullptr);
 		}
+		uploadBuf->SetName(__FUNCTIONW__ L" intermediate buffer");
 		D3D12_TEXTURE_COPY_LOCATION uploadBufLocation = { uploadBuf.Get(), D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT, footprint };
 		D3D12_TEXTURE_COPY_LOCATION nativeBufLocation = { id.Get(), D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX, i };
 		ID3D12GraphicsCommandList* list = deviceMan.GetCommandList();
@@ -177,6 +178,14 @@ void afWriteTexture(SRVID id, const TexDesc& desc, const void* buf)
 	assert(destDesc.Format == DXGI_FORMAT_R8G8B8A8_UNORM);
 	AFTexSubresourceData data = { buf, (uint32_t)desc.size.x * 4, 0 };
 	afWriteTexture(id, desc, 1, &data);
+}
+
+void afSetTextureName(SRVID tex, const char* name)
+{
+	if (tex)
+	{
+		tex->SetName(SWPrintf(L"%S", name));
+	}
 }
 
 SRVID afCreateTexture2D(AFDTFormat format, const IVec2& size, void *image, bool isRenderTargetOrDepthStencil)
@@ -485,9 +494,8 @@ void AFRenderTarget::Init(IVec2 size, AFDTFormat colorFormat, AFDTFormat depthSt
 {
 	texSize = size;
 	renderTarget = afCreateDynamicTexture(colorFormat, size, nullptr, true);
-//	D3D12_RESOURCE_BARRIER barrier = { D3D12_RESOURCE_BARRIER_TYPE_TRANSITION, D3D12_RESOURCE_BARRIER_FLAG_NONE,{ renderTarget.Get(), 0, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET } };
+	afSetTextureName(renderTarget, __FUNCTION__);
 	ID3D12GraphicsCommandList* commandList = deviceMan.GetCommandList();
-//	commandList->ResourceBarrier(1, &barrier);
 	const D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = { D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 1 };
 	deviceMan.GetDevice()->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&rtvHeap));
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = rtvHeap->GetCPUDescriptorHandleForHeapStart();

@@ -69,6 +69,8 @@ struct AFTexSubresourceData
 
 SRVID afCreateTexture2D(AFDTFormat format, const IVec2& size, void *image = nullptr, bool isRenderTargetOrDepthStencil = false);
 SRVID afCreateTexture2D(AFDTFormat format, const struct TexDesc& desc, int mipCount, const AFTexSubresourceData datas[]);
+void afSetTextureName(SRVID tex, const char* name);
+
 void afWriteTexture(SRVID srv, const TexDesc& desc, const void* buf);
 void afWriteTexture(SRVID id, const TexDesc& desc, int mipCount, const AFTexSubresourceData datas[]);
 #define afCreateDynamicTexture afCreateTexture2D

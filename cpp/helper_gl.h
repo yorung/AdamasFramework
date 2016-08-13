@@ -212,6 +212,7 @@ inline void afSafeDeleteVAO(VAOID& vao)
 }
 IVec2 afGetTextureSize(SRVID tex);
 IVec2 afGetRenderbufferSize(GLuint renderbuffer);
+inline void afSetTextureName(SRVID, const char*) {}
 
 void afClear();
 

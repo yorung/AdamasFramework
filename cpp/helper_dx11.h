@@ -44,6 +44,7 @@ SRVID afCreateTexture2D(AFDTFormat format, const IVec2& size, void *image);
 SRVID afCreateTexture2D(AFDTFormat format, const struct TexDesc& desc, int mipCount, const AFTexSubresourceData datas[]);
 SRVID afCreateDynamicTexture(AFDTFormat format, const IVec2& size);
 IVec2 afGetTextureSize(SRVID tex);
+void afSetTextureName(SRVID tex, const char* name);
 
 class FakeVAO
 {
