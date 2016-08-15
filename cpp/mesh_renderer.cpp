@@ -67,7 +67,7 @@ void MeshRenderer::Create()
 {
 	Destroy();
 	uboForMaterials = afCreateUBO(MATERIAL_UBO_SIZE);
-	renderStates.Create(AFDL_CBV012_SRV0, "skin_instanced", dimof(elements), elements, BM_NONE, DSM_DEPTH_ENABLE, CM_CW, dimof(samplers), samplers);
+	renderStates.Create(AFDL_ROOTCBV012_SRV0, "skin_instanced", dimof(elements), elements, BM_NONE, DSM_DEPTH_ENABLE, CM_CW, dimof(samplers), samplers);
 }
 
 void MeshRenderer::Destroy()
@@ -157,12 +157,19 @@ void MeshRenderer::Flush()
 	matrixMan.Get(MatrixMan::VIEW, perDrawCallUBO.matV);
 	matrixMan.Get(MatrixMan::PROJ, perDrawCallUBO.matP);
 
+	renderStates.Apply();
+#ifdef AF_DX12
+	afBindBufferToRoot(&perDrawCallUBO, sizeof(PerDrawCallUBO), 0);
+	afBindBufferToRoot(uboForMaterials, 1);
+	afBindBufferToRoot(&renderBoneMatrices[0], sizeof(Mat) * renderBoneMatrices.size(), 2);
+#else
 	AFCbvBindToken cbvs[3];
 	cbvs[0].Create(&perDrawCallUBO, sizeof(PerDrawCallUBO));
 	cbvs[1].Create(uboForMaterials);
 	cbvs[2].Create(&renderBoneMatrices[0], sizeof(Mat) * renderBoneMatrices.size());
+	afBindCbvs(cbvs, dimof(cbvs));
+#endif
 
-	renderStates.Apply();
 
 //	aflog("ubo pos = %d %d\n", glGetUniformLocation(shaderId, "matV"), glGetUniformLocation(shaderId, "matP"));
 
@@ -175,7 +182,11 @@ void MeshRenderer::Flush()
 	for (auto it : r->materialMaps) {
 		const Material* mat = meshRenderer.GetMaterial(it.materialId);
 		assert(mat);
-		afBindCbvsSrv0(cbvs, dimof(cbvs), mat->texture);
+#ifdef AF_DX12
+		afBindSrv0(mat->texture, 3);
+#else
+		afBindSrv0(mat->texture);
+#endif
 		int count = it.faces * 3;
 		int start = it.faceStartIndex * 3;
 		afDrawIndexed(PT_TRIANGLELIST, count, start, nStoredCommands);

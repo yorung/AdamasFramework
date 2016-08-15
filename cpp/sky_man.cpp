@@ -14,7 +14,7 @@ void SkyMan::Create(const char *texFileName, const char* shader)
 {
 	Destroy();
 	texId = afLoadTexture(texFileName, texDesc);
-	renderStates.Create(AFDL_CBV0_SRV0, shader, 0, nullptr, BM_NONE, DSM_DEPTH_CLOSEREQUAL_READONLY, CM_DISABLE, dimof(samplers), samplers);
+	renderStates.Create(AFDL_ROOTCBV0_SRV0, shader, 0, nullptr, BM_NONE, DSM_DEPTH_CLOSEREQUAL_READONLY, CM_DISABLE, dimof(samplers), samplers);
 }
 
 void SkyMan::Draw()
@@ -30,13 +30,14 @@ void SkyMan::Draw()
 	matV._41 = matV._42 = matV._43 = 0;
 	Mat invVP = inv(matV * matP);
 
+#ifdef AF_DX12
+	afBindBufferToRoot(&invVP, sizeof(invVP), 0);
+	afBindSrv0(texId, 1);
+#else
 	AFCbvBindToken token;
 	token.Create(&invVP, sizeof(invVP));
-#ifdef GL_TRUE
 	afBindCbvs(&token, 1);
 	(texDesc.isCubeMap ? afBindCubeMapToBindingPoint : afBindTextureToBindingPoint)(texId, 0);
-#else
-	afBindCbvsSrv0(&token, 1, texId);
 #endif
 	afDraw(PT_TRIANGLESTRIP, 4);
 }
