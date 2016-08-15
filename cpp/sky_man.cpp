@@ -30,15 +30,10 @@ void SkyMan::Draw()
 	matV._41 = matV._42 = matV._43 = 0;
 	Mat invVP = inv(matV * matP);
 
-#ifdef AF_DX12
-	afBindBufferToRoot(&invVP, sizeof(invVP), 0);
-	afBindTextureToBindingPoint(texId, afGetTRegisterBindingPoint(AFDL_CBV0_SRV0));
-#else
 	AFCbvBindToken token;
 	token.Create(&invVP, sizeof(invVP));
 	afBindCbvs(&token, 1);
-	(texDesc.isCubeMap ? afBindCubeMapToBindingPoint : afBindTextureToBindingPoint)(texId, 0);
-#endif
+	(texDesc.isCubeMap ? afBindCubeMapToBindingPoint : afBindTextureToBindingPoint)(texId, afGetTRegisterBindingPoint(AFDL_CBV0_SRV0));
 	afDraw(PT_TRIANGLESTRIP, 4);
 }
 
