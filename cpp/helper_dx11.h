@@ -173,8 +173,7 @@ inline void afBindCbvs(AFCbvBindToken cbvs[], int nCbvs)
 	}
 }
 
-inline void afBindCbvsSrv0(AFCbvBindToken cbvs[], int nCbvs, SRVID srv)
+inline int afGetTRegisterBindingPoint(DescriptorLayout)
 {
-	afBindCbvs(cbvs, nCbvs);
-	afBindTextureToBindingPoint(srv, 0);
+	return 0;
 }

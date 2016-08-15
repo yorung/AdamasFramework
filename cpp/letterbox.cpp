@@ -21,7 +21,7 @@ void LetterBox::Draw(AFRenderTarget& target, SRVID srcTex)
 	LazyInit();
 
 	target.BeginRenderToThis();
-	afBindSrv0(srcTex);
+	afBindTextureToBindingPoint(srcTex, 0);
 	renderStates.Apply();
 	stockObjects.ApplyFullScreenVAO();
 	afDraw(PT_TRIANGLESTRIP, 4);

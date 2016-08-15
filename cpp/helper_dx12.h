@@ -155,7 +155,9 @@ inline void afSafeDeleteVAO(VAOID& p) { p.reset(); }
 
 void afBindBufferToRoot(const void* buf, int size, int rootParameterIndex);
 void afBindBufferToRoot(UBOID ubo, int rootParameterIndex);
-void afBindCbv0(const void* buf, int size);
-void afBindSrv0(SRVID srv, int rootParameterIndex = 0);
-void afBindCbv0Srv0(const void* buf, int size, SRVID srv);
-void afBindCbvsSrv0(AFCbvBindToken cbvs[], int nCbvs, SRVID srv);
+void afBindTextureToBindingPoint(SRVID srv, int rootParameterIndex);
+
+constexpr int afGetTRegisterBindingPoint(DescriptorLayout layout)
+{
+	return (layout == AFDL_CBV0_SRV0) ? 1 : (layout == AFDL_CBV012_SRV0) ? 3 : 0;
+}
