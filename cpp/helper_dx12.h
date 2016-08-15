@@ -153,8 +153,8 @@ VAOID afCreateVAO(const InputElement elements[], int numElements, int numBuffers
 void afBindVAO(const VAOID& vao);
 inline void afSafeDeleteVAO(VAOID& p) { p.reset(); }
 
-void afBindBufferToRoot(const void* buf, int size, int rootParameterIndex);
-void afBindBufferToRoot(UBOID ubo, int rootParameterIndex);
+void afBindBufferToBindingPoint(const void* buf, int size, int rootParameterIndex);
+void afBindBufferToBindingPoint(UBOID ubo, int rootParameterIndex);
 void afBindTextureToBindingPoint(SRVID srv, int rootParameterIndex);
 #define afBindCubeMapToBindingPoint afBindTextureToBindingPoint
 

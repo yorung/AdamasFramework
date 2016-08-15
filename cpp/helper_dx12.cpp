@@ -474,14 +474,6 @@ void afBindTextureToBindingPoint(SRVID srv, int rootParameterIndex)
 	deviceMan.SetAssignedDescriptorHeap(descriptorHeapIndex, rootParameterIndex);
 }
 
-void afBindCbv0Srv0(const void* buf, int size, SRVID srv)
-{
-	int descriptorHeapIndex = deviceMan.AssignDescriptorHeap(2);
-	deviceMan.AssignCBVAndConstantBuffer(descriptorHeapIndex, buf, size);
-	deviceMan.AssignSRV(descriptorHeapIndex + 1, srv);
-	deviceMan.SetAssignedDescriptorHeap(descriptorHeapIndex, 0);
-}
-
 void afSetVertexBufferFromSystemMemory(const void* buf, int size, int stride)
 {
 	VBOID vbo = afCreateDynamicVertexBuffer(size, buf);
@@ -572,26 +564,25 @@ void FakeVAO::Apply()
 
 void afBindCbvs(AFCbvBindToken cbvs[], int nCbvs)
 {
-	int descriptorHeapIndex = deviceMan.AssignDescriptorHeap(nCbvs + 1);
 	for (int i = 0; i < nCbvs; i++) {
 		AFCbvBindToken& cbv = cbvs[i];
 		if (cbv.top >= 0) {
 			deviceMan.GetCommandList()->SetGraphicsRootConstantBufferView(i, deviceMan.GetConstantBufferGPUAddress(cbv.top));
 		} else if (cbv.ubo) {
-			afBindBufferToRoot(cbv.ubo, i);
+			afBindBufferToBindingPoint(cbv.ubo, i);
 		} else {
 			assert(0);
 		}
 	}
 }
 
-void afBindBufferToRoot(const void* buf, int size, int rootParameterIndex)
+void afBindBufferToBindingPoint(const void* buf, int size, int rootParameterIndex)
 {
 	int cbTop = deviceMan.AssignConstantBuffer(buf, size);
 	deviceMan.GetCommandList()->SetGraphicsRootConstantBufferView(rootParameterIndex, deviceMan.GetConstantBufferGPUAddress(cbTop));
 }
 
-void afBindBufferToRoot(UBOID ubo, int rootParameterIndex)
+void afBindBufferToBindingPoint(UBOID ubo, int rootParameterIndex)
 {
 	deviceMan.GetCommandList()->SetGraphicsRootConstantBufferView(rootParameterIndex, ubo->GetGPUVirtualAddress());
 }
