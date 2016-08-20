@@ -122,50 +122,38 @@ UBOID afCreateUBO(int size)
 
 void afWriteTexture(SRVID id, const TexDesc& desc, int mipCount, const AFTexSubresourceData datas[])
 {
+	const int maxSubresources = 100;
 	const UINT subResources = mipCount * desc.arraySize;
+	assert(subResources <= maxSubresources);
 	const D3D12_RESOURCE_DESC destDesc = id->GetDesc();
-/*	for debug
-	std::vector<D3D12_PLACED_SUBRESOURCE_FOOTPRINT> footprints;
-	footprints.resize(subResources);
-	deviceMan.GetDevice()->GetCopyableFootprints(&destDesc, 0, subResources, 0, &footprints[0], nullptr, nullptr, nullptr);
-*/
-
-
+	D3D12_PLACED_SUBRESOURCE_FOOTPRINT footprints[maxSubresources];
+	UINT64 rowSizeInBytes[maxSubresources], uploadSize;
+	UINT numRows[maxSubresources];
+	deviceMan.GetDevice()->GetCopyableFootprints(&destDesc, 0, subResources, 0, footprints, numRows, rowSizeInBytes, &uploadSize);
+	ComPtr<ID3D12Resource> uploadBuf = afCreateBuffer((int)uploadSize);
+	assert(uploadBuf);
+	uploadBuf->SetName(__FUNCTIONW__ L" intermediate buffer");
+	D3D12_RANGE readRange = {};
+	BYTE* ptr;
+	HRESULT hr = uploadBuf->Map(0, &readRange, (void**)&ptr);
+	assert(ptr);
 	for (UINT i = 0; i < subResources; i++) {
-		D3D12_PLACED_SUBRESOURCE_FOOTPRINT footprint;
-		UINT numRow;
-		UINT64 rowSizeInBytes, uploadSize;
-		deviceMan.GetDevice()->GetCopyableFootprints(&destDesc, i, 1, 0, &footprint, &numRow, &rowSizeInBytes, &uploadSize);
-		ComPtr<ID3D12Resource> uploadBuf;
-		if (datas[i].pitch == footprint.Footprint.RowPitch) {
-			uploadBuf = afCreateBuffer((int)uploadSize, datas[i].ptr);
-		} else {
-			assert(datas[i].pitch == rowSizeInBytes);
-			assert(datas[i].pitch < footprint.Footprint.RowPitch);
-			uploadBuf = afCreateBuffer((int)uploadSize);
-			D3D12_RANGE readRange = {};
-			BYTE* ptr;
-			HRESULT hr = uploadBuf->Map(0, &readRange, (void**)&ptr);
-			assert(ptr);
-			for (UINT row = 0; row < numRow; row++) {
-				memcpy(ptr + footprint.Footprint.RowPitch * row, (BYTE*)datas[i].ptr + datas[i].pitch * row, datas[i].pitch);
-			}
-			uploadBuf->Unmap(0, nullptr);
+		assert(datas[i].pitch == rowSizeInBytes[i]);
+		assert(datas[i].pitch <= footprints[i].Footprint.RowPitch);
+		for (UINT row = 0; row < numRows[i]; row++) {
+			memcpy(ptr + footprints[i].Offset + footprints[i].Footprint.RowPitch * row, (BYTE*)datas[i].ptr + datas[i].pitch * row, datas[i].pitch);
 		}
-		uploadBuf->SetName(__FUNCTIONW__ L" intermediate buffer");
-		D3D12_TEXTURE_COPY_LOCATION uploadBufLocation = { uploadBuf.Get(), D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT, footprint };
+		D3D12_TEXTURE_COPY_LOCATION uploadBufLocation = { uploadBuf.Get(), D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT, footprints[i] };
 		D3D12_TEXTURE_COPY_LOCATION nativeBufLocation = { id.Get(), D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX, i };
 		ID3D12GraphicsCommandList* list = deviceMan.GetCommandList();
-
 		D3D12_RESOURCE_BARRIER transition1 = { D3D12_RESOURCE_BARRIER_TYPE_TRANSITION, D3D12_RESOURCE_BARRIER_FLAG_NONE,{ id.Get(), i, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_COPY_DEST } };
 		list->ResourceBarrier(1, &transition1);
 		list->CopyTextureRegion(&nativeBufLocation, 0, 0, 0, &uploadBufLocation, nullptr);
 		D3D12_RESOURCE_BARRIER transition2 = { D3D12_RESOURCE_BARRIER_TYPE_TRANSITION, D3D12_RESOURCE_BARRIER_FLAG_NONE,{ id.Get(), i, D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE } };
 		list->ResourceBarrier(1, &transition2);
-
-		deviceMan.AddIntermediateCommandlistDependentResource(uploadBuf);
 	}
-
+	uploadBuf->Unmap(0, nullptr);
+	deviceMan.AddIntermediateCommandlistDependentResource(uploadBuf);
 	deviceMan.AddIntermediateCommandlistDependentResource(id);
 }
 
