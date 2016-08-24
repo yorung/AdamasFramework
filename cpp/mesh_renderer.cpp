@@ -67,7 +67,7 @@ void MeshRenderer::Create()
 {
 	Destroy();
 	uboForMaterials = afCreateUBO(MATERIAL_UBO_SIZE);
-	renderStates.Create(AFDL_CBV012_SRV0, "skin_instanced", dimof(elements), elements, BM_NONE, DSM_DEPTH_ENABLE, CM_CW, dimof(samplers), samplers);
+	renderStates.Create("skin_instanced", dimof(elements), elements, BM_NONE, DSM_DEPTH_ENABLE, CM_CW, dimof(samplers), samplers);
 }
 
 void MeshRenderer::Destroy()
@@ -173,7 +173,13 @@ void MeshRenderer::Flush()
 	for (auto it : r->materialMaps) {
 		const Material* mat = meshRenderer.GetMaterial(it.materialId);
 		assert(mat);
-		afBindTextureToBindingPoint(mat->texture, afGetTRegisterBindingPoint(AFDL_CBV012_SRV0));
+		afBindTextureToBindingPoint(mat->texture,
+#ifdef AF_DX12
+		3
+#else
+		0
+#endif
+		);
 		int count = it.faces * 3;
 		int start = it.faceStartIndex * 3;
 		afDrawIndexed(PT_TRIANGLELIST, count, start, nStoredCommands);

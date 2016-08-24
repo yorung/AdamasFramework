@@ -249,11 +249,11 @@ void WaterSurfaceES2::Init()
 	vboFullScr = afCreateVertexBuffer(sizeof(vboFullScrSrc), &vboFullScrSrc[0]);
 	iboFullScr = afCreateIndexBuffer(&iboFullScrSrc[0], dimof(iboFullScrSrc));
 
-	renderStateWater.Create(AFDL_CBV0_SRV012345, "water_es2", dimof(elements), elements, BM_NONE, DSM_DISABLE, CM_DISABLE, dimof(samplers), samplers);
+	renderStateWater.Create("water_es2", dimof(elements), elements, BM_NONE, DSM_DISABLE, CM_DISABLE, dimof(samplers), samplers);
 
 	const char* shaderName = "vivid";
 //	const char* shaderName = "letterbox";
-	renderStatePostProcess.Create(AFDL_SRV0, shaderName, dimof(elementsFullScr), elementsFullScr, BM_NONE, DSM_DISABLE, CM_DISABLE, dimof(samplers), samplers);
+	renderStatePostProcess.Create(shaderName, dimof(elementsFullScr), elementsFullScr, BM_NONE, DSM_DISABLE, CM_DISABLE, dimof(samplers), samplers);
 
 	texIds.resize(dimof(texFiles));
 	for (int i = 0; i < (int)dimof(texFiles); i++) {

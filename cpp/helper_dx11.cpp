@@ -306,7 +306,7 @@ void AFRenderTarget::BeginRenderToThis()
 	deviceMan11.GetContext()->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }
 
-void AFRenderStates::Create(DescriptorLayout, const char* shaderName, int numInputElements, const InputElement* inputElements, BlendMode blendMode_, DepthStencilMode depthStencilMode_, CullMode cullMode_, int numSamplerTypes_, const SamplerType samplerTypes_[]) {
+void AFRenderStates::Create(const char* shaderName, int numInputElements, const InputElement* inputElements, BlendMode blendMode_, DepthStencilMode depthStencilMode_, CullMode cullMode_, int numSamplerTypes_, const SamplerType samplerTypes_[]) {
 	shaderId = shaderMan.Create(shaderName, inputElements, numInputElements);
 	blendMode = blendMode_;
 	depthStencilMode = depthStencilMode_;

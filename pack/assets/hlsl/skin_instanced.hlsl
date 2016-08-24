@@ -44,6 +44,9 @@ cbuffer boneUBO : register(b2) {
 	matrix bonesBuffer[100];
 };
 
+#define RSDEF "RootFlags(ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT), CBV(b0), CBV(b1), CBV(b2), DescriptorTable(SRV(t0)), StaticSampler(s0)"
+
+[RootSignature(RSDEF)]
 VS_OUTPUT VSMain(VS_INPUT _In, uint instanceId : SV_InstanceID)
 {
 	RenderCommand cmd = renderCommands[instanceId];
@@ -80,6 +83,8 @@ float4 CalcColor(VS_OUTPUT _In)
 
 SamplerState gSampler : register(s0);
 Texture2D gTexture : register(t0);
+
+[RootSignature(RSDEF)]
 float4 PSMain(VS_OUTPUT _In) : SV_TARGET
 {
 	return gTexture.Sample(gSampler, _In.texcoord) * CalcColor(_In);

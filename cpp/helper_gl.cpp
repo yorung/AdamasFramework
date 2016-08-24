@@ -547,7 +547,7 @@ void afClear()
 	afHandleGLError(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT));
 }
 
-void AFRenderStates::Create(DescriptorLayout, const char* shaderName, int numInputElements, const InputElement* inputElements, BlendMode blendMode_, DepthStencilMode depthStencilMode_, CullMode cullMode_, int numSamplerTypes_, const SamplerType samplerTypes_[]) {
+void AFRenderStates::Create(const char* shaderName, int numInputElements, const InputElement* inputElements, BlendMode blendMode_, DepthStencilMode depthStencilMode_, CullMode cullMode_, int numSamplerTypes_, const SamplerType samplerTypes_[]) {
 	shaderId = shaderMan.Create(shaderName, inputElements, numInputElements);
 	blendMode = blendMode_;
 	depthStencilMode = depthStencilMode_;

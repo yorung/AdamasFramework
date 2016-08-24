@@ -101,7 +101,7 @@ class AFRenderStates {
 public:
 	ShaderMan::SMID GetShaderId() { return shaderId; }
 	bool IsReady() { return shaderId != ShaderMan::INVALID_SMID; }
-	void Create(DescriptorLayout, const char* shaderName, int numInputElements, const InputElement* inputElements, BlendMode blendMode_, DepthStencilMode depthStencilMode_, CullMode cullMode_, int numSamplerTypes_ = 0, const SamplerType samplerTypes_[] = nullptr);
+	void Create(const char* shaderName, int numInputElements, const InputElement* inputElements, BlendMode blendMode_, DepthStencilMode depthStencilMode_, CullMode cullMode_, int numSamplerTypes_ = 0, const SamplerType samplerTypes_[] = nullptr);
 	void Apply() const;
 	void Destroy() { shaderId = ShaderMan::INVALID_SMID; }
 };
@@ -171,9 +171,4 @@ inline void afBindCbvs(AFCbvBindToken cbvs[], int nCbvs)
 	for (int i = 0; i < nCbvs; i++) {
 		afBindBufferToBindingPoint(cbvs[i].Get(), i);
 	}
-}
-
-inline int afGetTRegisterBindingPoint(DescriptorLayout)
-{
-	return 0;
 }

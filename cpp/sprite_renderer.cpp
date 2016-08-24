@@ -30,7 +30,7 @@ void SpriteRenderer::Init()
 		CInputElement("TEXCOORD", SF_R32G32_FLOAT, 16),
 	};
 	const static SamplerType samplers[] = { AFST_LINEAR_CLAMP };
-	renderStates.Create(AFDL_CBV0_SRV0, "sprite", dimof(layout), layout, BM_ALPHA, DSM_DISABLE, CM_DISABLE, dimof(samplers), samplers);
+	renderStates.Create("sprite", dimof(layout), layout, BM_ALPHA, DSM_DISABLE, CM_DISABLE, dimof(samplers), samplers);
 	quadListVertexBuffer.Create(layout, dimof(layout), sizeof(SpriteVertex), MAX_SPRITES_IN_ONE_DRAW_CALL);
 }
 
@@ -66,7 +66,11 @@ void SpriteRenderer::Draw(const SpriteCommands& sprites)
 	SRVID curTex;
 	auto flush = [&] {
 		if (numStoredSprites > 0) {
-			afBindTextureToBindingPoint(curTex, afGetTRegisterBindingPoint(AFDL_CBV0_SRV0));
+#ifdef AF_DX12
+			afBindTextureToBindingPoint(curTex, 1);
+#else
+			afBindTextureToBindingPoint(curTex, 0);
+#endif
 			quadListVertexBuffer.Write(v, sizeof(SpriteVertex) * 4 * numStoredSprites);
 			afDrawIndexed(PT_TRIANGLELIST, 6 * numStoredSprites, 0);
 			numStoredSprites = 0;
