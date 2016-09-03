@@ -326,7 +326,7 @@ void WaterSurfaceES2::Draw()
 	}
 
 	AFRenderTarget rtWater;
-	rtWater.Init(systemMisc.GetScreenSize(), AFDT_R5G6B5_UINT);
+	rtWater.Init(systemMisc.GetScreenSize(), AFDT_R8G8B8A8_UNORM);
 	rtWater.BeginRenderToThis();
 	AFCbvBindToken token;
 	token.Create(&uboBuf, sizeof(uboBuf));
@@ -344,8 +344,10 @@ void WaterSurfaceES2::Draw()
 	afBindTextureToBindingPoint(rtWater.GetTexture(), 0);
 #ifndef AF_DX12
 	afBindVAO(vaoFullScr);
-#endif
 	afDrawIndexed(PT_TRIANGLESTRIP, 4);
+#else
+	afDraw(PT_TRIANGLESTRIP, 4);
+#endif
 	afBindVAO(0);
 }
 
