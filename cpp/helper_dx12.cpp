@@ -456,15 +456,21 @@ void FakeVAO::Apply()
 	}
 }
 
-void afBindCbvs(AFCbvBindToken cbvs[], int nCbvs)
+void afBindCbvs(AFCbvBindToken cbvs[], int nCbvs, int startBindingPoint)
 {
-	for (int i = 0; i < nCbvs; i++) {
+	for (int i = 0; i < nCbvs; i++)
+	{
 		AFCbvBindToken& cbv = cbvs[i];
-		if (cbv.top >= 0) {
-			deviceMan.GetCommandList()->SetGraphicsRootConstantBufferView(i, deviceMan.GetConstantBufferGPUAddress(cbv.top));
-		} else if (cbv.ubo) {
-			afBindBufferToBindingPoint(cbv.ubo, i);
-		} else {
+		if (cbv.top >= 0)
+		{
+			deviceMan.GetCommandList()->SetGraphicsRootConstantBufferView(startBindingPoint + i, deviceMan.GetConstantBufferGPUAddress(cbv.top));
+		}
+		else if (cbv.ubo)
+		{
+			afBindBufferToBindingPoint(cbv.ubo, startBindingPoint + i);
+		}
+		else
+		{
 			assert(0);
 		}
 	}

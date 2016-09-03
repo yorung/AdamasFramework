@@ -118,7 +118,7 @@ public:
 	}
 };
 
-void afBindCbvs(AFCbvBindToken cbvs[], int nCbvs);
+void afBindCbvs(AFCbvBindToken cbvs[], int nCbvs, int startBindingPoint = 0);
 
 class AFRenderTarget
 {

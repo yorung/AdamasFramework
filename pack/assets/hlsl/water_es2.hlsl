@@ -11,7 +11,7 @@ struct VsToPs {
 	float4 pos4 : SV_POSITION;
 };
 
-cbuffer perDrawCallUBO : register(b0) {
+cbuffer perDrawCallUBO : register(b6) {
 	matrix matW;
 	matrix matV;
 	matrix matP;
@@ -22,6 +22,9 @@ static const float airToWater = 1.0 / 1.33333;
 static const float3 camDir = float3(0, 0, -1);
 static const float waterDepth = 0.2;
 
+#define RSDEF "RootFlags(ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT), DescriptorTable(SRV(t0)), DescriptorTable(SRV(t1)), DescriptorTable(SRV(t2)), DescriptorTable(SRV(t3)), DescriptorTable(SRV(t4)), DescriptorTable(SRV(t5)), CBV(b6), StaticSampler(s0), StaticSampler(s1), StaticSampler(s2), StaticSampler(s3), StaticSampler(s4), StaticSampler(s5)"
+
+[RootSignature(RSDEF)]
 VsToPs VSMain(VsIn vsIn)
 {
 	VsToPs vsToPs;
@@ -59,6 +62,7 @@ Texture2D texture5 : register(t5);
 static const float loopTime = 20.0;
 static const float PI2 = 3.1415926 * 2.0;
 
+[RootSignature(RSDEF)]
 float4 PSMain(VsToPs psIn) : SV_TARGET
 {
 	float dist1 = length(psIn.position + float2(0.5, 0.5));

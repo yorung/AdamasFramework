@@ -8,7 +8,7 @@ out vec2 position;
 out vec3 normal;
 out vec4 color;
 
-layout (std140, binding = 0) uniform matrices {
+layout (std140, binding = 6) uniform matrices {
 	mat4 matW;
 	mat4 matV;
 	mat4 matP;

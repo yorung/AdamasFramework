@@ -12,7 +12,7 @@ layout (binding = 3) uniform sampler2D sampler3;
 layout (binding = 4) uniform sampler2D sampler4;
 layout (binding = 5) uniform sampler2D sampler5;
 
-layout (std140, binding = 0) uniform matrices {
+layout (std140, binding = 6) uniform matrices {
 	mat4 matW;
 	mat4 matV;
 	mat4 matP;

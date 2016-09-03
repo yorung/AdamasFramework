@@ -1,7 +1,5 @@
 #include "stdafx.h"
 
-#ifndef AF_DX12
-
 struct WaterVert
 {
 	Vec3 pos;
@@ -253,7 +251,11 @@ void WaterSurfaceES2::Init()
 
 	const char* shaderName = "vivid";
 //	const char* shaderName = "letterbox";
+#ifdef AF_DX12
+	renderStatePostProcess.Create(shaderName, 0, nullptr, BM_NONE, DSM_DISABLE, CM_DISABLE, dimof(samplers), samplers);
+#else
 	renderStatePostProcess.Create(shaderName, dimof(elementsFullScr), elementsFullScr, BM_NONE, DSM_DISABLE, CM_DISABLE, dimof(samplers), samplers);
+#endif
 
 	texIds.resize(dimof(texFiles));
 	for (int i = 0; i < (int)dimof(texFiles); i++) {
@@ -326,20 +328,24 @@ void WaterSurfaceES2::Draw()
 	AFRenderTarget rtWater;
 	rtWater.Init(systemMisc.GetScreenSize(), AFDT_R5G6B5_UINT);
 	rtWater.BeginRenderToThis();
-	UBOID ubo = afBindCbv0(&uboBuf, sizeof(uboBuf));
+	AFCbvBindToken token;
+	token.Create(&uboBuf, sizeof(uboBuf));
+	afBindCbvs(&token, 1, 6);
+
 	afBindVAO(vao);
 	afDrawIndexed(PT_TRIANGLESTRIP, nIndi);
 	afBindVAO(0);
-	afSafeDeleteBuffer(ubo);
 
 	AFRenderTarget rtDefault;
 	rtDefault.InitForDefaultRenderTarget();
 	rtDefault.BeginRenderToThis();
+
 	renderStatePostProcess.Apply();
-	afBindSrv0(rtWater.GetTexture());
+	afBindTextureToBindingPoint(rtWater.GetTexture(), 0);
+#ifndef AF_DX12
 	afBindVAO(vaoFullScr);
+#endif
 	afDrawIndexed(PT_TRIANGLESTRIP, 4);
 	afBindVAO(0);
 }
 
-#endif
