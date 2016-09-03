@@ -123,7 +123,6 @@ void afBindCbvs(AFCbvBindToken cbvs[], int nCbvs, int startBindingPoint = 0);
 class AFRenderTarget
 {
 	IVec2 texSize;
-	ComPtr<ID3D12DescriptorHeap> rtvHeap;
 	ComPtr<ID3D12Resource> renderTarget;
 	bool asDefault = false;
 public:
