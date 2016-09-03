@@ -36,14 +36,6 @@ void AddMenu(const char *name, const char *cmd)
 	DrawMenuBar(hWnd);
 }
 
-static void ShowLastError()
-{
-	wchar_t* msg;
-	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, nullptr, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&msg, 0, nullptr);
-	MessageBox(hWnd, msg, L"", MB_OK);
-	LocalFree(msg);
-}
-
 void ClearMenu()
 {
 	HMENU hMenu = GetMenu(hWnd);
@@ -51,7 +43,7 @@ void ClearMenu()
 	{
 		BOOL r = RemoveMenu(hMenu, m.first, MF_BYCOMMAND);
 		if (!r) {
-			ShowLastError();
+			ShowLastWinAPIError();
 		}
 	}
 	);
@@ -74,31 +66,6 @@ static void ProcessLuaCommandTbl(int cmd)
 	if (luaL_dostring(L, it->second.c_str())) {
 		const char *p = lua_tostring(L, -1);
 		MessageBoxA(GetActiveWindow(), p, "luaL_dostring error", MB_OK);
-	}
-}
-
-// WindowMessage
-static BOOL ProcessWindowMessage(){
-	MSG msg;
-	for (;;){
-		while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)){
-			if (msg.message == WM_QUIT){
-				return FALSE;
-			}
-			if (!TranslateAccelerator(hWnd, hAccelTable, &msg)) {
-				TranslateMessage(&msg);
-				DispatchMessage(&msg);
-			}
-		}
-
-		BOOL active = !IsIconic(hWnd) && GetForegroundWindow() == hWnd;
-
-		if (!active){
-			WaitMessage();
-			continue;
-		}
-
-		return TRUE;
 	}
 }
 
@@ -139,12 +106,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE,
 	int lastW = 0;
 	int lastH = 0;
 
-	// Main message loop:
-	for (;;) {
-		if (!ProcessWindowMessage()) {
-			break;
-		}
-
+	while (ProcessWindowMessage(hWnd, hAccelTable))
+	{
 		RECT rc;
 		GetClientRect(hWnd, &rc);
 		int w = rc.right - rc.left;
