@@ -1,7 +1,5 @@
 #include "stdafx.h"
 
-#ifndef AF_DX12
-
 Glow glow;
 AFRenderTarget glowMap[6];
 const static SamplerType samplerTypes[] = { AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP };
@@ -45,13 +43,13 @@ void Glow::MakeGlow(AFRenderTarget& target, SRVID srcTex)
 	stockObjects.ApplyFullScreenVAO();
 	renderStateGlowExtraction.Apply();
 	glowMap[0].BeginRenderToThis();
-	afBindSrv0(srcTex);
+	afBindTextureToBindingPoint(srcTex, 0);
 	afDraw(PT_TRIANGLESTRIP, 4);
 
 	renderStateGlowCopy.Apply();
 	for (int i = 1; i < (int)dimof(glowMap); i++) {
 		glowMap[i].BeginRenderToThis();
-		afBindSrv0(glowMap[i - 1].GetTexture());
+		afBindTextureToBindingPoint(glowMap[i - 1].GetTexture(), 0);
 		afDraw(PT_TRIANGLESTRIP, 4);
 	}
 
@@ -64,5 +62,3 @@ void Glow::MakeGlow(AFRenderTarget& target, SRVID srcTex)
 	afDraw(PT_TRIANGLESTRIP, 4);
 	afBindVAO(0);
 }
-
-#endif

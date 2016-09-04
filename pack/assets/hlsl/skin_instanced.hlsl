@@ -44,7 +44,7 @@ cbuffer boneUBO : register(b2) {
 	matrix bonesBuffer[100];
 };
 
-#define RSDEF "RootFlags(ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT), CBV(b0), CBV(b1), CBV(b2), DescriptorTable(SRV(t0)), StaticSampler(s0)"
+#define RSDEF "RootFlags(ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT), CBV(b0), CBV(b1), CBV(b2), DescriptorTable(SRV(t3)), StaticSampler(s3)"
 
 [RootSignature(RSDEF)]
 VS_OUTPUT VSMain(VS_INPUT _In, uint instanceId : SV_InstanceID)
@@ -81,8 +81,8 @@ float4 CalcColor(VS_OUTPUT _In)
 	return d;
 }
 
-SamplerState gSampler : register(s0);
-Texture2D gTexture : register(t0);
+SamplerState gSampler : register(s3);
+Texture2D gTexture : register(t3);
 
 [RootSignature(RSDEF)]
 float4 PSMain(VS_OUTPUT _In) : SV_TARGET

@@ -153,19 +153,6 @@ public:
 	UBOID Get() { return ubo; }
 };
 
-inline UBOID afBindCbv0(const void* buf, int size)
-{
-	UBOID ubo = afCreateUBO(size);
-	afWriteBuffer(ubo, buf, size);
-	afBindBufferToBindingPoint(ubo, 0);
-	return ubo;
-}
-
-inline void afBindSrv0(SRVID tex)
-{
-	afBindTextureToBindingPoint(tex, 0);
-}
-
 inline void afBindCbvs(AFCbvBindToken cbvs[], int nCbvs, int startBindingPoint = 0)
 {
 	for (int i = 0; i < nCbvs; i++)

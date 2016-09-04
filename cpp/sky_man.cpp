@@ -33,13 +33,7 @@ void SkyMan::Draw()
 	AFCbvBindToken token;
 	token.Create(&invVP, sizeof(invVP));
 	afBindCbvs(&token, 1);
-	(texDesc.isCubeMap ? afBindCubeMapToBindingPoint : afBindTextureToBindingPoint)(texId,
-#ifdef AF_DX12
-		1
-#else
-		0
-#endif
-	);
+	(texDesc.isCubeMap ? afBindCubeMapToBindingPoint : afBindTextureToBindingPoint)(texId, 1);
 	afDraw(PT_TRIANGLESTRIP, 4);
 }
 

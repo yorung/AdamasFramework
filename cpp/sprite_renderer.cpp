@@ -59,18 +59,14 @@ void SpriteRenderer::Draw(const SpriteCommands& sprites)
 
 	AFCbvBindToken cbv;
 	cbv.Create(&proj, sizeof(Mat));
-	afBindCbvs(&cbv, 1);
+	afBindCbvs(&cbv, 1, 1);
 
 	SpriteVertex v[MAX_SPRITES_IN_ONE_DRAW_CALL][4];
 	int numStoredSprites = 0;
 	SRVID curTex;
 	auto flush = [&] {
 		if (numStoredSprites > 0) {
-#ifdef AF_DX12
-			afBindTextureToBindingPoint(curTex, 1);
-#else
 			afBindTextureToBindingPoint(curTex, 0);
-#endif
 			quadListVertexBuffer.Write(v, sizeof(SpriteVertex) * 4 * numStoredSprites);
 			afDrawIndexed(PT_TRIANGLELIST, 6 * numStoredSprites, 0);
 			numStoredSprites = 0;

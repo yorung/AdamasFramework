@@ -98,9 +98,7 @@ void App::Destroy()
 	fontMan.Destroy();
 	meshRenderer.Destroy();
 	meshMan.Destroy();
-#ifndef AF_DX12
 	glow.Destroy();
-#endif
 	skyMan.Destroy();
 	letterBox.Destroy();
 	ClearMenu();

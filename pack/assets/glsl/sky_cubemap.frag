@@ -7,7 +7,7 @@ layout (location = 0) out vec4 fragColor;
 layout (std140, binding = 0, row_major) uniform inst {
 	mat4 invVP;
 };
-layout (binding = 0) uniform samplerCube tex;
+layout (binding = 1) uniform samplerCube tex;
 
 void main() {
 	vec3 dir = normalize((vec4(vfPosition, 0.0, 1.0) * invVP).xyz);

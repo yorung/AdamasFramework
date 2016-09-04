@@ -8,7 +8,7 @@ layout (std140, binding = 0, row_major) uniform inst {
 	mat4 invVP;
 };
 
-layout (binding = 0) uniform sampler2D sampler;
+layout (binding = 1) uniform sampler2D sampler;
 layout (location = 0) out vec4 fragColor;
 
 void main()

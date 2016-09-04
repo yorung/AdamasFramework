@@ -6,7 +6,7 @@ in vec2 TEXCOORD;
 in vec4 COLOR;
 out vec2 texcoord;
 out vec4 color;
-layout (binding = 0) uniform matUbo {
+layout (binding = 1) uniform matUbo {
 	layout (row_major) mat4 matProj;
 };
 

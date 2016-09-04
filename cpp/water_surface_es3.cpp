@@ -206,7 +206,7 @@ void WaterSurfaceES3::UpdateHeightMap(const UniformBuffer& hmub)
 	auto& heightR = heightMap[heightCurrentWriteTarget];
 	heightCurrentWriteTarget ^= 1;
 	auto& heightW = heightMap[heightCurrentWriteTarget];
-	afBindSrv0(heightR.GetTexture());
+	afBindTextureToBindingPoint(heightR.GetTexture(), 0);
 	heightW.BeginRenderToThis();
 
 	renderStateHeightMap.Apply();
@@ -222,7 +222,7 @@ void WaterSurfaceES3::UpdateHeightMap(const UniformBuffer& hmub)
 void WaterSurfaceES3::UpdateNormalMap()
 {
 	auto& heightR = heightMap[heightCurrentWriteTarget];
-	afBindSrv0(heightR.GetTexture());
+	afBindTextureToBindingPoint(heightR.GetTexture(), 0);
 	normalMap.BeginRenderToThis();
 	renderStateNormalMap.Apply();
 	stockObjects.ApplyFullScreenVAO();
