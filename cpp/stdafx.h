@@ -37,16 +37,12 @@ extern const char* boundJavaClass;
 #include <algorithm>
 #include <string>
 #include <map>
-#include <deque>
 #include <stack>
 #include <chrono>
-#include <random>
 #include <memory>
 
 #include <assert.h>
-#include <time.h>
 #include <stdint.h>
-#include <ctype.h>
 
 #include <../submodules/lua/src/lua.hpp>
 

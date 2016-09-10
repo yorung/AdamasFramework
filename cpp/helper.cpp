@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#include <random>
+
 float Random()
 {
 	static std::mt19937 seed{ std::random_device()() };
