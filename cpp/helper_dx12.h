@@ -20,7 +20,6 @@ typedef ComPtr<ID3D12Resource> SRVID;
 inline void afSafeDeleteBuffer(ComPtr<ID3D12Resource>& p) { p.Reset(); }
 inline void afSafeDeleteTexture(SRVID& p) { p.Reset(); }
 
-void afSetPipeline(ComPtr<ID3D12PipelineState> ps, ComPtr<ID3D12RootSignature> rs);
 void afSetDescriptorHeap(ComPtr<ID3D12DescriptorHeap> heap);
 void afSetVertexBuffer(VBOID id, int stride);
 void afSetVertexBuffers(int numIds, VBOID ids[], int strides[]);
@@ -75,7 +74,9 @@ public:
 	}
 	void Apply() const
 	{
-		afSetPipeline(pipelineState, rootSignature);
+		ID3D12GraphicsCommandList* list = deviceMan.GetCommandList();
+		list->SetPipelineState(pipelineState.Get());
+		list->SetGraphicsRootSignature(rootSignature.Get());
 	}
 	void Destroy()
 	{
