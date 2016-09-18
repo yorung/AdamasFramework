@@ -95,13 +95,14 @@ class AFRenderStates {
 	BlendMode blendMode = BM_NONE;
 	DepthStencilMode depthStencilMode = DSM_DISABLE;
 	CullMode cullMode = CM_DISABLE;
+	PrimitiveTopology primitiveTopology = PT_TRIANGLESTRIP;
 	int numSamplerTypes = 0;
 	const SamplerType* samplerTypes = nullptr;
 	ShaderMan::SMID shaderId = ShaderMan::INVALID_SMID;
 public:
 	ShaderMan::SMID GetShaderId() { return shaderId; }
 	bool IsReady() { return shaderId != ShaderMan::INVALID_SMID; }
-	void Create(const char* shaderName, int numInputElements, const InputElement* inputElements, BlendMode blendMode_, DepthStencilMode depthStencilMode_, CullMode cullMode_, int numSamplerTypes_ = 0, const SamplerType samplerTypes_[] = nullptr);
+	void Create(const char* shaderName, int numInputElements, const InputElement* inputElements, BlendMode blendMode_, DepthStencilMode depthStencilMode_, CullMode cullMode_, int numSamplerTypes_ = 0, const SamplerType samplerTypes_[] = nullptr, PrimitiveTopology primitiveTopology_ = PT_TRIANGLESTRIP);
 	void Apply() const;
 	void Destroy() { shaderId = ShaderMan::INVALID_SMID; }
 };

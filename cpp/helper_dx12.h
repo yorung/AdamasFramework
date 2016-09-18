@@ -31,7 +31,7 @@ IBOID afCreateIndexBuffer(const AFIndex* indi, int numIndi);
 ComPtr<ID3D12Resource> afCreateDynamicVertexBuffer(int size, const void* buf = nullptr);
 UBOID afCreateUBO(int size);
 
-ComPtr<ID3D12PipelineState> afCreatePSO(const char *shaderName, const InputElement elements[], int numElements, BlendMode blendMode, DepthStencilMode depthStencilMode, CullMode cullMode, ComPtr<ID3D12RootSignature>& rootSignature, D3D12_PRIMITIVE_TOPOLOGY_TYPE primitiveTopology);
+ComPtr<ID3D12PipelineState> afCreatePSO(const char *shaderName, const InputElement elements[], int numElements, BlendMode blendMode, DepthStencilMode depthStencilMode, CullMode cullMode, ComPtr<ID3D12RootSignature>& rootSignature, PrimitiveTopology primitiveTopology);
 
 void afDrawIndexed(PrimitiveTopology pt, int numIndices, int start = 0, int instanceCount = 1);
 void afDraw(PrimitiveTopology pt, int numVertices, int start = 0, int instanceCount = 1);
@@ -66,10 +66,12 @@ void afSetVertexBufferFromSystemMemory(const void* buf, int size, int stride);
 class AFRenderStates {
 	ComPtr<ID3D12RootSignature> rootSignature;
 	ComPtr<ID3D12PipelineState> pipelineState;
+	PrimitiveTopology primitiveTopology = PT_TRIANGLESTRIP;
 public:
 	bool IsReady() { return !!pipelineState; }
-	void Create(const char* shaderName, int numInputElements, const InputElement* inputElements, BlendMode blendMode_, DepthStencilMode depthStencilMode_, CullMode cullMode_, int numSamplerTypes_ = 0, const SamplerType samplerTypes_[] = nullptr, D3D12_PRIMITIVE_TOPOLOGY_TYPE primitiveTopology = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE)
+	void Create(const char* shaderName, int numInputElements, const InputElement* inputElements, BlendMode blendMode_, DepthStencilMode depthStencilMode_, CullMode cullMode_, int numSamplerTypes_ = 0, const SamplerType samplerTypes_[] = nullptr, PrimitiveTopology primitiveTopology_ = PT_TRIANGLESTRIP)
 	{
+		primitiveTopology = primitiveTopology_;
 		pipelineState = afCreatePSO(shaderName, inputElements, numInputElements, blendMode_, depthStencilMode_, cullMode_, rootSignature, primitiveTopology);
 	}
 	void Apply() const
@@ -77,6 +79,7 @@ public:
 		ID3D12GraphicsCommandList* list = deviceMan.GetCommandList();
 		list->SetPipelineState(pipelineState.Get());
 		list->SetGraphicsRootSignature(rootSignature.Get());
+		list->IASetPrimitiveTopology(primitiveTopology);
 	}
 	void Destroy()
 	{

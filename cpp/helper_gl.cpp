@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+static PrimitiveTopology s_primitiveTopology = PT_TRIANGLESTRIP;
+
 IBOID afCreateIndexBuffer(const AFIndex* indi, int numIndi)
 {
 	IBOID ibo;
@@ -547,17 +549,21 @@ void afClear()
 	afHandleGLError(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT));
 }
 
-void AFRenderStates::Create(const char* shaderName, int numInputElements, const InputElement* inputElements, BlendMode blendMode_, DepthStencilMode depthStencilMode_, CullMode cullMode_, int numSamplerTypes_, const SamplerType samplerTypes_[]) {
+void AFRenderStates::Create(const char* shaderName, int numInputElements, const InputElement* inputElements, BlendMode blendMode_, DepthStencilMode depthStencilMode_, CullMode cullMode_, int numSamplerTypes_, const SamplerType samplerTypes_[], PrimitiveTopology primitiveTopology_)
+{
 	shaderId = shaderMan.Create(shaderName, inputElements, numInputElements);
 	blendMode = blendMode_;
 	depthStencilMode = depthStencilMode_;
 	cullMode = cullMode_;
+	primitiveTopology = primitiveTopology_;
 	numSamplerTypes = numSamplerTypes_;
 	samplerTypes = samplerTypes_;
 }
 
-void AFRenderStates::Apply() const {
+void AFRenderStates::Apply() const
+{
 	shaderMan.Apply(shaderId);
+	s_primitiveTopology = primitiveTopology;
 	afBlendMode(blendMode);
 	afDepthStencilMode(depthStencilMode);
 	afCullMode(cullMode);

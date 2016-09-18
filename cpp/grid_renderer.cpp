@@ -91,11 +91,7 @@ GridRenderer::GridRenderer(int numGrid_, float pitch_)
 		CInputElement("POSITION", SF_R32G32B32_FLOAT, 0),
 		CInputElement("COLOR", SF_R32G32B32_FLOAT, 12),
 	};
-	renderStates.Create("solid", dimof(layout), layout, BM_NONE, DSM_DEPTH_ENABLE, CM_DISABLE, 0, nullptr
-#ifdef AF_DX12
-		, D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE
-#endif
-	);
+	renderStates.Create("solid", dimof(layout), layout, BM_NONE, DSM_DEPTH_ENABLE, CM_DISABLE, 0, nullptr, PT_LINELIST);
 
 	vbo = afCreateVertexBuffer(sizeVertices, &vert[0]);
 	ibo = afCreateIndexBuffer(&indi[0], indi.size());
