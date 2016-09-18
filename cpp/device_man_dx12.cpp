@@ -103,7 +103,7 @@ void DeviceManDX12::EndScene()
 
 	commandList->Close();
 	ID3D12CommandList* lists[] = { commandList.Get() };
-	commandQueue->ExecuteCommandLists(_countof(lists), lists);
+	commandQueue->ExecuteCommandLists(arrayparam(lists));
 
 	commandQueue->Signal(fence.Get(), res.fenceValueToGuard = fenceValue++);
 }
@@ -115,7 +115,7 @@ void DeviceManDX12::Flush()
 	}
 	commandList->Close();
 	ID3D12CommandList* lists[] = { commandList.Get() };
-	commandQueue->ExecuteCommandLists(_countof(lists), lists);
+	commandQueue->ExecuteCommandLists(arrayparam(lists));
 	commandQueue->Signal(fence.Get(), fenceValue);
 	afWaitFenceValue(fence, fenceValue++);
 
@@ -132,7 +132,7 @@ void DeviceManDX12::ResetCommandListAndSetDescriptorHeap()
 	FrameResources& res = frameResources[frameIndex];
 	commandList->Reset(res.commandAllocator.Get(), nullptr);
 	ID3D12DescriptorHeap* ppHeaps[] = { res.srvHeap.Get() };
-	commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
+	commandList->SetDescriptorHeaps(arrayparam(ppHeaps));
 }
 
 int DeviceManDX12::AssignDescriptorHeap(int numRequired)

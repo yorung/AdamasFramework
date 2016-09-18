@@ -113,7 +113,7 @@ class AFDynamicQuadListVertexBuffer {
 	int vertexBufferSize;
 public:
 	~AFDynamicQuadListVertexBuffer() { Destroy(); }
-	void Create(const InputElement*, int, int vertexSize_, int nQuad)
+	void Create(int, const InputElement*, int vertexSize_, int nQuad)
 	{
 		Destroy();
 		stride = vertexSize_;
@@ -131,7 +131,7 @@ public:
 		afWriteBuffer(vbo, buf, size);
 		ID3D11Buffer* d11Bufs[] = { vbo.Get() };
 		UINT offsets[] = { 0 };
-		deviceMan11.GetContext()->IASetVertexBuffers(0, dimof(d11Bufs), d11Bufs, &stride, offsets);
+		deviceMan11.GetContext()->IASetVertexBuffers(0, arrayparam(d11Bufs), &stride, offsets);
 	}
 	void Destroy()
 	{

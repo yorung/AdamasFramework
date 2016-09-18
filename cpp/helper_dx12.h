@@ -94,7 +94,7 @@ class AFDynamicQuadListVertexBuffer {
 	int vertexBufferSize;
 public:
 	~AFDynamicQuadListVertexBuffer() { Destroy(); }
-	void Create(const InputElement*, int, int vertexSize_, int nQuad);
+	void Create(int, const InputElement*, int vertexSize_, int nQuad);
 	void Apply()
 	{
 		afSetIndexBuffer(ibo);

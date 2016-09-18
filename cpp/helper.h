@@ -1,4 +1,5 @@
 #define dimof(x) (sizeof(x) / sizeof(x[0]))
+#define arrayparam(x) dimof(x), x
 
 void *LoadFile(const char *fileName, int* size = nullptr);
 bool SaveFile(const char *fileName, const uint8_t* buf, int size);

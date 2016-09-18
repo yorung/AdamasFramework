@@ -14,7 +14,7 @@ void SkyMan::Create(const char *texFileName, const char* shader)
 {
 	Destroy();
 	texId = afLoadTexture(texFileName, texDesc);
-	renderStates.Create(shader, 0, nullptr, BM_NONE, DSM_DEPTH_CLOSEREQUAL_READONLY, CM_DISABLE, dimof(samplers), samplers);
+	renderStates.Create(shader, 0, nullptr, BM_NONE, DSM_DEPTH_CLOSEREQUAL_READONLY, CM_DISABLE, arrayparam(samplers));
 }
 
 void SkyMan::Draw()

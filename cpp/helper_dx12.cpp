@@ -9,7 +9,7 @@ static const float clearColor[] = { 0.0f, 0.2f, 0.3f, 1.0f };
 void afSetDescriptorHeap(ComPtr<ID3D12DescriptorHeap> heap)
 {
 	ID3D12DescriptorHeap* ppHeaps[] = { heap.Get() };
-	deviceMan.GetCommandList()->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
+	deviceMan.GetCommandList()->SetDescriptorHeaps(arrayparam(ppHeaps));
 	deviceMan.GetCommandList()->SetGraphicsRootDescriptorTable(0, heap->GetGPUDescriptorHandleForHeapStart());
 }
 
@@ -378,7 +378,7 @@ void afSetVertexBufferFromSystemMemory(const void* buf, int size, int stride)
 	deviceMan.AddIntermediateCommandlistDependentResource(vbo);
 }
 
-void AFDynamicQuadListVertexBuffer::Create(const InputElement*, int, int vertexSize_, int nQuad)
+void AFDynamicQuadListVertexBuffer::Create(int, const InputElement*, int vertexSize_, int nQuad)
 {
 	Destroy();
 	stride = vertexSize_;

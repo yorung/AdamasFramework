@@ -67,7 +67,7 @@ void MeshRenderer::Create()
 {
 	Destroy();
 	uboForMaterials = afCreateUBO(MATERIAL_UBO_SIZE);
-	renderStates.Create("skin_instanced", dimof(elements), elements, BM_NONE, DSM_DEPTH_ENABLE, CM_CW, dimof(samplers), samplers, PT_TRIANGLELIST);
+	renderStates.Create("skin_instanced", arrayparam(elements), BM_NONE, DSM_DEPTH_ENABLE, CM_CW, arrayparam(samplers), PT_TRIANGLELIST);
 }
 
 void MeshRenderer::Destroy()

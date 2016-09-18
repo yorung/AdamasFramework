@@ -54,7 +54,7 @@ Picking::Picking()
 	vbo3d = afCreateDynamicVertexBuffer(sizeof(Vertex) * 3);
 	VBOID vboIds3d[] = { vbo3d };
 	vao3d = afCreateVAO(elements, dimof(elements), 1, vboIds3d, &strides, IBOID());
-	renderStates.Create("solid", dimof(elements), elements, BM_NONE, DSM_DEPTH_ENABLE, CM_DISABLE);
+	renderStates.Create("solid", arrayparam(elements), BM_NONE, DSM_DEPTH_ENABLE, CM_DISABLE);
 	Update();
 }
 
