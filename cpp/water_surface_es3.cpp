@@ -124,14 +124,14 @@ void WaterSurfaceES3::Init()
 {
 	Destroy();
 	for (auto& it : renderTarget) {
-		it.Init(min(IVec2(1024, 1024), systemMisc.GetScreenSize()), AFDT_R8G8B8A8_UNORM, AFDT_INVALID);
+		it.Init(min(IVec2(1024, 1024), systemMisc.GetScreenSize()), AFF_R8G8B8A8_UNORM, AFF_INVALID);
 		it.BeginRenderToThis();	// clear textures
 	}
 	for (auto& it : heightMap) {
-		it.Init(IVec2(HEIGHT_MAP_W, HEIGHT_MAP_H), AFDT_R16G16B16A16_FLOAT, AFDT_INVALID);
+		it.Init(IVec2(HEIGHT_MAP_W, HEIGHT_MAP_H), AFF_R16G16B16A16_FLOAT, AFF_INVALID);
 		it.BeginRenderToThis();	// clear textures
 	}
-	normalMap.Init(IVec2(HEIGHT_MAP_W, HEIGHT_MAP_H), AFDT_R8G8B8A8_UNORM, AFDT_INVALID);
+	normalMap.Init(IVec2(HEIGHT_MAP_W, HEIGHT_MAP_H), AFF_R8G8B8A8_UNORM, AFF_INVALID);
 	normalMap.BeginRenderToThis();	// clear textures
 
 	AFRenderTarget rt;

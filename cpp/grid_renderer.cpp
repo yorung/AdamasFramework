@@ -88,8 +88,8 @@ GridRenderer::GridRenderer(int numGrid_, float pitch_)
 	lines = indi.size() / 2;
 
 	const static InputElement layout[] = {
-		CInputElement("POSITION", SF_R32G32B32_FLOAT, 0),
-		CInputElement("COLOR", SF_R32G32B32_FLOAT, 12),
+		CInputElement("POSITION", AFF_R32G32B32_FLOAT, 0),
+		CInputElement("COLOR", AFF_R32G32B32_FLOAT, 12),
 	};
 	renderStates.Create("solid", arrayparam(layout), BM_NONE, DSM_DEPTH_ENABLE, CM_DISABLE, 0, nullptr, PT_LINELIST);
 

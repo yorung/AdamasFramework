@@ -7,13 +7,13 @@ static const size_t MAX_BONE_SSBOS = 100;
 static const size_t MATERIAL_UBO_SIZE = sizeof(Material) * MAX_MATERIALS;
 
 static const InputElement elements[] = {
-	CInputElement("POSITION", SF_R32G32B32_FLOAT, 0),
-	CInputElement("NORMAL", SF_R32G32B32_FLOAT, 12),
-	CInputElement("vColor", SF_R8G8B8A8_UNORM, 24),
-	CInputElement("vTexcoord", SF_R32G32_FLOAT, 28),
-	CInputElement("vBlendWeights", SF_R32G32B32_FLOAT, 36),
-	CInputElement("vBlendIndices", SF_R8G8B8A8_UINT, 48),
-	CInputElement("materialId", SF_R32_UINT, 52),
+	CInputElement("POSITION", AFF_R32G32B32_FLOAT, 0),
+	CInputElement("NORMAL", AFF_R32G32B32_FLOAT, 12),
+	CInputElement("vColor", AFF_R8G8B8A8_UNORM, 24),
+	CInputElement("vTexcoord", AFF_R32G32_FLOAT, 28),
+	CInputElement("vBlendWeights", AFF_R32G32B32_FLOAT, 36),
+	CInputElement("vBlendIndices", AFF_R8G8B8A8_UINT, 48),
+	CInputElement("materialId", AFF_R32_UINT, 52),
 };
 
 static const SamplerType samplers[] = {

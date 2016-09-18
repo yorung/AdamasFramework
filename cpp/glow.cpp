@@ -15,7 +15,7 @@ void Glow::LazyInit()
 
 	int texSize = GLOW_WH;
 	for (auto& it : glowMap) {
-		it.Init(IVec2(texSize, texSize), AFDT_R8G8B8A8_UNORM, AFDT_INVALID);
+		it.Init(IVec2(texSize, texSize), AFF_R8G8B8A8_UNORM, AFF_INVALID);
 		it.BeginRenderToThis();	// clear textures
 		texSize /= 2;
 	}

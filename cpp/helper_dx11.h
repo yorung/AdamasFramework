@@ -40,9 +40,9 @@ void afDraw(int numVertices, int start = 0, int instanceCount = 1);
 
 typedef D3D11_SUBRESOURCE_DATA AFTexSubresourceData;
 
-SRVID afCreateTexture2D(AFDTFormat format, const IVec2& size, void *image);
-SRVID afCreateTexture2D(AFDTFormat format, const struct TexDesc& desc, int mipCount, const AFTexSubresourceData datas[]);
-SRVID afCreateDynamicTexture(AFDTFormat format, const IVec2& size);
+SRVID afCreateTexture2D(AFFormat format, const IVec2& size, void *image);
+SRVID afCreateTexture2D(AFFormat format, const struct TexDesc& desc, int mipCount, const AFTexSubresourceData datas[]);
+SRVID afCreateDynamicTexture(AFFormat format, const IVec2& size);
 IVec2 afGetTextureSize(SRVID tex);
 void afSetTextureName(SRVID tex, const char* name);
 
@@ -73,7 +73,7 @@ class AFRenderTarget
 public:
 	~AFRenderTarget() { Destroy(); }
 	void InitForDefaultRenderTarget();
-	void Init(IVec2 size, AFDTFormat colorFormat, AFDTFormat depthStencilFormat = AFDT_INVALID);
+	void Init(IVec2 size, AFFormat colorFormat, AFFormat depthStencilFormat = AFF_INVALID);
 	void Destroy();
 	void BeginRenderToThis();
 	ID3D11ShaderResourceView* GetTexture() { return shaderResourceView; }

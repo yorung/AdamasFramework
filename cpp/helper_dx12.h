@@ -43,8 +43,8 @@ struct AFTexSubresourceData
 	uint32_t pitchSlice;
 };
 
-SRVID afCreateTexture2D(AFDTFormat format, const IVec2& size, void *image = nullptr, bool isRenderTargetOrDepthStencil = false);
-SRVID afCreateTexture2D(AFDTFormat format, const struct TexDesc& desc, int mipCount, const AFTexSubresourceData datas[]);
+SRVID afCreateTexture2D(AFFormat format, const IVec2& size, void *image = nullptr, bool isRenderTargetOrDepthStencil = false);
+SRVID afCreateTexture2D(AFFormat format, const struct TexDesc& desc, int mipCount, const AFTexSubresourceData datas[]);
 void afSetTextureName(SRVID tex, const char* name);
 
 void afWriteTexture(SRVID srv, const TexDesc& desc, const void* buf);
@@ -132,7 +132,7 @@ class AFRenderTarget
 public:
 	~AFRenderTarget() { Destroy(); }
 	void InitForDefaultRenderTarget();
-	void Init(IVec2 size, AFDTFormat colorFormat, AFDTFormat depthStencilFormat = AFDT_INVALID);
+	void Init(IVec2 size, AFFormat colorFormat, AFFormat depthStencilFormat = AFF_INVALID);
 	void Destroy();
 	void BeginRenderToThis();
 	ComPtr<ID3D12Resource> GetTexture() { return renderTarget; }

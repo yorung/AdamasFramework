@@ -199,7 +199,7 @@ SRVID LoadTextureViaOS(const char* name, IVec2& size)
 	if (!LoadImageViaGdiPlus(name, size, col)) {
 		return SRVID();
 	}
-	return afCreateTexture2D(AFDT_R8G8B8A8_UNORM, size, &col[0]);
+	return afCreateTexture2D(AFF_R8G8B8A8_UNORM, size, &col[0]);
 }
 
 #define IS_HANGUL(c)	( (c) >= 0xAC00 && (c) <= 0xD7A3 )

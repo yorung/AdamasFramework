@@ -173,9 +173,9 @@ void afSetTextureName(SRVID tex, const char* name)
 	}
 }
 
-SRVID afCreateTexture2D(AFDTFormat format, const IVec2& size, void *image, bool isRenderTargetOrDepthStencil)
+SRVID afCreateTexture2D(AFFormat format, const IVec2& size, void *image, bool isRenderTargetOrDepthStencil)
 {
-	bool isDepthStencil = format == AFDT_DEPTH || format == AFDT_DEPTH_STENCIL;
+	bool isDepthStencil = format == AFF_DEPTH || format == AFF_DEPTH_STENCIL;
 	D3D12_RESOURCE_DESC textureDesc = {};
 	textureDesc.MipLevels = 1;
 	textureDesc.Format = format;
@@ -209,7 +209,7 @@ SRVID afCreateTexture2D(AFDTFormat format, const IVec2& size, void *image, bool 
 	return id;
 }
 
-SRVID afCreateTexture2D(AFDTFormat format, const struct TexDesc& desc, int mipCount, const AFTexSubresourceData datas[])
+SRVID afCreateTexture2D(AFFormat format, const struct TexDesc& desc, int mipCount, const AFTexSubresourceData datas[])
 {
 	D3D12_RESOURCE_DESC resourceDesc = { D3D12_RESOURCE_DIMENSION_TEXTURE2D, 0, (UINT64)desc.size.x, (UINT)desc.size.y, (UINT16)desc.arraySize, (UINT16)mipCount, format, {1, 0} };
 	SRVID tex;
@@ -289,7 +289,7 @@ ComPtr<ID3D12PipelineState> afCreatePSO(const char *shaderName, const InputEleme
 	psoDesc.PrimitiveTopologyType = ToD3D12PrimitiveTopologyType(primitiveTopology);
 	psoDesc.NumRenderTargets = 1;
 	psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
-	psoDesc.DSVFormat = AFDT_DEPTH_STENCIL;
+	psoDesc.DSVFormat = AFF_DEPTH_STENCIL;
 	psoDesc.SampleDesc.Count = 1;
 	ComPtr<ID3D12PipelineState> pso;
 	HRESULT hr = deviceMan.GetDevice()->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&pso));
@@ -399,7 +399,7 @@ void AFRenderTarget::InitForDefaultRenderTarget()
 	asDefault = true;
 }
 
-void AFRenderTarget::Init(IVec2 size, AFDTFormat colorFormat, AFDTFormat depthStencilFormat)
+void AFRenderTarget::Init(IVec2 size, AFFormat colorFormat, AFFormat depthStencilFormat)
 {
 	texSize = size;
 	renderTarget = afCreateDynamicTexture(colorFormat, size, nullptr, true);

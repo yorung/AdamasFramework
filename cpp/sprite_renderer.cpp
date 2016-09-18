@@ -25,9 +25,9 @@ void SpriteRenderer::Init()
 {
 	Destroy();
 	static InputElement layout[] = {
-		CInputElement("POSITION", SF_R32G32B32_FLOAT, 0),
-		CInputElement("COLOR", SF_R8G8B8A8_UNORM, 12),
-		CInputElement("TEXCOORD", SF_R32G32_FLOAT, 16),
+		CInputElement("POSITION", AFF_R32G32B32_FLOAT, 0),
+		CInputElement("COLOR", AFF_R8G8B8A8_UNORM, 12),
+		CInputElement("TEXCOORD", AFF_R32G32_FLOAT, 16),
 	};
 	const static SamplerType samplers[] = { AFST_LINEAR_CLAMP };
 	renderStates.Create("sprite", arrayparam(layout), BM_ALPHA, DSM_DISABLE, CM_DISABLE, arrayparam(samplers), PT_TRIANGLELIST);

@@ -35,7 +35,7 @@ UBOID afCreateUBO(int size)
 	return ubo;
 }
 
-SRVID afCreateTexture2D(AFDTFormat format, const IVec2& size, void *image)
+SRVID afCreateTexture2D(AFFormat format, const IVec2& size, void *image)
 {
 	CD3D11_TEXTURE2D_DESC desc(format, size.x, size.y, 1, 1, D3D11_BIND_SHADER_RESOURCE);
 	D3D11_SUBRESOURCE_DATA r = { image, (uint32_t)size.x * 4, 0 };
@@ -46,7 +46,7 @@ SRVID afCreateTexture2D(AFDTFormat format, const IVec2& size, void *image)
 	return srv;
 }
 
-SRVID afCreateTexture2D(AFDTFormat format, const TexDesc& afDesc, int mipCount, const AFTexSubresourceData datas[])
+SRVID afCreateTexture2D(AFFormat format, const TexDesc& afDesc, int mipCount, const AFTexSubresourceData datas[])
 {
 	ComPtr<ID3D11Texture2D> tex;
 	CD3D11_TEXTURE2D_DESC desc(format, afDesc.size.x, afDesc.size.y, afDesc.arraySize, mipCount, D3D11_BIND_SHADER_RESOURCE, D3D11_USAGE_DEFAULT, 0, 1, 0, afDesc.isCubeMap ? D3D11_RESOURCE_MISC_TEXTURECUBE : 0);
@@ -57,7 +57,7 @@ SRVID afCreateTexture2D(AFDTFormat format, const TexDesc& afDesc, int mipCount, 
 	return srv;
 }
 
-SRVID afCreateDynamicTexture(AFDTFormat format, const IVec2& size)
+SRVID afCreateDynamicTexture(AFFormat format, const IVec2& size)
 {
 	CD3D11_TEXTURE2D_DESC desc(format, size.x, size.y, 1, 1, D3D11_BIND_SHADER_RESOURCE, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
 	ComPtr<ID3D11Texture2D> tex;

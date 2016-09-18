@@ -109,25 +109,25 @@ void afWriteTexture(SRVID srv, const TexDesc& desc, const void* buf)
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-static void CreateTextureInternal(AFDTFormat format, const IVec2& size, void* img)
+static void CreateTextureInternal(AFFormat format, const IVec2& size, void* img)
 {
 	auto gen = [=](GLint internalFormat, GLint format, GLenum type) {
 		afHandleGLError(glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, size.x, size.y, 0, format, type, img));
 	};
 	switch (format) {
-	case AFDT_R8G8B8A8_UNORM:
+	case AFF_R8G8B8A8_UNORM:
 		gen(GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE);
 		break;
-	case AFDT_R8G8B8A8_UNORM_SRGB:
+	case AFF_R8G8B8A8_UNORM_SRGB:
 #ifdef AF_GLES31
 		gen(GL_SRGB8_ALPHA8, GL_RGBA, GL_UNSIGNED_BYTE);
 #endif
 		break;
-	case AFDT_R5G6B5_UINT:
+	case AFF_R5G6B5_UINT:
 		gen(GL_RGB, GL_RGB, GL_UNSIGNED_SHORT_5_6_5);
 		break;
 
-	case AFDT_R16G16B16A16_FLOAT:
+	case AFF_R16G16B16A16_FLOAT:
 #ifdef AF_GLES31
 		gen(GL_RGBA16F, GL_RGBA, GL_HALF_FLOAT);
 #else
@@ -135,7 +135,7 @@ static void CreateTextureInternal(AFDTFormat format, const IVec2& size, void* im
 #endif
 		break;
 
-	case AFDT_R32G32B32A32_FLOAT:
+	case AFF_R32G32B32A32_FLOAT:
 #ifdef AF_GLES31
 		gen(GL_RGBA32F, GL_RGBA, GL_FLOAT);
 #else
@@ -144,10 +144,10 @@ static void CreateTextureInternal(AFDTFormat format, const IVec2& size, void* im
 		break;
 
 #ifdef AF_GLES31
-	case AFDT_DEPTH:
+	case AFF_DEPTH:
 		gen(GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT);
 		break;
-	case AFDT_DEPTH_STENCIL:
+	case AFF_DEPTH_STENCIL:
 		gen(GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8);
 		break;
 #endif
@@ -157,7 +157,7 @@ static void CreateTextureInternal(AFDTFormat format, const IVec2& size, void* im
 	}
 }
 
-SRVID afCreateDynamicTexture(AFDTFormat format, const IVec2& size)
+SRVID afCreateDynamicTexture(AFFormat format, const IVec2& size)
 {
 	SRVID texture;
 	glGenTextures(1, &texture.x);
@@ -171,7 +171,7 @@ SRVID afCreateDynamicTexture(AFDTFormat format, const IVec2& size)
 	return texture;
 }
 
-SRVID afCreateTexture2D(AFDTFormat format, const IVec2& size, void *image)
+SRVID afCreateTexture2D(AFFormat format, const IVec2& size, void *image)
 {
 	SRVID texture;
 	glGenTextures(1, &texture.x);
@@ -186,7 +186,7 @@ SRVID afCreateTexture2D(AFDTFormat format, const IVec2& size, void *image)
 	return texture;
 }
 
-SRVID afCreateTexture2D(AFDTFormat format, const TexDesc& desc, int mipCount, const AFTexSubresourceData datas[])
+SRVID afCreateTexture2D(AFFormat format, const TexDesc& desc, int mipCount, const AFTexSubresourceData datas[])
 {
 	GLenum target = desc.isCubeMap ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D;
 	GLenum targetFace = desc.isCubeMap ? GL_TEXTURE_CUBE_MAP_POSITIVE_X : GL_TEXTURE_2D;
@@ -204,7 +204,7 @@ SRVID afCreateTexture2D(AFDTFormat format, const TexDesc& desc, int mipCount, co
 		for (int m = 0; m < mipCount; m++) {
 			int w = std::max(1, desc.size.x >> m);
 			int h = std::max(1, desc.size.y >> m);
-			if (format == AFDT_R8G8B8A8_UNORM) {
+			if (format == AFF_R8G8B8A8_UNORM) {
 				afHandleGLError(glTexImage2D(targetFace + a, m, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, datas[idx].ptr));
 			} else {
 				afHandleGLError(glCompressedTexImage2D(targetFace + a, m, format, w, h, 0, datas[idx].pitchSlice, datas[idx].ptr));
@@ -213,7 +213,7 @@ SRVID afCreateTexture2D(AFDTFormat format, const TexDesc& desc, int mipCount, co
 		}
 	}
 	if (mipCount == 1) {
-		if (format == AFDT_R8G8B8A8_UNORM) {
+		if (format == AFF_R8G8B8A8_UNORM) {
 			afHandleGLError(glGenerateMipmap(target));
 		} else {
 			glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	// temporary disable mipmap
@@ -255,52 +255,44 @@ void afSetVertexAttributes(const InputElement elements[], int numElements, int n
 		}
 		afHandleGLError(glEnableVertexAttribArray(i));
 		switch (d.format) {
-		case SF_R32_FLOAT:
-		case SF_R32G32_FLOAT:
-		case SF_R32G32B32_FLOAT:
-		case SF_R32G32B32A32_FLOAT:
-			afHandleGLError(glVertexAttribPointer(i, d.format - SF_R32_FLOAT + 1, GL_FLOAT, GL_FALSE, strides[d.inputSlot], (void*)d.offset));
+		case AFF_R32_FLOAT:
+		case AFF_R32G32_FLOAT:
+		case AFF_R32G32B32_FLOAT:
+		case AFF_R32G32B32A32_FLOAT:
+			afHandleGLError(glVertexAttribPointer(i, d.format - AFF_R32_FLOAT + 1, GL_FLOAT, GL_FALSE, strides[d.inputSlot], (void*)d.offset));
 			break;
-		case SF_R8_UNORM:
-		case SF_R8G8_UNORM:
-		case SF_R8G8B8_UNORM:
-		case SF_R8G8B8A8_UNORM:
-			afHandleGLError(glVertexAttribPointer(i, d.format - SF_R8_UNORM + 1, GL_UNSIGNED_BYTE, GL_TRUE, strides[d.inputSlot], (void*)d.offset));
+		case AFF_R8_UNORM:
+		case AFF_R8G8_UNORM:
+		case AFF_R8G8B8_UNORM:
+		case AFF_R8G8B8A8_UNORM:
+			afHandleGLError(glVertexAttribPointer(i, d.format - AFF_R8_UNORM + 1, GL_UNSIGNED_BYTE, GL_TRUE, strides[d.inputSlot], (void*)d.offset));
 			break;
-		case SF_R8_UINT_TO_FLOAT:
-		case SF_R8G8_UINT_TO_FLOAT:
-		case SF_R8G8B8_UINT_TO_FLOAT:
-		case SF_R8G8B8A8_UINT_TO_FLOAT:
+		case AFF_R8_UINT:
+		case AFF_R8G8_UINT:
+		case AFF_R8G8B8_UINT:
+		case AFF_R8G8B8A8_UINT:
+#ifdef AF_GLES31
+			afHandleGLError(glVertexAttribIPointer(i, d.format - AFF_R8_UINT + 1, GL_UNSIGNED_BYTE, strides[d.inputSlot], (void*)d.offset));
+#else
 			afHandleGLError(glVertexAttribPointer(i, d.format - SF_R8_UINT_TO_FLOAT + 1, GL_UNSIGNED_BYTE, GL_FALSE, strides[d.inputSlot], (void*)d.offset));
-			break;
-		case SF_R8_UINT:
-		case SF_R8G8_UINT:
-		case SF_R8G8B8_UINT:
-		case SF_R8G8B8A8_UINT:
-#ifdef AF_GLES31
-			afHandleGLError(glVertexAttribIPointer(i, d.format - SF_R8_UINT + 1, GL_UNSIGNED_BYTE, strides[d.inputSlot], (void*)d.offset));
 #endif
 			break;
-		case SF_R16_UINT_TO_FLOAT:
-		case SF_R16G16_UINT_TO_FLOAT:
-		case SF_R16G16B16_UINT_TO_FLOAT:
-		case SF_R16G16B16A16_UINT_TO_FLOAT:
+		case AFF_R16_UINT:
+		case AFF_R16G16_UINT:
+		case AFF_R16G16B16_UINT:
+		case AFF_R16G16B16A16_UINT:
+#ifdef AF_GLES31
+			afHandleGLError(glVertexAttribIPointer(i, d.format - AFF_R16_UINT + 1, GL_UNSIGNED_SHORT, strides[d.inputSlot], (void*)d.offset));
+#else
 			afHandleGLError(glVertexAttribPointer(i, d.format - SF_R16_UINT_TO_FLOAT + 1, GL_UNSIGNED_SHORT, GL_FALSE, strides[d.inputSlot], (void*)d.offset));
-			break;
-		case SF_R16_UINT:
-		case SF_R16G16_UINT:
-		case SF_R16G16B16_UINT:
-		case SF_R16G16B16A16_UINT:
-#ifdef AF_GLES31
-			afHandleGLError(glVertexAttribIPointer(i, d.format - SF_R16_UINT + 1, GL_UNSIGNED_SHORT, strides[d.inputSlot], (void*)d.offset));
 #endif
 			break;
-		case SF_R32_UINT:
-		case SF_R32G32_UINT:
-		case SF_R32G32B32_UINT:
-		case SF_R32G32B32A32_UINT:
+		case AFF_R32_UINT:
+		case AFF_R32G32_UINT:
+		case AFF_R32G32B32_UINT:
+		case AFF_R32G32B32A32_UINT:
 #ifdef AF_GLES31
-			afHandleGLError(glVertexAttribIPointer(i, d.format - SF_R32_UINT + 1, GL_UNSIGNED_INT, strides[d.inputSlot], (void*)d.offset));
+			afHandleGLError(glVertexAttribIPointer(i, d.format - AFF_R32_UINT + 1, GL_UNSIGNED_INT, strides[d.inputSlot], (void*)d.offset));
 #endif
 			break;
 		default:
@@ -490,7 +482,7 @@ void AFRenderTarget::InitForDefaultRenderTarget()
 	texSize = systemMisc.GetScreenSize();
 }
 
-void AFRenderTarget::Init(IVec2 size, AFDTFormat colorFormat, AFDTFormat depthStencilFormat)
+void AFRenderTarget::Init(IVec2 size, AFFormat colorFormat, AFFormat depthStencilFormat)
 {
 	Destroy();
 	texSize = size;
@@ -498,7 +490,7 @@ void AFRenderTarget::Init(IVec2 size, AFDTFormat colorFormat, AFDTFormat depthSt
 	if (texColor == 0) {
 		aflog("AFRenderTarget::Init: cannot create dynamic texture. format=%d", colorFormat);
 	}
-	if (depthStencilFormat != AFDT_INVALID) {
+	if (depthStencilFormat != AFF_INVALID) {
 		texDepth = afCreateDynamicTexture(depthStencilFormat, size);
 	}
 

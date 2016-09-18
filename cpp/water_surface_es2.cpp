@@ -197,12 +197,12 @@ void WaterSurfaceES2::Destroy()
 }
 
 static const InputElement elements[] = {
-	CInputElement("vPosition", SF_R32G32B32_FLOAT, 0),
-	CInputElement("vNormal", SF_R32G32B32_FLOAT, 12),
+	CInputElement("vPosition", AFF_R32G32B32_FLOAT, 0),
+	CInputElement("vNormal", AFF_R32G32B32_FLOAT, 12),
 };
 
 static const InputElement elementsFullScr[] = {
-	CInputElement("POSITION", SF_R32G32_FLOAT, 0),
+	CInputElement("POSITION", AFF_R32G32_FLOAT, 0),
 };
 
 static const SamplerType samplers[] = {
@@ -326,7 +326,7 @@ void WaterSurfaceES2::Draw()
 	}
 
 	AFRenderTarget rtWater;
-	rtWater.Init(systemMisc.GetScreenSize(), AFDT_R8G8B8A8_UNORM);
+	rtWater.Init(systemMisc.GetScreenSize(), AFF_R8G8B8A8_UNORM);
 	rtWater.BeginRenderToThis();
 	AFCbvBindToken token;
 	token.Create(&uboBuf, sizeof(uboBuf));

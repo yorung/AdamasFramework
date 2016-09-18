@@ -4,49 +4,49 @@ typedef unsigned short AFIndex;
 GLenum _afHandleGLError(const char* file, const char* func, int line, const char* command);
 #define afHandleGLError(command) do{ command; _afHandleGLError(__FILE__, __FUNCTION__, __LINE__, #command); } while(0)
 
-enum ShaderFormat {
-	SF_INVALID,
-	SF_R32_FLOAT,
-	SF_R32G32_FLOAT,
-	SF_R32G32B32_FLOAT,
-	SF_R32G32B32A32_FLOAT,
-	SF_R8_UNORM,
-	SF_R8G8_UNORM,
-	SF_R8G8B8_UNORM,
-	SF_R8G8B8A8_UNORM,
-	SF_R8_UINT,
-	SF_R8G8_UINT,
-	SF_R8G8B8_UINT,
-	SF_R8G8B8A8_UINT,
-	SF_R16_UINT,
-	SF_R16G16_UINT,
-	SF_R16G16B16_UINT,
-	SF_R16G16B16A16_UINT,
-	SF_R32_UINT,
-	SF_R32G32_UINT,
-	SF_R32G32B32_UINT,
-	SF_R32G32B32A32_UINT,
-	SF_R8_UINT_TO_FLOAT,
-	SF_R8G8_UINT_TO_FLOAT,
-	SF_R8G8B8_UINT_TO_FLOAT,
-	SF_R8G8B8A8_UINT_TO_FLOAT,
-	SF_R16_UINT_TO_FLOAT,
-	SF_R16G16_UINT_TO_FLOAT,
-	SF_R16G16B16_UINT_TO_FLOAT,
-	SF_R16G16B16A16_UINT_TO_FLOAT,
+enum AFFormat {
+	AFF_INVALID,
+	AFF_R32_FLOAT,
+	AFF_R32G32_FLOAT,
+	AFF_R32G32B32_FLOAT,
+	AFF_R32G32B32A32_FLOAT,
+	AFF_R8_UNORM,
+	AFF_R8G8_UNORM,
+	AFF_R8G8B8_UNORM,
+	AFF_R8G8B8A8_UNORM,
+	AFF_R8_UINT,
+	AFF_R8G8_UINT,
+	AFF_R8G8B8_UINT,
+	AFF_R8G8B8A8_UINT,
+	AFF_R16_UINT,
+	AFF_R16G16_UINT,
+	AFF_R16G16B16_UINT,
+	AFF_R16G16B16A16_UINT,
+	AFF_R32_UINT,
+	AFF_R32G32_UINT,
+	AFF_R32G32B32_UINT,
+	AFF_R32G32B32A32_UINT,
+	AFF_R8G8B8A8_UNORM_SRGB,
+	AFF_R5G6B5_UINT,
+	AFF_DEPTH,
+	AFF_DEPTH_STENCIL,
+	AFF_R16G16B16A16_FLOAT,
+	AFF_BC1_UNORM = 0x83F1,	// GL_COMPRESSED_RGBA_S3TC_DXT1_EXT
+	AFF_BC2_UNORM = 0x83F2,	// GL_COMPRESSED_RGBA_S3TC_DXT3_EXT
+	AFF_BC3_UNORM = 0x83F3,	// GL_COMPRESSED_RGBA_S3TC_DXT5_EXT,
 };
 
 struct InputElement {
 	int inputSlot = 0;
 	const char* name = nullptr;
-	ShaderFormat format = SF_INVALID;
+	AFFormat format = AFF_INVALID;
 	int offset = 0;
 	bool perInstance = false;
 };
 
 class CInputElement : public InputElement {
 public:
-	CInputElement(const char* name, ShaderFormat format, int offset, int inputSlot = 0, bool perInstance = false) {
+	CInputElement(const char* name, AFFormat format, int offset, int inputSlot = 0, bool perInstance = false) {
 		this->name = name;
 		this->format = format;
 		this->inputSlot = inputSlot;
@@ -114,23 +114,10 @@ struct AFTexSubresourceData
 	uint32_t pitchSlice;
 };
 
-enum AFDTFormat
-{
-	AFDT_INVALID,
-	AFDT_R8G8B8A8_UNORM,
-	AFDT_R8G8B8A8_UNORM_SRGB,
-	AFDT_R5G6B5_UINT,
-	AFDT_R32G32B32A32_FLOAT,
-	AFDT_R16G16B16A16_FLOAT,
-	AFDT_DEPTH,
-	AFDT_DEPTH_STENCIL,
-	AFDT_BC1_UNORM = 0x83F1,	// GL_COMPRESSED_RGBA_S3TC_DXT1_EXT
-	AFDT_BC2_UNORM = 0x83F2,	// GL_COMPRESSED_RGBA_S3TC_DXT3_EXT
-	AFDT_BC3_UNORM = 0x83F3,	// GL_COMPRESSED_RGBA_S3TC_DXT5_EXT,
-};
-SRVID afCreateTexture2D(AFDTFormat format, const IVec2& size, void *image);
-SRVID afCreateTexture2D(AFDTFormat format, const struct TexDesc& desc, int mipCount, const AFTexSubresourceData datas[]);
-SRVID afCreateDynamicTexture(AFDTFormat format, const IVec2& size);
+
+SRVID afCreateTexture2D(AFFormat format, const IVec2& size, void *image);
+SRVID afCreateTexture2D(AFFormat format, const struct TexDesc& desc, int mipCount, const AFTexSubresourceData datas[]);
+SRVID afCreateDynamicTexture(AFFormat format, const IVec2& size);
 
 void afWriteTexture(SRVID srv, const TexDesc& desc, const void* buf);
 
@@ -188,7 +175,7 @@ class AFRenderTarget
 	GLuint renderbufferObject = 0;
 public:
 	void InitForDefaultRenderTarget();
-	void Init(IVec2 size, AFDTFormat colorFormat, AFDTFormat depthStencilFormat = AFDT_INVALID);
+	void Init(IVec2 size, AFFormat colorFormat, AFFormat depthStencilFormat = AFF_INVALID);
 	void Destroy();
 	void BeginRenderToThis();
 	SRVID GetTexture() { return texColor; }
