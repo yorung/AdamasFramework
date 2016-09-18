@@ -169,8 +169,8 @@ enum PrimitiveTopology {
 	PT_LINELIST = GL_LINES,
 };
 
-void afDrawIndexed(PrimitiveTopology pt, int numIndices, int start = 0, int instanceCount = 1);
-void afDraw(PrimitiveTopology pt, int numVertices, int start = 0, int instanceCount = 1);
+void afDrawIndexed(int numIndices, int start = 0, int instanceCount = 1);
+void afDraw(int numVertices, int start = 0, int instanceCount = 1);
 
 #ifdef AF_GLES31
 #define afBindVAO(vao) afHandleGLError(glBindVertexArray(vao))

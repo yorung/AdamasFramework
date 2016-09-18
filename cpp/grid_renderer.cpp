@@ -112,7 +112,7 @@ void GridRenderer::Draw()
 	token.Create(&matVP, sizeof(Mat));
 	afBindCbvs(&token, 1);
 	afBindVAO(vao);
-	afDraw(PT_LINELIST, lines * 2);
+	afDraw(lines * 2);
 	afBindVAO(0);
 #ifndef NDEBUG
 	Vec2 v;

@@ -24,7 +24,7 @@ void LetterBox::Draw(AFRenderTarget& target, SRVID srcTex)
 	afBindTextureToBindingPoint(srcTex, 0);
 	renderStates.Apply();
 	stockObjects.ApplyFullScreenVAO();
-	afDraw(PT_TRIANGLESTRIP, 4);
+	afDraw(4);
 }
 
 void LetterBox::Destroy()

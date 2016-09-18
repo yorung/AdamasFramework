@@ -44,13 +44,13 @@ void Glow::MakeGlow(AFRenderTarget& target, SRVID srcTex)
 	renderStateGlowExtraction.Apply();
 	glowMap[0].BeginRenderToThis();
 	afBindTextureToBindingPoint(srcTex, 0);
-	afDraw(PT_TRIANGLESTRIP, 4);
+	afDraw(4);
 
 	renderStateGlowCopy.Apply();
 	for (int i = 1; i < (int)dimof(glowMap); i++) {
 		glowMap[i].BeginRenderToThis();
 		afBindTextureToBindingPoint(glowMap[i - 1].GetTexture(), 0);
-		afDraw(PT_TRIANGLESTRIP, 4);
+		afDraw(4);
 	}
 
 	renderStateGlowLastPass.Apply();
@@ -59,6 +59,6 @@ void Glow::MakeGlow(AFRenderTarget& target, SRVID srcTex)
 		afBindTextureToBindingPoint(glowMap[i].GetTexture(), i);
 	}
 	afBindTextureToBindingPoint(srcTex, 6);
-	afDraw(PT_TRIANGLESTRIP, 4);
+	afDraw(4);
 	afBindVAO(0);
 }

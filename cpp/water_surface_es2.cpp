@@ -333,7 +333,7 @@ void WaterSurfaceES2::Draw()
 	afBindCbvs(&token, 1, 6);
 
 	afBindVAO(vao);
-	afDrawIndexed(PT_TRIANGLESTRIP, nIndi);
+	afDrawIndexed(nIndi);
 	afBindVAO(0);
 
 	AFRenderTarget rtDefault;
@@ -344,9 +344,9 @@ void WaterSurfaceES2::Draw()
 	afBindTextureToBindingPoint(rtWater.GetTexture(), 0);
 #ifndef AF_DX12
 	afBindVAO(vaoFullScr);
-	afDrawIndexed(PT_TRIANGLESTRIP, 4);
+	afDrawIndexed(4);
 #else
-	afDraw(PT_TRIANGLESTRIP, 4);
+	afDraw(4);
 #endif
 	afBindVAO(0);
 }

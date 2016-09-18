@@ -160,7 +160,7 @@ void Picking::Draw3D()
 	AFCbvBindToken token;
 	token.Create(&mVP, sizeof(Mat));
 	afBindCbvs(&token, 1);
-	afDraw(PT_TRIANGLESTRIP, 3);
+	afDraw(3);
 	afBindVAO(0);
 }
 
@@ -172,6 +172,6 @@ void Picking::Draw2D()
 	AFCbvBindToken token;
 	token.Create(&matIdentity, sizeof(Mat));
 	afBindCbvs(&token, 1);
-	afDraw(PT_TRIANGLESTRIP, 3);
+	afDraw(3);
 	afBindVAO(0);
 }

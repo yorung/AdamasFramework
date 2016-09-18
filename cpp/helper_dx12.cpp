@@ -218,17 +218,15 @@ SRVID afCreateTexture2D(AFDTFormat format, const struct TexDesc& desc, int mipCo
 	return tex;
 }
 
-void afDrawIndexed(PrimitiveTopology pt, int numIndices, int start, int instanceCount)
+void afDrawIndexed(int numIndices, int start, int instanceCount)
 {
 	ID3D12GraphicsCommandList* list = deviceMan.GetCommandList();
-	list->IASetPrimitiveTopology(pt);
 	list->DrawIndexedInstanced(numIndices, instanceCount, start, 0, 0);
 }
 
-void afDraw(PrimitiveTopology pt, int numVertices, int start, int instanceCount)
+void afDraw(int numVertices, int start, int instanceCount)
 {
 	ID3D12GraphicsCommandList* list = deviceMan.GetCommandList();
-	list->IASetPrimitiveTopology(pt);
 	list->DrawInstanced(numVertices, instanceCount, start, 0);
 }
 

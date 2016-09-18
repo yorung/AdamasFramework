@@ -30,7 +30,7 @@ void SpriteRenderer::Init()
 		CInputElement("TEXCOORD", SF_R32G32_FLOAT, 16),
 	};
 	const static SamplerType samplers[] = { AFST_LINEAR_CLAMP };
-	renderStates.Create("sprite", dimof(layout), layout, BM_ALPHA, DSM_DISABLE, CM_DISABLE, dimof(samplers), samplers);
+	renderStates.Create("sprite", dimof(layout), layout, BM_ALPHA, DSM_DISABLE, CM_DISABLE, dimof(samplers), samplers, PT_TRIANGLELIST);
 	quadListVertexBuffer.Create(layout, dimof(layout), sizeof(SpriteVertex), MAX_SPRITES_IN_ONE_DRAW_CALL);
 }
 
@@ -68,7 +68,7 @@ void SpriteRenderer::Draw(const SpriteCommands& sprites)
 		if (numStoredSprites > 0) {
 			afBindTextureToBindingPoint(curTex, 0);
 			quadListVertexBuffer.Write(v, sizeof(SpriteVertex) * 4 * numStoredSprites);
-			afDrawIndexed(PT_TRIANGLELIST, 6 * numStoredSprites, 0);
+			afDrawIndexed(6 * numStoredSprites, 0);
 			numStoredSprites = 0;
 		}
 	};

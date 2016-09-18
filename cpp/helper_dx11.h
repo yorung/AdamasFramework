@@ -35,8 +35,8 @@ void afBindTextureToBindingPoint(SRVID srv, UINT textureBindingPoint);
 #define afBindCubeMapToBindingPoint afBindTextureToBindingPoint
 void afBindSamplerToBindingPoint(SAMPLERID sampler, UINT textureBindingPoint);
 
-void afDrawIndexed(PrimitiveTopology pt, int numIndices, int start = 0, int instanceCount = 1);
-void afDraw(PrimitiveTopology pt, int numVertices, int start = 0, int instanceCount = 1);
+void afDrawIndexed(int numIndices, int start = 0, int instanceCount = 1);
+void afDraw(int numVertices, int start = 0, int instanceCount = 1);
 
 typedef D3D11_SUBRESOURCE_DATA AFTexSubresourceData;
 

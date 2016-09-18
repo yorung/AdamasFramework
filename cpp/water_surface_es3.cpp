@@ -215,7 +215,7 @@ void WaterSurfaceES3::UpdateHeightMap(const UniformBuffer& hmub)
 	afHandleGLError(glUniform4fv(0, sizeof(hmub) / (sizeof(GLfloat) * 4), (GLfloat*)&hmub));
 
 	stockObjects.ApplyFullScreenVAO();
-	afDraw(PT_TRIANGLESTRIP, 4);
+	afDraw(4);
 	afBindVAO(0);
 }
 
@@ -226,7 +226,7 @@ void WaterSurfaceES3::UpdateNormalMap()
 	normalMap.BeginRenderToThis();
 	renderStateNormalMap.Apply();
 	stockObjects.ApplyFullScreenVAO();
-	afDraw(PT_TRIANGLESTRIP, 4);
+	afDraw(4);
 	afBindVAO(0);
 }
 
@@ -249,7 +249,7 @@ void WaterSurfaceES3::RenderWater(const UniformBuffer& hmub)
 	stockObjects.ApplyFullScreenVAO();
 	afBindTextureToBindingPoint(curHeightMap.GetTexture(), 6);
 	afBindTextureToBindingPoint(normalMap.GetTexture(), 7);
-	afDraw(PT_TRIANGLESTRIP, 4);
+	afDraw(4);
 	afBindTextureToBindingPoint(0, 6);
 	afBindVAO(0);
 }

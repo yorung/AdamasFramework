@@ -224,23 +224,23 @@ SRVID afCreateTexture2D(AFDTFormat format, const TexDesc& desc, int mipCount, co
 	return texture;
 }
 
-void afDrawIndexed(PrimitiveTopology pt, int numIndices, int start, int instanceCount)
+void afDrawIndexed(int numIndices, int start, int instanceCount)
 {
 #ifdef AF_GLES31
-	afHandleGLError(glDrawElementsInstanced/*BaseVertex*/(pt, numIndices, AFIndexTypeToDevice, (void*)(start * sizeof(AFIndex)), instanceCount/*, cmd.baseVertex*/));
+	afHandleGLError(glDrawElementsInstanced/*BaseVertex*/(s_primitiveTopology, numIndices, AFIndexTypeToDevice, (void*)(start * sizeof(AFIndex)), instanceCount/*, cmd.baseVertex*/));
 #else
 	assert(instanceCount == 1);
-	afHandleGLError(glDrawElements(pt, numIndices, AFIndexTypeToDevice, (void*)(start * sizeof(AFIndex))));
+	afHandleGLError(glDrawElements(s_primitiveTopology, numIndices, AFIndexTypeToDevice, (void*)(start * sizeof(AFIndex))));
 #endif
 }
 
-void afDraw(PrimitiveTopology pt, int numVertices, int start, int instanceCount)
+void afDraw(int numVertices, int start, int instanceCount)
 {
 #ifdef AF_GLES31
-	afHandleGLError(glDrawArraysInstanced(pt, start * sizeof(AFIndex), numVertices, instanceCount));
+	afHandleGLError(glDrawArraysInstanced(s_primitiveTopology, start * sizeof(AFIndex), numVertices, instanceCount));
 #else
 	assert(instanceCount == 1);
-	afHandleGLError(glDrawArrays(pt, start * sizeof(AFIndex), numVertices));
+	afHandleGLError(glDrawArrays(s_primitiveTopology, start * sizeof(AFIndex), numVertices));
 #endif
 }
 

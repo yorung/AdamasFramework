@@ -34,7 +34,7 @@ void SkyMan::Draw()
 	token.Create(&invVP, sizeof(invVP));
 	afBindCbvs(&token, 1);
 	(texDesc.isCubeMap ? afBindCubeMapToBindingPoint : afBindTextureToBindingPoint)(texId, 1);
-	afDraw(PT_TRIANGLESTRIP, 4);
+	afDraw(4);
 }
 
 void SkyMan::Destroy()

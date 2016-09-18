@@ -33,8 +33,8 @@ UBOID afCreateUBO(int size);
 
 ComPtr<ID3D12PipelineState> afCreatePSO(const char *shaderName, const InputElement elements[], int numElements, BlendMode blendMode, DepthStencilMode depthStencilMode, CullMode cullMode, ComPtr<ID3D12RootSignature>& rootSignature, PrimitiveTopology primitiveTopology);
 
-void afDrawIndexed(PrimitiveTopology pt, int numIndices, int start = 0, int instanceCount = 1);
-void afDraw(PrimitiveTopology pt, int numVertices, int start = 0, int instanceCount = 1);
+void afDrawIndexed(int numIndices, int start = 0, int instanceCount = 1);
+void afDraw(int numVertices, int start = 0, int instanceCount = 1);
 
 struct AFTexSubresourceData
 {

@@ -144,15 +144,13 @@ void afWriteTexture(SRVID srv, const TexDesc& desc, const void* buf)
 	deviceMan11.GetContext()->Unmap(tx.Get(), 0);
 }
 
-void afDrawIndexed(PrimitiveTopology pt, int numIndices, int start, int instanceCount)
+void afDrawIndexed(int numIndices, int start, int instanceCount)
 {
-	deviceMan11.GetContext()->IASetPrimitiveTopology(pt);
 	deviceMan11.GetContext()->DrawIndexedInstanced(numIndices, instanceCount, start, 0, 0);
 }
 
-void afDraw(PrimitiveTopology pt, int numVertices, int start, int instanceCount)
+void afDraw(int numVertices, int start, int instanceCount)
 {
-	deviceMan11.GetContext()->IASetPrimitiveTopology(pt);
 	deviceMan11.GetContext()->DrawInstanced(numVertices, instanceCount, start, 0);
 }
 
