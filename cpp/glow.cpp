@@ -22,9 +22,9 @@ void Glow::LazyInit()
 
 	int numElements = 0;
 	const InputElement* elements = stockObjects.GetFullScreenInputElements(numElements);
-	renderStateGlowExtraction.Create("glow_extraction", numElements, elements, BM_NONE, DSM_DISABLE, CM_DISABLE, 1, samplerTypes);
-	renderStateGlowCopy.Create("glow_copy", numElements, elements, BM_NONE, DSM_DISABLE, CM_DISABLE, 1, samplerTypes);
-	renderStateGlowLastPass.Create("glow_lastpass", numElements, elements, BM_NONE, DSM_DISABLE, CM_DISABLE, dimof(samplerTypes), samplerTypes);
+	renderStateGlowExtraction.Create("glow_extraction", numElements, elements, AFRS_NONE, 1, samplerTypes);
+	renderStateGlowCopy.Create("glow_copy", numElements, elements, AFRS_NONE, 1, samplerTypes);
+	renderStateGlowLastPass.Create("glow_lastpass", numElements, elements, AFRS_NONE, dimof(samplerTypes), samplerTypes);
 }
 
 void Glow::Destroy()

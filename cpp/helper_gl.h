@@ -211,17 +211,14 @@ IBOID afCreateTiledPlaneIBO(int numTiles, int* numIndies = nullptr);
 VBOID afCreateTiledPlaneVBO(int numTiles);
 IBOID afCreateQuadListIndexBuffer(int numQuads);
 SRVID afLoadTexture(const char* name, TexDesc& desc);
-void afCullMode(CullMode cullMode);
-void afBlendMode(BlendMode mode);
-void afDepthStencilMode(DepthStencilMode mode);
+void afCullMode(uint32_t flags);
+void afBlendMode(uint32_t flags);
+void afDepthStencilMode(uint32_t flags);
 SAMPLERID afCreateSampler(SamplerType type);
 void afSetSampler(SamplerType type, int slot);
 
 class AFRenderStates {
-	BlendMode blendMode = BM_NONE;
-	DepthStencilMode depthStencilMode = DSM_DISABLE;
-	CullMode cullMode = CM_DISABLE;
-	PrimitiveTopology primitiveTopology = PT_TRIANGLESTRIP;
+	uint32_t flags = AFRS_NONE;
 	int numSamplerTypes = 0;
 	const SamplerType* samplerTypes = nullptr;
 	ShaderMan::SMID shaderId = ShaderMan::INVALID_SMID;
@@ -230,7 +227,7 @@ class AFRenderStates {
 public:
 	ShaderMan::SMID GetShaderId() { return shaderId; }
 	bool IsReady() { return shaderId != ShaderMan::INVALID_SMID; }
-	void Create(const char* shaderName, int numInputElements, const InputElement* inputElements, BlendMode blendMode_, DepthStencilMode depthStencilMode_, CullMode cullMode_, int numSamplerTypes_ = 0, const SamplerType samplerTypes_[] = nullptr, PrimitiveTopology _primitiveTopology = PT_TRIANGLESTRIP);
+	void Create(const char* shaderName, int numInputElements = 0, const InputElement* inputElements = nullptr, uint32_t flags = AFRS_NONE, int numSamplerTypes_ = 0, const SamplerType samplerTypes_[] = nullptr);
 	void Apply() const;
 	void Destroy() { shaderId = ShaderMan::INVALID_SMID; }
 };

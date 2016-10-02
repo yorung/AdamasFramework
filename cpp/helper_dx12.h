@@ -31,7 +31,7 @@ IBOID afCreateIndexBuffer(const AFIndex* indi, int numIndi);
 ComPtr<ID3D12Resource> afCreateDynamicVertexBuffer(int size, const void* buf = nullptr);
 UBOID afCreateUBO(int size);
 
-ComPtr<ID3D12PipelineState> afCreatePSO(const char *shaderName, const InputElement elements[], int numElements, BlendMode blendMode, DepthStencilMode depthStencilMode, CullMode cullMode, ComPtr<ID3D12RootSignature>& rootSignature, PrimitiveTopology primitiveTopology);
+ComPtr<ID3D12PipelineState> afCreatePSO(const char *shaderName, const InputElement elements[], int numElements, uint32_t flags, ComPtr<ID3D12RootSignature>& rootSignature);
 
 void afDrawIndexed(int numIndices, int start = 0, int instanceCount = 1);
 void afDraw(int numVertices, int start = 0, int instanceCount = 1);
@@ -69,10 +69,10 @@ class AFRenderStates {
 	PrimitiveTopology primitiveTopology = PT_TRIANGLESTRIP;
 public:
 	bool IsReady() { return !!pipelineState; }
-	void Create(const char* shaderName, int numInputElements, const InputElement* inputElements, BlendMode blendMode_, DepthStencilMode depthStencilMode_, CullMode cullMode_, int numSamplerTypes_ = 0, const SamplerType samplerTypes_[] = nullptr, PrimitiveTopology primitiveTopology_ = PT_TRIANGLESTRIP)
+	void Create(const char* shaderName, int numInputElements, const InputElement* inputElements, uint32_t flags, int numSamplerTypes_ = 0, const SamplerType samplerTypes_[] = nullptr, PrimitiveTopology primitiveTopology_ = PT_TRIANGLESTRIP)
 	{
-		primitiveTopology = primitiveTopology_;
-		pipelineState = afCreatePSO(shaderName, inputElements, numInputElements, blendMode_, depthStencilMode_, cullMode_, rootSignature, primitiveTopology);
+		primitiveTopology = RenderFlagsToPrimitiveTopology(flags);
+		pipelineState = afCreatePSO(shaderName, inputElements, numInputElements, flags, rootSignature);
 	}
 	void Apply() const
 	{

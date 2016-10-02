@@ -9,6 +9,18 @@ typedef unsigned short AFIndex;
 #define PT_TRIANGLELIST D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST
 #define PT_LINELIST D3D_PRIMITIVE_TOPOLOGY_LINELIST
 
+inline PrimitiveTopology RenderFlagsToPrimitiveTopology(uint32_t flags)
+{
+	if (flags & AFRS_PRIMITIVE_TRIANGLELIST)
+	{
+		return PT_TRIANGLELIST;
+	} else if (flags & AFRS_PRIMITIVE_LINELIST)
+	{
+		return PT_LINELIST;
+	}
+	return PT_TRIANGLESTRIP;
+}
+
 typedef DXGI_FORMAT AFFormat;
 #define AFF_INVALID DXGI_FORMAT_UNKNOWN
 #define AFF_R8G8B8A8_UNORM DXGI_FORMAT_R8G8B8A8_UNORM

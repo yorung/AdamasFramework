@@ -67,7 +67,6 @@ static const int BONE_MAX = 50;
 #endif
 
 #ifdef AF_DX12
-#include "helper_win.h"
 #include "device_man_dx12.h"
 #include "helper_dx12.h"
 #endif

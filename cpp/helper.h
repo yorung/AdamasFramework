@@ -33,21 +33,17 @@ struct TexDesc {
 	bool isCubeMap = false;
 };
 
-enum CullMode {
-	CM_DISABLE,
-	CM_CW,
-	CM_CCW,
-};
-
-enum BlendMode {
-	BM_NONE,
-	BM_ALPHA,
-};
-
-enum DepthStencilMode {
-	DSM_DISABLE,
-	DSM_DEPTH_ENABLE,
-	DSM_DEPTH_CLOSEREQUAL_READONLY,
+enum RenderStateFlags : uint32_t
+{
+	AFRS_NONE = 0,
+	AFRS_CULL_CCW = 0x1,
+	AFRS_CULL_CW = 0x2,
+	AFRS_ALPHA_BLEND = 0x4,
+	AFRS_DEPTH_ENABLE = 0x8,
+	AFRS_DEPTH_CLOSEREQUAL_READONLY = 0x10,
+	AFRS_PRIMITIVE_TRIANGLESTRIP = 0x0,	// default
+	AFRS_PRIMITIVE_TRIANGLELIST = 0x20,
+	AFRS_PRIMITIVE_LINELIST = 0x40,
 };
 
 enum SamplerType {

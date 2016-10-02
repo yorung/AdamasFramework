@@ -30,7 +30,7 @@ void SpriteRenderer::Init()
 		CInputElement("TEXCOORD", AFF_R32G32_FLOAT, 16),
 	};
 	const static SamplerType samplers[] = { AFST_LINEAR_CLAMP };
-	renderStates.Create("sprite", arrayparam(layout), BM_ALPHA, DSM_DISABLE, CM_DISABLE, arrayparam(samplers), PT_TRIANGLELIST);
+	renderStates.Create("sprite", arrayparam(layout), AFRS_ALPHA_BLEND | AFRS_PRIMITIVE_TRIANGLELIST, arrayparam(samplers));
 	quadListVertexBuffer.Create(sizeof(SpriteVertex), MAX_SPRITES_IN_ONE_DRAW_CALL);
 }
 

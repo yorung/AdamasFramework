@@ -23,7 +23,7 @@ App::App()
 void App::Draw()
 {
 #ifdef GL_TRUE
-	afDepthStencilMode(DSM_DEPTH_ENABLE);
+	afDepthStencilMode(AFRS_DEPTH_ENABLE);
 #endif
 	AFRenderTarget rtDefault;
 	rtDefault.InitForDefaultRenderTarget();

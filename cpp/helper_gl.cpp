@@ -333,56 +333,58 @@ VAOID afCreateVAO(const InputElement elements[], int numElements, int numBuffers
 }
 #endif
 
-void afBlendMode(BlendMode mode)
+void afBlendMode(uint32_t flags)
 {
-	switch(mode) {
-	case BM_ALPHA:
+	if (flags & AFRS_ALPHA_BLEND)
+	{
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		break;
-	case BM_NONE:
+	}
+	else
+	{
 		glDisable(GL_BLEND);
-		break;
 	}
 }
 
-void afDepthStencilMode(DepthStencilMode mode)
+void afDepthStencilMode(uint32_t flags)
 {
-	switch (mode) {
-	case DSM_DISABLE:
-		glDisable(GL_DEPTH_TEST);
-		glDepthMask(GL_FALSE);
-		glDepthFunc(GL_ALWAYS);
-		break;
-	case DSM_DEPTH_ENABLE:
+	if (flags & AFRS_DEPTH_ENABLE)
+	{
 		glEnable(GL_DEPTH_TEST);
 		glDepthMask(GL_TRUE);
 		glDepthFunc(GL_GREATER);
-		break;
-	case DSM_DEPTH_CLOSEREQUAL_READONLY:
+	}
+	else if (flags & AFRS_DEPTH_CLOSEREQUAL_READONLY)
+	{
 		glEnable(GL_DEPTH_TEST);
 		glDepthMask(GL_FALSE);
 		glDepthFunc(GL_GEQUAL);
-		break;
+	}
+	else
+	{
+		glDisable(GL_DEPTH_TEST);
+		glDepthMask(GL_FALSE);
+		glDepthFunc(GL_ALWAYS);
 	}
 }
 
-void afCullMode(CullMode cullMode)
+void afCullMode(uint32_t flags)
 {
-	switch(cullMode) {
-	case CM_DISABLE:
-		glDisable(GL_CULL_FACE);
-		break;
-	case CM_CCW:
+	if (flags & AFRS_CULL_CCW)
+	{
 		glEnable(GL_CULL_FACE);
 		glCullFace(GL_BACK);
 		glFrontFace(GL_CCW);
-		break;
-	case CM_CW:
+	}
+	else if (flags & AFRS_CULL_CW)
+	{
 		glEnable(GL_CULL_FACE);
 		glCullFace(GL_BACK);
 		glFrontFace(GL_CW);
-		break;
+	}
+	else
+	{
+		glDisable(GL_CULL_FACE);
 	}
 }
 
@@ -553,28 +555,38 @@ void afClear()
 	afHandleGLError(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT));
 }
 
-void AFRenderStates::Create(const char* shaderName, int numInputElements, const InputElement* inputElements, BlendMode blendMode_, DepthStencilMode depthStencilMode_, CullMode cullMode_, int numSamplerTypes_, const SamplerType samplerTypes_[], PrimitiveTopology primitiveTopology_)
+void AFRenderStates::Create(const char* shaderName, int numInputElements, const InputElement* inputElements, uint32_t flags_, int numSamplerTypes_, const SamplerType samplerTypes_[])
 {
 	shaderId = shaderMan.Create(shaderName, inputElements, numInputElements);
 	elements = inputElements;
 	numElements = numInputElements;
-	blendMode = blendMode_;
-	depthStencilMode = depthStencilMode_;
-	cullMode = cullMode_;
-	primitiveTopology = primitiveTopology_;
+	flags = flags_;
 	numSamplerTypes = numSamplerTypes_;
 	samplerTypes = samplerTypes_;
+}
+
+static PrimitiveTopology RenderFlagsToPrimitiveTopology(uint32_t flags)
+{
+	if (flags & AFRS_PRIMITIVE_TRIANGLELIST)
+	{
+		return PT_TRIANGLELIST;
+	}
+	else if (flags & AFRS_PRIMITIVE_LINELIST)
+	{
+		return PT_LINELIST;
+	}
+	return PT_TRIANGLESTRIP;
 }
 
 void AFRenderStates::Apply() const
 {
 	shaderMan.Apply(shaderId);
-	s_primitiveTopology = primitiveTopology;
 	s_elements = elements;
 	s_numElements = numElements;
-	afBlendMode(blendMode);
-	afDepthStencilMode(depthStencilMode);
-	afCullMode(cullMode);
+	s_primitiveTopology = RenderFlagsToPrimitiveTopology(flags);
+	afBlendMode(flags);
+	afDepthStencilMode(flags);
+	afCullMode(flags);
 	for (int i = 0; i < numSamplerTypes; i++) {
 		afSetSampler(samplerTypes[i], i);
 	}

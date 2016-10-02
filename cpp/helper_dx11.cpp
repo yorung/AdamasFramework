@@ -167,31 +167,32 @@ void afDraw(int numVertices, int start, int instanceCount)
 	deviceMan11.GetContext()->DrawInstanced(numVertices, instanceCount, start, 0);
 }
 
-void afCullMode(CullMode cullMode)
+void afCullMode(uint32_t flags)
 {
 	ID3D11RasterizerState* rs;
 	CD3D11_RASTERIZER_DESC rasterDesc(D3D11_DEFAULT);
-	switch (cullMode) {
-	case CM_DISABLE:
-		rasterDesc.CullMode = D3D11_CULL_NONE;
-		break;
-	case CM_CCW:
+	if (flags & AFRS_CULL_CCW)
+	{
 		rasterDesc.CullMode = D3D11_CULL_BACK;
 		rasterDesc.FrontCounterClockwise = TRUE;
-		break;
-	case CM_CW:
+	}
+	else if (flags & AFRS_CULL_CW)
+	{
 		rasterDesc.CullMode = D3D11_CULL_BACK;
 		rasterDesc.FrontCounterClockwise = FALSE;
-		break;
+	}
+	else
+	{
+		rasterDesc.CullMode = D3D11_CULL_NONE;
 	}
 	deviceMan11.GetDevice()->CreateRasterizerState(&rasterDesc, &rs);
 	deviceMan11.GetContext()->RSSetState(rs);
 	SAFE_RELEASE(rs);
 }
 
-void afBlendMode(BlendMode mode)
+void afBlendMode(uint32_t flags)
 {
-	if (mode == BM_NONE) {
+	if (!(flags & AFRS_ALPHA_BLEND)) {
 		deviceMan11.GetContext()->OMSetBlendState(nullptr, nullptr, 0xffffffff);
 		return;
 	}
@@ -212,20 +213,22 @@ void afBlendMode(BlendMode mode)
 	SAFE_RELEASE(bs);
 }
 
-void afDepthStencilMode(DepthStencilMode mode)
+void afDepthStencilMode(uint32_t flags)
 {
 	ComPtr<ID3D11DepthStencilState> ds;
 	D3D11_DEPTH_STENCIL_DESC desc = CD3D11_DEPTH_STENCIL_DESC(CD3D11_DEFAULT());
-	switch(mode) {
-	case DSM_DISABLE:
-		desc.DepthEnable = FALSE;
-		break;
-	case DSM_DEPTH_ENABLE:
-		break;	// same as default
-	case DSM_DEPTH_CLOSEREQUAL_READONLY:
+	if (flags & AFRS_DEPTH_ENABLE)
+	{
+		// same as default
+	}
+	else if (flags & AFRS_DEPTH_CLOSEREQUAL_READONLY)
+	{
 		desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
 		desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
-		break;
+	}
+	else
+	{
+		desc.DepthEnable = FALSE;
 	}
 	deviceMan11.GetDevice()->CreateDepthStencilState(&desc, &ds);
 	deviceMan11.GetContext()->OMSetDepthStencilState(ds.Get(), 1);
@@ -302,24 +305,21 @@ void AFRenderTarget::BeginRenderToThis()
 	deviceMan11.GetContext()->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }
 
-void AFRenderStates::Create(const char* shaderName, int numInputElements, const InputElement* inputElements, BlendMode blendMode_, DepthStencilMode depthStencilMode_, CullMode cullMode_, int numSamplerTypes_, const SamplerType samplerTypes_[], PrimitiveTopology primitiveTopology_)
+void AFRenderStates::Create(const char* shaderName, int numInputElements, const InputElement* inputElements, uint32_t flags_, int numSamplerTypes_, const SamplerType samplerTypes_[])
 {
 	shaderId = shaderMan.Create(shaderName, inputElements, numInputElements);
-	blendMode = blendMode_;
-	depthStencilMode = depthStencilMode_;
-	cullMode = cullMode_;
-	primitiveTopology = primitiveTopology_;
 	numSamplerTypes = numSamplerTypes_;
 	samplerTypes = samplerTypes_;
+	flags = flags_;
 }
 
 void AFRenderStates::Apply() const
 {
 	shaderMan.Apply(shaderId);
-	deviceMan11.GetContext()->IASetPrimitiveTopology(primitiveTopology);
-	afBlendMode(blendMode);
-	afDepthStencilMode(depthStencilMode);
-	afCullMode(cullMode);
+	deviceMan11.GetContext()->IASetPrimitiveTopology(RenderFlagsToPrimitiveTopology(flags));
+	afBlendMode(flags);
+	afDepthStencilMode(flags);
+	afCullMode(flags);
 	for (int i = 0; i < numSamplerTypes; i++) {
 		afSetSampler(samplerTypes[i], i);
 	}

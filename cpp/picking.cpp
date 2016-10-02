@@ -49,7 +49,7 @@ Picking::Picking()
 	vbo2d = afCreateDynamicVertexBuffer(sizeof(Vertex) * 3);
 	int strides = sizeof(Vertex);
 	vbo3d = afCreateDynamicVertexBuffer(sizeof(Vertex) * 3);
-	renderStates.Create("solid", arrayparam(elements), BM_NONE, DSM_DEPTH_ENABLE, CM_DISABLE);
+	renderStates.Create("solid", arrayparam(elements), AFRS_DEPTH_ENABLE);
 	Update();
 }
 
