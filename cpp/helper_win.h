@@ -27,7 +27,7 @@ typedef DXGI_FORMAT AFFormat;
 #define AFF_R8G8B8A8_UNORM DXGI_FORMAT_R8G8B8A8_UNORM
 #define AFF_R32_UINT DXGI_FORMAT_R32_UINT
 #define AFF_R8G8B8A8_UINT DXGI_FORMAT_R8G8B8A8_UINT
-#endif
 
 void ShowLastWinAPIError();
 bool ProcessWindowMessage(HWND hWnd, HACCEL hAccelTable);
+#endif
