@@ -52,7 +52,7 @@ bool FontMan::Init()
 	texture = afCreateDynamicTexture(AFF_R8G8B8A8_UNORM, IVec2(TEX_W, TEX_H));
 	afSetTextureName(texture, __FUNCTION__);
 	renderStates.Create("font", arrayparam(elements), BM_ALPHA, DSM_DISABLE, CM_DISABLE, arrayparam(samplers), PT_TRIANGLELIST);
-	quadListVertexBuffer.Create(arrayparam(elements), sizeof(FontVertex), SPRITE_MAX);
+	quadListVertexBuffer.Create(sizeof(FontVertex), SPRITE_MAX);
 	return true;
 }
 

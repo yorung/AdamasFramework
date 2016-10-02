@@ -31,7 +31,7 @@ void SpriteRenderer::Init()
 	};
 	const static SamplerType samplers[] = { AFST_LINEAR_CLAMP };
 	renderStates.Create("sprite", arrayparam(layout), BM_ALPHA, DSM_DISABLE, CM_DISABLE, arrayparam(samplers), PT_TRIANGLELIST);
-	quadListVertexBuffer.Create(arrayparam(layout), sizeof(SpriteVertex), MAX_SPRITES_IN_ONE_DRAW_CALL);
+	quadListVertexBuffer.Create(sizeof(SpriteVertex), MAX_SPRITES_IN_ONE_DRAW_CALL);
 }
 
 static void StoreVertices(SpriteVertex v[4], float width, float height, uint32_t color, float uLeft, float vTop, float uRight, float vBottom, const Mat& matW)

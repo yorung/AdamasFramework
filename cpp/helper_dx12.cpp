@@ -378,7 +378,7 @@ void afSetVertexBufferFromSystemMemory(const void* buf, int size, int stride)
 	deviceMan.AddIntermediateCommandlistDependentResource(vbo);
 }
 
-void AFDynamicQuadListVertexBuffer::Create(int, const InputElement*, int vertexSize_, int nQuad)
+void AFDynamicQuadListVertexBuffer::Create(int vertexSize_, int nQuad)
 {
 	Destroy();
 	stride = vertexSize_;
