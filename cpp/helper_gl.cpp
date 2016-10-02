@@ -1,6 +1,8 @@
 #include "stdafx.h"
 
 static PrimitiveTopology s_primitiveTopology = PT_TRIANGLESTRIP;
+static const InputElement* s_elements;
+static int s_numElements;
 
 IBOID afCreateIndexBuffer(const AFIndex* indi, int numIndi)
 {
@@ -308,6 +310,16 @@ void afSetVertexAttributes(const InputElement elements[], int numElements, int n
 	afHandleGLError(glBindBuffer(GL_ARRAY_BUFFER, 0));
 }
 
+void afSetVertexBuffer(VBOID id, int stride)
+{
+	afSetVertexAttributes(s_elements, s_numElements, 1, &id, &stride);
+}
+
+void afSetIndexBuffer(IBOID indexBuffer)
+{
+	afHandleGLError(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer));
+}
+
 #ifdef AF_GLES31
 VAOID afCreateVAO(const InputElement elements[], int numElements, int numBuffers, VBOID const vertexBufferIds[], const int strides[], IBOID ibo)
 {
@@ -544,6 +556,8 @@ void afClear()
 void AFRenderStates::Create(const char* shaderName, int numInputElements, const InputElement* inputElements, BlendMode blendMode_, DepthStencilMode depthStencilMode_, CullMode cullMode_, int numSamplerTypes_, const SamplerType samplerTypes_[], PrimitiveTopology primitiveTopology_)
 {
 	shaderId = shaderMan.Create(shaderName, inputElements, numInputElements);
+	elements = inputElements;
+	numElements = numInputElements;
 	blendMode = blendMode_;
 	depthStencilMode = depthStencilMode_;
 	cullMode = cullMode_;
@@ -556,6 +570,8 @@ void AFRenderStates::Apply() const
 {
 	shaderMan.Apply(shaderId);
 	s_primitiveTopology = primitiveTopology;
+	s_elements = elements;
+	s_numElements = numElements;
 	afBlendMode(blendMode);
 	afDepthStencilMode(depthStencilMode);
 	afCullMode(cullMode);

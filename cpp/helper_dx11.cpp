@@ -5,6 +5,19 @@
 #include <D3DCommon.h>
 #pragma comment(lib, "dxguid.lib")
 
+void afSetVertexBuffer(VBOID vertexBuffer, int stride_)
+{
+	ID3D11Buffer* d11Bufs[] = { vertexBuffer.Get() };
+	UINT stride = (UINT)stride_;
+	UINT offset = 0;
+	deviceMan11.GetContext()->IASetVertexBuffers(0, arrayparam(d11Bufs), &stride, &offset);
+}
+
+void afSetIndexBuffer(IBOID indexBuffer)
+{
+	deviceMan11.GetContext()->IASetIndexBuffer(indexBuffer.Get(), AFIndexTypeToDevice, 0);
+}
+
 IBOID afCreateIndexBuffer(const AFIndex* indi, int numIndi)
 {
 	IBOID indexBuffer;
@@ -240,21 +253,6 @@ void afSetTextureName(SRVID tex, const char* name)
 	if (res)
 	{
 		res->SetPrivateData(WKPDID_D3DDebugObjectName, strlen(name), name);
-	}
-}
-
-VAOID afCreateVAO(const InputElement elements[], int numElements, int numBuffers, VBOID const vertexBufferIds[], const int strides[], IBOID ibo)
-{
-	(void)elements;
-	(void)numElements;
-	VAOID p(new FakeVAO(numBuffers, vertexBufferIds, strides, nullptr, ibo));
-	return p;
-}
-
-void afBindVAO(const VAOID& vao)
-{
-	if (vao) {
-		vao->Apply();
 	}
 }
 

@@ -29,7 +29,6 @@ void RenderMesh::Destroy()
 {
 	afSafeDeleteBuffer(ibo);
 	afSafeDeleteBuffer(vbo);
-	afSafeDeleteVAO(vao);
 }
 
 void RenderMesh::Init(const Block& block)
@@ -51,11 +50,6 @@ void RenderMesh::Init(const Block& block)
 	materialMaps = block.materialMaps;
 	VBOID verts[] = { vbo };
 	int strides[] = { sizeof(MeshVertex) };
-	vao = afCreateVAO(elements, dimof(elements), dimof(verts), verts, strides, ibo);
-#ifdef GL_TRUE
-	aflog("RenderMesh::Init created vao=%d\n", vao.x);
-#endif
-	assert(vao);
 }
 
 MeshRenderer::~MeshRenderer()
@@ -168,8 +162,8 @@ void MeshRenderer::Flush()
 	RenderMesh* r = GetMeshByMRID(c.meshId);
 	assert(r);
 
-	assert(r->vao);
-	afBindVAO(r->vao);
+	afSetIndexBuffer(r->ibo);
+	afSetVertexBuffer(r->vbo, sizeof(MeshVertex));
 	for (auto it : r->materialMaps) {
 		const Material* mat = meshRenderer.GetMaterial(it.materialId);
 		assert(mat);
@@ -178,7 +172,6 @@ void MeshRenderer::Flush()
 		int start = it.faceStartIndex * 3;
 		afDrawIndexed(count, start, nStoredCommands);
 	}
-	afBindVAO(0);
 
 	renderBoneMatrices.clear();
 	nStoredCommands = 0;

@@ -85,25 +85,4 @@ void ShaderMan11::Apply(SMID id)
 	}
 }
 
-FakeVAO::FakeVAO(int numBuffers, const VBOID vbos_[], const int strides_[], const UINT offsets_[], IBOID ibo_)
-{
-	ibo = ibo_;
-	vbos.resize(numBuffers);
-	d3dBuffers.resize(numBuffers);
-	strides.resize(numBuffers);
-	offsets.resize(numBuffers);
-	for (int i = 0; i < numBuffers; i++) {
-		vbos[i] = vbos_[i];
-		d3dBuffers[i] = vbos[i].Get();
-		strides[i] = (UINT)strides_[i];
-		offsets[i] = offsets_ ? offsets_[i] : 0;
-	}
-}
-
-void FakeVAO::Apply()
-{
-	deviceMan11.GetContext()->IASetVertexBuffers(0, vbos.size(), &d3dBuffers[0], &strides[0], &offsets[0]);
-	deviceMan11.GetContext()->IASetIndexBuffer(ibo.Get(), AFIndexTypeToDevice, 0);
-}
-
 #endif

@@ -37,7 +37,6 @@ class WaterSurfaceES2
 	double nextTime;
 	VBOID vbo, vboFullScr;
 	IBOID ibo, iboFullScr;
-	VAOID vao, vaoFullScr;
 	int nIndi;
 	std::vector<SRVID> texIds;
 public:
@@ -189,8 +188,6 @@ void WaterSurfaceES2::Destroy()
 	afSafeDeleteBuffer(ibo);
 	afSafeDeleteBuffer(vboFullScr);
 	afSafeDeleteBuffer(iboFullScr);
-	afSafeDeleteVAO(vao);
-	afSafeDeleteVAO(vaoFullScr);
 	for (auto& it : texIds) {
 		afSafeDeleteTexture(it);
 	}
@@ -261,14 +258,6 @@ void WaterSurfaceES2::Init()
 	for (int i = 0; i < (int)dimof(texFiles); i++) {
 		texIds[i] = texMan.Create(texFiles[i].name);
 	}
-
-	VBOID vertexBufferIds[] = { vbo };
-	int strides[] = { sizeof(WaterVert) };
-	vao = afCreateVAO(elements, dimof(elements), 1, vertexBufferIds, strides, ibo);
-
-	VBOID vertexBufferIdsFullScr[] = { vboFullScr };
-	int stridesFullScr[] = { sizeof(Vec2) };
-	vaoFullScr = afCreateVAO(elementsFullScr, dimof(elementsFullScr), 1, vertexBufferIdsFullScr, stridesFullScr, iboFullScr);
 }
 
 void WaterSurfaceES2::UpdateRipple()
@@ -332,9 +321,12 @@ void WaterSurfaceES2::Draw()
 	token.Create(&uboBuf, sizeof(uboBuf));
 	afBindCbvs(&token, 1, 6);
 
-	afBindVAO(vao);
+	VBOID vertexBufferIdsFullScr[] = { vboFullScr };
+	int stridesFullScr[] = { sizeof(Vec2) };
+
+	afSetVertexBuffer(vbo, sizeof(WaterVert));
+	afSetIndexBuffer(ibo);
 	afDrawIndexed(nIndi);
-	afBindVAO(0);
 
 	AFRenderTarget rtDefault;
 	rtDefault.InitForDefaultRenderTarget();
@@ -343,11 +335,11 @@ void WaterSurfaceES2::Draw()
 	renderStatePostProcess.Apply();
 	afBindTextureToBindingPoint(rtWater.GetTexture(), 0);
 #ifndef AF_DX12
-	afBindVAO(vaoFullScr);
+	afSetVertexBuffer(vboFullScr, sizeof(Vec2));
+	afSetIndexBuffer(iboFullScr);
 	afDrawIndexed(4);
 #else
 	afDraw(4);
 #endif
-	afBindVAO(0);
 }
 

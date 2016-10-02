@@ -1,7 +1,6 @@
 class StockObjects {
 	VBOID vboFullScr;
 	IBOID iboFullScr;
-	VAOID vaoFullScr;
 #ifndef AF_DX12
 	SAMPLERID builtInSamplers[AFST_MAX];
 #endif
@@ -9,7 +8,7 @@ class StockObjects {
 public:
 	void Init();
 	void Destroy();
-	void ApplyFullScreenVAO() const;
+	void ApplyFullScreenVertexBuffer() const;
 	const InputElement* GetFullScreenInputElements(int& numElements) const;
 #ifndef AF_DX12
 	SAMPLERID GetBuiltInSampler(SamplerType samplerType) { return builtInSamplers[samplerType]; }

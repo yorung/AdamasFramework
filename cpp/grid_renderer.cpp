@@ -4,7 +4,6 @@ class GridRenderer
 {
 	VBOID vbo;
 	IBOID ibo;
-	VAOID vao;
 	AFRenderStates renderStates;
 	int lines;
 	int numGrid;
@@ -54,11 +53,9 @@ GridRenderer::~GridRenderer()
 	renderStates.Destroy();
 	afSafeDeleteBuffer(ibo);
 	afSafeDeleteBuffer(vbo);
-	afSafeDeleteVAO(vao);
 
 	assert(!vbo);
 	assert(!ibo);
-	assert(!vao);
 }
 
 GridRenderer::GridRenderer(int numGrid_, float pitch_)
@@ -95,10 +92,6 @@ GridRenderer::GridRenderer(int numGrid_, float pitch_)
 
 	vbo = afCreateVertexBuffer(sizeVertices, &vert[0]);
 	ibo = afCreateIndexBuffer(&indi[0], indi.size());
-
-	int strides[] = {sizeof(GridVert)};
-	VBOID vbos[] = {vbo};
-	vao = afCreateVAO(layout, dimof(layout), 1, vbos, strides, ibo);
 }
 
 void GridRenderer::Draw()
@@ -111,9 +104,10 @@ void GridRenderer::Draw()
 	AFCbvBindToken token;
 	token.Create(&matVP, sizeof(Mat));
 	afBindCbvs(&token, 1);
-	afBindVAO(vao);
+	afSetVertexBuffer(vbo, sizeof(GridVert));
+	afSetIndexBuffer(ibo);
 	afDraw(lines * 2);
-	afBindVAO(0);
+
 #ifndef NDEBUG
 	Vec2 v;
 	if (GetMousePosInGrid(v)) {

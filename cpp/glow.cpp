@@ -40,7 +40,7 @@ void Glow::Destroy()
 void Glow::MakeGlow(AFRenderTarget& target, SRVID srcTex)
 {
 	LazyInit();
-	stockObjects.ApplyFullScreenVAO();
+	stockObjects.ApplyFullScreenVertexBuffer();
 	renderStateGlowExtraction.Apply();
 	glowMap[0].BeginRenderToThis();
 	afBindTextureToBindingPoint(srcTex, 0);
@@ -60,5 +60,4 @@ void Glow::MakeGlow(AFRenderTarget& target, SRVID srcTex)
 	}
 	afBindTextureToBindingPoint(srcTex, 6);
 	afDraw(4);
-	afBindVAO(0);
 }

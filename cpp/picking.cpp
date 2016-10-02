@@ -12,7 +12,6 @@ struct Vertex {
 
 class Picking {
 	VBOID vbo2d, vbo3d;
-	VAOID vao2d, vao3d;
 	AFRenderStates renderStates;
 public:
 	Picking();
@@ -49,19 +48,13 @@ Picking::Picking()
 {
 	vbo2d = afCreateDynamicVertexBuffer(sizeof(Vertex) * 3);
 	int strides = sizeof(Vertex);
-	VBOID vboIds2d[] = { vbo2d };
-	vao2d = afCreateVAO(elements, dimof(elements), 1, vboIds2d, &strides, IBOID());
 	vbo3d = afCreateDynamicVertexBuffer(sizeof(Vertex) * 3);
-	VBOID vboIds3d[] = { vbo3d };
-	vao3d = afCreateVAO(elements, dimof(elements), 1, vboIds3d, &strides, IBOID());
 	renderStates.Create("solid", arrayparam(elements), BM_NONE, DSM_DEPTH_ENABLE, CM_DISABLE);
 	Update();
 }
 
 Picking::~Picking()
 {
-	afSafeDeleteVAO(vao2d);
-	afSafeDeleteVAO(vao3d);
 	afSafeDeleteBuffer(vbo2d);
 	afSafeDeleteBuffer(vbo3d);
 }
@@ -152,7 +145,7 @@ void Picking::Update()
 void Picking::Draw3D()
 {
 	renderStates.Apply();
-	afBindVAO(vao3d);
+	afSetVertexBuffer(vbo3d, sizeof(Vertex));
 	Mat mView, mProj;
 	matrixMan.Get(MatrixMan::VIEW, mView);
 	matrixMan.Get(MatrixMan::PROJ, mProj);
@@ -161,17 +154,15 @@ void Picking::Draw3D()
 	token.Create(&mVP, sizeof(Mat));
 	afBindCbvs(&token, 1);
 	afDraw(3);
-	afBindVAO(0);
 }
 
 void Picking::Draw2D()
 {
 	renderStates.Apply();
-	afBindVAO(vao2d);
+	afSetVertexBuffer(vbo2d, sizeof(Vertex));
 	Mat matIdentity;
 	AFCbvBindToken token;
 	token.Create(&matIdentity, sizeof(Mat));
 	afBindCbvs(&token, 1);
 	afDraw(3);
-	afBindVAO(0);
 }

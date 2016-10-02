@@ -436,27 +436,6 @@ void AFRenderTarget::BeginRenderToThis()
 	commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 }
 
-FakeVAO::FakeVAO(int numBuffers, VBOID const vbos_[], const int strides_[], const UINT offsets_[], IBOID ibo_)
-{
-	ibo = ibo_;
-	vbos.resize(numBuffers);
-	strides.resize(numBuffers);
-	offsets.resize(numBuffers);
-	for (int i = 0; i < numBuffers; i++) {
-		vbos[i] = vbos_[i];
-		strides[i] = (UINT)strides_[i];
-		offsets[i] = offsets_ ? offsets_[i] : 0;
-	}
-}
-
-void FakeVAO::Apply()
-{
-	afSetVertexBuffers((int)vbos.size(), vbos.data(), strides.data());
-	if (ibo) {
-		afSetIndexBuffer(ibo);
-	}
-}
-
 void afBindCbvs(AFCbvBindToken cbvs[], int nCbvs, int startBindingPoint)
 {
 	for (int i = 0; i < nCbvs; i++)
@@ -486,21 +465,6 @@ void afBindBufferToBindingPoint(const void* buf, int size, int rootParameterInde
 void afBindBufferToBindingPoint(UBOID ubo, int rootParameterIndex)
 {
 	deviceMan.GetCommandList()->SetGraphicsRootConstantBufferView(rootParameterIndex, ubo->GetGPUVirtualAddress());
-}
-
-VAOID afCreateVAO(const InputElement elements[], int numElements, int numBuffers, VBOID const vertexBufferIds[], const int strides[], IBOID ibo)
-{
-	(void)elements;
-	(void)numElements;
-	VAOID p(new FakeVAO(numBuffers, vertexBufferIds, strides, nullptr, ibo));
-	return p;
-}
-
-void afBindVAO(const VAOID& vao)
-{
-	if (vao) {
-		vao->Apply();
-	}
 }
 
 #endif

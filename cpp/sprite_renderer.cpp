@@ -93,5 +93,4 @@ void SpriteRenderer::Draw(const SpriteCommands& sprites)
 		);
 	}
 	flush();
-	afBindVAO(0);
 }

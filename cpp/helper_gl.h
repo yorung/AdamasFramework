@@ -81,7 +81,8 @@ typedef AFGLName SAMPLERID;
 typedef AFGLName SRVID;
 
 void afSetVertexAttributes(const InputElement elements[], int numElements, int numBuffers, VBOID const vertexBufferIds[], const int strides[]);
-
+void afSetVertexBuffer(VBOID id, int stride);
+void afSetIndexBuffer(IBOID indexBuffer);
 
 template <class BufName>
 void afWriteBuffer(BufName bufName, const void* buf, int size)
@@ -224,6 +225,8 @@ class AFRenderStates {
 	int numSamplerTypes = 0;
 	const SamplerType* samplerTypes = nullptr;
 	ShaderMan::SMID shaderId = ShaderMan::INVALID_SMID;
+	const InputElement* elements;
+	int numElements;
 public:
 	ShaderMan::SMID GetShaderId() { return shaderId; }
 	bool IsReady() { return shaderId != ShaderMan::INVALID_SMID; }
@@ -232,10 +235,10 @@ public:
 	void Destroy() { shaderId = ShaderMan::INVALID_SMID; }
 };
 
-class AFDynamicQuadListVertexBuffer {
+class AFDynamicQuadListVertexBuffer
+{
 	IBOID ibo;
 	VBOID vbo;
-	VAOID vao;
 	int nQuad;
 	int vertexSize;
 	int vertexBufferSize;
@@ -249,12 +252,11 @@ public:
 		vertexBufferSize = nQuad * vertexSize * 4;
 		ibo = afCreateQuadListIndexBuffer(nQuad);
 		vbo = afCreateDynamicVertexBuffer(vertexBufferSize);
-		VBOID vboIds[] = { vbo };
-		vao = afCreateVAO(elements, numElements, 1, vboIds, &vertexSize_, ibo);
 	}
 	void Apply()
 	{
-		afBindVAO(vao);
+		afSetVertexBuffer(vbo, vertexSize);
+		afSetIndexBuffer(ibo);
 	}
 	void Write(const void* buf, int size)
 	{
@@ -265,7 +267,6 @@ public:
 	{
 		afSafeDeleteBuffer(ibo);
 		afSafeDeleteBuffer(vbo);
-		afSafeDeleteVAO(vao);
 	}
 };
 

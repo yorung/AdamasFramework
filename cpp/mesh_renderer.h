@@ -35,7 +35,6 @@ struct RenderCommand
 class RenderMesh
 {
 public:
-	VAOID vao;
 	VBOID vbo;
 	IBOID ibo;
 	std::vector<MaterialMap> materialMaps;

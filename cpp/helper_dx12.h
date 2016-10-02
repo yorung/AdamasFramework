@@ -138,22 +138,6 @@ public:
 	ComPtr<ID3D12Resource> GetTexture() { return renderTarget; }
 };
 
-class FakeVAO
-{
-	std::vector<VBOID> vbos;
-	std::vector<UINT> offsets;
-	std::vector<int> strides;
-	ComPtr<ID3D12Resource> ibo;
-public:
-	FakeVAO(int numBuffers, VBOID const buffers[], const int strides[], const UINT offsets[], IBOID ibo);
-	void Apply();
-};
-
-typedef std::unique_ptr<FakeVAO> VAOID;
-VAOID afCreateVAO(const InputElement elements[], int numElements, int numBuffers, VBOID const vertexBufferIds[], const int strides[], IBOID ibo);
-void afBindVAO(const VAOID& vao);
-inline void afSafeDeleteVAO(VAOID& p) { p.reset(); }
-
 void afBindBufferToBindingPoint(const void* buf, int size, int rootParameterIndex);
 void afBindBufferToBindingPoint(UBOID ubo, int rootParameterIndex);
 void afBindTextureToBindingPoint(SRVID srv, int rootParameterIndex);
