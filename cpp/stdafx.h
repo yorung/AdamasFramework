@@ -53,7 +53,10 @@ static const int BONE_MAX = 50;
 #include "system_misc.h"
 #include "helper.h"
 #include "helper_text.h"
+
+#ifdef _MSC_VER
 #include "helper_win.h"
+#endif
 
 #ifdef AF_GLES31
 #include "shader_man_gl.h"
