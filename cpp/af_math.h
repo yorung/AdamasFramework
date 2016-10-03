@@ -467,21 +467,7 @@ inline Mat fastInv(const Mat& mtx)
 	return r;
 }
 
-inline Mat perspectiveLH(affloat fov, affloat aspect, affloat n, affloat f)
-{
-	affloat cotHalfFov = 1 / std::tan(fov * 0.5f);
-	Mat proj = Mat(cotHalfFov / aspect, 0, 0, 0, 0, cotHalfFov, 0, 0,
-#ifdef GL_TRUE
-		0, 0, -(f + n) / (f - n), 1,
-		0, 0, (n * f) * 2 / (f - n), 0);
-#else
-		0, 0, f / (f - n), 1,
-		0, 0, -(n * f) / (f - n), 0);
-#endif
-	return proj;
-}
-
-#ifdef GL_TRUE
+#if GL_TRUE
 static const affloat NDC_SPACE_NEAR = 1;
 static const affloat NDC_SPACE_FAR = -1;
 #else
@@ -489,32 +475,40 @@ static const affloat NDC_SPACE_NEAR = 0;
 static const affloat NDC_SPACE_FAR = 1;
 #endif
 
+inline Mat perspectiveLH(affloat fov, affloat aspect, affloat n, affloat f)
+{
+	affloat cotHalfFov = 1 / std::tan(fov * 0.5f);
+#if VK_TRUE
+	Mat proj = Mat(cotHalfFov / aspect, 0, 0, 0, 0, -cotHalfFov, 0, 0, 0, 0, f / (f - n), 1, 0, 0, -(n * f) / (f - n), 0);
+#elif GL_TRUE
+	Mat proj = Mat(cotHalfFov / aspect, 0, 0, 0, 0, cotHalfFov, 0, 0, 0, 0, -(f + n) / (f - n), 1, 0, 0, (n * f) * 2 / (f - n), 0);
+#else
+	Mat proj = Mat(cotHalfFov / aspect, 0, 0, 0, 0, cotHalfFov, 0, 0, 0, 0, f / (f - n), 1, 0, 0, -(n * f) / (f - n), 0);
+#endif
+	return proj;
+}
+
 inline Mat perspectiveRH(affloat fov, affloat aspect, affloat n, affloat f)
 {
 	affloat cotHalfFov = 1 / std::tan(fov * 0.5f);
-	Mat proj = Mat(cotHalfFov / aspect, 0, 0, 0, 0, cotHalfFov, 0, 0,
-#ifdef GL_TRUE
-		0, 0, -(f + n) / (f - n), -1,
-		0, 0, -(n * f) * 2 / (f - n), 0);
+#if VK_TRUE
+	Mat proj = Mat(cotHalfFov / aspect, 0, 0, 0, 0, -cotHalfFov, 0, 0, 0, 0, f / (f - n), -1, 0, 0, (n * f) / (f - n), 0);
+#elif GL_TRUE
+	Mat proj = Mat(cotHalfFov / aspect, 0, 0, 0, 0, cotHalfFov, 0, 0, 0, 0, -(f + n) / (f - n), -1, 0, 0, -(n * f) * 2 / (f - n), 0);
 #else
-		0, 0, f / (f - n), -1,
-		0, 0, (n * f) / (f - n), 0);
+	Mat proj = Mat(cotHalfFov / aspect, 0, 0, 0, 0, cotHalfFov, 0, 0, 0, 0, f / (f - n), -1, 0, 0, (n * f) / (f - n), 0);
 #endif
 	return proj;
 }
 
 inline Mat ortho(affloat left, affloat right, affloat bottom, affloat top, affloat n, affloat f)
 {
-#ifdef GL_TRUE
-	Mat proj = Mat(2 / (right - left), 0, 0, 0,
-		0, 2 / (top - bottom), 0, 0,
-		0, 0, -2 / (f - n), 0,
-		(left + right) / (left - right), (bottom + top) / (bottom - top), (n + f) / (n - f), 1);
+#if VK_TRUE
+	Mat proj = Mat(2 / (right - left), 0, 0, 0, 0, -2 / (top - bottom), 0, 0, 0, 0, 1 / (f - n), 0, (left + right) / (left - right), (bottom + top) / (bottom - top), n / (n - f), 1);
+#elif GL_TRUE
+	Mat proj = Mat(2 / (right - left), 0, 0, 0, 0, 2 / (top - bottom), 0, 0, 0, 0, -2 / (f - n), 0, (left + right) / (left - right), (bottom + top) / (bottom - top), (n + f) / (n - f), 1);
 #else
-	Mat proj = Mat(2 / (right - left), 0, 0, 0,
-		0, 2 / (top - bottom), 0, 0,
-		0, 0, 1 / (f - n), 0,
-		(left + right) / (left - right), (bottom + top) / (bottom - top), n / (n - f), 1);
+	Mat proj = Mat(2 / (right - left), 0, 0, 0, 0, 2 / (top - bottom), 0, 0, 0, 0, 1 / (f - n), 0, (left + right) / (left - right), (bottom + top) / (bottom - top), n / (n - f), 1);
 #endif
 	return proj;
 }
