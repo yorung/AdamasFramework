@@ -504,7 +504,7 @@ inline Mat perspectiveRH(affloat fov, affloat aspect, affloat n, affloat f)
 inline Mat ortho(affloat left, affloat right, affloat bottom, affloat top, affloat n, affloat f)
 {
 #if VK_TRUE
-	Mat proj = Mat(2 / (right - left), 0, 0, 0, 0, -2 / (top - bottom), 0, 0, 0, 0, 1 / (f - n), 0, (left + right) / (left - right), (bottom + top) / (bottom - top), n / (n - f), 1);
+	Mat proj = Mat(2 / (right - left), 0, 0, 0, 0, 2 / (bottom - top), 0, 0, 0, 0, 1 / (f - n), 0, (left + right) / (left - right), (bottom + top) / (top - bottom), n / (n - f), 1);
 #elif GL_TRUE
 	Mat proj = Mat(2 / (right - left), 0, 0, 0, 0, 2 / (top - bottom), 0, 0, 0, 0, -2 / (f - n), 0, (left + right) / (left - right), (bottom + top) / (bottom - top), (n + f) / (n - f), 1);
 #else
