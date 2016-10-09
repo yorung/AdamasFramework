@@ -660,9 +660,9 @@ void AFRenderStates::Create(const char* shaderName, int numInputElements, const 
 		const VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = { VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO, nullptr, 0, 1, &deviceMan.commonUboDescriptorSetLayout };
 		afHandleVKError(vkCreatePipelineLayout(device, &pipelineLayoutCreateInfo, nullptr, &pipelineLayout));
 	}
-	else if (!strcmp(shaderName, "sky_photosphere") || !strcmp(shaderName, "sky_cubemap"))
+	else if (!strcmp(shaderName, "sky_photosphere") || !strcmp(shaderName, "sky_cubemap") || !strcmp(shaderName, "sprite"))
 	{
-		VkDescriptorSetLayout layouts[] = { deviceMan.commonUboDescriptorSetLayout, deviceMan.commonTextureDescriptorSetLayout };
+		VkDescriptorSetLayout layouts[] = { deviceMan.commonTextureDescriptorSetLayout, deviceMan.commonUboDescriptorSetLayout };
 		const VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = { VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO, nullptr, 0, arrayparam(layouts) };
 		afHandleVKError(vkCreatePipelineLayout(device, &pipelineLayoutCreateInfo, nullptr, &pipelineLayout));
 	}
