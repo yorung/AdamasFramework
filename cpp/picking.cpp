@@ -110,17 +110,21 @@ void Picking::Update()
 	Vec2 scrPos = systemMisc.GetScreenSize();
 	Vec2 curPos = systemMisc.GetMousePos();
 
-	Vec2 curPosInNDC = curPos / scrPos * Vec2(2, -2) + Vec2(-1, 1);
+	Vec2 curPosIn2D = curPos / scrPos * Vec2(2, -2) + Vec2(-1, 1);
 
 	// test
-	Mat vp = makeViewportMatrix(scrPos);
-	Vec3 transformed = transform(Vec3(curPos.x, curPos.y, 1), inv(vp));
-	assert(std::abs(transformed.x - curPosInNDC.x) < 0.001f);
-	assert(std::abs(transformed.y - curPosInNDC.y) < 0.001f);
+	Mat proj2d;
+#ifdef AF_VULKAN
+	proj2d._22 = -1;
+#endif
+	Mat projVp = proj2d * makeViewportMatrix(scrPos);
+	Vec3 transformed = transform(Vec3(curPos.x, curPos.y, 1), inv(projVp));
+	assert(std::abs(transformed.x - curPosIn2D.x) < 0.001f);
+	assert(std::abs(transformed.y - curPosIn2D.y) < 0.001f);
 
 	for (int i = 0; i < 3; i++) {
 		Vec3 dir = v[(i + 1) % 3].pos - v[i].pos;
-		Vec3 cursorDir = Vec3(curPosInNDC.x, curPosInNDC.y, 0) - v[i].pos;
+		Vec3 cursorDir = Vec3(curPosIn2D.x, curPosIn2D.y, 0) - v[i].pos;
 		if (cross(dir, cursorDir).z > 0) {
 			hit = false;
 		}
@@ -167,7 +171,10 @@ void Picking::Draw2D()
 {
 	renderStates.Apply();
 	afSetVertexBuffer(vbo2d, sizeof(Vertex));
-	Mat matIdentity;
-	afBindBuffer(sizeof(Mat), &matIdentity, 0);
+	Mat proj2d;
+#ifdef AF_VULKAN
+	proj2d._22 = -1;
+#endif
+	afBindBuffer(sizeof(Mat), &proj2d, 0);
 	afDraw(3);
 }

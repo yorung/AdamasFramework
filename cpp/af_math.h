@@ -534,7 +534,11 @@ inline Mat makeViewportMatrix(const Vec2& screenSize)
 	Mat vp;
 	Vec2 sz = screenSize / 2;
 	vp._11 = sz.x;
+#if VK_TRUE
+	vp._22 = sz.y;
+#else
 	vp._22 = -sz.y;
+#endif
 	vp._41 = sz.x;
 	vp._42 = sz.y;
 	return vp;

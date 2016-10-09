@@ -92,7 +92,14 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DX11Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DX12Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\cpp\helper_vulkan.cpp" />
+    <ClCompile Include="..\cpp\helper_vulkan.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DX11Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DX11Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DX12Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DX12Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\cpp\helper_win.cpp" />
     <ClCompile Include="..\cpp\hub.cpp" />
     <ClCompile Include="..\cpp\hub_android.cpp">
@@ -236,7 +243,14 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DX12Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\cpp\helper_text.h" />
-    <ClInclude Include="..\cpp\helper_vulkan.h" />
+    <ClInclude Include="..\cpp\helper_vulkan.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DX11Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DX11Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DX12Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DX12Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="..\cpp\helper_win.h" />
     <ClInclude Include="..\cpp\hub.h" />
     <ClInclude Include="..\cpp\input_man.h" />
