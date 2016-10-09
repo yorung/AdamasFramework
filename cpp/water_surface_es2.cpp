@@ -273,7 +273,7 @@ void WaterSurfaceES2::UpdateRipple()
 
 	std::vector<WaterVert> vert;
 	UpdateVert(vert);
-	afWriteBuffer(vbo, &vert[0], vert.size() * sizeof(WaterVert));
+	afWriteBuffer(vbo, vert.size() * sizeof(WaterVert), &vert[0]);
 }
 
 void WaterSurfaceES2::Update()

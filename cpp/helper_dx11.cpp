@@ -119,7 +119,7 @@ void afBindSamplerToBindingPoint(SAMPLERID sampler, UINT slot)
 	deviceMan11.GetContext()->PSSetSamplers(slot, 1, sampler.GetAddressOf());
 }
 
-void afWriteBuffer(const IBOID p, const void* buf, int size)
+void afWriteBuffer(const IBOID p, int size, const void* buf)
 {
 	assert(p);
 #ifdef _DEBUG

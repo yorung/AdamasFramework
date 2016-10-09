@@ -42,7 +42,7 @@ void afSetIndexBuffer(IBOID id)
 	list->IASetIndexBuffer(&indexBufferView);
 }
 
-void afWriteBuffer(const IBOID id, const void* buf, int size)
+void afWriteBuffer(const IBOID id, int size, const void* buf)
 {
 #ifdef _DEBUG
 	D3D12_RESOURCE_DESC desc = id->GetDesc();
@@ -67,7 +67,7 @@ ComPtr<ID3D12Resource> afCreateBuffer(int size, const void* buf)
 	HRESULT hr = deviceMan.GetDevice()->CreateCommittedResource(&uploadHeapProperties, D3D12_HEAP_FLAG_NONE, &desc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&o));
 	assert(hr == S_OK);
 	if (buf) {
-		afWriteBuffer(o, buf, size);
+		afWriteBuffer(o, size, buf);
 	}
 	return o;
 }

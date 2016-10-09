@@ -121,7 +121,7 @@ void Picking::Update()
 		v[i].color = hit ? Vec3(i == 0, i == 1, i == 2) : Vec3(0.5, 0.5, 0.5);
 	}
 
-	afWriteBuffer(vbo2d, v, sizeof(v));
+	afWriteBuffer(vbo2d, sizeof(v), v);
 
 	radian = (float)(std::fmod(GetTime(), 10) * M_PI * 2 / 10);
 	radius = 50.f;
@@ -139,7 +139,7 @@ void Picking::Update()
 		v[i].color = hit ? Vec3(i == 0, i == 1, i == 2) : Vec3(0.5, 0.5, 0.5);
 	}
 
-	afWriteBuffer(vbo3d, v, sizeof(v));
+	afWriteBuffer(vbo3d, sizeof(v), v);
 }
 
 void Picking::Draw3D()

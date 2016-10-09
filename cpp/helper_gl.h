@@ -85,7 +85,7 @@ void afSetVertexBuffer(VBOID id, int stride);
 void afSetIndexBuffer(IBOID indexBuffer);
 
 template <class BufName>
-void afWriteBuffer(BufName bufName, const void* buf, int size)
+void afWriteBuffer(BufName bufName, int size, const void* buf)
 {
 	afHandleGLError(glBindBuffer(BufName::bufType, bufName));
 	afHandleGLError(glBufferSubData(BufName::bufType, 0, size, buf));
@@ -257,7 +257,7 @@ public:
 	void Write(const void* buf, int size)
 	{
 		assert(size <= vertexBufferSize);
-		afWriteBuffer(vbo, buf, size);
+		afWriteBuffer(vbo, size, buf);
 	}
 	void Destroy()
 	{

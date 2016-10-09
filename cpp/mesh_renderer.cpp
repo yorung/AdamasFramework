@@ -188,7 +188,7 @@ MMID MeshRenderer::CreateMaterial(const Material& mat)
 	materials.push_back(mat);
 
 	assert(materials.size() <= MAX_MATERIALS);
-	afWriteBuffer(uboForMaterials, &materials[0], sizeof(materials[0]) * materials.size());
+	afWriteBuffer(uboForMaterials, sizeof(materials[0]) * materials.size(), &materials[0]);
 
 	return materials.size() - 1;
 }
