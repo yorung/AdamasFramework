@@ -4,10 +4,10 @@ precision highp float;
 in vec2 vfPosition;
 
 layout (location = 0) out vec4 fragColor;
-layout (std140, binding = 0, row_major) uniform inst {
+layout (std140, binding = 1, row_major) uniform inst {
 	mat4 invVP;
 };
-layout (binding = 1) uniform sampler2D tex;
+layout (binding = 0) uniform sampler2D tex;
 
 void main() {
 	const float toDeg = 180.0 / 3.141592650;

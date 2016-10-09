@@ -1,10 +1,10 @@
-cbuffer perObject : register(b0)
+cbuffer perObject : register(b1)
 {
 	row_major matrix invVP;
 }
 
-Texture2D gTexture : register(t1);
-SamplerState samplerState : register(s1);
+Texture2D gTexture : register(t0);
+SamplerState samplerState : register(s0);
 
 struct VsToPs
 {
@@ -12,7 +12,7 @@ struct VsToPs
 	float4 pos2 : POS2;
 };
 
-#define RSDEF "CBV(b0), DescriptorTable(SRV(t1)), StaticSampler(s1)"
+#define RSDEF "DescriptorTable(SRV(t0)), CBV(b1), StaticSampler(s0)"
 
 [RootSignature(RSDEF)]
 VsToPs VSMain(uint id : SV_VertexID)
