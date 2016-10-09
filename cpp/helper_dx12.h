@@ -105,24 +105,6 @@ public:
 	}
 };
 
-class AFCbvBindToken {
-public:
-	UBOID ubo;
-	int top = -1;
-	int size = 0;
-	void Create(UBOID ubo_)
-	{
-		ubo = ubo_;
-	}
-	void Create(const void* buf, int size_)
-	{
-		top = deviceMan.AssignConstantBuffer(buf, size_);
-		size = size_;
-	}
-};
-
-void afBindCbvs(AFCbvBindToken cbvs[], int nCbvs, int startBindingPoint = 0);
-
 class AFRenderTarget
 {
 	IVec2 texSize;
@@ -137,7 +119,7 @@ public:
 	ComPtr<ID3D12Resource> GetTexture() { return renderTarget; }
 };
 
-void afBindBuffer(const void* buf, int size, int rootParameterIndex);
+void afBindBuffer(int size, const void* buf, int rootParameterIndex);
 void afBindBuffer(UBOID ubo, int rootParameterIndex);
 void afBindTexture(SRVID srv, int rootParameterIndex);
 #define afBindCubeMap afBindTexture

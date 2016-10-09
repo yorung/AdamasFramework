@@ -3,6 +3,16 @@
 static PrimitiveTopology s_primitiveTopology = PT_TRIANGLESTRIP;
 static const InputElement* s_elements;
 static int s_numElements;
+static std::vector<UBOID> s_intermediateUniformBuffer;
+
+static void DiscardIntermediateBuffer()
+{
+	for (auto& it : s_intermediateUniformBuffer)
+	{
+		afSafeDeleteBuffer(it);
+	}
+	s_intermediateUniformBuffer.clear();
+}
 
 IBOID afCreateIndexBuffer(int numIndi, const AFIndex* indi)
 {
@@ -45,12 +55,12 @@ SSBOID afCreateSSBO(int size)
 	return name;
 }
 
-UBOID afCreateUBO(int size)
+UBOID afCreateUBO(int size, const void* buf)
 {
 	UBOID name;
 	glGenBuffers(1, &name.x);
 	glBindBuffer(GL_UNIFORM_BUFFER, name);
-	glBufferData(GL_UNIFORM_BUFFER, size, NULL, GL_DYNAMIC_DRAW);
+	glBufferData(GL_UNIFORM_BUFFER, size, buf, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	return name;
 }
@@ -89,6 +99,16 @@ void afBindBuffer(UBOID ubo, GLuint uniformBlockBinding)
 	glGetIntegerv(GL_UNIFORM_BUFFER_BINDING, &prev);
 	glBindBufferBase(GL_UNIFORM_BUFFER, uniformBlockBinding, ubo);
 	glBindBuffer(GL_UNIFORM_BUFFER, prev);
+}
+
+void afBindBuffer(int size, const void* buffer, GLuint uniformBlockBinding)
+{
+	UBOID ubo = afCreateUBO(size, buffer);
+	GLint prev;
+	glGetIntegerv(GL_UNIFORM_BUFFER_BINDING, &prev);
+	glBindBufferBase(GL_UNIFORM_BUFFER, uniformBlockBinding, ubo);
+	glBindBuffer(GL_UNIFORM_BUFFER, prev);
+	s_intermediateUniformBuffer.push_back(ubo);	// Must be kept before draw calls which refer this ubo.
 }
 #endif
 
@@ -575,6 +595,7 @@ void AFRenderStates::Apply() const
 	for (int i = 0; i < numSamplerTypes; i++) {
 		afSetSampler(samplerTypes[i], i);
 	}
+	DiscardIntermediateBuffer();
 }
 
 void afSetSampler(SamplerType type, int slot)

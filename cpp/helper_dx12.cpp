@@ -429,27 +429,7 @@ void AFRenderTarget::BeginRenderToThis()
 	commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 }
 
-void afBindCbvs(AFCbvBindToken cbvs[], int nCbvs, int startBindingPoint)
-{
-	for (int i = 0; i < nCbvs; i++)
-	{
-		AFCbvBindToken& cbv = cbvs[i];
-		if (cbv.top >= 0)
-		{
-			deviceMan.GetCommandList()->SetGraphicsRootConstantBufferView(startBindingPoint + i, deviceMan.GetConstantBufferGPUAddress(cbv.top));
-		}
-		else if (cbv.ubo)
-		{
-			afBindBuffer(cbv.ubo, startBindingPoint + i);
-		}
-		else
-		{
-			assert(0);
-		}
-	}
-}
-
-void afBindBuffer(const void* buf, int size, int rootParameterIndex)
+void afBindBuffer(int size, const void* buf, int rootParameterIndex)
 {
 	int cbTop = deviceMan.AssignConstantBuffer(buf, size);
 	deviceMan.GetCommandList()->SetGraphicsRootConstantBufferView(rootParameterIndex, deviceMan.GetConstantBufferGPUAddress(cbTop));

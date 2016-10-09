@@ -29,10 +29,7 @@ void SkyMan::Draw()
 	matrixMan.Get(MatrixMan::PROJ, matP);
 	matV._41 = matV._42 = matV._43 = 0;
 	Mat invVP = inv(matV * matP);
-
-	AFCbvBindToken token;
-	token.Create(&invVP, sizeof(invVP));
-	afBindCbvs(&token, 1);
+	afBindBuffer(sizeof(invVP), &invVP, 0);
 	(texDesc.isCubeMap ? afBindCubeMap : afBindTexture)(texId, 1);
 	afDraw(4);
 }

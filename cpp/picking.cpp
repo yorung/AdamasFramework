@@ -150,9 +150,7 @@ void Picking::Draw3D()
 	matrixMan.Get(MatrixMan::VIEW, mView);
 	matrixMan.Get(MatrixMan::PROJ, mProj);
 	Mat mVP = mView * mProj;
-	AFCbvBindToken token;
-	token.Create(&mVP, sizeof(Mat));
-	afBindCbvs(&token, 1);
+	afBindBuffer(sizeof(Mat), &mVP, 0);
 	afDraw(3);
 }
 
@@ -161,8 +159,6 @@ void Picking::Draw2D()
 	renderStates.Apply();
 	afSetVertexBuffer(vbo2d, sizeof(Vertex));
 	Mat matIdentity;
-	AFCbvBindToken token;
-	token.Create(&matIdentity, sizeof(Mat));
-	afBindCbvs(&token, 1);
+	afBindBuffer(sizeof(Mat), &matIdentity, 0);
 	afDraw(3);
 }

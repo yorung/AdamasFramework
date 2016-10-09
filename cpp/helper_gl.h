@@ -185,9 +185,10 @@ typedef TBufName<GL_SHADER_STORAGE_BUFFER> SSBOID;
 typedef TBufName<GL_UNIFORM_BUFFER> UBOID;
 typedef AFGLName VAOID;
 SSBOID afCreateSSBO(int size);
-UBOID afCreateUBO(int size);
+UBOID afCreateUBO(int size, const void* buf = nullptr);
 void afBindBuffer(SSBOID ssbo, GLuint storageBlockBinding);
 void afBindBuffer(UBOID ubo, GLuint uniformBlockBinding);
+void afBindBuffer(int size, const void* buffer, GLuint uniformBlockBinding);
 VAOID afCreateVAO(const InputElement elements[], int numElements, int numBuffers, VBOID const *vertexBufferIds, const int* strides, IBOID ibo);
 inline void afSafeDeleteVAO(VAOID& vao)
 {
@@ -264,40 +265,3 @@ public:
 		afSafeDeleteBuffer(vbo);
 	}
 };
-
-class AFCbvBindToken {
-	UBOID ubo;
-	bool uboIsExternalDoNotDelete = false;
-public:
-	~AFCbvBindToken()
-	{
-		if (!uboIsExternalDoNotDelete) {
-			afSafeDeleteBuffer(ubo);
-		}
-	}
-	void Create(UBOID ubo_)
-	{
-		ubo = ubo_;
-		uboIsExternalDoNotDelete = true;
-	}
-	void Create(const void* buf, int size)
-	{
-		ubo = afCreateUBO(size);
-		afWriteBuffer(ubo, buf, size);
-	}
-	UBOID Get() { return ubo; }
-};
-
-inline void afBindCbvs(AFCbvBindToken cbvs[], int nCbvs, int startBindingPoint = 0)
-{
-	for (int i = 0; i < nCbvs; i++)
-	{
-		afBindBuffer(cbvs[i].Get(), startBindingPoint + i);
-	}
-}
-
-inline void afBindCbvsSrv0(AFCbvBindToken cbvs[], int nCbvs, SRVID srv)
-{
-	afBindCbvs(cbvs, nCbvs);
-	afBindTexture(srv, 0);
-}

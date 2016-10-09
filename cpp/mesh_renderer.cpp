@@ -152,11 +152,9 @@ void MeshRenderer::Flush()
 	matrixMan.Get(MatrixMan::PROJ, perDrawCallUBO.matP);
 
 	renderStates.Apply();
-	AFCbvBindToken cbvs[3];
-	cbvs[0].Create(&perDrawCallUBO, sizeof(PerDrawCallUBO));
-	cbvs[1].Create(uboForMaterials);
-	cbvs[2].Create(&renderBoneMatrices[0], sizeof(Mat) * renderBoneMatrices.size());
-	afBindCbvs(cbvs, dimof(cbvs));
+	afBindBuffer(sizeof(PerDrawCallUBO), &perDrawCallUBO, 0);
+	afBindBuffer(uboForMaterials, 1);
+	afBindBuffer(sizeof(Mat) * renderBoneMatrices.size(), &renderBoneMatrices[0], 2);
 
 	const RenderCommand& c = perDrawCallUBO.commands[0];
 	RenderMesh* r = GetMeshByMRID(c.meshId);

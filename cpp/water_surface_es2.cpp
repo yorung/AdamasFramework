@@ -317,9 +317,7 @@ void WaterSurfaceES2::Draw()
 	AFRenderTarget rtWater;
 	rtWater.Init(systemMisc.GetScreenSize(), AFF_R8G8B8A8_UNORM);
 	rtWater.BeginRenderToThis();
-	AFCbvBindToken token;
-	token.Create(&uboBuf, sizeof(uboBuf));
-	afBindCbvs(&token, 1, 6);
+	afBindBuffer(sizeof(uboBuf), &uboBuf, 6);
 
 	VBOID vertexBufferIdsFullScr[] = { vboFullScr };
 	int stridesFullScr[] = { sizeof(Vec2) };

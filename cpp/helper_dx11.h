@@ -31,9 +31,10 @@ void afWriteTexture(SRVID srv, const struct TexDesc& desc, const void* buf);
 IBOID afCreateIndexBuffer(int numIndi, const AFIndex* indi);
 VBOID afCreateVertexBuffer(int size, const void* buf);
 VBOID afCreateDynamicVertexBuffer(int size);
-UBOID afCreateUBO(int size);
+UBOID afCreateUBO(int size, const void* buf = nullptr);
 
 void afBindBuffer(UBOID ubo, UINT slot);
+void afBindBuffer(int size, const void* buf, UINT slot);
 void afBindTexture(SRVID srv, UINT slot);
 #define afBindCubeMap afBindTexture
 void afBindSamplerToBindingPoint(SAMPLERID sampler, UINT slot);

@@ -41,10 +41,11 @@ VBOID afCreateDynamicVertexBuffer(int size)
 	return vbo;
 }
 
-UBOID afCreateUBO(int size)
+UBOID afCreateUBO(int size, const void* buf)
 {
 	UBOID ubo;
-	deviceMan11.GetDevice()->CreateBuffer(&CD3D11_BUFFER_DESC(size, D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE), nullptr, &ubo);
+	D3D11_SUBRESOURCE_DATA subresData = { buf, 0, 0 };
+	deviceMan11.GetDevice()->CreateBuffer(&CD3D11_BUFFER_DESC(size, D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE), buf ? &subresData : nullptr, &ubo);
 	return ubo;
 }
 
@@ -100,6 +101,12 @@ void afBindBuffer(UBOID ubo, UINT slot)
 {
 	deviceMan11.GetContext()->VSSetConstantBuffers(slot, 1, ubo.GetAddressOf());
 	deviceMan11.GetContext()->PSSetConstantBuffers(slot, 1, ubo.GetAddressOf());
+}
+
+void afBindBuffer(int size, const void* buf, UINT slot)
+{
+	UBOID id = afCreateUBO(size, buf);
+	afBindBuffer(id, slot);
 }
 
 void afBindTexture(SRVID srv, UINT slot)

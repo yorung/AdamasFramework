@@ -101,9 +101,7 @@ void GridRenderer::Draw()
 	matrixMan.Get(MatrixMan::VIEW, matView);
 	matrixMan.Get(MatrixMan::PROJ, matProj);
 	Mat matVP = matView * matProj;
-	AFCbvBindToken token;
-	token.Create(&matVP, sizeof(Mat));
-	afBindCbvs(&token, 1);
+	afBindBuffer(sizeof(Mat), &matVP, 0);
 	afSetVertexBuffer(vbo, sizeof(GridVert));
 	afSetIndexBuffer(ibo);
 	afDraw(lines * 2);
