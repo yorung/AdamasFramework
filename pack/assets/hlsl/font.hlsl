@@ -13,7 +13,7 @@ struct VsToPs {
 [RootSignature(RSDEF)]
 VsToPs VSMain(VsIn vsIn) {
 	VsToPs vsOut;
-	vsOut.pos = float4(vsIn.pos, 0, 1);
+	vsOut.pos = float4(vsIn.pos * float2(1, -1), 0, 1);
 	vsOut.coord = vsIn.coord;
 	return vsOut;
 }

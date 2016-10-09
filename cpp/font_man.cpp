@@ -144,7 +144,7 @@ void FontMan::Render()
 		}
 		const CharCache& cc = it->second;
 		for (int j = 0; j < (int)dimof(fontVertAlign); j++) {
-			verts[i * 4 + j].pos = (((cs.pos + cc.desc.distDelta + fontVertAlign[j] * cc.desc.srcWidth)) * Vec2(2, -2)) / scrSize + Vec2(-1, 1);
+			verts[i * 4 + j].pos = (((cs.pos + cc.desc.distDelta + fontVertAlign[j] * cc.desc.srcWidth)) * 2) / scrSize + Vec2(-1, -1);
 			verts[i * 4 + j].coord = (cc.srcPos + fontVertAlign[j] * cc.desc.srcWidth) / Vec2(TEX_W, TEX_H);
 		}
 	}
