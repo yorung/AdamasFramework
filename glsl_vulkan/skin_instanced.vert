@@ -47,9 +47,7 @@ layout (std140, set = 2, binding = 0) uniform boneSSBO
 
 void main()
 {
-	RenderCommand cmd = renderCommands[gl_InstanceIndex];
-	uint boneStartIndex = cmd.boneStartIndex;
-	Material material = materials[materialId];
+	uint boneStartIndex = renderCommands[gl_InstanceIndex].boneStartIndex;
 
 	mat4 comb =
 		bonesBuffer[boneStartIndex + vBlendIndices.x] * vBlendWeights.x +
@@ -59,9 +57,9 @@ void main()
 
 	vec3 pos = POSITION.xyz;
 
-	gl_Position = matP * matV * cmd.matWorld * comb * vec4(pos, 1.0);
+	gl_Position = matP * matV * renderCommands[gl_InstanceIndex].matWorld * comb * vec4(pos, 1.0);
 	texcoord = vTexcoord;
-	diffuse = vColor * vec4(material.faceColor.xyz, 1.0);
-	emissive = material.emissive.xyz;
-	normal = mat3(cmd.matWorld * comb) * NORMAL;
+	diffuse = vColor * vec4(materials[materialId].faceColor.xyz, 1.0);
+	emissive = materials[materialId].emissive.xyz;
+	normal = mat3(renderCommands[gl_InstanceIndex].matWorld * comb) * NORMAL;
 }
