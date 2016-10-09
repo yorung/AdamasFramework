@@ -24,11 +24,19 @@ void SpriteRenderer::Destroy()
 void SpriteRenderer::Create()
 {
 	Destroy();
+#ifdef AF_VULKAN
+	static InputElement layout[] = {
+		CInputElement(0, AFF_R32G32B32_FLOAT, 0),
+		CInputElement(1, AFF_R8G8B8A8_UNORM, 12),
+		CInputElement(2, AFF_R32G32_FLOAT, 16),
+	};
+#else
 	static InputElement layout[] = {
 		CInputElement("POSITION", AFF_R32G32B32_FLOAT, 0),
 		CInputElement("COLOR", AFF_R8G8B8A8_UNORM, 12),
 		CInputElement("TEXCOORD", AFF_R32G32_FLOAT, 16),
 	};
+#endif
 	const static SamplerType samplers[] = { AFST_LINEAR_CLAMP };
 	renderStates.Create("sprite", arrayparam(layout), AFRS_ALPHA_BLEND | AFRS_PRIMITIVE_TRIANGLELIST, arrayparam(samplers));
 	quadListVertexBuffer.Create(sizeof(SpriteVertex), MAX_SPRITES_IN_ONE_DRAW_CALL);

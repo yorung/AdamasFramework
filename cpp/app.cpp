@@ -25,9 +25,12 @@ void App::Draw()
 #ifdef GL_TRUE
 	afDepthStencilMode(AFRS_DEPTH_ENABLE);
 #endif
+
+#ifndef AF_VULKAN
 	AFRenderTarget rtDefault;
 	rtDefault.InitForDefaultRenderTarget();
 	rtDefault.BeginRenderToThis();
+#endif
 
 	IVec2 scrSize = systemMisc.GetScreenSize();
 	float f = 1000;
@@ -98,9 +101,11 @@ void App::Destroy()
 	fontMan.Destroy();
 	meshRenderer.Destroy();
 	meshMan.Destroy();
-	glow.Destroy();
 	skyMan.Destroy();
+#ifndef AF_VULKAN
+	glow.Destroy();
 	letterBox.Destroy();
+#endif
 	ClearMenu();
 	meshId = MeshMan::INVALID_MMID;
 }

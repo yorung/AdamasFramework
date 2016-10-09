@@ -10,6 +10,7 @@ typedef VkFormat AFFormat;
 #define AFF_R32G32B32_FLOAT VK_FORMAT_R32G32B32_SFLOAT
 #define AFF_R32G32_FLOAT VK_FORMAT_R32G32_SFLOAT
 #define AFF_R8G8B8A8_UINT VK_FORMAT_R8G8B8A8_UINT
+#define AFF_R32_UINT VK_FORMAT_R32_UINT
 
 typedef VkVertexInputAttributeDescription InputElement;
 class CInputElement : public InputElement
@@ -58,13 +59,14 @@ struct BufferContext
 };
 
 void afSafeDeleteBuffer(BufferContext& buffer);
-void WriteBuffer(BufferContext& buffer, int size, const void* srcData);
+void afWriteBuffer(BufferContext& buffer, int size, const void* srcData);
 BufferContext CreateBuffer(VkDevice device, VkBufferUsageFlags usage, const VkPhysicalDeviceMemoryProperties& memoryProperties, int size, const void* srcData);
 
 typedef BufferContext VBOID;
 typedef BufferContext IBOID;
 typedef BufferContext UBOID;
 VBOID afCreateVertexBuffer(int size, const void* srcData);
+VBOID afCreateDynamicVertexBuffer(int size, const void* srcData = nullptr);
 IBOID afCreateIndexBuffer(int numIndi, const AFIndex* indi);
 UBOID afCreateUBO(int size, const void* srcData = nullptr);
 IBOID afCreateQuadListIndexBuffer(int numQuads);
@@ -84,7 +86,10 @@ struct TextureContext
 	VkDeviceMemory memory = 0;
 	VkImageView view = 0;
 	VkDescriptorSet descriptorSet = 0;
-	bool operator !() { return !image; }
+	TexDesc texDesc;
+	bool operator !() const { return !image; }
+	bool operator !=(const TextureContext& r) const { return image != r.image; }
+	bool operator ==(const TextureContext& r) const { return image == r.image; }
 };
 typedef TextureContext SRVID;
 
@@ -100,7 +105,12 @@ void afBindBuffer(int size, const void* buf, int descritorSetIndex);
 void afBindTexture(VkPipelineLayout pipelineLayout, const TextureContext& textureContext, int descritorSetIndex);
 void afBindTexture(const TextureContext& textureContext, int descritorSetIndex);
 
-void afSetVertexBuffer(VBOID id);
+inline IVec2 afGetTextureSize(SRVID tex)
+{
+	return tex.texDesc.size;
+}
+
+void afSetVertexBuffer(VBOID id, int stride);
 void afSetIndexBuffer(IBOID id);
 
 void afDrawIndexed(int numIndices, int start = 0, int instanceCount = 1);
@@ -115,9 +125,11 @@ class AFRenderStates {
 	VkPipeline pipeline = 0;
 	VkPipelineLayout pipelineLayout = 0;
 public:
-	void Create(const char* shaderName, int numInputElements = 0, const InputElement* inputElements = nullptr, uint32_t flags = AFRS_NONE);
+	VkPipelineLayout GetPipelineLayout() { return pipelineLayout; }
+	void Create(const char* shaderName, int numInputElements = 0, const InputElement* inputElements = nullptr, uint32_t flags = AFRS_NONE, int numSamplers = 0, const SamplerType samplerTypes[] = nullptr);
 	void Apply();
 	void Destroy();
+	bool IsReady() { return pipeline != 0; }
 };
 
 class AFDynamicQuadListVertexBuffer

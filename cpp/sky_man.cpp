@@ -30,7 +30,11 @@ void SkyMan::Draw()
 	matV._41 = matV._42 = matV._43 = 0;
 	Mat invVP = inv(matV * matP);
 	afBindBuffer(sizeof(invVP), &invVP, 1);
+#ifdef AF_VULKAN
+	afBindTexture(texId, 0);
+#else
 	(texDesc.isCubeMap ? afBindCubeMap : afBindTexture)(texId, 0);
+#endif
 	afDraw(4);
 }
 

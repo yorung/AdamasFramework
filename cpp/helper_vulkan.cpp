@@ -62,13 +62,18 @@ void afSafeDeleteBuffer(BufferContext& buffer)
 	afSafeDeleteVk(vkFreeMemory, buffer.device, buffer.memory);
 }
 
-void WriteBuffer(BufferContext& buffer, int size, const void* srcData)
+void afWriteBuffer(BufferContext& buffer, int size, const void* srcData)
 {
 	assert(buffer.mappedMemory);
 	memcpy(buffer.mappedMemory, srcData, size);
 }
 
 VBOID afCreateVertexBuffer(int size, const void* srcData)
+{
+	return CreateBuffer(deviceMan.GetDevice(), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, deviceMan.physicalDeviceMemoryProperties, size, srcData);
+}
+
+VBOID afCreateDynamicVertexBuffer(int size, const void* srcData)
 {
 	return CreateBuffer(deviceMan.GetDevice(), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, deviceMan.physicalDeviceMemoryProperties, size, srcData);
 }
@@ -99,7 +104,7 @@ BufferContext CreateBuffer(VkDevice device, VkBufferUsageFlags usage, const VkPh
 	buffer.size = size;
 	if (srcData)
 	{
-		WriteBuffer(buffer, size, srcData);
+		afWriteBuffer(buffer, size, srcData);
 	}
 	return buffer;
 }
@@ -181,6 +186,7 @@ TextureContext afCreateDynamicTexture(VkFormat format, const IVec2& size, void *
 	TextureContext textureContext;
 	textureContext.device = device;
 	textureContext.format = format;
+	textureContext.texDesc.size = size;
 	const VkImageCreateInfo dynamicTextureCreateInfo = { VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO, nullptr, 0, VK_IMAGE_TYPE_2D, format,{ (uint32_t)size.x, (uint32_t)size.y, 1 }, 1, 1, VK_SAMPLE_COUNT_1_BIT, VK_IMAGE_TILING_LINEAR, VK_IMAGE_USAGE_SAMPLED_BIT, VK_SHARING_MODE_EXCLUSIVE, 0, nullptr, VK_IMAGE_LAYOUT_PREINITIALIZED };
 	const VkImageCreateInfo depthStencilCreateInfo = { VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO, nullptr, 0, VK_IMAGE_TYPE_2D, format,{ (uint32_t)size.x, (uint32_t)size.y, 1 }, 1, 1, VK_SAMPLE_COUNT_1_BIT, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_SHARING_MODE_EXCLUSIVE, 0, nullptr, VK_IMAGE_LAYOUT_UNDEFINED };
 	afHandleVKError(vkCreateImage(device, isDepth ? &depthStencilCreateInfo : &dynamicTextureCreateInfo, nullptr, &textureContext.image));
@@ -219,6 +225,7 @@ SRVID afCreateTexture2D(AFFormat format, const struct TexDesc& desc, int mipCoun
 	VkDevice device = deviceMan.GetDevice();
 	textureContext.device = device;
 	textureContext.format = format;
+	textureContext.texDesc = desc;
 	const VkImageCreateInfo imageCreateInfo = { VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO, nullptr, (desc.isCubeMap ? VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT : 0u), VK_IMAGE_TYPE_2D, format,{ (uint32_t)desc.size.x, (uint32_t)desc.size.y, 1 }, (uint32_t)mipCount, desc.isCubeMap ? 6u : 1u, VK_SAMPLE_COUNT_1_BIT, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT, VK_SHARING_MODE_EXCLUSIVE, 0, nullptr, VK_IMAGE_LAYOUT_UNDEFINED };
 	afHandleVKError(vkCreateImage(device, &imageCreateInfo, nullptr, &textureContext.image));
 
@@ -276,8 +283,9 @@ void afBindTexture(const TextureContext& textureContext, int descritorSetIndex)
 	afBindTexture(s_pipelineLayout, textureContext, descritorSetIndex);
 }
 
-void afSetVertexBuffer(VBOID vertexBuffer)
+void afSetVertexBuffer(VBOID vertexBuffer, int stride)
 {
+	(void)stride;
 	VkDeviceSize offsets[1] = {};
 	VkCommandBuffer commandBuffer = deviceMan.commandBuffer;
 	vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertexBuffer.buffer, offsets);
@@ -639,7 +647,7 @@ void AFBufferStackAllocator::Destroy()
 	afSafeDeleteBuffer(bufferContext);
 }
 
-void AFRenderStates::Create(const char* shaderName, int numInputElements, const InputElement* inputElements, uint32_t flags)
+void AFRenderStates::Create(const char* shaderName, int numInputElements, const InputElement* inputElements, uint32_t flags, int numSamplers, const SamplerType samplerTypes[])
 {
 	VkDevice device = deviceMan.GetDevice();
 
@@ -658,6 +666,12 @@ void AFRenderStates::Create(const char* shaderName, int numInputElements, const 
 	else if (!strcmp(shaderName, "font"))
 	{
 		VkDescriptorSetLayout layouts[] = { deviceMan.commonTextureDescriptorSetLayout };
+		const VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = { VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO, nullptr, 0, arrayparam(layouts) };
+		afHandleVKError(vkCreatePipelineLayout(device, &pipelineLayoutCreateInfo, nullptr, &pipelineLayout));
+	}
+	else if (!strcmp(shaderName, "skin_instanced"))
+	{
+		VkDescriptorSetLayout layouts[] = { deviceMan.commonUboDescriptorSetLayout, deviceMan.commonUboDescriptorSetLayout, deviceMan.commonUboDescriptorSetLayout, deviceMan.commonTextureDescriptorSetLayout };
 		const VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = { VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO, nullptr, 0, arrayparam(layouts) };
 		afHandleVKError(vkCreatePipelineLayout(device, &pipelineLayoutCreateInfo, nullptr, &pipelineLayout));
 	}

@@ -1,9 +1,18 @@
 #include "stdafx.h"
 
-const static InputElement elements[] = {
+#ifdef AF_VULKAN
+const static InputElement elements[] =
+{
+	CInputElement(0, AFF_R32G32B32_FLOAT, 0),
+	CInputElement(1, AFF_R32G32B32_FLOAT, 12),
+};
+#else
+const static InputElement elements[] =
+{
 	CInputElement("POSITION", AFF_R32G32B32_FLOAT, 0),
 	CInputElement("COLOR", AFF_R32G32B32_FLOAT, 12),
 };
+#endif
 
 struct Vertex {
 	Vec3 pos;
