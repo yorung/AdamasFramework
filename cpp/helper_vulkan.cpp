@@ -439,7 +439,7 @@ void DeviceManVK::Create(HWND hWnd)
 	vkGetPhysicalDeviceMemoryProperties(physicalDevice, &physicalDeviceMemoryProperties);
 
 	// preallocated resources and descriptors
-	uboAllocator.Create(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, 0x10000);
+	uboAllocator.Create(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, 0x20000);
 	static const uint32_t descriptorPoolSize = 10;
 	const VkDescriptorPoolSize descriptorPoolSizes[2] = { { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, descriptorPoolSize },{ VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, descriptorPoolSize } };
 	const VkDescriptorPoolCreateInfo descriptorPoolCreateInfo = { VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO, nullptr, VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT, descriptorPoolSize, arrayparam(descriptorPoolSizes) };
@@ -660,7 +660,7 @@ void AFRenderStates::Create(const char* shaderName, int numInputElements, const 
 		const VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = { VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO, nullptr, 0, 1, &deviceMan.commonUboDescriptorSetLayout };
 		afHandleVKError(vkCreatePipelineLayout(device, &pipelineLayoutCreateInfo, nullptr, &pipelineLayout));
 	}
-	else if (!strcmp(shaderName, "sky_photosphere") || !strcmp(shaderName, "sky_cubemap") || !strcmp(shaderName, "sprite"))
+	else if (!strcmp(shaderName, "sky_photosphere") || !strcmp(shaderName, "sky_cubemap") || !strcmp(shaderName, "projection_equirectangular_to_stereographic") || !strcmp(shaderName, "sprite"))
 	{
 		VkDescriptorSetLayout layouts[] = { deviceMan.commonTextureDescriptorSetLayout, deviceMan.commonUboDescriptorSetLayout };
 		const VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = { VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO, nullptr, 0, arrayparam(layouts) };
