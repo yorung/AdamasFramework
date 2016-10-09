@@ -91,7 +91,7 @@ VBOID afCreateVertexBuffer(int size, const void* buf)
 	return o;
 }
 
-IBOID afCreateIndexBuffer(const AFIndex* indi, int numIndi)
+IBOID afCreateIndexBuffer(int numIndi, const AFIndex* indi)
 {
 	assert(indi);
 	int size = numIndi * sizeof(AFIndex);

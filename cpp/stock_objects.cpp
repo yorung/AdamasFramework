@@ -12,7 +12,7 @@ void StockObjects::CreateFullScreenVAO()
 	Vec2 vboFullScrSrc[] = { { -1, 1 }, { -1, -1 }, { 1, 1 }, { 1, -1 } };
 
 	vboFullScr = afCreateVertexBuffer(sizeof(vboFullScrSrc), &vboFullScrSrc[0]);
-	iboFullScr = afCreateIndexBuffer(&iboFullScrSrc[0], dimof(iboFullScrSrc));
+	iboFullScr = afCreateIndexBuffer(arrayparam(iboFullScrSrc));
 }
 
 void StockObjects::Create()

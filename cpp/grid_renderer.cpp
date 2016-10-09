@@ -91,7 +91,7 @@ GridRenderer::GridRenderer(int numGrid_, float pitch_)
 	renderStates.Create("solid", arrayparam(layout), AFRS_DEPTH_ENABLE | AFRS_PRIMITIVE_LINELIST);
 
 	vbo = afCreateVertexBuffer(sizeVertices, &vert[0]);
-	ibo = afCreateIndexBuffer(&indi[0], indi.size());
+	ibo = afCreateIndexBuffer(indi.size(), &indi[0]);
 }
 
 void GridRenderer::Draw()

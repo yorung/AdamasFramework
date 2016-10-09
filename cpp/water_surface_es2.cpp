@@ -236,13 +236,13 @@ void WaterSurfaceES2::Init()
 	nIndi = indi.size();
 
 	vbo = afCreateDynamicVertexBuffer(vert.size() * sizeof(WaterVert));
-	ibo = afCreateIndexBuffer(&indi[0], indi.size());
+	ibo = afCreateIndexBuffer(indi.size(), &indi[0]);
 
 	AFIndex iboFullScrSrc[] = { 0, 1, 2, 3 };
 	Vec2 vboFullScrSrc[] = {{-1, 1}, {-1, -1}, {1, 1}, {1, -1}};
 
 	vboFullScr = afCreateVertexBuffer(sizeof(vboFullScrSrc), &vboFullScrSrc[0]);
-	iboFullScr = afCreateIndexBuffer(&iboFullScrSrc[0], dimof(iboFullScrSrc));
+	iboFullScr = afCreateIndexBuffer(arrayparam(iboFullScrSrc));
 
 	renderStateWater.Create("water_es2", arrayparam(elements), AFRS_NONE, arrayparam(samplers));
 

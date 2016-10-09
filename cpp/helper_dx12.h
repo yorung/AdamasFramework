@@ -27,7 +27,7 @@ void afSetIndexBuffer(IBOID id);
 void afWriteBuffer(const IBOID id, const void* buf, int size);
 ComPtr<ID3D12Resource> afCreateBuffer(int size, const void* buf = nullptr);
 VBOID afCreateVertexBuffer(int size, const void* buf = nullptr);
-IBOID afCreateIndexBuffer(const AFIndex* indi, int numIndi);
+IBOID afCreateIndexBuffer(int numIndi, const AFIndex* indi);
 ComPtr<ID3D12Resource> afCreateDynamicVertexBuffer(int size, const void* buf = nullptr);
 UBOID afCreateUBO(int size);
 

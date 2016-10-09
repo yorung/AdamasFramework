@@ -39,7 +39,7 @@ IBOID afCreateTiledPlaneIBO(int numTiles, int* numIndies)
 		*numIndies = (int)indi.size();
 	}
 
-	return afCreateIndexBuffer(&indi[0], (int)indi.size());
+	return afCreateIndexBuffer((int)indi.size(), &indi[0]);
 }
 
 VBOID afCreateTiledPlaneVBO(int numTiles)
@@ -181,7 +181,7 @@ IBOID afCreateQuadListIndexBuffer(int numQuads)
 		int vertIdx = i % 6;
 		indi[i] = rectIdx * 4 + tbl[vertIdx];
 	}
-	return afCreateIndexBuffer(&indi[0], numIndi);
+	return afCreateIndexBuffer(numIndi, &indi[0]);
 }
 
 void afVerify(bool ok)

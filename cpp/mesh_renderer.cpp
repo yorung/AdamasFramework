@@ -45,7 +45,7 @@ void RenderMesh::Init(const Block& block)
 
 	int sizeVertex = numVertices * sizeof(MeshVertex);
 	vbo = afCreateVertexBuffer(sizeVertex, &block.vertices[0]);
-	ibo = afCreateIndexBuffer(indices, numIndices);
+	ibo = afCreateIndexBuffer(numIndices, indices);
 
 	materialMaps = block.materialMaps;
 	VBOID verts[] = { vbo };

@@ -18,7 +18,7 @@ void afSetIndexBuffer(IBOID indexBuffer)
 	deviceMan11.GetContext()->IASetIndexBuffer(indexBuffer.Get(), AFIndexTypeToDevice, 0);
 }
 
-IBOID afCreateIndexBuffer(const AFIndex* indi, int numIndi)
+IBOID afCreateIndexBuffer(int numIndi, const AFIndex* indi)
 {
 	IBOID indexBuffer;
 	D3D11_SUBRESOURCE_DATA subresData = { indi, 0, 0 };

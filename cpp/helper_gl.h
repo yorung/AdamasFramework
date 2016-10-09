@@ -122,7 +122,7 @@ SRVID afCreateDynamicTexture(AFFormat format, const IVec2& size);
 
 void afWriteTexture(SRVID srv, const TexDesc& desc, const void* buf);
 
-IBOID afCreateIndexBuffer(const AFIndex* indi, int numIndi);
+IBOID afCreateIndexBuffer(int numIndi, const AFIndex* indi);
 VBOID afCreateVertexBuffer(int size, const void* buf);
 VBOID afCreateDynamicVertexBuffer(int size);
 

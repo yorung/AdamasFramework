@@ -4,7 +4,7 @@ static PrimitiveTopology s_primitiveTopology = PT_TRIANGLESTRIP;
 static const InputElement* s_elements;
 static int s_numElements;
 
-IBOID afCreateIndexBuffer(const AFIndex* indi, int numIndi)
+IBOID afCreateIndexBuffer(int numIndi, const AFIndex* indi)
 {
 	IBOID ibo;
 	afHandleGLError(glGenBuffers(1, &ibo.x));
