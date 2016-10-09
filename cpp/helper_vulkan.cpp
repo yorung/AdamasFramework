@@ -315,8 +315,11 @@ static uint32_t GetVkFormatSize(VkFormat format)
 {
 	switch (format)
 	{
-	case VK_FORMAT_R32G32B32_SFLOAT: return 12;
-	case VK_FORMAT_R32G32_SFLOAT: return 8;
+	case AFF_R8G8B8A8_UNORM: return 4;
+	case AFF_R32G32B32_FLOAT: return 12;
+	case AFF_R32G32_FLOAT: return 8;
+	case AFF_R8G8B8A8_UINT: return 4;
+	case AFF_R32_UINT: return 4;
 	}
 	assert(0);
 	return 0;
@@ -361,9 +364,9 @@ static VkPrimitiveTopology RenderFlagsToPrimitiveTopology(uint32_t flags)
 VkPipeline DeviceManVK::CreatePipeline(const char* name, VkPipelineLayout pipelineLayout, uint32_t numAttributes, const VkVertexInputAttributeDescription attributes[], uint32_t flags)
 {
 	char path[MAX_PATH];
-	sprintf_s(path, sizeof(path), "%s.vert.spv", name);
+	sprintf_s(path, sizeof(path), "spv/%s.vert.spv", name);
 	VkShaderModule vertexShader = CreateShaderModule(device, path);
-	sprintf_s(path, sizeof(path), "%s.frag.spv", name);
+	sprintf_s(path, sizeof(path), "spv/%s.frag.spv", name);
 	VkShaderModule fragmentShader = CreateShaderModule(device, path);
 	VkVertexInputBindingDescription binding = {};
 	std::for_each(attributes, attributes + numAttributes, [&](const VkVertexInputAttributeDescription& attr) { binding.stride += GetVkFormatSize(attr.format); assert(attr.binding == 0); });
