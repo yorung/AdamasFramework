@@ -6,7 +6,7 @@ class StockObjects {
 #endif
 	void CreateFullScreenVAO();
 public:
-	void Init();
+	void Create();
 	void Destroy();
 	void ApplyFullScreenVertexBuffer() const;
 	const InputElement* GetFullScreenInputElements(int& numElements) const;

@@ -34,8 +34,8 @@ VBOID afCreateDynamicVertexBuffer(int size);
 UBOID afCreateUBO(int size);
 
 void afBindBufferToBindingPoint(UBOID ubo, UINT uniformBlockBinding);
-void afBindTextureToBindingPoint(SRVID srv, UINT textureBindingPoint);
-#define afBindCubeMapToBindingPoint afBindTextureToBindingPoint
+void afBindTexture(SRVID srv, UINT textureBindingPoint);
+#define afBindCubeMap afBindTexture
 void afBindSamplerToBindingPoint(SAMPLERID sampler, UINT textureBindingPoint);
 
 void afDrawIndexed(int numIndices, int start = 0, int instanceCount = 1);

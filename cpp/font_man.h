@@ -28,7 +28,7 @@ class FontMan
 public:
 	FontMan();
 	~FontMan();
-	bool Init();
+	void Create();
 	void Destroy();
 	void FlushToTexture();
 	void DrawString(Vec2 pos, int fontSize, const wchar_t *text);

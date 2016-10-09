@@ -15,7 +15,7 @@ void StockObjects::CreateFullScreenVAO()
 	iboFullScr = afCreateIndexBuffer(&iboFullScrSrc[0], dimof(iboFullScrSrc));
 }
 
-void StockObjects::Init()
+void StockObjects::Create()
 {
 	CreateFullScreenVAO();
 #ifndef AF_DX12

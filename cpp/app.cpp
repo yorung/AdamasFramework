@@ -64,9 +64,9 @@ void App::Init()
 	glClearDepthf(0);	// for left-handed coordinate
 #endif
 	meshRenderer.Create();
-	fontMan.Init();
-	spriteRenderer.Init();
-	stockObjects.Init();
+	fontMan.Create();
+	spriteRenderer.Create();
+	stockObjects.Create();
 
 	luaMan.Create();
 }

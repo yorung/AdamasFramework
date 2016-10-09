@@ -357,7 +357,7 @@ IVec2 afGetTextureSize(SRVID tex)
 	return IVec2((int)desc.Width, (int)desc.Height);
 }
 
-void afBindTextureToBindingPoint(SRVID srv, int rootParameterIndex)
+void afBindTexture(SRVID srv, int rootParameterIndex)
 {
 	int descriptorHeapIndex = deviceMan.AssignDescriptorHeap(1);
 	deviceMan.AssignSRV(descriptorHeapIndex, srv);

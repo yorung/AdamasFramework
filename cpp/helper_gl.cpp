@@ -92,13 +92,13 @@ void afBindBufferToBindingPoint(UBOID ubo, GLuint uniformBlockBinding)
 }
 #endif
 
-void afBindTextureToBindingPoint(GLuint tex, GLuint textureBindingPoint)
+void afBindTexture(GLuint tex, GLuint textureBindingPoint)
 {
 	afHandleGLError(glActiveTexture(GL_TEXTURE0 + textureBindingPoint));
 	afHandleGLError(glBindTexture(GL_TEXTURE_2D, tex));
 }
 
-void afBindCubeMapToBindingPoint(GLuint tex, GLuint textureBindingPoint)
+void afBindCubeMap(GLuint tex, GLuint textureBindingPoint)
 {
 	afHandleGLError(glActiveTexture(GL_TEXTURE0 + textureBindingPoint));
 	afHandleGLError(glBindTexture(GL_TEXTURE_CUBE_MAP, tex));

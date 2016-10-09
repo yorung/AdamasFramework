@@ -25,7 +25,7 @@ class SpriteRenderer
 public:
 	~SpriteRenderer();
 	void Destroy();
-	void Init();
+	void Create();
 	void Draw(const SpriteCommands& sprites);
 };
 

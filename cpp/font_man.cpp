@@ -43,17 +43,18 @@ const static SamplerType samplers[] = {
 	AFST_POINT_CLAMP,
 };
 
-bool FontMan::Init()
+void FontMan::Create()
 {
 	Destroy();
-	if (!texSrc.Create(TEX_W, TEX_H)) {
-		return false;
+	if (!texSrc.Create(TEX_W, TEX_H))
+	{
+		assert(0);
+		return;
 	}
 	texture = afCreateDynamicTexture(AFF_R8G8B8A8_UNORM, IVec2(TEX_W, TEX_H));
 	afSetTextureName(texture, __FUNCTION__);
 	renderStates.Create("font", arrayparam(elements), AFRS_ALPHA_BLEND | AFRS_PRIMITIVE_TRIANGLELIST, arrayparam(samplers));
 	quadListVertexBuffer.Create(sizeof(FontVertex), SPRITE_MAX);
-	return true;
 }
 
 void FontMan::Destroy()
@@ -150,7 +151,7 @@ void FontMan::Render()
 	renderStates.Apply();
 	quadListVertexBuffer.Apply();
 	quadListVertexBuffer.Write(verts, 4 * numSprites * sizeof(FontVertex));
-	afBindTextureToBindingPoint(texture, 0);
+	afBindTexture(texture, 0);
 	afDrawIndexed(numSprites * 6);
 	numSprites = 0;
 }

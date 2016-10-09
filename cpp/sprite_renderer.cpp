@@ -21,7 +21,7 @@ void SpriteRenderer::Destroy()
 	renderStates.Destroy();
 }
 
-void SpriteRenderer::Init()
+void SpriteRenderer::Create()
 {
 	Destroy();
 	static InputElement layout[] = {
@@ -66,7 +66,7 @@ void SpriteRenderer::Draw(const SpriteCommands& sprites)
 	SRVID curTex;
 	auto flush = [&] {
 		if (numStoredSprites > 0) {
-			afBindTextureToBindingPoint(curTex, 0);
+			afBindTexture(curTex, 0);
 			quadListVertexBuffer.Write(v, sizeof(SpriteVertex) * 4 * numStoredSprites);
 			afDrawIndexed(6 * numStoredSprites, 0);
 			numStoredSprites = 0;

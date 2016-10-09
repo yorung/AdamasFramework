@@ -140,5 +140,5 @@ public:
 
 void afBindBufferToBindingPoint(const void* buf, int size, int rootParameterIndex);
 void afBindBufferToBindingPoint(UBOID ubo, int rootParameterIndex);
-void afBindTextureToBindingPoint(SRVID srv, int rootParameterIndex);
-#define afBindCubeMapToBindingPoint afBindTextureToBindingPoint
+void afBindTexture(SRVID srv, int rootParameterIndex);
+#define afBindCubeMap afBindTexture

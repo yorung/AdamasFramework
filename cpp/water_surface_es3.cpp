@@ -206,7 +206,7 @@ void WaterSurfaceES3::UpdateHeightMap(const UniformBuffer& hmub)
 	auto& heightR = heightMap[heightCurrentWriteTarget];
 	heightCurrentWriteTarget ^= 1;
 	auto& heightW = heightMap[heightCurrentWriteTarget];
-	afBindTextureToBindingPoint(heightR.GetTexture(), 0);
+	afBindTexture(heightR.GetTexture(), 0);
 	heightW.BeginRenderToThis();
 
 	renderStateHeightMap.Apply();
@@ -222,7 +222,7 @@ void WaterSurfaceES3::UpdateHeightMap(const UniformBuffer& hmub)
 void WaterSurfaceES3::UpdateNormalMap()
 {
 	auto& heightR = heightMap[heightCurrentWriteTarget];
-	afBindTextureToBindingPoint(heightR.GetTexture(), 0);
+	afBindTexture(heightR.GetTexture(), 0);
 	normalMap.BeginRenderToThis();
 	renderStateNormalMap.Apply();
 	stockObjects.ApplyFullScreenVertexBuffer();
@@ -235,7 +235,7 @@ void WaterSurfaceES3::RenderWater(const UniformBuffer& hmub)
 	renderStateWaterLastPass.Apply();
 
 	for (int i = 0; i < (int)dimof(texFiles); i++) {
-		afBindTextureToBindingPoint(texId[i], i);
+		afBindTexture(texId[i], i);
 		afSetSampler(texFiles[i].clamp ? AFST_LINEAR_CLAMP : AFST_LINEAR_WRAP, i);
 	}
 
@@ -247,10 +247,10 @@ void WaterSurfaceES3::RenderWater(const UniformBuffer& hmub)
 
 	renderTarget[0].BeginRenderToThis();
 	stockObjects.ApplyFullScreenVertexBuffer();
-	afBindTextureToBindingPoint(curHeightMap.GetTexture(), 6);
-	afBindTextureToBindingPoint(normalMap.GetTexture(), 7);
+	afBindTexture(curHeightMap.GetTexture(), 6);
+	afBindTexture(normalMap.GetTexture(), 7);
 	afDraw(4);
-	afBindTextureToBindingPoint(0, 6);
+	afBindTexture(0, 6);
 	afBindVAO(0);
 }
 

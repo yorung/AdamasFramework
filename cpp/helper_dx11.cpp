@@ -113,7 +113,7 @@ void afBindBufferToBindingPoint(UBOID ubo, UINT uniformBlockBinding)
 	deviceMan11.GetContext()->PSSetConstantBuffers(uniformBlockBinding, 1, ubo.GetAddressOf());
 }
 
-void afBindTextureToBindingPoint(SRVID srv, UINT textureBindingPoint)
+void afBindTexture(SRVID srv, UINT textureBindingPoint)
 {
 	deviceMan11.GetContext()->PSSetShaderResources(textureBindingPoint, 1, srv.GetAddressOf());
 }

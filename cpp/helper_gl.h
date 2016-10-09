@@ -148,8 +148,8 @@ void afLayoutSamplerBindingManually(GLuint program, const GLchar* name, GLuint s
 void afLayoutSSBOBindingManually(GLuint program, const GLchar* name, GLuint storageBlockBinding);
 void afLayoutUBOBindingManually(GLuint program, const GLchar* name, GLuint uniformBlockBinding);
 #endif
-void afBindTextureToBindingPoint(GLuint tex, GLuint textureBindingPoint);
-void afBindCubeMapToBindingPoint(GLuint tex, GLuint textureBindingPoint);
+void afBindTexture(GLuint tex, GLuint textureBindingPoint);
+void afBindCubeMap(GLuint tex, GLuint textureBindingPoint);
 
 enum PrimitiveTopology {
 	PT_TRIANGLESTRIP = GL_TRIANGLE_STRIP,
@@ -301,5 +301,5 @@ inline void afBindCbvs(AFCbvBindToken cbvs[], int nCbvs, int startBindingPoint =
 inline void afBindCbvsSrv0(AFCbvBindToken cbvs[], int nCbvs, SRVID srv)
 {
 	afBindCbvs(cbvs, nCbvs);
-	afBindTextureToBindingPoint(srv, 0);
+	afBindTexture(srv, 0);
 }

@@ -311,7 +311,7 @@ void WaterSurfaceES2::Draw()
 
 	renderStateWater.Apply();
 	for (int i = 0; i < (int)dimof(texFiles); i++) {
-		afBindTextureToBindingPoint(texIds[i], i);
+		afBindTexture(texIds[i], i);
 	}
 
 	AFRenderTarget rtWater;
@@ -333,7 +333,7 @@ void WaterSurfaceES2::Draw()
 	rtDefault.BeginRenderToThis();
 
 	renderStatePostProcess.Apply();
-	afBindTextureToBindingPoint(rtWater.GetTexture(), 0);
+	afBindTexture(rtWater.GetTexture(), 0);
 #ifndef AF_DX12
 	afSetVertexBuffer(vboFullScr, sizeof(Vec2));
 	afSetIndexBuffer(iboFullScr);
