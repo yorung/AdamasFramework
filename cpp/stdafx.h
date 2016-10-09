@@ -10,6 +10,11 @@
 #include "device_man_wgl.h"
 #endif
 
+#ifdef AF_VULKAN
+#define VK_USE_PLATFORM_WIN32_KHR
+#include <vulkan/vulkan.h>
+#endif
+
 #ifdef AF_DX11
 #include <d3d11.h>
 #include <wrl.h>	// ComPtr
@@ -61,6 +66,10 @@ static const int BONE_MAX = 50;
 #ifdef AF_GLES31
 #include "shader_man_gl.h"
 #include "helper_gl.h"
+#endif
+
+#ifdef AF_VULKAN
+#include "helper_vulkan.h"
 #endif
 
 #ifdef AF_DX11

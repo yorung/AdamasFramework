@@ -85,14 +85,14 @@ void App::LoadMesh(const char* fileName)
 
 void App::Destroy()
 {
-#ifdef AF_DX12
+#if defined(AF_DX12) || defined(AF_VULKAN)
 	deviceMan.Flush();
 #endif
 	luaMan.Destroy();
 	stockObjects.Destroy();
 	spriteRenderer.Destroy();
 	texMan.Destroy();
-#ifndef AF_DX12
+#if defined(AF_GLES31) || defined(AF_DX11)
 	shaderMan.Destroy();
 #endif
 	fontMan.Destroy();

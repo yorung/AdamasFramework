@@ -145,6 +145,9 @@
     <ClCompile Include="..\cpp\helper_dx12.cpp">
       <Filter>DX12</Filter>
     </ClCompile>
+    <ClCompile Include="..\cpp\helper_vulkan.cpp">
+      <Filter>Vulkan</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resource.h">
@@ -267,6 +270,9 @@
     <ClInclude Include="..\cpp\helper_win.h">
       <Filter>Windows</Filter>
     </ClInclude>
+    <ClInclude Include="..\cpp\helper_vulkan.h">
+      <Filter>Vulkan</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Windows">
@@ -286,6 +292,9 @@
     </Filter>
     <Filter Include="DX12">
       <UniqueIdentifier>{3ad9077a-d1f0-4c15-8ace-0907d7a2f25d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Vulkan">
+      <UniqueIdentifier>{2ad927c3-d2d5-464e-a4f8-f84440cea3f3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

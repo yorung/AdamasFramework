@@ -1,5 +1,5 @@
 #include "stdafx.h"
-
+#ifndef AF_VULKAN
 struct WaterVert
 {
 	Vec3 pos;
@@ -340,4 +340,4 @@ void WaterSurfaceES2::Draw()
 	afDraw(4);
 #endif
 }
-
+#endif
