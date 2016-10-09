@@ -26,7 +26,10 @@ SRVID TexMan::CreateWhiteTexture()
 		return it->second;
 	}
 	uint32_t white = 0xffffffff;
-	SRVID tex = afCreateTexture2D(AFF_R8G8B8A8_UNORM, IVec2(1, 1), &white);
+	TexDesc desc;
+	desc.size = IVec2(1, 1);
+	AFTexSubresourceData data = { &white, 4, 4 };
+	SRVID tex = afCreateTexture2D(AFF_R8G8B8A8_UNORM, desc, 1, &data);
 	afSetTextureName(tex, __FUNCTION__);
 	return nameToId[name] = tex;
 }

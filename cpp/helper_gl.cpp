@@ -173,21 +173,6 @@ SRVID afCreateDynamicTexture(AFFormat format, const IVec2& size)
 	return texture;
 }
 
-SRVID afCreateTexture2D(AFFormat format, const IVec2& size, void *image)
-{
-	SRVID texture;
-	glGenTextures(1, &texture.x);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	CreateTextureInternal(format, size, image);
-	glGenerateMipmap(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, 0);
-	return texture;
-}
-
 SRVID afCreateTexture2D(AFFormat format, const TexDesc& desc, int mipCount, const AFTexSubresourceData datas[])
 {
 	GLenum target = desc.isCubeMap ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D;

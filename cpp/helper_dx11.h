@@ -43,7 +43,6 @@ void afDraw(int numVertices, int start = 0, int instanceCount = 1);
 
 typedef D3D11_SUBRESOURCE_DATA AFTexSubresourceData;
 
-SRVID afCreateTexture2D(AFFormat format, const IVec2& size, void *image);
 SRVID afCreateTexture2D(AFFormat format, const struct TexDesc& desc, int mipCount, const AFTexSubresourceData datas[]);
 SRVID afCreateDynamicTexture(AFFormat format, const IVec2& size);
 IVec2 afGetTextureSize(SRVID tex);

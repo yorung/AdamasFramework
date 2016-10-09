@@ -115,8 +115,6 @@ struct AFTexSubresourceData
 	uint32_t pitchSlice;
 };
 
-
-SRVID afCreateTexture2D(AFFormat format, const IVec2& size, void *image);
 SRVID afCreateTexture2D(AFFormat format, const struct TexDesc& desc, int mipCount, const AFTexSubresourceData datas[]);
 SRVID afCreateDynamicTexture(AFFormat format, const IVec2& size);
 

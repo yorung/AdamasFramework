@@ -48,17 +48,6 @@ UBOID afCreateUBO(int size)
 	return ubo;
 }
 
-SRVID afCreateTexture2D(AFFormat format, const IVec2& size, void *image)
-{
-	CD3D11_TEXTURE2D_DESC desc(format, size.x, size.y, 1, 1, D3D11_BIND_SHADER_RESOURCE);
-	D3D11_SUBRESOURCE_DATA r = { image, (uint32_t)size.x * 4, 0 };
-	ComPtr<ID3D11Texture2D> tex;
-	ComPtr<ID3D11ShaderResourceView> srv;
-	deviceMan11.GetDevice()->CreateTexture2D(&desc, &r, &tex);
-	deviceMan11.GetDevice()->CreateShaderResourceView(tex.Get(), nullptr, &srv);
-	return srv;
-}
-
 SRVID afCreateTexture2D(AFFormat format, const TexDesc& afDesc, int mipCount, const AFTexSubresourceData datas[])
 {
 	ComPtr<ID3D11Texture2D> tex;

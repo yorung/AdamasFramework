@@ -173,7 +173,7 @@ void afSetTextureName(SRVID tex, const char* name)
 	}
 }
 
-SRVID afCreateTexture2D(AFFormat format, const IVec2& size, void *image, bool isRenderTargetOrDepthStencil)
+SRVID afCreateDynamicTexture(AFFormat format, const IVec2& size, void *image, bool isRenderTargetOrDepthStencil)
 {
 	bool isDepthStencil = format == AFF_DEPTH || format == AFF_DEPTH_STENCIL;
 	D3D12_RESOURCE_DESC textureDesc = {};

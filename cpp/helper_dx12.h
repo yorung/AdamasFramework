@@ -43,13 +43,12 @@ struct AFTexSubresourceData
 	uint32_t pitchSlice;
 };
 
-SRVID afCreateTexture2D(AFFormat format, const IVec2& size, void *image = nullptr, bool isRenderTargetOrDepthStencil = false);
+SRVID afCreateDynamicTexture(AFFormat format, const IVec2& size, void *image = nullptr, bool isRenderTargetOrDepthStencil = false);
 SRVID afCreateTexture2D(AFFormat format, const struct TexDesc& desc, int mipCount, const AFTexSubresourceData datas[]);
 void afSetTextureName(SRVID tex, const char* name);
 
 void afWriteTexture(SRVID srv, const TexDesc& desc, const void* buf);
 void afWriteTexture(SRVID id, const TexDesc& desc, int mipCount, const AFTexSubresourceData datas[]);
-#define afCreateDynamicTexture afCreateTexture2D
 
 SRVID LoadTextureViaOS(const char* name, IVec2& size);
 IBOID afCreateTiledPlaneIBO(int numTiles, int* numIndies = nullptr);
