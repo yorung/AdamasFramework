@@ -1,5 +1,16 @@
+@echo off
 set COMPILER=%VK_SDK_PATH%\Bin32\glslangValidator.exe
+for %%i in (*.vert,*.frag) do call :compile %%i
+goto done
 
-for %%i in (*.vert,*.frag) do %COMPILER% -V %%i -o ../pack/assets/spv/%%i.spv
+:compile
+echo -------------
+%COMPILER% -V %1 -o ../pack/assets/spv/%1.spv
+echo ERRORLEVEL: %ERRORLEVEL%
+if %ERRORLEVEL% equ 2 (
+	pause
+	exit
+)
+exit /b
 
-pause
+:done
