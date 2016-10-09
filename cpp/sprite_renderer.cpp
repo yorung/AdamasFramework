@@ -2,7 +2,7 @@
 
 SpriteRenderer spriteRenderer;
 
-static const int MAX_SPRITES_IN_ONE_DRAW_CALL = 10;
+static const int MAX_SPRITES_IN_ONE_DRAW_CALL = 16;
 
 struct SpriteVertex {
 	Vec3 pos;
