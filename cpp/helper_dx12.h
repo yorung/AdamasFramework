@@ -137,7 +137,7 @@ public:
 	ComPtr<ID3D12Resource> GetTexture() { return renderTarget; }
 };
 
-void afBindBufferToBindingPoint(const void* buf, int size, int rootParameterIndex);
-void afBindBufferToBindingPoint(UBOID ubo, int rootParameterIndex);
+void afBindBuffer(const void* buf, int size, int rootParameterIndex);
+void afBindBuffer(UBOID ubo, int rootParameterIndex);
 void afBindTexture(SRVID srv, int rootParameterIndex);
 #define afBindCubeMap afBindTexture

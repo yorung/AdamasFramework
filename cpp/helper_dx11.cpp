@@ -96,20 +96,20 @@ SAMPLERID afCreateSampler(SamplerType type)
 	return sampler;
 }
 
-void afBindBufferToBindingPoint(UBOID ubo, UINT uniformBlockBinding)
+void afBindBuffer(UBOID ubo, UINT slot)
 {
-	deviceMan11.GetContext()->VSSetConstantBuffers(uniformBlockBinding, 1, ubo.GetAddressOf());
-	deviceMan11.GetContext()->PSSetConstantBuffers(uniformBlockBinding, 1, ubo.GetAddressOf());
+	deviceMan11.GetContext()->VSSetConstantBuffers(slot, 1, ubo.GetAddressOf());
+	deviceMan11.GetContext()->PSSetConstantBuffers(slot, 1, ubo.GetAddressOf());
 }
 
-void afBindTexture(SRVID srv, UINT textureBindingPoint)
+void afBindTexture(SRVID srv, UINT slot)
 {
-	deviceMan11.GetContext()->PSSetShaderResources(textureBindingPoint, 1, srv.GetAddressOf());
+	deviceMan11.GetContext()->PSSetShaderResources(slot, 1, srv.GetAddressOf());
 }
 
-void afBindSamplerToBindingPoint(SAMPLERID sampler, UINT textureBindingPoint)
+void afBindSamplerToBindingPoint(SAMPLERID sampler, UINT slot)
 {
-	deviceMan11.GetContext()->PSSetSamplers(textureBindingPoint, 1, sampler.GetAddressOf());
+	deviceMan11.GetContext()->PSSetSamplers(slot, 1, sampler.GetAddressOf());
 }
 
 void afWriteBuffer(const IBOID p, const void* buf, int size)

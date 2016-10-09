@@ -440,7 +440,7 @@ void afBindCbvs(AFCbvBindToken cbvs[], int nCbvs, int startBindingPoint)
 		}
 		else if (cbv.ubo)
 		{
-			afBindBufferToBindingPoint(cbv.ubo, startBindingPoint + i);
+			afBindBuffer(cbv.ubo, startBindingPoint + i);
 		}
 		else
 		{
@@ -449,13 +449,13 @@ void afBindCbvs(AFCbvBindToken cbvs[], int nCbvs, int startBindingPoint)
 	}
 }
 
-void afBindBufferToBindingPoint(const void* buf, int size, int rootParameterIndex)
+void afBindBuffer(const void* buf, int size, int rootParameterIndex)
 {
 	int cbTop = deviceMan.AssignConstantBuffer(buf, size);
 	deviceMan.GetCommandList()->SetGraphicsRootConstantBufferView(rootParameterIndex, deviceMan.GetConstantBufferGPUAddress(cbTop));
 }
 
-void afBindBufferToBindingPoint(UBOID ubo, int rootParameterIndex)
+void afBindBuffer(UBOID ubo, int rootParameterIndex)
 {
 	deviceMan.GetCommandList()->SetGraphicsRootConstantBufferView(rootParameterIndex, ubo->GetGPUVirtualAddress());
 }

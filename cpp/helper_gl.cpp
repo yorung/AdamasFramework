@@ -75,7 +75,7 @@ void afLayoutUBOBindingManually(GLuint program, const GLchar* name, GLuint unifo
 #endif
 
 #ifdef AF_GLES31
-void afBindBufferToBindingPoint(SSBOID ssbo, GLuint storageBlockBinding)
+void afBindBuffer(SSBOID ssbo, GLuint storageBlockBinding)
 {
 	GLint prev;
 	glGetIntegerv(GL_SHADER_STORAGE_BUFFER_BINDING, &prev);
@@ -83,7 +83,7 @@ void afBindBufferToBindingPoint(SSBOID ssbo, GLuint storageBlockBinding)
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, prev);
 }
 
-void afBindBufferToBindingPoint(UBOID ubo, GLuint uniformBlockBinding)
+void afBindBuffer(UBOID ubo, GLuint uniformBlockBinding)
 {
 	GLint prev;
 	glGetIntegerv(GL_UNIFORM_BUFFER_BINDING, &prev);

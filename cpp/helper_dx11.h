@@ -33,10 +33,10 @@ VBOID afCreateVertexBuffer(int size, const void* buf);
 VBOID afCreateDynamicVertexBuffer(int size);
 UBOID afCreateUBO(int size);
 
-void afBindBufferToBindingPoint(UBOID ubo, UINT uniformBlockBinding);
-void afBindTexture(SRVID srv, UINT textureBindingPoint);
+void afBindBuffer(UBOID ubo, UINT slot);
+void afBindTexture(SRVID srv, UINT slot);
 #define afBindCubeMap afBindTexture
-void afBindSamplerToBindingPoint(SAMPLERID sampler, UINT textureBindingPoint);
+void afBindSamplerToBindingPoint(SAMPLERID sampler, UINT slot);
 
 void afDrawIndexed(int numIndices, int start = 0, int instanceCount = 1);
 void afDraw(int numVertices, int start = 0, int instanceCount = 1);
@@ -140,6 +140,6 @@ inline void afBindCbvs(AFCbvBindToken cbvs[], int nCbvs, int startBindingPoint =
 {
 	for (int i = 0; i < nCbvs; i++)
 	{
-		afBindBufferToBindingPoint(cbvs[i].Get(), startBindingPoint + i);
+		afBindBuffer(cbvs[i].Get(), startBindingPoint + i);
 	}
 }

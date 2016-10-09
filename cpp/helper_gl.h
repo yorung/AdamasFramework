@@ -186,8 +186,8 @@ typedef TBufName<GL_UNIFORM_BUFFER> UBOID;
 typedef AFGLName VAOID;
 SSBOID afCreateSSBO(int size);
 UBOID afCreateUBO(int size);
-void afBindBufferToBindingPoint(SSBOID ssbo, GLuint storageBlockBinding);
-void afBindBufferToBindingPoint(UBOID ubo, GLuint uniformBlockBinding);
+void afBindBuffer(SSBOID ssbo, GLuint storageBlockBinding);
+void afBindBuffer(UBOID ubo, GLuint uniformBlockBinding);
 VAOID afCreateVAO(const InputElement elements[], int numElements, int numBuffers, VBOID const *vertexBufferIds, const int* strides, IBOID ibo);
 inline void afSafeDeleteVAO(VAOID& vao)
 {
@@ -292,7 +292,7 @@ inline void afBindCbvs(AFCbvBindToken cbvs[], int nCbvs, int startBindingPoint =
 {
 	for (int i = 0; i < nCbvs; i++)
 	{
-		afBindBufferToBindingPoint(cbvs[i].Get(), startBindingPoint + i);
+		afBindBuffer(cbvs[i].Get(), startBindingPoint + i);
 	}
 }
 
