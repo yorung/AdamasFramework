@@ -77,8 +77,13 @@ void MeshRenderer::Create()
 	uboForMaterials = afCreateUBO(MATERIAL_UBO_SIZE);
 
 #ifdef AF_VULKAN
+	VkDevice device = deviceMan.GetDevice();
 	const VkDescriptorSetAllocateInfo descriptorSetAllocateInfo = { VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO, nullptr, deviceMan.descriptorPool, 1, &deviceMan.commonUboDescriptorSetLayout };
 	afHandleVKError(vkAllocateDescriptorSets(deviceMan.GetDevice(), &descriptorSetAllocateInfo, &uboDescriptorSet));
+
+	const VkDescriptorBufferInfo descriptorBufferInfo = { uboForMaterials.buffer, 0, VK_WHOLE_SIZE };
+	const VkWriteDescriptorSet writeDescriptorSets[] = { { VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, uboDescriptorSet, 0, 0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, nullptr, &descriptorBufferInfo } };
+	vkUpdateDescriptorSets(device, arrayparam(writeDescriptorSets), 0, nullptr);
 #endif
 
 	renderStates.Create("skin_instanced", arrayparam(elements), AFRS_DEPTH_ENABLE | AFRS_CULL_CW | AFRS_PRIMITIVE_TRIANGLELIST, arrayparam(samplers));

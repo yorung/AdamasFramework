@@ -1,16 +1,17 @@
 #version 450
 
-in vec3 POSITION;
-in vec3 NORMAL;
-in vec2 vTexcoord;
-in vec4 vColor;
-in vec3 vBlendWeights;
-in uvec4 vBlendIndices;
-in uint materialId;
-out vec2 texcoord;
-out vec4 diffuse;
-out vec3 emissive;
-out vec3 normal;
+layout(location = 0) in vec3 POSITION;
+layout(location = 1) in vec3 NORMAL;
+layout(location = 2) in vec4 vColor;
+layout(location = 3) in vec2 vTexcoord;
+layout(location = 4) in vec3 vBlendWeights;
+layout(location = 5) in uvec4 vBlendIndices;
+layout(location = 6) in uint materialId;
+
+layout (location = 0) out vec2 texcoord;
+layout (location = 1) out vec4 diffuse;
+layout (location = 2) out vec3 emissive;
+layout (location = 3) out vec3 normal;
 struct RenderCommand
 {
 	mat4 matWorld;
@@ -59,7 +60,9 @@ void main()
 
 	gl_Position = matP * matV * renderCommands[gl_InstanceIndex].matWorld * comb * vec4(pos, 1.0);
 	texcoord = vTexcoord;
-	diffuse = vColor * vec4(materials[materialId].faceColor.xyz, 1.0);
-	emissive = materials[materialId].emissive.xyz;
+	//diffuse = vColor * vec4(materials[materialId].faceColor.xyz, 1.0);
+	//emissive = materials[materialId].emissive.xyz;
 	normal = mat3(renderCommands[gl_InstanceIndex].matWorld * comb) * NORMAL;
+	emissive = vec3(0.0, 0.0, 0.0);
+	diffuse = vColor;
 }
