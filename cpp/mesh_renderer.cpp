@@ -165,7 +165,7 @@ void MeshRenderer::Flush()
 	for (auto it : r->materialMaps) {
 		const Material* mat = meshRenderer.GetMaterial(it.materialId);
 		assert(mat);
-		afBindTexture(mat->texture, 3);
+		afBindTexture(texMan.IndexToTexture(mat->texture), 3);
 		int count = it.faces * 3;
 		int start = it.faceStartIndex * 3;
 		afDrawIndexed(count, start, nStoredCommands);

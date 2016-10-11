@@ -20,7 +20,7 @@ public:
 	Vec3 specular;
 	float power = 0;
 	Vec3 emissive;
-	SRVID texture;
+	int texture;
 };
 
 struct RenderCommand
