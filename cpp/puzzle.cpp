@@ -2,11 +2,13 @@
 
 class Puzzle
 {
+	SRVID tex;
 	int panels[16];
 	SpriteCommands cmds;
 	void TryMove(int x, int y);
 public:
 	Puzzle();
+	~Puzzle();
 	void Update();
 	void Draw();
 };
@@ -35,14 +37,22 @@ public:
 
 Puzzle::Puzzle()
 {
-	for (int i = 0; i < (int)dimof(panels); i++) {
+	tex = afLoadTexture("models/jiji.dds", TexDesc());
+	for (int i = 0; i < (int)dimof(panels); i++)
+	{
 		panels[i] = i;
 	}
 	panels[0] = -1;
 	srand((unsigned int)time(0));
-	for (int i = 0; i < 10000; i++) {
+	for (int i = 0; i < 10000; i++)
+	{
 		TryMove(rand() % 4, rand() % 4);
 	}
+}
+
+Puzzle::~Puzzle()
+{
+	afSafeDeleteTexture(tex);
 }
 
 void Puzzle::TryMove(int x, int y)
@@ -65,7 +75,7 @@ void Puzzle::Update()
 {
 	cmds.clear();
 	SpriteCommand cmd;
-	cmd.tex = texMan.Create("models/jiji.dds");
+	cmd.tex = tex;
 
 	const float pitch = 0.25f;
 	const float sprW = 64;

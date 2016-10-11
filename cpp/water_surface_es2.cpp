@@ -255,8 +255,9 @@ void WaterSurfaceES2::Init()
 #endif
 
 	texIds.resize(dimof(texFiles));
-	for (int i = 0; i < (int)dimof(texFiles); i++) {
-		texIds[i] = texMan.Create(texFiles[i].name);
+	for (int i = 0; i < (int)dimof(texFiles); i++)
+	{
+		texIds[i] = afLoadTexture(texFiles[i].name, TexDesc());
 	}
 }
 
