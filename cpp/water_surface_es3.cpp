@@ -111,10 +111,17 @@ WaterSurfaceES3::~WaterSurfaceES3()
 
 void WaterSurfaceES3::Destroy()
 {
-	for (auto& it : renderTarget) {
+	for (auto& it : texId)
+	{
+		afSafeDeleteTexture(it);
+	}
+	texId.clear();
+	for (auto& it : renderTarget)
+	{
 		it.Destroy();
 	}
-	for (auto& it : heightMap) {
+	for (auto& it : heightMap)
+	{
 		it.Destroy();
 	}
 	normalMap.Destroy();
@@ -157,15 +164,10 @@ void WaterSurfaceES3::Init()
 
 	glActiveTexture(GL_TEXTURE0);
 	texId.resize(dimof(texFiles));
-	for (int i = 0; i < (int)dimof(texFiles); i++) {
-		texId[i] = texMan.Create(texFiles[i].name);
+	for (int i = 0; i < (int)dimof(texFiles); i++)
+	{
+		texId[i] = afLoadTexture(texFiles[i].name, TexDesc());
 		aflog("WaterSurface::Init tex %s %s\n", texFiles[i].name, (texId[i] ? "OK" : "NG"));
-		if (!texFiles[i].clamp) {
-            glBindTexture(GL_TEXTURE_2D, texId[i]);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-            glBindTexture(GL_TEXTURE_2D, 0);
-        }
 	}
 
 	aflog("WaterSurface::Init finished!\n");

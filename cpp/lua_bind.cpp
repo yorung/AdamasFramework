@@ -162,9 +162,14 @@ static void BindImage(lua_State* L)
 		std::string fileName;
 #endif
 	public:
+		~Image()
+		{
+			afSafeDeleteTexture(texId);
+		}
+
 		Image(const char *fileName)
 		{
-			texId = texMan.Create(fileName);
+			texId = afLoadTexture(fileName, TexDesc());
 #ifdef _DEBUG
 			this->fileName = fileName;
 #endif
