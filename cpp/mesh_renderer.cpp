@@ -187,10 +187,14 @@ void MeshRenderer::Flush()
 	renderStates.Apply();
 	afBindBuffer(sizeof(PerDrawCallUBO), &perDrawCallUBO, 0);
 #ifdef AF_VULKAN
-	uint32_t dynamicOffset = 0;
-	VkCommandBuffer commandBuffer = deviceMan.commandBuffer;
 	const uint32_t descritorSetIndex = 1;
-	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, renderStates.GetPipelineLayout(), descritorSetIndex, 1, &deviceMan.commonUboDescriptorSet, 1, &dynamicOffset);
+
+	assert(materials.size() <= MAX_MATERIALS);
+	afBindBuffer(sizeof(Material) * materials.size(), &materials[0], descritorSetIndex);
+
+	//uint32_t dynamicOffset = 0;
+	//VkCommandBuffer commandBuffer = deviceMan.commandBuffer;
+	//vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, renderStates.GetPipelineLayout(), descritorSetIndex, 1, &deviceMan.commonUboDescriptorSet, 1, &dynamicOffset);
 #else
 	afBindBuffer(uboForMaterials, 1);
 #endif

@@ -60,9 +60,9 @@ void main()
 
 	gl_Position = matP * matV * renderCommands[gl_InstanceIndex].matWorld * comb * vec4(pos, 1.0);
 	texcoord = vTexcoord;
-	//diffuse = vColor * vec4(materials[materialId].faceColor.xyz, 1.0);
-	//emissive = materials[materialId].emissive.xyz;
+	diffuse = vColor * vec4(materials[materialId].faceColor.xyz, 1.0);
+	emissive = materials[materialId].emissive.xyz;
 	normal = mat3(renderCommands[gl_InstanceIndex].matWorld * comb) * NORMAL;
-	emissive = vec3(0.0, 0.0, 0.0);
-	diffuse = vColor;
+	//emissive = vec3(0.0, 0.0, 0.0);
+	//diffuse = vColor;
 }
