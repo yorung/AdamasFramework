@@ -6,7 +6,20 @@ static const size_t MAX_MATERIALS = 100;
 static const size_t MAX_BONE_SSBOS = 100;
 static const size_t MATERIAL_UBO_SIZE = sizeof(Material) * MAX_MATERIALS;
 
-static const InputElement elements[] = {
+#ifdef AF_VULKAN
+static const InputElement elements[] =
+{
+	CInputElement(0, AFF_R32G32B32_FLOAT, 0),
+	CInputElement(1, AFF_R32G32B32_FLOAT, 12),
+	CInputElement(2, AFF_R8G8B8A8_UNORM, 24),
+	CInputElement(3, AFF_R32G32_FLOAT, 28),
+	CInputElement(4, AFF_R32G32B32_FLOAT, 36),
+	CInputElement(5, AFF_R8G8B8A8_UINT, 48),
+	CInputElement(6, AFF_R32_UINT, 52),
+};
+#else
+static const InputElement elements[] =
+{
 	CInputElement("POSITION", AFF_R32G32B32_FLOAT, 0),
 	CInputElement("NORMAL", AFF_R32G32B32_FLOAT, 12),
 	CInputElement("vColor", AFF_R8G8B8A8_UNORM, 24),
@@ -15,6 +28,7 @@ static const InputElement elements[] = {
 	CInputElement("vBlendIndices", AFF_R8G8B8A8_UINT, 48),
 	CInputElement("materialId", AFF_R32_UINT, 52),
 };
+#endif
 
 static const SamplerType samplers[] = {
 	AFST_MIPMAP_WRAP,
@@ -61,11 +75,30 @@ void MeshRenderer::Create()
 {
 	Destroy();
 	uboForMaterials = afCreateUBO(MATERIAL_UBO_SIZE);
+
+#ifdef AF_VULKAN
+	VkDevice device = deviceMan.GetDevice();
+	const VkDescriptorSetAllocateInfo descriptorSetAllocateInfo = { VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO, nullptr, deviceMan.descriptorPool, 1, &deviceMan.commonUboDescriptorSetLayout };
+	afHandleVKError(vkAllocateDescriptorSets(deviceMan.GetDevice(), &descriptorSetAllocateInfo, &uboDescriptorSet));
+
+	const VkDescriptorBufferInfo descriptorBufferInfo = { uboForMaterials.buffer, 0, VK_WHOLE_SIZE };
+	const VkWriteDescriptorSet writeDescriptorSets[] = { { VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, uboDescriptorSet, 0, 0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, nullptr, &descriptorBufferInfo } };
+	vkUpdateDescriptorSets(device, arrayparam(writeDescriptorSets), 0, nullptr);
+#endif
+
 	renderStates.Create("skin_instanced", arrayparam(elements), AFRS_DEPTH_ENABLE | AFRS_CULL_CW | AFRS_PRIMITIVE_TRIANGLELIST, arrayparam(samplers));
 }
 
 void MeshRenderer::Destroy()
 {
+#ifdef AF_VULKAN
+	if (uboDescriptorSet)
+	{
+		afHandleVKError(vkFreeDescriptorSets(deviceMan.GetDevice(), deviceMan.descriptorPool, 1, &uboDescriptorSet));
+		uboDescriptorSet = 0;
+	}
+#endif
+
 	for (int i = 0; i < (int)renderMeshes.size(); i++) {
 		RenderMesh* m = renderMeshes[i];
 		delete m;
@@ -153,7 +186,18 @@ void MeshRenderer::Flush()
 
 	renderStates.Apply();
 	afBindBuffer(sizeof(PerDrawCallUBO), &perDrawCallUBO, 0);
+#ifdef AF_VULKAN
+	const uint32_t descritorSetIndex = 1;
+
+	//assert(materials.size() <= MAX_MATERIALS);
+	//afBindBuffer(sizeof(Material) * materials.size(), &materials[0], descritorSetIndex);
+
+	uint32_t dynamicOffset = 0;
+	VkCommandBuffer commandBuffer = deviceMan.commandBuffer;
+	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, renderStates.GetPipelineLayout(), descritorSetIndex, 1, &uboDescriptorSet, 1, &dynamicOffset);
+#else
 	afBindBuffer(uboForMaterials, 1);
+#endif
 	afBindBuffer(sizeof(Mat) * renderBoneMatrices.size(), &renderBoneMatrices[0], 2);
 
 	const RenderCommand& c = perDrawCallUBO.commands[0];

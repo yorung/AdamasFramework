@@ -24,6 +24,8 @@ Global
 		DX12Release|Win32 = DX12Release|Win32
 		ES31Debug|Win32 = ES31Debug|Win32
 		ES31Release|Win32 = ES31Release|Win32
+		VKDebug|Win32 = VKDebug|Win32
+		VKRelease|Win32 = VKRelease|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{D13F848D-7701-43BA-B781-1481A54FE77D}.DX11Debug|Win32.ActiveCfg = DX11Debug|Win32
@@ -38,6 +40,10 @@ Global
 		{D13F848D-7701-43BA-B781-1481A54FE77D}.ES31Debug|Win32.Build.0 = Debug|Win32
 		{D13F848D-7701-43BA-B781-1481A54FE77D}.ES31Release|Win32.ActiveCfg = Release|Win32
 		{D13F848D-7701-43BA-B781-1481A54FE77D}.ES31Release|Win32.Build.0 = Release|Win32
+		{D13F848D-7701-43BA-B781-1481A54FE77D}.VKDebug|Win32.ActiveCfg = VKDebug|Win32
+		{D13F848D-7701-43BA-B781-1481A54FE77D}.VKDebug|Win32.Build.0 = VKDebug|Win32
+		{D13F848D-7701-43BA-B781-1481A54FE77D}.VKRelease|Win32.ActiveCfg = VKRelease|Win32
+		{D13F848D-7701-43BA-B781-1481A54FE77D}.VKRelease|Win32.Build.0 = VKRelease|Win32
 		{B9510AE9-6611-42BB-ABC3-73FCABF768D1}.DX11Debug|Win32.ActiveCfg = DX11Debug|Win32
 		{B9510AE9-6611-42BB-ABC3-73FCABF768D1}.DX11Debug|Win32.Build.0 = DX11Debug|Win32
 		{B9510AE9-6611-42BB-ABC3-73FCABF768D1}.DX11Release|Win32.ActiveCfg = DX11Release|Win32
@@ -50,6 +56,10 @@ Global
 		{B9510AE9-6611-42BB-ABC3-73FCABF768D1}.ES31Debug|Win32.Build.0 = Debug|Win32
 		{B9510AE9-6611-42BB-ABC3-73FCABF768D1}.ES31Release|Win32.ActiveCfg = Release|Win32
 		{B9510AE9-6611-42BB-ABC3-73FCABF768D1}.ES31Release|Win32.Build.0 = Release|Win32
+		{B9510AE9-6611-42BB-ABC3-73FCABF768D1}.VKDebug|Win32.ActiveCfg = VKDebug|Win32
+		{B9510AE9-6611-42BB-ABC3-73FCABF768D1}.VKDebug|Win32.Build.0 = VKDebug|Win32
+		{B9510AE9-6611-42BB-ABC3-73FCABF768D1}.VKRelease|Win32.ActiveCfg = VKRelease|Win32
+		{B9510AE9-6611-42BB-ABC3-73FCABF768D1}.VKRelease|Win32.Build.0 = VKRelease|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

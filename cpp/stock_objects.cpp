@@ -1,8 +1,16 @@
 #include "stdafx.h"
 
-static const InputElement elements[] = {
+#ifdef AF_VULKAN
+static const InputElement elements[] =
+{
+	CInputElement(0, AFF_R32G32_FLOAT, 0),
+};
+#else
+static const InputElement elements[] =
+{
 	CInputElement("POSITION", AFF_R32G32_FLOAT, 0),
 };
+#endif
 
 StockObjects stockObjects;
 
@@ -18,7 +26,7 @@ void StockObjects::CreateFullScreenVAO()
 void StockObjects::Create()
 {
 	CreateFullScreenVAO();
-#ifndef AF_DX12
+#if defined(AF_GLES31) || defined(AF_DX11)
 	for (int i = 0; i < AFST_MAX; i++)
 	{
 		builtInSamplers[i] = afCreateSampler((SamplerType)i);
@@ -30,7 +38,7 @@ void StockObjects::Destroy()
 {
 	afSafeDeleteBuffer(vboFullScr);
 	afSafeDeleteBuffer(iboFullScr);
-#ifndef AF_DX12
+#if defined(AF_GLES31) || defined(AF_DX11)
 	for (SAMPLERID& sampler : builtInSamplers)
 	{
 		afSafeDeleteSampler(sampler);

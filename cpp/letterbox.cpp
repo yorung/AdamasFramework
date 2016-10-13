@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#ifndef AF_VULKAN
+
 LetterBox letterBox;
 
 void LetterBox::LazyInit()
@@ -31,3 +33,4 @@ void LetterBox::Destroy()
 {
 	renderStates.Destroy();
 }
+#endif

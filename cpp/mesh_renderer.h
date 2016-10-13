@@ -20,7 +20,7 @@ public:
 	Vec3 specular;
 	float power = 0;
 	Vec3 emissive;
-	int texture;
+	int texture = 0;
 };
 
 struct RenderCommand
@@ -60,6 +60,9 @@ public:
 	std::vector<Material> materials;
 	UBOID uboForMaterials;
 	RenderMesh* GetMeshByMRID(MRID id);
+#ifdef AF_VULKAN
+	VkDescriptorSet uboDescriptorSet = 0;
+#endif
 public:
 	~MeshRenderer();
 	void Create();

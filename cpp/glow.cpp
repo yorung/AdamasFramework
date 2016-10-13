@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#ifndef AF_VULKAN
+
 Glow glow;
 AFRenderTarget glowMap[6];
 const static SamplerType samplerTypes[] = { AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP };
@@ -61,3 +63,4 @@ void Glow::MakeGlow(AFRenderTarget& target, SRVID srcTex)
 	afBindTexture(srcTex, 6);
 	afDraw(4);
 }
+#endif
