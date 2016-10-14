@@ -21,6 +21,13 @@ void afSetVertexBuffer(VBOID id, int stride)
 	list->IASetVertexBuffers(0, 1, &vertexBufferView);
 }
 
+void afSetVertexBuffer(int size, const void* buf, int stride)
+{
+	VBOID vbo = afCreateDynamicVertexBuffer(size, buf);
+	afSetVertexBuffer(vbo, stride);
+	deviceMan.AddIntermediateCommandlistDependentResource(vbo);
+}
+
 void afSetVertexBuffers(int numIds, VBOID ids[], int strides[])
 {
 	ID3D12GraphicsCommandList* list = deviceMan.GetCommandList();
@@ -382,9 +389,7 @@ void AFDynamicQuadListVertexBuffer::Create(int vertexSize_, int nQuad)
 void AFDynamicQuadListVertexBuffer::Write(const void* buf, int size)
 {
 	assert(size <= vertexBufferSize);
-	VBOID vbo = afCreateDynamicVertexBuffer(size, buf);
-	afSetVertexBuffer(vbo, stride);
-	deviceMan.AddIntermediateCommandlistDependentResource(vbo);
+	afSetVertexBuffer(size, buf, stride);
 }
 
 void AFRenderTarget::InitForDefaultRenderTarget()

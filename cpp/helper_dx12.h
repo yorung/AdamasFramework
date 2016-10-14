@@ -22,6 +22,7 @@ inline void afSafeDeleteTexture(SRVID& p) { p.Reset(); }
 
 void afSetDescriptorHeap(ComPtr<ID3D12DescriptorHeap> heap);
 void afSetVertexBuffer(VBOID id, int stride);
+void afSetVertexBuffer(int size, const void* buf, int stride);
 void afSetVertexBuffers(int numIds, VBOID ids[], int strides[]);
 void afSetIndexBuffer(IBOID id);
 void afWriteBuffer(const IBOID id, int size, const void* buf);

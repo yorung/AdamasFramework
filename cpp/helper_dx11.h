@@ -23,6 +23,7 @@ inline void afSafeDeleteSampler(SAMPLERID& p) { p.Reset(); }
 inline void afSafeDeleteTexture(SRVID& p) { p.Reset(); }
 
 void afSetVertexBuffer(VBOID vertexBuffer, int stride);
+void afSetVertexBuffer(int size, const void* buf, int stride);
 void afSetIndexBuffer(IBOID indexBuffer);
 
 void afWriteBuffer(const IBOID p, int size, const void* buf);
@@ -105,16 +106,12 @@ public:
 	}
 	void Apply()
 	{
-		deviceMan.GetContext()->IASetIndexBuffer(ibo.Get(), AFIndexTypeToDevice, 0);
+		afSetIndexBuffer(ibo);
 	}
 	void Write(const void* buf, int size)
 	{
 		assert(size <= vertexBufferSize);
-		VBOID vbo = afCreateDynamicVertexBuffer(size);
-		afWriteBuffer(vbo, size, buf);
-		ID3D11Buffer* d11Bufs[] = { vbo.Get() };
-		UINT offsets[] = { 0 };
-		deviceMan11.GetContext()->IASetVertexBuffers(0, arrayparam(d11Bufs), &stride, offsets);
+		afSetVertexBuffer(size, buf, stride);
 	}
 	void Destroy()
 	{

@@ -13,6 +13,13 @@ void afSetVertexBuffer(VBOID vertexBuffer, int stride_)
 	deviceMan11.GetContext()->IASetVertexBuffers(0, arrayparam(d11Bufs), &stride, &offset);
 }
 
+void afSetVertexBuffer(int size, const void* buf, int stride)
+{
+	VBOID vbo = afCreateDynamicVertexBuffer(size);
+	afWriteBuffer(vbo, size, buf);
+	afSetVertexBuffer(vbo, stride);
+}
+
 void afSetIndexBuffer(IBOID indexBuffer)
 {
 	deviceMan11.GetContext()->IASetIndexBuffer(indexBuffer.Get(), AFIndexTypeToDevice, 0);
