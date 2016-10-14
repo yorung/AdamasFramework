@@ -112,6 +112,7 @@ inline IVec2 afGetTextureSize(SRVID tex)
 
 void afSetVertexBuffer(VBOID id, int stride);
 void afSetIndexBuffer(IBOID id);
+void afSetVertexBuffer(int size, const void* buffer, int stride);
 
 void afDrawIndexed(int numIndices, int start = 0, int instanceCount = 1);
 void afDraw(int numVertices, int start = 0, int instanceCount = 1);
@@ -134,7 +135,6 @@ public:
 
 class AFDynamicQuadListVertexBuffer
 {
-	VBOID vbo;
 	IBOID ibo;
 	UINT stride;
 	int vertexBufferSize;
@@ -146,7 +146,6 @@ public:
 	void Destroy()
 	{
 		afSafeDeleteBuffer(ibo);
-		afSafeDeleteBuffer(vbo);
 	}
 };
 
@@ -188,6 +187,7 @@ public:
 	VkCommandBuffer commandBuffer = 0;
 	VkDescriptorPool descriptorPool = 0;
 	AFBufferStackAllocator uboAllocator;
+	AFBufferStackAllocator vertexBufferAllocator;
 	VkDescriptorSetLayout commonUboDescriptorSetLayout = 0;
 	VkDescriptorSetLayout commonTextureDescriptorSetLayout = 0;
 	VkDescriptorSet commonUboDescriptorSet = 0;

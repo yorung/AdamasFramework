@@ -283,6 +283,15 @@ void afBindTexture(const TextureContext& textureContext, int descritorSetIndex)
 	afBindTexture(s_pipelineLayout, textureContext, descritorSetIndex);
 }
 
+void afSetVertexBuffer(int size, const void* buffer, int stride)
+{
+	(void)stride;
+	AFBufferStackAllocator& allocator = deviceMan.vertexBufferAllocator;
+	VkDeviceSize offset = allocator.Allocate(size, buffer);
+	VkCommandBuffer commandBuffer = deviceMan.commandBuffer;
+	vkCmdBindVertexBuffers(commandBuffer, 0, 1, &allocator.bufferContext.buffer, &offset);
+}
+
 void afSetVertexBuffer(VBOID vertexBuffer, int stride)
 {
 	(void)stride;
@@ -330,22 +339,18 @@ void AFDynamicQuadListVertexBuffer::Create(int vertexSize_, int nQuad)
 	Destroy();
 	stride = vertexSize_;
 	vertexBufferSize = nQuad * vertexSize_ * 4;
-	vbo = afCreateVertexBuffer(vertexBufferSize, nullptr);
 	ibo = afCreateQuadListIndexBuffer(nQuad);
 }
 
 void AFDynamicQuadListVertexBuffer::Apply()
 {
-	VkCommandBuffer cmd = deviceMan.commandBuffer;
-	VkDeviceSize offsets[1] = {};
-	vkCmdBindVertexBuffers(cmd, 0, 1, &vbo.buffer, offsets);
 	afSetIndexBuffer(ibo);
 }
 
 void AFDynamicQuadListVertexBuffer::Write(const void* buf, int size)
 {
 	assert(size <= vertexBufferSize);
-	memcpy(vbo.mappedMemory, buf, size);
+	afSetVertexBuffer(size, buf, stride);
 }
 
 static VkPrimitiveTopology RenderFlagsToPrimitiveTopology(uint32_t flags)
@@ -440,6 +445,7 @@ void DeviceManVK::Create(HWND hWnd)
 
 	// preallocated resources and descriptors
 	uboAllocator.Create(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, 0x20000);
+	vertexBufferAllocator.Create(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, 0x20000);
 	static const uint32_t descriptorPoolSize = 10;
 	const VkDescriptorPoolSize descriptorPoolSizes[2] = { { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, descriptorPoolSize },{ VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, descriptorPoolSize } };
 	const VkDescriptorPoolCreateInfo descriptorPoolCreateInfo = { VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO, nullptr, VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT, descriptorPoolSize, arrayparam(descriptorPoolSizes) };
@@ -546,6 +552,7 @@ void DeviceManVK::Present()
 
 	afHandleVKError(vkQueueWaitIdle(queue));
 	uboAllocator.ResetAllocation();
+	vertexBufferAllocator.ResetAllocation();
 
 	const VkPresentInfoKHR presentInfo = { VK_STRUCTURE_TYPE_PRESENT_INFO_KHR, nullptr, 1, &semaphore, 1, &swapchain, &frameIndex };
 	afHandleVKError(vkQueuePresentKHR(queue, &presentInfo));
@@ -565,6 +572,7 @@ void DeviceManVK::Destroy()
 	afSafeDeleteVk(vkDestroyDescriptorSetLayout, device, commonUboDescriptorSetLayout);
 	afSafeDeleteVk(vkDestroyDescriptorSetLayout, device, commonTextureDescriptorSetLayout);
 	uboAllocator.Destroy();
+	vertexBufferAllocator.Destroy();
 	afSafeDeleteVk(vkDestroyDescriptorPool, device, descriptorPool);
 	afSafeDeleteVk(vkDestroyPipelineCache, device, pipelineCache);
 	if (commandBuffer)
@@ -617,6 +625,7 @@ void DeviceManVK::Flush()
 
 	afHandleVKError(vkQueueWaitIdle(queue));
 	uboAllocator.ResetAllocation();
+	vertexBufferAllocator.ResetAllocation();
 
 	const VkCommandBufferBeginInfo commandBufferBeginInfo = { VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO };
 	afHandleVKError(vkBeginCommandBuffer(commandBuffer, &commandBufferBeginInfo));
