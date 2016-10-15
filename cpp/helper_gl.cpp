@@ -5,7 +5,7 @@ static const InputElement* s_elements;
 static int s_numElements;
 static std::vector<UBOID> s_intermediateUniformBuffer;
 
-static void DiscardIntermediateBuffer()
+void DiscardIntermediateGLBuffers()
 {
 	for (auto& it : s_intermediateUniformBuffer)
 	{
@@ -595,7 +595,7 @@ void AFRenderStates::Apply() const
 	for (int i = 0; i < numSamplerTypes; i++) {
 		afSetSampler(samplerTypes[i], i);
 	}
-	DiscardIntermediateBuffer();
+	DiscardIntermediateGLBuffers();
 }
 
 void afSetSampler(SamplerType type, int slot)

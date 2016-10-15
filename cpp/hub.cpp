@@ -15,6 +15,9 @@ void Hub::Init()
 void Hub::Destroy()
 {
 	app.Destroy();
+#ifdef AF_GLES31
+	DiscardIntermediateGLBuffers();
+#endif
 }
 
 void Hub::Update()
