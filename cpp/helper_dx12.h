@@ -123,4 +123,3 @@ public:
 void afBindBuffer(int size, const void* buf, int rootParameterIndex);
 void afBindBuffer(UBOID ubo, int rootParameterIndex);
 void afBindTexture(SRVID srv, int rootParameterIndex);
-#define afBindCubeMap afBindTexture

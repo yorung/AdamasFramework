@@ -37,7 +37,6 @@ UBOID afCreateUBO(int size, const void* buf = nullptr);
 void afBindBuffer(UBOID ubo, UINT slot);
 void afBindBuffer(int size, const void* buf, UINT slot);
 void afBindTexture(SRVID srv, UINT slot);
-#define afBindCubeMap afBindTexture
 void afBindSamplerToBindingPoint(SAMPLERID sampler, UINT slot);
 
 void afDrawIndexed(int numIndices, int start = 0, int instanceCount = 1);
