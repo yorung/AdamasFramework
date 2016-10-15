@@ -235,6 +235,7 @@
     </ClInclude>
     <ClInclude Include="..\cpp\dev_camera.h" />
     <ClInclude Include="..\cpp\dib.h" />
+    <ClInclude Include="..\cpp\AFDynamicQuadListVertexBuffer.inl" />
     <ClInclude Include="..\cpp\font_man.h" />
     <ClInclude Include="..\cpp\fps.h" />
     <ClInclude Include="..\cpp\glow.h" />

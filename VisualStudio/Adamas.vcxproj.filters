@@ -273,6 +273,9 @@
     <ClInclude Include="..\cpp\helper_vulkan.h">
       <Filter>Vulkan</Filter>
     </ClInclude>
+    <ClInclude Include="..\cpp\AFDynamicQuadListVertexBuffer.inl">
+      <Filter>PlatformIndipendent</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Windows">

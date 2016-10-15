@@ -133,21 +133,7 @@ public:
 	bool IsReady() { return pipeline != 0; }
 };
 
-class AFDynamicQuadListVertexBuffer
-{
-	IBOID ibo;
-	UINT stride;
-	int vertexBufferSize;
-public:
-	~AFDynamicQuadListVertexBuffer() { Destroy(); }
-	void Create(int vertexSize_, int nQuad);
-	void Apply();
-	void Write(const void* buf, int size);
-	void Destroy()
-	{
-		afSafeDeleteBuffer(ibo);
-	}
-};
+#include "AFDynamicQuadListVertexBuffer.inl"
 
 class AFBufferStackAllocator
 {

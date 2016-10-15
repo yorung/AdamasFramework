@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#ifdef VK_TRUE
+
 #pragma comment(lib, "vulkan-1.lib")
 
 static const VkComponentMapping colorComponentMapping = { VK_COMPONENT_SWIZZLE_R, VK_COMPONENT_SWIZZLE_G, VK_COMPONENT_SWIZZLE_B, VK_COMPONENT_SWIZZLE_A };
@@ -332,25 +334,6 @@ static uint32_t GetVkFormatSize(VkFormat format)
 	}
 	assert(0);
 	return 0;
-}
-
-void AFDynamicQuadListVertexBuffer::Create(int vertexSize_, int nQuad)
-{
-	Destroy();
-	stride = vertexSize_;
-	vertexBufferSize = nQuad * vertexSize_ * 4;
-	ibo = afCreateQuadListIndexBuffer(nQuad);
-}
-
-void AFDynamicQuadListVertexBuffer::Apply()
-{
-	afSetIndexBuffer(ibo);
-}
-
-void AFDynamicQuadListVertexBuffer::Write(const void* buf, int size)
-{
-	assert(size <= vertexBufferSize);
-	afSetVertexBuffer(size, buf, stride);
 }
 
 static VkPrimitiveTopology RenderFlagsToPrimitiveTopology(uint32_t flags)
@@ -708,3 +691,4 @@ void AFRenderStates::Destroy()
 	afSafeDeleteVk(vkDestroyPipelineLayout, device, pipelineLayout);
 	afSafeDeleteVk(vkDestroyPipeline, device, pipeline);
 }
+#endif

@@ -88,23 +88,7 @@ public:
 	}
 };
 
-class AFDynamicQuadListVertexBuffer {
-	IBOID ibo;
-	UINT stride;
-	int vertexBufferSize;
-public:
-	~AFDynamicQuadListVertexBuffer() { Destroy(); }
-	void Create(int vertexSize_, int nQuad);
-	void Apply()
-	{
-		afSetIndexBuffer(ibo);
-	}
-	void Write(const void* buf, int size);
-	void Destroy()
-	{
-		afSafeDeleteBuffer(ibo);
-	}
-};
+#include "AFDynamicQuadListVertexBuffer.inl"
 
 class AFRenderTarget
 {

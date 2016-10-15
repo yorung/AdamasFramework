@@ -378,20 +378,6 @@ void afSetVertexBufferFromSystemMemory(const void* buf, int size, int stride)
 	deviceMan.AddIntermediateCommandlistDependentResource(vbo);
 }
 
-void AFDynamicQuadListVertexBuffer::Create(int vertexSize_, int nQuad)
-{
-	Destroy();
-	stride = vertexSize_;
-	vertexBufferSize = nQuad * vertexSize_ * 4;
-	ibo = afCreateQuadListIndexBuffer(nQuad);
-}
-
-void AFDynamicQuadListVertexBuffer::Write(const void* buf, int size)
-{
-	assert(size <= vertexBufferSize);
-	afSetVertexBuffer(size, buf, stride);
-}
-
 void AFRenderTarget::InitForDefaultRenderTarget()
 {
 	asDefault = true;
