@@ -117,26 +117,3 @@ public:
 		afSafeDeleteBuffer(ibo);
 	}
 };
-
-class AFCbvBindToken {
-	UBOID ubo;
-public:
-	void Create(UBOID ubo_)
-	{
-		ubo = ubo_;
-	}
-	void Create(const void* buf, int size)
-	{
-		ubo = afCreateUBO(size);
-		afWriteBuffer(ubo, size, buf);
-	}
-	UBOID Get() { return ubo; }
-};
-
-inline void afBindCbvs(AFCbvBindToken cbvs[], int nCbvs, int startBindingPoint = 0)
-{
-	for (int i = 0; i < nCbvs; i++)
-	{
-		afBindBuffer(cbvs[i].Get(), startBindingPoint + i);
-	}
-}
