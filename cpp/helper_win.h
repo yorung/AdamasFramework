@@ -1,4 +1,6 @@
 #if defined(__d3d11_h__) || defined(__d3d12_h__)
+#include "AFGraphicsDefinitions.inl"
+
 ComPtr<ID3DBlob> afCompileHLSL(const char* name, const char* entryPoint, const char* target);
 
 typedef unsigned short AFIndex;
@@ -14,7 +16,8 @@ inline PrimitiveTopology RenderFlagsToPrimitiveTopology(uint32_t flags)
 	if (flags & AFRS_PRIMITIVE_TRIANGLELIST)
 	{
 		return PT_TRIANGLELIST;
-	} else if (flags & AFRS_PRIMITIVE_LINELIST)
+	}
+	else if (flags & AFRS_PRIMITIVE_LINELIST)
 	{
 		return PT_LINELIST;
 	}

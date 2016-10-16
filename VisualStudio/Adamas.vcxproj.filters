@@ -312,5 +312,8 @@
     <None Include="..\cpp\AFGraphicsFunctions.inl">
       <Filter>PlatformIndipendent</Filter>
     </None>
+    <None Include="..\cpp\AFGraphicsDefinitions.inl">
+      <Filter>PlatformIndipendent</Filter>
+    </None>
   </ItemGroup>
 </Project>

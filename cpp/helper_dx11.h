@@ -1,3 +1,5 @@
+#include "AFGraphicsDefinitions.inl"
+
 typedef D3D11_INPUT_ELEMENT_DESC InputElement;
 
 class CInputElement : public InputElement {

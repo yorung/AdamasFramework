@@ -1,3 +1,5 @@
+#include "AFGraphicsDefinitions.inl"
+
 typedef unsigned short AFIndex;
 #define AFIndexTypeToDevice VK_INDEX_TYPE_UINT16
 

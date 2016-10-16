@@ -1,3 +1,5 @@
+#include "AFGraphicsDefinitions.inl"
+
 typedef unsigned short AFIndex;
 #define AFIndexTypeToDevice GL_UNSIGNED_SHORT
 
