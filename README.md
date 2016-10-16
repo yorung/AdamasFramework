@@ -5,6 +5,7 @@ Currently, this framework supports following platforms.
 
 * Android - OpenGL ES 3.1
 * Windows - OpenGL ES 3.1
+* Windows - Vulkan
 * Windows - DirectX 11
 * Windows - DirectX 12
 
@@ -19,7 +20,8 @@ Please type following from git bash to obtain submodule.
 
 # How to build for Windows platform
 
-Visual Studio 2015 required. For DX11, just open VisualStudio\Adamas.sln and build it.
+Just open VisualStudio\Adamas.sln and build it.
+Build for Vulkan, the SDK is required. Visit https://vulkan.lunarg.com/ for download.
 Build for OpenGL ES 3.1, OpenGL extension header files required. Please refer VisualStudio\glheaders\place_extension_headers_here.txt for more information.
 
 # How to build for Android platform
