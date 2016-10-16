@@ -37,7 +37,7 @@ public:
 
 Puzzle::Puzzle()
 {
-	tex = afLoadTexture("models/jiji.dds", TexDesc());
+	tex = afLoadTexture("models/jiji.dds");
 	for (int i = 0; i < (int)dimof(panels); i++)
 	{
 		panels[i] = i;

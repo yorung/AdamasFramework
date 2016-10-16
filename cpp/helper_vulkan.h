@@ -69,7 +69,6 @@ VBOID afCreateVertexBuffer(int size, const void* srcData);
 VBOID afCreateDynamicVertexBuffer(int size, const void* srcData = nullptr);
 IBOID afCreateIndexBuffer(int numIndi, const AFIndex* indi);
 UBOID afCreateUBO(int size, const void* srcData = nullptr);
-IBOID afCreateQuadListIndexBuffer(int numQuads);
 
 struct AFTexSubresourceData
 {
@@ -93,8 +92,6 @@ struct TextureContext
 };
 typedef TextureContext SRVID;
 
-SRVID afLoadTexture(const char* name, TexDesc& desc);
-SRVID LoadTextureViaOS(const char* name, IVec2& size);
 SRVID afCreateDynamicTexture(VkFormat format, const IVec2& size, void *image = nullptr);
 SRVID afCreateTexture2D(AFFormat format, const struct TexDesc& desc, int mipCount, const AFTexSubresourceData datas[]);
 void afWriteTexture(TextureContext& textureContext, const TexDesc& texDesc, void *image);
@@ -132,8 +129,6 @@ public:
 	void Destroy();
 	bool IsReady() { return pipeline != 0; }
 };
-
-#include "AFDynamicQuadListVertexBuffer.inl"
 
 class AFBufferStackAllocator
 {
@@ -186,3 +181,6 @@ public:
 	VkPipeline CreatePipeline(const char* name, VkPipelineLayout pipelineLayout, uint32_t numAttributes, const VkVertexInputAttributeDescription attributes[], uint32_t flags);
 };
 extern DeviceManVK deviceMan;
+
+#include "AFGraphicsFunctions.inl"
+#include "AFDynamicQuadListVertexBuffer.inl"

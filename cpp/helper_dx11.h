@@ -66,11 +66,6 @@ public:
 //	ID3D11UnorderedAccessView* GetUnorderedAccessView() { return unorderedAccessView; }
 };
 
-SRVID LoadTextureViaOS(const char* name, IVec2& size);
-IBOID afCreateTiledPlaneIBO(int numTiles, int* numIndies = nullptr);
-VBOID afCreateTiledPlaneVBO(int numTiles);
-IBOID afCreateQuadListIndexBuffer(int numQuads);
-SRVID afLoadTexture(const char* name, TexDesc& desc);
 void afCullMode(uint32_t flags);
 void afBlendMode(uint32_t flags);
 void afDepthStencilMode(uint32_t flags);
@@ -90,4 +85,5 @@ public:
 	void Destroy() { shaderId = ShaderMan::INVALID_SMID; }
 };
 
+#include "AFGraphicsFunctions.inl"
 #include "AFDynamicQuadListVertexBuffer.inl"

@@ -19,7 +19,7 @@ int TexMan::Create(const char *name)
 	{
 		return it->second;
 	}
-	srvids.push_back(afLoadTexture(name, TexDesc()));
+	srvids.push_back(afLoadTexture(name));
 	return nameToIndex[name] = srvids.size() - 1;
 }
 

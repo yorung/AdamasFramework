@@ -51,12 +51,6 @@ void afSetTextureName(SRVID tex, const char* name);
 void afWriteTexture(SRVID srv, const TexDesc& desc, const void* buf);
 void afWriteTexture(SRVID id, const TexDesc& desc, int mipCount, const AFTexSubresourceData datas[]);
 
-SRVID LoadTextureViaOS(const char* name, IVec2& size);
-IBOID afCreateTiledPlaneIBO(int numTiles, int* numIndies = nullptr);
-SRVID afLoadTexture(const char* name, TexDesc& desc);
-VBOID afCreateTiledPlaneVBO(int numTiles);
-IBOID afCreateQuadListIndexBuffer(int numQuads);
-
 ComPtr<ID3D12DescriptorHeap> afCreateDescriptorHeap(int numSrvs, SRVID srvs[]);
 void afWaitFenceValue(ComPtr<ID3D12Fence> fence, UINT64 value);
 IVec2 afGetTextureSize(SRVID tex);
@@ -88,8 +82,6 @@ public:
 	}
 };
 
-#include "AFDynamicQuadListVertexBuffer.inl"
-
 class AFRenderTarget
 {
 	IVec2 texSize;
@@ -107,3 +99,6 @@ public:
 void afBindBuffer(int size, const void* buf, int rootParameterIndex);
 void afBindBuffer(UBOID ubo, int rootParameterIndex);
 void afBindTexture(SRVID srv, int rootParameterIndex);
+
+#include "AFGraphicsFunctions.inl"
+#include "AFDynamicQuadListVertexBuffer.inl"

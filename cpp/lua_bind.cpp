@@ -169,7 +169,7 @@ static void BindImage(lua_State* L)
 
 		Image(const char *fileName)
 		{
-			texId = afLoadTexture(fileName, TexDesc());
+			texId = afLoadTexture(fileName);
 #ifdef _DEBUG
 			this->fileName = fileName;
 #endif

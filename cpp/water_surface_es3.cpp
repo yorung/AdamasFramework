@@ -166,7 +166,7 @@ void WaterSurfaceES3::Init()
 	texId.resize(dimof(texFiles));
 	for (int i = 0; i < (int)dimof(texFiles); i++)
 	{
-		texId[i] = afLoadTexture(texFiles[i].name, TexDesc());
+		texId[i] = afLoadTexture(texFiles[i].name);
 		aflog("WaterSurface::Init tex %s %s\n", texFiles[i].name, (texId[i] ? "OK" : "NG"));
 	}
 

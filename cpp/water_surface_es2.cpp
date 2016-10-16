@@ -257,7 +257,7 @@ void WaterSurfaceES2::Init()
 	texIds.resize(dimof(texFiles));
 	for (int i = 0; i < (int)dimof(texFiles); i++)
 	{
-		texIds[i] = afLoadTexture(texFiles[i].name, TexDesc());
+		texIds[i] = afLoadTexture(texFiles[i].name);
 	}
 }
 
