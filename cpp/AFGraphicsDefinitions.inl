@@ -1,6 +1,7 @@
 #pragma once
 
-struct TexDesc {
+struct TexDesc
+{
 	IVec2 size;
 	int arraySize = 1;
 	bool isCubeMap = false;

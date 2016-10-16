@@ -23,7 +23,7 @@ App::App()
 void App::Draw()
 {
 #ifdef GL_TRUE
-	afDepthStencilMode(AFRS_DEPTH_ENABLE);
+	afDepthStencilMode(AFRS_DEPTH_ENABLE);	// This needed to clear depth stencil buffer
 #endif
 
 #ifndef AF_VULKAN
