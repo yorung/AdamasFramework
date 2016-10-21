@@ -1,5 +1,7 @@
 #pragma once
 
+#define AF_WAIT_VBLANK 1
+
 #ifdef _MSC_VER
 #define NOMINMAX
 #define _USE_MATH_DEFINES

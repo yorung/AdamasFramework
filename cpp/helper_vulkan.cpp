@@ -349,6 +349,18 @@ static VkPrimitiveTopology RenderFlagsToPrimitiveTopology(uint32_t flags)
 	return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
 }
 
+static bool IsPresentModeSupported(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, VkPresentModeKHR presentMode)
+{
+	uint32_t numPresentModes = 0;
+	VkPresentModeKHR presentModes[VK_PRESENT_MODE_RANGE_SIZE_KHR] = {};
+	afHandleVKError(vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &numPresentModes, nullptr));
+	assert(numPresentModes <= _countof(presentModes));
+	afHandleVKError(vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &numPresentModes, presentModes));
+	auto it = std::find(presentModes, presentModes + numPresentModes, presentMode);
+	assert(it != presentModes + numPresentModes);
+	return it != presentModes + numPresentModes;
+}
+
 VkPipeline DeviceManVK::CreatePipeline(const char* name, VkPipelineLayout pipelineLayout, uint32_t numAttributes, const VkVertexInputAttributeDescription attributes[], uint32_t flags)
 {
 	char path[MAX_PATH];
@@ -467,18 +479,15 @@ void DeviceManVK::Create(HWND hWnd)
 	afHandleVKError(vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &numSurfaceFormats, nullptr));
 	assert(numSurfaceFormats <= _countof(surfaceFormats));
 	afHandleVKError(vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &numSurfaceFormats, surfaceFormats));
-	uint32_t numPresentModes = 0;
-	VkPresentModeKHR presentModes[32] = {};
-	afHandleVKError(vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &numPresentModes, nullptr));
-	assert(numPresentModes <= _countof(presentModes));
-	afHandleVKError(vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &numPresentModes, presentModes));
+	VkPresentModeKHR presentMode = AF_WAIT_VBLANK ? VK_PRESENT_MODE_FIFO_KHR : VK_PRESENT_MODE_MAILBOX_KHR;
+	IsPresentModeSupported(physicalDevice, surface, presentMode);
 	VkSurfaceCapabilitiesKHR surfaceCaps = {};
 	afHandleVKError(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface, &surfaceCaps));
 	VkBool32 physicalDeviceSurfaceSupport = VK_FALSE;
 	afHandleVKError(vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, 0, surface, &physicalDeviceSurfaceSupport));
 	assert(physicalDeviceSurfaceSupport);
 	GetClientRect(hWnd, &rc);
-	const VkSwapchainCreateInfoKHR swapchainInfo = { VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR, nullptr, 0, surface, surfaceCaps.minImageCount, surfaceFormats[0].format, surfaceFormats[0].colorSpace,{ uint32_t(rc.right), uint32_t(rc.bottom) }, 1, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VK_SHARING_MODE_EXCLUSIVE, 0, nullptr, VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR, VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR, presentModes[0], VK_TRUE };
+	const VkSwapchainCreateInfoKHR swapchainInfo = { VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR, nullptr, 0, surface, surfaceCaps.minImageCount, surfaceFormats[0].format, surfaceFormats[0].colorSpace,{ uint32_t(rc.right), uint32_t(rc.bottom) }, 1, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VK_SHARING_MODE_EXCLUSIVE, 0, nullptr, VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR, VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR, presentMode, VK_TRUE };
 	afHandleVKError(vkCreateSwapchainKHR(device, &swapchainInfo, nullptr, &swapchain));
 	afHandleVKError(vkGetSwapchainImagesKHR(device, swapchain, &swapChainCount, nullptr));
 	assert(swapChainCount <= _countof(swapChainImages));

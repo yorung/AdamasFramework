@@ -57,7 +57,7 @@ void DeviceMan11::Create(HWND hWnd)
 
 void DeviceMan11::Present()
 {
-	pSwapChain->Present(1, 0);
+	pSwapChain->Present(AF_WAIT_VBLANK, 0);
 }
 
 void DeviceMan11::Destroy()

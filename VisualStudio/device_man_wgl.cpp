@@ -88,6 +88,10 @@ void DeviceManWgl::CreateWGLInternal(HDC hdc)
 		err("wglMakeCurrent failed.");
 		goto END;
 	}
+	if (wglSwapIntervalEXT)
+	{
+		wglSwapIntervalEXT(AF_WAIT_VBLANK);
+	}
 #ifdef _DEBUG
 	afDumpCaps();
 	afDumpIsEnabled();

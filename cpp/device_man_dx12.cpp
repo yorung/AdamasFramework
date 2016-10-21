@@ -209,7 +209,7 @@ void DeviceManDX12::Present()
 		return;
 	}
 	EndScene();
-	swapChain->Present(1, 0);
+	swapChain->Present(AF_WAIT_VBLANK, 0);
 	BeginScene();
 }
 
