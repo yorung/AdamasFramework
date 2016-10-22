@@ -115,9 +115,6 @@
     <ClCompile Include="..\cpp\helper_gl.cpp">
       <Filter>GL</Filter>
     </ClCompile>
-    <ClCompile Include="..\cpp\shader_man_gl.cpp">
-      <Filter>GL</Filter>
-    </ClCompile>
     <ClCompile Include="..\cpp\helper_dx11.cpp">
       <Filter>DX11</Filter>
     </ClCompile>
@@ -241,9 +238,6 @@
       <Filter>PlatformIndipendent</Filter>
     </ClInclude>
     <ClInclude Include="..\cpp\helper_gl.h">
-      <Filter>GL</Filter>
-    </ClInclude>
-    <ClInclude Include="..\cpp\shader_man_gl.h">
       <Filter>GL</Filter>
     </ClInclude>
     <ClInclude Include="..\cpp\helper_dx11.h">

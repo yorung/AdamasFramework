@@ -66,7 +66,6 @@ static const int BONE_MAX = 50;
 #endif
 
 #ifdef AF_GLES31
-#include "shader_man_gl.h"
 #include "helper_gl.h"
 #endif
 

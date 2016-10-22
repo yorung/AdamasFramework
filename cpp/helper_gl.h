@@ -215,19 +215,21 @@ void afDepthStencilMode(uint32_t flags);
 SAMPLERID afCreateSampler(SamplerType type);
 void afSetSampler(SamplerType type, int slot);
 
-class AFRenderStates {
+class AFRenderStates
+{
 	uint32_t flags = AFRS_NONE;
 	int numSamplerTypes = 0;
 	const SamplerType* samplerTypes = nullptr;
-	ShaderMan::SMID shaderId = ShaderMan::INVALID_SMID;
+	GLuint shaderId = 0;
 	const InputElement* elements;
 	int numElements;
 public:
-	ShaderMan::SMID GetShaderId() { return shaderId; }
-	bool IsReady() { return shaderId != ShaderMan::INVALID_SMID; }
+	~AFRenderStates() { Destroy(); }
+	GLuint GetShaderId() { return shaderId; }
+	bool IsReady() { return shaderId != 0; }
 	void Create(const char* shaderName, int numInputElements = 0, const InputElement* inputElements = nullptr, uint32_t flags = AFRS_NONE, int numSamplerTypes_ = 0, const SamplerType samplerTypes_[] = nullptr);
 	void Apply() const;
-	void Destroy() { shaderId = ShaderMan::INVALID_SMID; }
+	void Destroy();
 };
 
 #include "AFGraphicsFunctions.inl"

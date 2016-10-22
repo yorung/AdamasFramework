@@ -14,6 +14,89 @@ void DiscardIntermediateGLBuffers()
 	s_intermediateUniformBuffer.clear();
 }
 
+static GLuint CompileShader(int type, const char *fileName)
+{
+	GLuint shader = glCreateShader(type);
+
+	void* img = LoadFile(fileName);
+	if (!img)
+	{
+		aflog("shader file %s not found", fileName);
+		return 0;
+	}
+	glShaderSource(shader, 1, (const char**)&img, NULL);
+	glCompileShader(shader);
+	free(img);
+
+	int result = 0;
+	glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
+	if (result == GL_FALSE)
+	{
+		int len;
+		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &len);
+		GLchar* buf = new GLchar[len];
+		int dummy;
+		glGetShaderInfoLog(shader, len, &dummy, buf);
+		aflog("result=%d (%s)%s", result, fileName, buf);
+		delete buf;
+		glDeleteShader(shader);
+		shader = 0;
+	}
+	else
+	{
+		aflog("CompileShader(%s) succeess. id=%d\n", fileName, shader);
+	}
+	return shader;
+}
+
+static GLuint afCompileGLSL(const char* name, const InputElement elements[], int numElements)
+{
+	char buf[256];
+	snprintf(buf, dimof(buf), "glsl/%s.vert", name);
+	GLuint vertexShader = CompileShader(GL_VERTEX_SHADER, buf);
+	if (!vertexShader)
+	{
+		return 0;
+	}
+	snprintf(buf, dimof(buf), "glsl/%s.frag", name);
+	GLuint fragmentShader = CompileShader(GL_FRAGMENT_SHADER, buf);
+	if (!fragmentShader)
+	{
+		return 0;
+	}
+	GLuint program = glCreateProgram();
+	for (int i = 0; i < numElements; i++)
+	{
+		glBindAttribLocation(program, i, elements[i].name);
+	}
+
+	glAttachShader(program, vertexShader);
+	glDeleteShader(vertexShader);
+	glAttachShader(program, fragmentShader);
+	glDeleteShader(fragmentShader);
+	glLinkProgram(program);
+
+	GLint status = 0;
+	glGetProgramiv(program, GL_LINK_STATUS, &status);
+	if (status == GL_FALSE)
+	{
+		GLint len = 0;
+		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &len);
+		GLchar* buf = new GLchar[len];
+		int dummy;
+		glGetProgramInfoLog(program, len, &dummy, buf);
+		aflog("glLinkProgram failed!=%d (%s)%s", status, name, buf);
+		delete buf;
+		glDeleteProgram(program);
+		program = 0;
+	}
+	else
+	{
+		aflog("CreateProgram(%s) succeess. id=%d\n", name, program);
+	}
+	return program;
+}
+
 IBOID afCreateIndexBuffer(int numIndi, const AFIndex* indi)
 {
 	IBOID ibo;
@@ -562,7 +645,7 @@ void afClear()
 
 void AFRenderStates::Create(const char* shaderName, int numInputElements, const InputElement* inputElements, uint32_t flags_, int numSamplerTypes_, const SamplerType samplerTypes_[])
 {
-	shaderId = shaderMan.Create(shaderName, inputElements, numInputElements);
+	shaderId = afCompileGLSL(shaderName, inputElements, numInputElements);
 	elements = inputElements;
 	numElements = numInputElements;
 	flags = flags_;
@@ -585,17 +668,27 @@ static PrimitiveTopology RenderFlagsToPrimitiveTopology(uint32_t flags)
 
 void AFRenderStates::Apply() const
 {
-	shaderMan.Apply(shaderId);
+	afHandleGLError(glUseProgram(shaderId));
 	s_elements = elements;
 	s_numElements = numElements;
 	s_primitiveTopology = RenderFlagsToPrimitiveTopology(flags);
 	afBlendMode(flags);
 	afDepthStencilMode(flags);
 	afCullMode(flags);
-	for (int i = 0; i < numSamplerTypes; i++) {
+	for (int i = 0; i < numSamplerTypes; i++)
+	{
 		afSetSampler(samplerTypes[i], i);
 	}
 	DiscardIntermediateGLBuffers();
+}
+
+void AFRenderStates::Destroy()
+{
+	if (shaderId != 0)
+	{
+		glDeleteProgram(shaderId);
+		shaderId = 0;
+	}
 }
 
 void afSetSampler(SamplerType type, int slot)

@@ -145,14 +145,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DX12Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='VKRelease|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\cpp\shader_man_gl.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DX11Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DX12Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='VKDebug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DX11Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DX12Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='VKRelease|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="..\cpp\sky_man.cpp" />
     <ClCompile Include="..\cpp\sprite_renderer.cpp" />
     <ClCompile Include="..\cpp\stdafx.cpp">
@@ -295,14 +287,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='VKDebug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DX11Release|Win32'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DX12Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='VKRelease|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\cpp\shader_man_gl.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DX11Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DX12Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='VKDebug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DX11Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DX12Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='VKRelease|Win32'">true</ExcludedFromBuild>
     </ClInclude>

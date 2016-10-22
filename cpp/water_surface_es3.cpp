@@ -156,7 +156,7 @@ void WaterSurfaceES3::Init()
 		renderStateNormalMap.Create("water_es3_normal", numElements, elements);
 	}
 
-	shaderMan.Apply(renderStateNormalMap.GetShaderId());
+	glUseProgram(renderStateNormalMap.GetShaderId());
 	Vec2 heightMapSize((float)HEIGHT_MAP_W, (float)HEIGHT_MAP_H);
 	glUniform2fv(glGetUniformLocation(renderStateNormalMap.GetShaderId(), "heightMapSize"), 1, (GLfloat*)&heightMapSize);
 
