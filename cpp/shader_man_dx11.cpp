@@ -37,9 +37,6 @@ ShaderMan11::SMID ShaderMan11::Create(const char *name, const D3D11_INPUT_ELEMEN
 			assert(!hr);
 		}
 	}
-
-	effect.elements = elements;
-	effect.numElements = numElements;
 	m_effects.push_back(effect);
 	return m_nameToId[name] = m_effects.size() - 1;
 }
@@ -55,23 +52,6 @@ void ShaderMan11::Destroy()
 	m_effects.clear();
 	m_nameToId.clear();
 	m_effects.push_back(Effect());	// make ID 0 invalid
-}
-
-void ShaderMan11::Reload()
-{
-	std::vector<Effect> effs = m_effects;
-	std::vector<std::string> names;
-
-	for (SMID i = 0; i < (SMID)m_effects.size(); i++) {
-		auto it = std::find_if(m_nameToId.begin(), m_nameToId.end(), [i](std::pair<std::string, SMID> v) { return v.second == i; } );
-		assert(it != m_nameToId.end());
-		names.push_back(it->first);
-	}
-	Destroy();
-	for (int i = 0; i < (int)names.size(); i++) {
-		auto& ef = effs[i];
-		Create(names[i].c_str(), ef.elements, ef.numElements);
-	}
 }
 
 void ShaderMan11::Apply(SMID id)
