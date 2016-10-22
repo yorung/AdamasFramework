@@ -310,7 +310,24 @@ void AFRenderTarget::BeginRenderToThis()
 
 void AFRenderStates::Create(const char* shaderName, int numInputElements, const InputElement* inputElements, uint32_t flags_, int numSamplerTypes_, const SamplerType samplerTypes_[])
 {
-	shaderId = shaderMan.Create(shaderName, inputElements, numInputElements);
+	ComPtr<ID3DBlob> vs = afCompileHLSL(shaderName, "VSMain", "vs_5_0");
+	ComPtr<ID3DBlob> ps = afCompileHLSL(shaderName, "PSMain", "ps_5_0");
+	HRESULT hr = S_OK;
+	if (ps)
+	{
+		hr = deviceMan11.GetDevice()->CreatePixelShader(ps->GetBufferPointer(), ps->GetBufferSize(), nullptr, &pixelShader);
+		assert(!hr);
+	}
+	if (vs)
+	{
+		hr = deviceMan11.GetDevice()->CreateVertexShader(vs->GetBufferPointer(), vs->GetBufferSize(), nullptr, &vertexShader);
+		assert(!hr);
+		if (inputElements && numInputElements > 0)
+		{
+			hr = deviceMan11.GetDevice()->CreateInputLayout(inputElements, numInputElements, vs->GetBufferPointer(), vs->GetBufferSize(), &inputLayout);
+			assert(!hr);
+		}
+	}
 	numSamplerTypes = numSamplerTypes_;
 	samplerTypes = samplerTypes_;
 	flags = flags_;
@@ -318,14 +335,24 @@ void AFRenderStates::Create(const char* shaderName, int numInputElements, const 
 
 void AFRenderStates::Apply() const
 {
-	shaderMan.Apply(shaderId);
+	deviceMan11.GetContext()->IASetInputLayout(inputLayout.Get());
+	deviceMan11.GetContext()->VSSetShader(vertexShader.Get(), nullptr, 0);
+	deviceMan11.GetContext()->PSSetShader(pixelShader.Get(), nullptr, 0);
 	deviceMan11.GetContext()->IASetPrimitiveTopology(RenderFlagsToPrimitiveTopology(flags));
 	afBlendMode(flags);
 	afDepthStencilMode(flags);
 	afCullMode(flags);
-	for (int i = 0; i < numSamplerTypes; i++) {
+	for (int i = 0; i < numSamplerTypes; i++)
+	{
 		afSetSampler(samplerTypes[i], i);
 	}
+}
+
+void AFRenderStates::Destroy()
+{
+	inputLayout.Reset();
+	vertexShader.Reset();
+	pixelShader.Reset();
 }
 
 void afSetSampler(SamplerType type, int slot)

@@ -74,7 +74,6 @@ static const int BONE_MAX = 50;
 #endif
 
 #ifdef AF_DX11
-#include "shader_man_dx11.h"
 #include "device_man_dx11.h"
 #include "helper_dx11.h"
 #endif

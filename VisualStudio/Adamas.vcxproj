@@ -135,16 +135,6 @@
     <ClCompile Include="..\cpp\mesh_x.cpp" />
     <ClCompile Include="..\cpp\picking.cpp" />
     <ClCompile Include="..\cpp\puzzle.cpp" />
-    <ClCompile Include="..\cpp\shader_man_dx11.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DX11Debug|Win32'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DX12Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='VKDebug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DX11Release|Win32'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DX12Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='VKRelease|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="..\cpp\sky_man.cpp" />
     <ClCompile Include="..\cpp\sprite_renderer.cpp" />
     <ClCompile Include="..\cpp\stdafx.cpp">
@@ -280,16 +270,6 @@
     <ClInclude Include="..\cpp\mesh_man.h" />
     <ClInclude Include="..\cpp\mesh_renderer.h" />
     <ClInclude Include="..\cpp\mesh_x.h" />
-    <ClInclude Include="..\cpp\shader_man_dx11.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DX11Debug|Win32'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DX12Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='VKDebug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DX11Release|Win32'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DX12Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='VKRelease|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
     <ClInclude Include="..\cpp\sky_man.h" />
     <ClInclude Include="..\cpp\sprite_renderer.h" />
     <ClInclude Include="..\cpp\stdafx.h" />

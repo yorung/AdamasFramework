@@ -118,9 +118,6 @@
     <ClCompile Include="..\cpp\helper_dx11.cpp">
       <Filter>DX11</Filter>
     </ClCompile>
-    <ClCompile Include="..\cpp\shader_man_dx11.cpp">
-      <Filter>DX11</Filter>
-    </ClCompile>
     <ClCompile Include="..\cpp\device_man_dx11.cpp">
       <Filter>DX11</Filter>
     </ClCompile>
@@ -241,9 +238,6 @@
       <Filter>GL</Filter>
     </ClInclude>
     <ClInclude Include="..\cpp\helper_dx11.h">
-      <Filter>DX11</Filter>
-    </ClInclude>
-    <ClInclude Include="..\cpp\shader_man_dx11.h">
       <Filter>DX11</Filter>
     </ClInclude>
     <ClInclude Include="..\cpp\device_man_dx11.h">

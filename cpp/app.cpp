@@ -95,9 +95,6 @@ void App::Destroy()
 	stockObjects.Destroy();
 	spriteRenderer.Destroy();
 	texMan.Destroy();
-#if defined(AF_DX11)
-	shaderMan.Destroy();
-#endif
 	fontMan.Destroy();
 	meshRenderer.Destroy();
 	meshMan.Destroy();

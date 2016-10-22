@@ -78,13 +78,14 @@ class AFRenderStates {
 	uint32_t flags = AFRS_NONE;
 	int numSamplerTypes = 0;
 	const SamplerType* samplerTypes = nullptr;
-	ShaderMan::SMID shaderId = ShaderMan::INVALID_SMID;
+	ComPtr<ID3D11InputLayout> inputLayout;
+	ComPtr<ID3D11VertexShader> vertexShader;
+	ComPtr<ID3D11PixelShader> pixelShader;
 public:
-	ShaderMan::SMID GetShaderId() { return shaderId; }
-	bool IsReady() { return shaderId != ShaderMan::INVALID_SMID; }
+	bool IsReady() { return !!pixelShader; }
 	void Create(const char* shaderName, int numInputElements = 0, const InputElement* inputElements = nullptr, uint32_t flags = AFRS_NONE, int numSamplerTypes_ = 0, const SamplerType samplerTypes_[] = nullptr);
 	void Apply() const;
-	void Destroy() { shaderId = ShaderMan::INVALID_SMID; }
+	void Destroy();
 };
 
 #include "AFGraphicsFunctions.inl"
