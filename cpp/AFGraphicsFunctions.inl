@@ -78,9 +78,19 @@ inline void bitScanForward(uint32_t* result, uint32_t mask)
 	*result = 0;
 }
 
-inline void ArrangeRawDDS(void* img, int size)
+inline AFFormat ArrangeRawDDS(void* img, int size)
 {
 	const DDSHeader* hdr = (DDSHeader*)img;
+#ifdef _MSC_VER	// GL_EXT_texture_format_BGRA8888 is an extension for OpenGL ES, so should use this only on Windows.
+	if (hdr->rMask == 0xff0000 && hdr->gMask == 0x00ff00 && hdr->bMask == 0x0000ff)
+	{
+		return AFF_B8G8R8A8_UNORM;
+	}
+#endif
+	if (hdr->rMask == 0x0000ff && hdr->gMask == 0x00ff00 && hdr->bMask == 0xff0000)
+	{
+		return AFF_R8G8B8A8_UNORM;
+	}
 	uint32_t rShift, gShift, bShift, aShift;
 	bitScanForward(&rShift, hdr->rMask);
 	bitScanForward(&gShift, hdr->gMask);
@@ -92,6 +102,7 @@ inline void ArrangeRawDDS(void* img, int size)
 			im |= 0xff000000;
 		}
 	});
+	return AFF_R8G8B8A8_UNORM;
 }
 
 inline SRVID afLoadDDSTexture(const char* name, TexDesc& texDesc)
@@ -120,8 +131,7 @@ inline SRVID afLoadDDSTexture(const char* name, TexDesc& texDesc)
 		pitchCalcurator = [](int w, int h) { return ((w + 3) / 4) * ((h + 3) / 4) * 16; };
 		break;
 	default:
-		ArrangeRawDDS(img, size);
-		format = AFF_R8G8B8A8_UNORM;
+		format = ArrangeRawDDS(img, size);
 		pitchCalcurator = [](int w, int h) { return w * h * 4; };
 		break;
 	}

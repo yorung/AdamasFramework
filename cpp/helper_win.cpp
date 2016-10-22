@@ -166,7 +166,7 @@ namespace Gdiplus {
 #include <gdiplus.h>
 #pragma comment(lib, "gdiplus.lib")
 
-static bool LoadImageViaGdiPlus(const char* name, IVec2& size, std::vector<uint32_t>& col)
+bool LoadImageViaGdiPlus(const char* name, IVec2& size, std::vector<uint32_t>& col)
 {
 	Gdiplus::GdiplusStartupInput gdiplusStartupInput;
 	ULONG_PTR gdiplusToken;
@@ -187,10 +187,6 @@ static bool LoadImageViaGdiPlus(const char* name, IVec2& size, std::vector<uint3
 	col.resize(w * h);
 	for (int y = 0; y < h; y++) {
 		memcpy(&col[y * w], (char*)bitmapData->Scan0 + bitmapData->Stride * y, w * 4);
-		for (int x = 0; x < w; x++) {
-			uint32_t& c = col[y * w + x];
-			c = (c & 0xff00ff00) | ((c & 0xff) << 16) | ((c & 0xff0000) >> 16);
-		}
 	}
 	image->UnlockBits(bitmapData);
 	delete bitmapData;
@@ -208,7 +204,7 @@ SRVID LoadTextureViaOS(const char* name, IVec2& size)
 	TexDesc desc;
 	desc.size = size;
 	AFTexSubresourceData subresource = { &col[0], (uint32_t)size.x * 4, (uint32_t)size.x * 4 * size.y };
-	return afCreateTexture2D(AFF_R8G8B8A8_UNORM, desc, 1, &subresource);
+	return afCreateTexture2D(AFF_B8G8R8A8_UNORM, desc, 1, &subresource);
 }
 
 #define IS_HANGUL(c)	( (c) >= 0xAC00 && (c) <= 0xD7A3 )

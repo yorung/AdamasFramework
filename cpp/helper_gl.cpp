@@ -296,6 +296,8 @@ SRVID afCreateTexture2D(AFFormat format, const TexDesc& desc, int mipCount, cons
 			int h = std::max(1, desc.size.y >> m);
 			if (format == AFF_R8G8B8A8_UNORM) {
 				afHandleGLError(glTexImage2D(targetFace + a, m, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, datas[idx].ptr));
+			} else if (format == AFF_B8G8R8A8_UNORM) {
+				afHandleGLError(glTexImage2D(targetFace + a, m, GL_BGRA_EXT, w, h, 0, GL_BGRA_EXT, GL_UNSIGNED_BYTE, datas[idx].ptr));
 			} else {
 				afHandleGLError(glCompressedTexImage2D(targetFace + a, m, format, w, h, 0, datas[idx].pitchSlice, datas[idx].ptr));
 			}
@@ -303,7 +305,7 @@ SRVID afCreateTexture2D(AFFormat format, const TexDesc& desc, int mipCount, cons
 		}
 	}
 	if (mipCount == 1) {
-		if (format == AFF_R8G8B8A8_UNORM) {
+		if (format == AFF_R8G8B8A8_UNORM || format == AFF_B8G8R8A8_UNORM) {
 			afHandleGLError(glGenerateMipmap(target));
 		} else {
 			glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	// temporary disable mipmap
