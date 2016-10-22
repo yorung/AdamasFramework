@@ -30,8 +30,12 @@ static const InputElement elements[] =
 };
 #endif
 
-static const SamplerType samplers[] = {
+static const SamplerType samplers[] =
+{
 	AFST_MIPMAP_WRAP,
+	AFST_MIPMAP_WRAP,
+	AFST_MIPMAP_WRAP,
+	AFST_MIPMAP_WRAP,	// s3 register
 };
 
 RenderMesh::~RenderMesh()
