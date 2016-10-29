@@ -101,8 +101,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE,
 
 	hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_ADAMAS));
 
-	deviceMan.Create(hWnd);
-
 	int lastW = 0;
 	int lastH = 0;
 
@@ -116,6 +114,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE,
 			lastW = w;
 			lastH = h;
 			hub.Destroy();
+			deviceMan.Destroy();
+			deviceMan.Create(hWnd);
 			hub.Init();
 		}
 		hub.Update();
