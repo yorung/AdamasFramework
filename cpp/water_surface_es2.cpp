@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#ifndef AF_VULKAN
+
 struct WaterVert
 {
 	Vec3 pos;
@@ -24,9 +24,10 @@ struct WaterSurfaceClassicUBO {
 
 class WaterSurfaceES2
 {
+	AFRenderTarget rtWater;
 	WaterSurfaceClassicUBO uboBuf;
-	AFRenderStates renderStateWater;
-	AFRenderStates renderStatePostProcess;
+	AFRenderStates renderStatesWater;
+	AFRenderStates renderStatesPostProcess;
 	int lines;
 	void UpdateVert(std::vector<WaterVert>& vert);
 	void UpdateRipple();
@@ -190,6 +191,8 @@ void WaterSurfaceES2::Destroy()
 	for (auto& it : texIds) {
 		afSafeDeleteTexture(it);
 	}
+	renderStatesPostProcess.Destroy();
+	renderStatesWater.Destroy();
 }
 
 static const InputElement elements[] =
@@ -211,6 +214,8 @@ void WaterSurfaceES2::Init()
 {
 	assert(dimof(samplers) >= dimof(texFiles));
 	Destroy();
+
+	rtWater.Init(systemMisc.GetScreenSize(), AFF_R8G8B8A8_UNORM);
 
 	lastTime = GetTime();
 
@@ -242,14 +247,14 @@ void WaterSurfaceES2::Init()
 	Vec2 vboFullScrSrc[] = {{-1, 1}, {-1, -1}, {1, 1}, {1, -1}};
 	vboFullScr = afCreateVertexBuffer(sizeof(vboFullScrSrc), &vboFullScrSrc[0]);
 
-	renderStateWater.Create("water_es2", arrayparam(elements), AFRS_NONE, arrayparam(samplers));
+	renderStatesWater.Create("water_es2", arrayparam(elements), AFRS_OFFSCREEN_PIPELINE, arrayparam(samplers));
 
 	const char* shaderName = "vivid";
 //	const char* shaderName = "letterbox";
 #ifdef AF_DX12
-	renderStatePostProcess.Create(shaderName, 0, nullptr, AFRS_NONE, arrayparam(samplers));
+	renderStatesPostProcess.Create(shaderName, 0, nullptr, AFRS_NONE, arrayparam(samplers));
 #else
-	renderStatePostProcess.Create(shaderName, arrayparam(elementsFullScr), AFRS_NONE, arrayparam(samplers));
+	renderStatesPostProcess.Create(shaderName, arrayparam(elementsFullScr), AFRS_NONE, arrayparam(samplers));
 #endif
 
 	texIds.resize(dimof(texFiles));
@@ -309,15 +314,15 @@ void WaterSurfaceES2::Draw()
 	UpdateRipple();
 
 	AFCommandList& cmd = afGetCommandList();
-	cmd.SetRenderStates(renderStateWater);
+
+	rtWater.BeginRenderToThis();
+
+	cmd.SetRenderStates(renderStatesWater);
 	for (int i = 0; i < (int)dimof(texFiles); i++)
 	{
 		cmd.SetTexture(texIds[i], i);
 	}
 
-	AFRenderTarget rtWater;
-	rtWater.Init(systemMisc.GetScreenSize(), AFF_R8G8B8A8_UNORM);
-	rtWater.BeginRenderToThis();
 	cmd.SetBuffer(sizeof(uboBuf), &uboBuf, 6);
 	cmd.SetVertexBuffer(vbo, sizeof(WaterVert));
 	cmd.SetIndexBuffer(ibo);
@@ -327,11 +332,10 @@ void WaterSurfaceES2::Draw()
 	rtDefault.InitForDefaultRenderTarget();
 	rtDefault.BeginRenderToThis();
 
-	cmd.SetRenderStates(renderStatePostProcess);
+	cmd.SetRenderStates(renderStatesPostProcess);
 	cmd.SetTexture(rtWater.GetTexture(), 0);
 #ifdef AF_GLES31
 	cmd.SetVertexBuffer(vboFullScr, sizeof(Vec2));
 #endif
 	cmd.Draw(4);
 }
-#endif

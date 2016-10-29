@@ -131,6 +131,21 @@ public:
 	bool IsReady() { return pipeline != 0; }
 };
 
+class AFRenderTarget
+{
+	VkFramebuffer framebuffer = 0;
+	IVec2 texSize;
+	TextureContext renderTarget;
+	bool asDefault = false;
+public:
+	~AFRenderTarget() { Destroy(); }
+	void InitForDefaultRenderTarget();
+	void Init(IVec2 size, AFFormat colorFormat, AFFormat depthStencilFormat = AFF_INVALID);
+	void Destroy();
+	void BeginRenderToThis();
+	TextureContext& GetTexture() { return renderTarget; }
+};
+
 class AFBufferStackAllocator
 {
 	VkDeviceSize allocatedSize = 0;
@@ -156,13 +171,14 @@ class DeviceManVK
 	TextureContext depthStencil;
 	VkSemaphore semaphore = 0;
 	VkCommandPool commandPool = 0;
-	VkRenderPass renderPass = 0;
 	VkPipelineCache pipelineCache = 0;
 	uint32_t frameIndex = 0;
 	RECT rc = {};
+	bool inRenderPass = false;
+public:
+	VkRenderPass primaryRenderPass = 0, offscreenRenderPass = 0;
 	VkViewport viewport;
 	VkRect2D scissor;
-public:
 	VkPhysicalDeviceMemoryProperties physicalDeviceMemoryProperties;
 	VkPhysicalDevice physicalDevice = nullptr;
 	VkDevice GetDevice() { return device; }
@@ -174,10 +190,11 @@ public:
 	VkDescriptorSetLayout commonTextureDescriptorSetLayout = 0;
 	VkDescriptorSet commonUboDescriptorSet = 0;
 	VkSampler sampler = 0;
+	TextureContext& GetDepthStencil() { return depthStencil; }
 	void Create(HWND hWnd);
 	void Present();
 	void Destroy();
-	void BeginScene();
+	void BeginScene(VkRenderPass nextRenderPass, VkFramebuffer nextFramebuffer);
 	void Flush();
 	VkPipeline CreatePipeline(const char* name, VkPipelineLayout pipelineLayout, uint32_t numAttributes, const VkVertexInputAttributeDescription attributes[], uint32_t flags);
 };

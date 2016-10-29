@@ -26,11 +26,9 @@ void App::Draw()
 	afDepthStencilMode(AFRS_DEPTH_ENABLE);	// This needed to clear depth stencil buffer
 #endif
 
-#ifndef AF_VULKAN
 	AFRenderTarget rtDefault;
 	rtDefault.InitForDefaultRenderTarget();
 	rtDefault.BeginRenderToThis();
-#endif
 
 	IVec2 scrSize = systemMisc.GetScreenSize();
 	float f = 1000;
