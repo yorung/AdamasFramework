@@ -17,19 +17,19 @@ void SkyMan::Create(const char *texFileName, const char* shader)
 	renderStates.Create(shader, 0, nullptr, AFRS_DEPTH_CLOSEREQUAL_READONLY, arrayparam(samplers));
 }
 
-void SkyMan::Draw()
+void SkyMan::Draw(AFCommandList& cmd)
 {
 	if (!renderStates.IsReady()) {
 		return;
 	}
-	renderStates.Apply();
+	cmd.SetRenderStates(renderStates);
 
 	Mat matV, matP;
 	matrixMan.Get(MatrixMan::VIEW, matV);
 	matrixMan.Get(MatrixMan::PROJ, matP);
 	matV._41 = matV._42 = matV._43 = 0;
 	Mat invVP = inv(matV * matP);
-	afBindBuffer(renderStates, sizeof(invVP), &invVP, 1);
+	cmd.SetBuffer(sizeof(invVP), &invVP, 1);
 #ifdef AF_GLES31
 	if (texDesc.isCubeMap)
 	{
@@ -38,8 +38,8 @@ void SkyMan::Draw()
 		return;
 	}
 #endif
-	afBindTexture(renderStates, texId, 0);
-	afDraw(4);
+	cmd.SetTexture(texId, 0);
+	cmd.Draw(4);
 }
 
 void SkyMan::Destroy()

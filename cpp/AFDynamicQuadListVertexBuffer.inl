@@ -1,3 +1,4 @@
+template <class AFCommandList>	// workaround: AFCommandList is not exist here
 class AFDynamicQuadListVertexBuffer
 {
 	IBOID ibo;
@@ -12,14 +13,11 @@ public:
 		vertexBufferSize = nQuad * vertexSize_ * 4;
 		ibo = afCreateQuadListIndexBuffer(nQuad);
 	}
-	void Apply()
-	{
-		afSetIndexBuffer(ibo);
-	}
-	void Write(const void* buf, int size)
+	void Apply(AFCommandList& cmd, const void* buf, int size)
 	{
 		assert(size <= vertexBufferSize);
-		afSetVertexBuffer(size, buf, stride);
+		cmd.SetIndexBuffer(ibo);
+		cmd.SetVertexBuffer(size, buf, stride);
 	}
 	void Destroy()
 	{

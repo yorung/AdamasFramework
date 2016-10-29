@@ -235,6 +235,7 @@ public:
 
 #include "AFGraphicsFunctions.inl"
 
+template<class AFCommandList>	// workaround: AFCommandList is not exist here
 class AFDynamicQuadListVertexBuffer
 {
 	IBOID ibo;
@@ -253,14 +254,11 @@ public:
 		ibo = afCreateQuadListIndexBuffer(nQuad);
 		vbo = afCreateDynamicVertexBuffer(vertexBufferSize);
 	}
-	void Apply()
-	{
-		afSetVertexBuffer(vbo, vertexSize);
-		afSetIndexBuffer(ibo);
-	}
-	void Write(const void* buf, int size)
+	void Apply(AFCommandList& cmd, const void* buf, int size)
 	{
 		assert(size <= vertexBufferSize);
+		afSetVertexBuffer(vbo, vertexSize);
+		afSetIndexBuffer(ibo);
 		afWriteBuffer(vbo, size, buf);
 	}
 	void Destroy()

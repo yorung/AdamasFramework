@@ -132,7 +132,7 @@ void FontMan::FlushToTexture()
 	afWriteTexture(texture, desc, texSrc.ReferPixels());
 }
 
-void FontMan::Render()
+void FontMan::Draw(AFCommandList& cmd)
 {
 	if (!numSprites) {
 		return;
@@ -157,11 +157,10 @@ void FontMan::Render()
 			verts[i * 4 + j].coord = (cc.srcPos + fontVertAlign[j] * cc.desc.srcWidth) / Vec2(TEX_W, TEX_H);
 		}
 	}
-	renderStates.Apply();
-	quadListVertexBuffer.Apply();
-	quadListVertexBuffer.Write(verts, 4 * numSprites * sizeof(FontVertex));
-	afBindTexture(renderStates, texture, 0);
-	afDrawIndexed(numSprites * 6);
+	cmd.SetRenderStates(renderStates);
+	quadListVertexBuffer.Apply(cmd, verts, 4 * numSprites * sizeof(FontVertex));
+	cmd.SetTexture(texture, 0);
+	cmd.DrawIndexed(numSprites * 6);
 	numSprites = 0;
 }
 

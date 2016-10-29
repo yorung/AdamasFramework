@@ -157,24 +157,26 @@ void Picking::Update()
 
 void Picking::Draw3D()
 {
-	renderStates.Apply();
-	afSetVertexBuffer(vbo3d, sizeof(Vertex));
+	AFCommandList& cmd = afGetCommandList();
+	cmd.SetRenderStates(renderStates);
+	cmd.SetVertexBuffer(vbo3d, sizeof(Vertex));
 	Mat mView, mProj;
 	matrixMan.Get(MatrixMan::VIEW, mView);
 	matrixMan.Get(MatrixMan::PROJ, mProj);
 	Mat mVP = mView * mProj;
-	afBindBuffer(renderStates, sizeof(Mat), &mVP, 0);
+	cmd.SetBuffer(sizeof(Mat), &mVP, 0);
 	afDraw(3);
 }
 
 void Picking::Draw2D()
 {
-	renderStates.Apply();
-	afSetVertexBuffer(vbo2d, sizeof(Vertex));
+	AFCommandList& cmd = afGetCommandList();
+	cmd.SetRenderStates(renderStates);
+	cmd.SetVertexBuffer(vbo2d, sizeof(Vertex));
 	Mat proj2d;
 #ifdef AF_VULKAN
 	proj2d._22 = -1;
 #endif
-	afBindBuffer(renderStates, sizeof(Mat), &proj2d, 0);
+	cmd.SetBuffer(sizeof(Mat), &proj2d, 0);
 	afDraw(3);
 }

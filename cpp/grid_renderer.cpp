@@ -105,15 +105,16 @@ GridRenderer::GridRenderer(int numGrid_, float pitch_)
 
 void GridRenderer::Draw()
 {
-	renderStates.Apply();
+	AFCommandList& cmd = afGetCommandList();
+	cmd.SetRenderStates(renderStates);
 	Mat matView, matProj;
 	matrixMan.Get(MatrixMan::VIEW, matView);
 	matrixMan.Get(MatrixMan::PROJ, matProj);
 	Mat matVP = matView * matProj;
-	afBindBuffer(renderStates, sizeof(Mat), &matVP, 0);
-	afSetVertexBuffer(vbo, sizeof(GridVert));
-	afSetIndexBuffer(ibo);
-	afDraw(lines * 2);
+	cmd.SetBuffer(sizeof(Mat), &matVP, 0);
+	cmd.SetVertexBuffer(vbo, sizeof(GridVert));
+	cmd.SetIndexBuffer(ibo);
+	cmd.Draw(lines * 2);
 
 #ifndef NDEBUG
 	Vec2 v;

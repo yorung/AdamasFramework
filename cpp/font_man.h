@@ -19,7 +19,7 @@ class FontMan
 	CharSprite charSprites[SPRITE_MAX];
 	int numSprites;
 	AFRenderStates renderStates;
-	AFDynamicQuadListVertexBuffer quadListVertexBuffer;
+	AFDynamicQuadListVertexBuffer<AFCommandList> quadListVertexBuffer;
 	bool dirty = false;
 	bool Build(const CharSignature& signature);
 	bool Cache(const CharSignature& code);
@@ -33,7 +33,7 @@ public:
 	void FlushToTexture();
 	void DrawString(Vec2 pos, int fontSize, const wchar_t *text);
 	void DrawString(Vec2 pos, int fontSize, const char *text);
-	void Render();
+	void Draw(AFCommandList& cmd);
 	Vec2 MeasureString(int fontSize, const char *text);
 };
 

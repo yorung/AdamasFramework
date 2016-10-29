@@ -62,18 +62,18 @@ void SpriteRenderer::Draw(const SpriteCommands& sprites)
 	Vec2 scrSize = systemMisc.GetScreenSize();
 	Mat proj = ortho(0, scrSize.x, scrSize.y, 0, -1000, 1000);
 
-	renderStates.Apply();
-	quadListVertexBuffer.Apply();
-	afBindBuffer(renderStates, sizeof(Mat), &proj, 1);
+	AFCommandList& cmd = afGetCommandList();
+	cmd.SetRenderStates(renderStates);
+	cmd.SetBuffer(sizeof(Mat), &proj, 1);
 
 	SpriteVertex v[MAX_SPRITES_IN_ONE_DRAW_CALL][4];
 	int numStoredSprites = 0;
 	SRVID curTex;
 	auto flush = [&] {
 		if (numStoredSprites > 0) {
-			afBindTexture(renderStates, curTex, 0);
-			quadListVertexBuffer.Write(v, sizeof(SpriteVertex) * 4 * numStoredSprites);
-			afDrawIndexed(6 * numStoredSprites, 0);
+			cmd.SetTexture(curTex, 0);
+			quadListVertexBuffer.Apply(cmd, v, sizeof(SpriteVertex) * 4 * numStoredSprites);
+			cmd.DrawIndexed(6 * numStoredSprites, 0);
 			numStoredSprites = 0;
 		}
 	};

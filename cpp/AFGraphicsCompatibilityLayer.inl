@@ -1,21 +1,60 @@
+class AFCommandList
+{
+	AFRenderStates* currentRS = nullptr;
+public:
+	void SetRenderStates(AFRenderStates& rs)
+	{
+		rs.Apply();
+		currentRS = &rs;
+	}
+	void SetTexture(SRVID texId, int descritorSetIndex)
+	{
 #ifdef AF_VULKAN
-inline void afBindBuffer(AFRenderStates& rs, int size, const void* buf, int descritorSetIndex)
-{
-	afBindBuffer(rs.GetPipelineLayout(), size, buf, descritorSetIndex);
-}
-
-inline void afBindTexture(AFRenderStates& rs, const TextureContext& textureContext, int descritorSetIndex)
-{
-	afBindTexture(rs.GetPipelineLayout(), textureContext, descritorSetIndex);
-}
+		afBindTexture(currentRS->GetPipelineLayout(), texId, descritorSetIndex);
 #else
-inline void afBindBuffer(AFRenderStates& rs, int size, const void* buf, int descritorSetIndex)
-{
-	afBindBuffer(size, buf, descritorSetIndex);
-}
-
-inline void afBindTexture(AFRenderStates& rs, SRVID texId, int descritorSetIndex)
-{
-	afBindTexture(texId, descritorSetIndex);
-}
+		afBindTexture(texId, descritorSetIndex);
 #endif
+	}
+	void SetBuffer(int size, const void* buf, int descritorSetIndex)
+	{
+#ifdef AF_VULKAN
+		afBindBuffer(currentRS->GetPipelineLayout(), size, buf, descritorSetIndex);
+#else
+		afBindBuffer(size, buf, descritorSetIndex);
+#endif
+	}
+#ifndef AF_VULKAN
+	void SetBuffer(UBOID uniformBuffer, int descriptorSetIndex)
+	{
+		afBindBuffer(uniformBuffer, descriptorSetIndex);
+	}
+#endif
+#ifndef AF_GLES31
+	void SetVertexBuffer(int size, const void* buf, int stride)
+	{
+		afSetVertexBuffer(size, buf, stride);
+	}
+#endif
+	void SetVertexBuffer(VBOID vertexBuffer, int stride)
+	{
+		afSetVertexBuffer(vertexBuffer, stride);
+	}
+	void SetIndexBuffer(IBOID indexBuffer)
+	{
+		afSetIndexBuffer(indexBuffer);
+	}
+	void Draw(int numVertices, int start = 0, int instanceCount = 1)
+	{
+		afDraw(numVertices, start, instanceCount);
+	}
+	void DrawIndexed(int numVertices, int start = 0, int instanceCount = 1)
+	{
+		afDrawIndexed(numVertices, start, instanceCount);
+	}
+};
+
+inline AFCommandList& afGetCommandList()
+{
+	static AFCommandList commandList;
+	return commandList;
+}

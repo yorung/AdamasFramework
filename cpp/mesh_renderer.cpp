@@ -134,10 +134,12 @@ MRID MeshRenderer::CreateRenderMesh(const Block& block)
 
 void MeshRenderer::SafeDestroyRenderMesh(MRID& id)
 {
-	if (id >= renderMeshes.size()) {
+	if (id >= renderMeshes.size())
+	{
 		return;
 	}
-	if (id != INVALID_MRID) {
+	if (id != INVALID_MRID)
+	{
 		SAFE_DELETE(renderMeshes[id]);
 		id = INVALID_MRID;
 	}
@@ -145,11 +147,13 @@ void MeshRenderer::SafeDestroyRenderMesh(MRID& id)
 
 RenderMesh* MeshRenderer::GetMeshByMRID(MRID id)
 {
-	if (id >= renderMeshes.size()) {
+	if (id >= renderMeshes.size())
+	{
 		return nullptr;
 	}
 	RenderMesh* r = renderMeshes[id];
-	if (!r) {
+	if (!r)
+	{
 		return nullptr;
 	}
 	return r;
@@ -157,19 +161,23 @@ RenderMesh* MeshRenderer::GetMeshByMRID(MRID id)
 
 void MeshRenderer::DrawRenderMesh(MRID id, const Mat& worldMat, const Mat BoneMatrices[], int nBones, const Block& block)
 {
-	if (!uboForMaterials) {
+	if (!uboForMaterials)
+	{
 		return;
 	}
 	assert(GetMeshByMRID(id));
 	assert(!block.materialMaps.empty());
 
-	if (nStoredCommands && id != perDrawCallUBO.commands[0].meshId) {
+	if (nStoredCommands && id != perDrawCallUBO.commands[0].meshId)
+	{
 		Flush();
 	}
-	if (nStoredCommands == MAX_INSTANCES) {
+	if (nStoredCommands == MAX_INSTANCES)
+	{
 		Flush();
 	}
-	if (nBones + renderBoneMatrices.size() > MAX_BONE_SSBOS) {
+	if (nBones + renderBoneMatrices.size() > MAX_BONE_SSBOS)
+	{
 		Flush();
 	}
 
@@ -195,8 +203,9 @@ void MeshRenderer::Flush()
 	matrixMan.Get(MatrixMan::VIEW, perDrawCallUBO.matV);
 	matrixMan.Get(MatrixMan::PROJ, perDrawCallUBO.matP);
 
-	renderStates.Apply();
-	afBindBuffer(renderStates, sizeof(PerDrawCallUBO), &perDrawCallUBO, 0);
+	AFCommandList& cmd = afGetCommandList();
+	cmd.SetRenderStates(renderStates);
+	cmd.SetBuffer(sizeof(PerDrawCallUBO), &perDrawCallUBO, 0);
 #ifdef AF_VULKAN
 	const uint32_t descritorSetIndex = 1;
 
@@ -207,23 +216,24 @@ void MeshRenderer::Flush()
 	VkCommandBuffer commandBuffer = deviceMan.commandBuffer;
 	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, renderStates.GetPipelineLayout(), descritorSetIndex, 1, &uboDescriptorSet, 1, &dynamicOffset);
 #else
-	afBindBuffer(uboForMaterials, 1);
+	cmd.SetBuffer(uboForMaterials, 1);
 #endif
-	afBindBuffer(renderStates, sizeof(Mat) * renderBoneMatrices.size(), &renderBoneMatrices[0], 2);
+	cmd.SetBuffer(sizeof(Mat) * renderBoneMatrices.size(), &renderBoneMatrices[0], 2);
 
 	const RenderCommand& c = perDrawCallUBO.commands[0];
 	RenderMesh* r = GetMeshByMRID(c.meshId);
 	assert(r);
 
-	afSetIndexBuffer(r->ibo);
-	afSetVertexBuffer(r->vbo, sizeof(MeshVertex));
-	for (auto it : r->materialMaps) {
+	cmd.SetIndexBuffer(r->ibo);
+	cmd.SetVertexBuffer(r->vbo, sizeof(MeshVertex));
+	for (auto it : r->materialMaps)
+	{
 		const Material* mat = meshRenderer.GetMaterial(it.materialId);
 		assert(mat);
-		afBindTexture(renderStates, texMan.IndexToTexture(mat->texture), 3);
+		cmd.SetTexture(texMan.IndexToTexture(mat->texture), 3);
 		int count = it.faces * 3;
 		int start = it.faceStartIndex * 3;
-		afDrawIndexed(count, start, nStoredCommands);
+		cmd.DrawIndexed(count, start, nStoredCommands);
 	}
 
 	renderBoneMatrices.clear();
@@ -232,11 +242,13 @@ void MeshRenderer::Flush()
 
 MMID MeshRenderer::CreateMaterial(const Material& mat)
 {
-	if (!uboForMaterials) {
+	if (!uboForMaterials)
+	{
 		return 0;
 	}
 	auto it = std::find_if(materials.begin(), materials.end(), [&mat](const Material& m) { return m == mat; });
-	if (it != materials.end()) {
+	if (it != materials.end())
+	{
 		int n = (int)std::distance(materials.begin(), it);
 		return n;
 	}

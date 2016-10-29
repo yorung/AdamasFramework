@@ -50,11 +50,12 @@ void App::Draw()
 		mesh->Draw(r, translate(radius * 2.0f, 0, 0) * q2m(Quat(Vec3(0, 1.0f, 0), normToRad(wrappedTime))));
 	}
 	*/
+	AFCommandList& cmd = afGetCommandList();
 	luaMan.Draw3D();
 	meshRenderer.Flush();
-	skyMan.Draw();
+	skyMan.Draw(cmd);
 	luaMan.Draw2D();
-	fontMan.Render();
+	fontMan.Draw(cmd);
 }
 
 void App::Init()

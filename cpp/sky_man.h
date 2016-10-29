@@ -6,7 +6,7 @@ class SkyMan
 public:
 	~SkyMan();
 	void Create(const char *texFileName, const char* shader);
-	void Draw();
+	void Draw(AFCommandList& cmd);
 	void Destroy();
 };
 
