@@ -1,13 +1,13 @@
 #version 450
 
-in vec2 POSITION;
-out vec2 texcoord;
-out vec2 position;
+layout (location = 0) out vec2 position;
+layout (location = 1) out vec2 texcoord;
 
 void main()
 {
-	gl_Position = vec4(POSITION.xy, 1, 1);
-	texcoord.x = POSITION.x * 0.5 + 0.5;
-	texcoord.y = POSITION.y * 0.5 + 0.5;
-	position = POSITION;
+	vec2 vPosition = vec2((gl_VertexIndex & 2) != 0 ? 1.0 : -1.0, (gl_VertexIndex & 1) != 0 ? -1.0 : 1.0);
+	gl_Position = vec4(vPosition.xy, 1, 1);
+	texcoord.x = vPosition.x * 0.5 + 0.5;
+	texcoord.y = vPosition.y * 0.5 + 0.5;
+	position = vPosition;
 }

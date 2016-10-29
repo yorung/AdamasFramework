@@ -24,6 +24,7 @@ struct WaterSurfaceClassicUBO {
 
 class WaterSurfaceES2
 {
+	AFRenderTarget rtWater;
 	WaterSurfaceClassicUBO uboBuf;
 	AFRenderStates renderStatePostProcess;
 	int lines;
@@ -223,6 +224,8 @@ void WaterSurfaceES2::Init()
 	assert(dimof(samplers) >= dimof(texFiles));
 	Destroy();
 
+	rtWater.Init(systemMisc.GetScreenSize(), AFF_R8G8B8A8_UNORM);
+
 	lastTime = GetTime();
 
 	std::vector<AFIndex> indi;
@@ -319,8 +322,6 @@ void WaterSurfaceES2::Draw()
 
 	AFCommandList& cmd = afGetCommandList();
 
-	AFRenderTarget rtWater;
-	rtWater.Init(systemMisc.GetScreenSize(), AFF_R8G8B8A8_UNORM);
 	rtWater.BeginRenderToThis();
 
 	cmd.SetRenderStates(renderStateWater);
@@ -344,6 +345,4 @@ void WaterSurfaceES2::Draw()
 	cmd.SetVertexBuffer(vboFullScr, sizeof(Vec2));
 #endif
 	cmd.Draw(4);
-	luaMan.Flush2DSprites();
-	luaMan.Flush2DSprites();
 }
