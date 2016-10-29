@@ -193,13 +193,15 @@ void WaterSurfaceES2::Destroy()
 	}
 }
 
-static const InputElement elements[] = {
-	CInputElement("vPosition", AFF_R32G32B32_FLOAT, 0),
-	CInputElement("vNormal", AFF_R32G32B32_FLOAT, 12),
+static const InputElement elements[] =
+{
+	AF_INPUT_ELEMENT(0, "vPosition", AFF_R32G32B32_FLOAT, 0),
+	AF_INPUT_ELEMENT(1, "vNormal", AFF_R32G32B32_FLOAT, 12),
 };
 
-static const InputElement elementsFullScr[] = {
-	CInputElement("POSITION", AFF_R32G32_FLOAT, 0),
+static const InputElement elementsFullScr[] =
+{
+	AF_INPUT_ELEMENT(0, "POSITION", AFF_R32G32_FLOAT, 0),
 };
 
 static const SamplerType samplers[] = {

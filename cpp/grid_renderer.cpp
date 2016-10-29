@@ -84,19 +84,11 @@ GridRenderer::GridRenderer(int numGrid_, float pitch_)
 	int sizeVertices = vert.size() * sizeof(GridVert);
 	lines = indi.size() / 2;
 
-#ifdef AF_VULKAN
 	const static InputElement layout[] =
 	{
-		CInputElement(0, AFF_R32G32B32_FLOAT, 0),
-		CInputElement(1, AFF_R32G32B32_FLOAT, 12),
+		AF_INPUT_ELEMENT(0, "POSITION", AFF_R32G32B32_FLOAT, 0),
+		AF_INPUT_ELEMENT(1, "COLOR", AFF_R32G32B32_FLOAT, 12),
 	};
-#else
-	const static InputElement layout[] =
-	{
-		CInputElement("POSITION", AFF_R32G32B32_FLOAT, 0),
-		CInputElement("COLOR", AFF_R32G32B32_FLOAT, 12),
-	};
-#endif
 	renderStates.Create("solid", arrayparam(layout), AFRS_DEPTH_ENABLE | AFRS_PRIMITIVE_LINELIST);
 
 	vbo = afCreateVertexBuffer(sizeVertices, &vert[0]);

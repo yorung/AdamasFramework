@@ -1,25 +1,19 @@
 #include "stdafx.h"
 
-#ifdef AF_VULKAN
 const static InputElement elements[] =
 {
-	CInputElement(0, AFF_R32G32B32_FLOAT, 0),
-	CInputElement(1, AFF_R32G32B32_FLOAT, 12),
+	AF_INPUT_ELEMENT(0, "POSITION", AFF_R32G32B32_FLOAT, 0),
+	AF_INPUT_ELEMENT(1, "COLOR", AFF_R32G32B32_FLOAT, 12),
 };
-#else
-const static InputElement elements[] =
-{
-	CInputElement("POSITION", AFF_R32G32B32_FLOAT, 0),
-	CInputElement("COLOR", AFF_R32G32B32_FLOAT, 12),
-};
-#endif
 
-struct Vertex {
+struct Vertex
+{
 	Vec3 pos;
 	Vec3 color;
 };
 
-class Picking {
+class Picking
+{
 	VBOID vbo2d, vbo3d;
 	AFRenderStates renderStates;
 public:

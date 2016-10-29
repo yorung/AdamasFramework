@@ -34,19 +34,11 @@ void FontMan::ClearCache()
 	curX = curY = curLineMaxH = 0;
 }
 
-#ifdef AF_VULKAN
 static InputElement elements[] =
 {
-	CInputElement(0, AFF_R32G32_FLOAT, 0),
-	CInputElement(1, AFF_R32G32_FLOAT, 8),
+	AF_INPUT_ELEMENT(0, "POSITION", AFF_R32G32_FLOAT, 0),
+	AF_INPUT_ELEMENT(1, "TEXCOORD", AFF_R32G32_FLOAT, 8),
 };
-#else
-static InputElement elements[] =
-{
-	CInputElement("POSITION", AFF_R32G32_FLOAT, 0),
-	CInputElement("TEXCOORD", AFF_R32G32_FLOAT, 8),
-};
-#endif
 
 const static SamplerType samplers[] = {
 	AFST_POINT_CLAMP,

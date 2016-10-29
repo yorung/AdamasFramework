@@ -6,29 +6,16 @@ static const size_t MAX_MATERIALS = 100;
 static const size_t MAX_BONE_SSBOS = 100;
 static const size_t MATERIAL_UBO_SIZE = sizeof(Material) * MAX_MATERIALS;
 
-#ifdef AF_VULKAN
 static const InputElement elements[] =
 {
-	CInputElement(0, AFF_R32G32B32_FLOAT, 0),
-	CInputElement(1, AFF_R32G32B32_FLOAT, 12),
-	CInputElement(2, AFF_R8G8B8A8_UNORM, 24),
-	CInputElement(3, AFF_R32G32_FLOAT, 28),
-	CInputElement(4, AFF_R32G32B32_FLOAT, 36),
-	CInputElement(5, AFF_R8G8B8A8_UINT, 48),
-	CInputElement(6, AFF_R32_UINT, 52),
+	AF_INPUT_ELEMENT(0, "POSITION", AFF_R32G32B32_FLOAT, 0),
+	AF_INPUT_ELEMENT(1, "NORMAL", AFF_R32G32B32_FLOAT, 12),
+	AF_INPUT_ELEMENT(2, "vColor", AFF_R8G8B8A8_UNORM, 24),
+	AF_INPUT_ELEMENT(3, "vTexcoord", AFF_R32G32_FLOAT, 28),
+	AF_INPUT_ELEMENT(4, "vBlendWeights", AFF_R32G32B32_FLOAT, 36),
+	AF_INPUT_ELEMENT(5, "vBlendIndices", AFF_R8G8B8A8_UINT, 48),
+	AF_INPUT_ELEMENT(6, "materialId", AFF_R32_UINT, 52),
 };
-#else
-static const InputElement elements[] =
-{
-	CInputElement("POSITION", AFF_R32G32B32_FLOAT, 0),
-	CInputElement("NORMAL", AFF_R32G32B32_FLOAT, 12),
-	CInputElement("vColor", AFF_R8G8B8A8_UNORM, 24),
-	CInputElement("vTexcoord", AFF_R32G32_FLOAT, 28),
-	CInputElement("vBlendWeights", AFF_R32G32B32_FLOAT, 36),
-	CInputElement("vBlendIndices", AFF_R8G8B8A8_UINT, 48),
-	CInputElement("materialId", AFF_R32_UINT, 52),
-};
-#endif
 
 static const SamplerType samplers[] =
 {

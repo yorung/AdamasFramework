@@ -1,16 +1,9 @@
 #include "stdafx.h"
 
-#ifdef AF_VULKAN
 static const InputElement elements[] =
 {
-	CInputElement(0, AFF_R32G32_FLOAT, 0),
+	AF_INPUT_ELEMENT(0, "POSITION", AFF_R32G32_FLOAT, 0),
 };
-#else
-static const InputElement elements[] =
-{
-	CInputElement("POSITION", AFF_R32G32_FLOAT, 0),
-};
-#endif
 
 StockObjects stockObjects;
 
