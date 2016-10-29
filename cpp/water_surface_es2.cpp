@@ -25,7 +25,6 @@ struct WaterSurfaceClassicUBO {
 class WaterSurfaceES2
 {
 	WaterSurfaceClassicUBO uboBuf;
-	AFRenderStates renderStateWater;
 	AFRenderStates renderStatePostProcess;
 	int lines;
 	void UpdateVert(std::vector<WaterVert>& vert);
@@ -207,6 +206,18 @@ static const SamplerType samplers[] = {
 	AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP
 };
 
+AFRenderStates renderStateWater;
+
+void MakeWaterRenderState()
+{
+	renderStateWater.Create("water_es2", arrayparam(elements), AFRS_NONE, arrayparam(samplers));
+}
+
+void DestroyWaterRenderState()
+{
+	renderStateWater.Destroy();
+}
+
 void WaterSurfaceES2::Init()
 {
 	assert(dimof(samplers) >= dimof(texFiles));
@@ -241,8 +252,6 @@ void WaterSurfaceES2::Init()
 
 	Vec2 vboFullScrSrc[] = {{-1, 1}, {-1, -1}, {1, 1}, {1, -1}};
 	vboFullScr = afCreateVertexBuffer(sizeof(vboFullScrSrc), &vboFullScrSrc[0]);
-
-	renderStateWater.Create("water_es2", arrayparam(elements), AFRS_NONE, arrayparam(samplers));
 
 	const char* shaderName = "vivid";
 //	const char* shaderName = "letterbox";
@@ -309,15 +318,17 @@ void WaterSurfaceES2::Draw()
 	UpdateRipple();
 
 	AFCommandList& cmd = afGetCommandList();
+
+	AFRenderTarget rtWater;
+	rtWater.Init(systemMisc.GetScreenSize(), AFF_R8G8B8A8_UNORM);
+	rtWater.BeginRenderToThis();
+
 	cmd.SetRenderStates(renderStateWater);
 	for (int i = 0; i < (int)dimof(texFiles); i++)
 	{
 		cmd.SetTexture(texIds[i], i);
 	}
 
-	AFRenderTarget rtWater;
-	rtWater.Init(systemMisc.GetScreenSize(), AFF_R8G8B8A8_UNORM);
-	rtWater.BeginRenderToThis();
 	cmd.SetBuffer(sizeof(uboBuf), &uboBuf, 6);
 	cmd.SetVertexBuffer(vbo, sizeof(WaterVert));
 	cmd.SetIndexBuffer(ibo);

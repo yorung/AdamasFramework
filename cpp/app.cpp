@@ -71,6 +71,9 @@ void App::Init()
 	stockObjects.Create();
 
 	luaMan.Create();
+
+	void MakeWaterRenderState();
+	MakeWaterRenderState();
 }
 
 void App::LoadMesh(const char* fileName)
@@ -87,6 +90,9 @@ void App::LoadMesh(const char* fileName)
 
 void App::Destroy()
 {
+	void DestroyWaterRenderState();
+	DestroyWaterRenderState();
+
 #if defined(AF_DX12) || defined(AF_VULKAN)
 	deviceMan.Flush();
 #endif
