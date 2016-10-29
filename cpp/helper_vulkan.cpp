@@ -7,6 +7,7 @@ static const uint32_t descriptorPoolSize = 32;
 
 static const VkComponentMapping colorComponentMapping = { VK_COMPONENT_SWIZZLE_R, VK_COMPONENT_SWIZZLE_G, VK_COMPONENT_SWIZZLE_B, VK_COMPONENT_SWIZZLE_A };
 static const VkComponentMapping depthComponentMapping = {};
+static const VkClearValue clearValues[2] = { { 0.2f, 0.5f, 0.5f },{ 1.0f, 0u } };
 
 DeviceManVK deviceMan;
 
@@ -182,30 +183,25 @@ TextureContext afCreateDynamicTexture(VkFormat format, const IVec2& size, void *
 	assert(formatProperties.linearTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT);
 
 	VkDevice device = deviceMan.GetDevice();
-	const bool isDepth = format == VK_FORMAT_D24_UNORM_S8_UINT;
 
 	TextureContext textureContext;
 	textureContext.device = device;
 	textureContext.format = format;
 	textureContext.texDesc.size = size;
 	const VkImageCreateInfo dynamicTextureCreateInfo = { VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO, nullptr, 0, VK_IMAGE_TYPE_2D, format,{ (uint32_t)size.x, (uint32_t)size.y, 1 }, 1, 1, VK_SAMPLE_COUNT_1_BIT, VK_IMAGE_TILING_LINEAR, VK_IMAGE_USAGE_SAMPLED_BIT, VK_SHARING_MODE_EXCLUSIVE, 0, nullptr, VK_IMAGE_LAYOUT_PREINITIALIZED };
-	const VkImageCreateInfo depthStencilCreateInfo = { VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO, nullptr, 0, VK_IMAGE_TYPE_2D, format,{ (uint32_t)size.x, (uint32_t)size.y, 1 }, 1, 1, VK_SAMPLE_COUNT_1_BIT, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_SHARING_MODE_EXCLUSIVE, 0, nullptr, VK_IMAGE_LAYOUT_UNDEFINED };
-	afHandleVKError(vkCreateImage(device, isDepth ? &depthStencilCreateInfo : &dynamicTextureCreateInfo, nullptr, &textureContext.image));
+	afHandleVKError(vkCreateImage(device, &dynamicTextureCreateInfo, nullptr, &textureContext.image));
 
 	VkMemoryRequirements req = {};
 	vkGetImageMemoryRequirements(device, textureContext.image, &req);
-	const VkMemoryAllocateInfo memoryAllocateInfo = { VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO, nullptr, req.size, GetCompatibleMemoryTypeIndex(deviceMan.physicalDeviceMemoryProperties, req.memoryTypeBits, isDepth ? VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT : VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT) };
+	const VkMemoryAllocateInfo memoryAllocateInfo = { VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO, nullptr, req.size, GetCompatibleMemoryTypeIndex(deviceMan.physicalDeviceMemoryProperties, req.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT) };
 	afHandleVKError(vkAllocateMemory(device, &memoryAllocateInfo, nullptr, &textureContext.memory));
 
 	afHandleVKError(vkBindImageMemory(device, textureContext.image, textureContext.memory, 0));
 
-	VkImageViewCreateInfo imageViewCreateInfo = { VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, nullptr, 0, textureContext.image, VK_IMAGE_VIEW_TYPE_2D, format, isDepth ? depthComponentMapping : colorComponentMapping, { FormatToAspectFlags(format), 0, 1, 0, 1 } };
+	VkImageViewCreateInfo imageViewCreateInfo = { VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, nullptr, 0, textureContext.image, VK_IMAGE_VIEW_TYPE_2D, format, colorComponentMapping, { FormatToAspectFlags(format), 0, 1, 0, 1 } };
 	afHandleVKError(vkCreateImageView(device, &imageViewCreateInfo, nullptr, &textureContext.view));
 
-	if (!isDepth)
-	{
-		CreateTextureDescriptorSet(textureContext);
-	}
+	CreateTextureDescriptorSet(textureContext);
 
 	TexDesc texDesc;
 	texDesc.size = size;
@@ -213,6 +209,45 @@ TextureContext afCreateDynamicTexture(VkFormat format, const IVec2& size, void *
 	{
 		afWriteTexture(textureContext, texDesc, image);
 	}
+	return textureContext;
+}
+
+TextureContext afCreateRenderTarget(VkFormat format, const IVec2& size)
+{
+	VkFormatProperties formatProperties;
+	vkGetPhysicalDeviceFormatProperties(deviceMan.physicalDevice, format, &formatProperties);
+	assert(formatProperties.linearTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT);
+
+	VkDevice device = deviceMan.GetDevice();
+	const bool isDepth = format == VK_FORMAT_D24_UNORM_S8_UINT;
+
+	TextureContext textureContext;
+	textureContext.device = device;
+	textureContext.format = format;
+	textureContext.texDesc.size = size;
+	const VkImageCreateInfo renderTargetCreateInfo = { VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO, nullptr, 0, VK_IMAGE_TYPE_2D, format,{ (uint32_t)size.x, (uint32_t)size.y, 1 }, 1, 1, VK_SAMPLE_COUNT_1_BIT, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT, VK_SHARING_MODE_EXCLUSIVE, 0, nullptr, VK_IMAGE_LAYOUT_UNDEFINED };
+	const VkImageCreateInfo depthStencilCreateInfo = { VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO, nullptr, 0, VK_IMAGE_TYPE_2D, format,{ (uint32_t)size.x, (uint32_t)size.y, 1 }, 1, 1, VK_SAMPLE_COUNT_1_BIT, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_SHARING_MODE_EXCLUSIVE, 0, nullptr, VK_IMAGE_LAYOUT_UNDEFINED };
+	afHandleVKError(vkCreateImage(device, isDepth ? &depthStencilCreateInfo : &renderTargetCreateInfo, nullptr, &textureContext.image));
+
+	VkMemoryRequirements req = {};
+	vkGetImageMemoryRequirements(device, textureContext.image, &req);
+	const VkMemoryAllocateInfo memoryAllocateInfo = { VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO, nullptr, req.size, GetCompatibleMemoryTypeIndex(deviceMan.physicalDeviceMemoryProperties, req.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT) };
+	afHandleVKError(vkAllocateMemory(device, &memoryAllocateInfo, nullptr, &textureContext.memory));
+
+	afHandleVKError(vkBindImageMemory(device, textureContext.image, textureContext.memory, 0));
+
+	VkImageViewCreateInfo imageViewCreateInfo = { VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, nullptr, 0, textureContext.image, VK_IMAGE_VIEW_TYPE_2D, format, isDepth ? depthComponentMapping : colorComponentMapping,{ FormatToAspectFlags(format), 0, 1, 0, 1 } };
+	afHandleVKError(vkCreateImageView(device, &imageViewCreateInfo, nullptr, &textureContext.view));
+
+	if (!isDepth)
+	{
+		CreateTextureDescriptorSet(textureContext);
+
+		//VkCommandBuffer cmd = deviceMan.commandBuffer;
+		//const VkImageMemoryBarrier undefToAttachment = { VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER, nullptr, 0, VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, textureContext.image,{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 } };
+		//vkCmdPipelineBarrier(cmd, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0, 0, nullptr, 0, nullptr, 1, &undefToAttachment);
+	}
+
 	return textureContext;
 }
 
@@ -317,6 +352,18 @@ static VkRenderPass CreateRenderPass(VkFormat colorBufferFormat, VkFormat depthS
 	const VkAttachmentReference depthStencilAttachmentReference = { 1, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL };
 	const VkSubpassDescription subpassDescriptions[] = { { 0, VK_PIPELINE_BIND_POINT_GRAPHICS, 0, nullptr, 1, &colorAttachmentReference, nullptr, &depthStencilAttachmentReference } };
 	const VkAttachmentDescription attachments[2] = { { 0, colorBufferFormat, VK_SAMPLE_COUNT_1_BIT, VK_ATTACHMENT_LOAD_OP_CLEAR, VK_ATTACHMENT_STORE_OP_STORE, VK_ATTACHMENT_LOAD_OP_DONT_CARE, VK_ATTACHMENT_STORE_OP_DONT_CARE, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR },{ 0, depthStencilFormat, VK_SAMPLE_COUNT_1_BIT, VK_ATTACHMENT_LOAD_OP_CLEAR, VK_ATTACHMENT_STORE_OP_STORE, VK_ATTACHMENT_LOAD_OP_CLEAR, VK_ATTACHMENT_STORE_OP_STORE, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL } };
+	const VkRenderPassCreateInfo renderPassInfo = { VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO, nullptr, 0, arrayparam(attachments), arrayparam(subpassDescriptions) };
+	VkRenderPass renderPass = 0;
+	afHandleVKError(vkCreateRenderPass(deviceMan.GetDevice(), &renderPassInfo, nullptr, &renderPass));
+	return renderPass;
+}
+
+static VkRenderPass CreateRenderPassForOffscreen(VkFormat colorBufferFormat, VkFormat depthStencilFormat)
+{
+	const VkAttachmentReference colorAttachmentReference = { 0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL };
+	const VkAttachmentReference depthStencilAttachmentReference = { 1, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL };
+	const VkSubpassDescription subpassDescriptions[] = { { 0, VK_PIPELINE_BIND_POINT_GRAPHICS, 0, nullptr, 1, &colorAttachmentReference, nullptr, &depthStencilAttachmentReference } };
+	const VkAttachmentDescription attachments[2] = { { 0, colorBufferFormat, VK_SAMPLE_COUNT_1_BIT, VK_ATTACHMENT_LOAD_OP_CLEAR, VK_ATTACHMENT_STORE_OP_STORE, VK_ATTACHMENT_LOAD_OP_DONT_CARE, VK_ATTACHMENT_STORE_OP_DONT_CARE, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL },{ 0, depthStencilFormat, VK_SAMPLE_COUNT_1_BIT, VK_ATTACHMENT_LOAD_OP_CLEAR, VK_ATTACHMENT_STORE_OP_STORE, VK_ATTACHMENT_LOAD_OP_CLEAR, VK_ATTACHMENT_STORE_OP_STORE, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL } };
 	const VkRenderPassCreateInfo renderPassInfo = { VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO, nullptr, 0, arrayparam(attachments), arrayparam(subpassDescriptions) };
 	VkRenderPass renderPass = 0;
 	afHandleVKError(vkCreateRenderPass(deviceMan.GetDevice(), &renderPassInfo, nullptr, &renderPass));
@@ -496,7 +543,7 @@ void DeviceManVK::Create(HWND hWnd)
 	afHandleVKError(vkGetSwapchainImagesKHR(device, swapchain, &swapChainCount, swapChainImages));
 
 	// depth stencil
-	depthStencil = afCreateDynamicTexture(VK_FORMAT_D24_UNORM_S8_UINT, IVec2(rc.right, rc.bottom), nullptr);
+	depthStencil = afCreateRenderTarget(VK_FORMAT_D24_UNORM_S8_UINT, IVec2(rc.right, rc.bottom));
 
 	// render pass
 	renderPass = CreateRenderPass(swapchainInfo.imageFormat, VK_FORMAT_D24_UNORM_S8_UINT);
@@ -510,15 +557,30 @@ void DeviceManVK::Create(HWND hWnd)
 	}
 	viewport = { 0, 0, (float)rc.right, (float)rc.bottom, 0, 1 };
 	scissor = { 0, 0, (uint32_t)rc.right, (uint32_t)rc.bottom };
+
+	afHandleVKError(vkAcquireNextImageKHR(device, swapchain, UINT64_MAX, semaphore, VK_NULL_HANDLE, &frameIndex));
+	inRenderPass = false;
 }
 
-void DeviceManVK::BeginScene()
+void DeviceManVK::BeginScene(VkRenderPass nextRenderPass, VkFramebuffer nextFramebuffer)
 {
-	afHandleVKError(vkAcquireNextImageKHR(device, swapchain, UINT64_MAX, semaphore, VK_NULL_HANDLE, &frameIndex));
+	if (inRenderPass)
+	{
+		vkCmdEndRenderPass(commandBuffer);
+		inRenderPass = false;
+	}
 
-	const VkClearValue clearValues[2] = { { 0.2f, 0.5f, 0.5f }, { 1.0f, 0u } };
-	const VkRenderPassBeginInfo renderPassBeginInfo = { VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO, nullptr, renderPass, framebuffers[frameIndex],{ {},{ (uint32_t)rc.right, (uint32_t)rc.bottom } }, arrayparam(clearValues) };
-	vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+	if (nextRenderPass)
+	{
+		const VkRenderPassBeginInfo renderPassBeginInfo = { VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO, nullptr, nextRenderPass, nextFramebuffer,{ {},{ (uint32_t)rc.right, (uint32_t)rc.bottom } }, arrayparam(clearValues) };
+		vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+	}
+	else
+	{
+		const VkRenderPassBeginInfo renderPassBeginInfo = { VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO, nullptr, renderPass, framebuffers[frameIndex],{ {},{ (uint32_t)rc.right, (uint32_t)rc.bottom } }, arrayparam(clearValues) };
+		vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+	}
+	inRenderPass = true;
 
 	vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
 	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
@@ -526,7 +588,11 @@ void DeviceManVK::BeginScene()
 
 void DeviceManVK::Present()
 {
-	vkCmdEndRenderPass(commandBuffer);
+	if (inRenderPass)
+	{
+		vkCmdEndRenderPass(commandBuffer);
+		inRenderPass = false;
+	}
 	afHandleVKError(vkEndCommandBuffer(commandBuffer));
 
 	VkQueue queue = 0;
@@ -542,6 +608,8 @@ void DeviceManVK::Present()
 
 	const VkPresentInfoKHR presentInfo = { VK_STRUCTURE_TYPE_PRESENT_INFO_KHR, nullptr, 1, &semaphore, 1, &swapchain, &frameIndex };
 	afHandleVKError(vkQueuePresentKHR(queue, &presentInfo));
+
+	afHandleVKError(vkAcquireNextImageKHR(device, swapchain, UINT64_MAX, semaphore, VK_NULL_HANDLE, &frameIndex));
 
 	const VkCommandBufferBeginInfo commandBufferBeginInfo = { VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO };
 	afHandleVKError(vkBeginCommandBuffer(commandBuffer, &commandBufferBeginInfo));
@@ -709,14 +777,15 @@ void AFRenderStates::Destroy()
 
 void AFRenderTarget::InitForDefaultRenderTarget()
 {
-	bool asDefault = true;
+	asDefault = true;
 }
 
 void AFRenderTarget::Init(IVec2 size, AFFormat colorFormat, AFFormat depthStencilFormat)
 {
+	texSize = size;
 	VkDevice device = deviceMan.GetDevice();
-	renderPass = CreateRenderPass(colorFormat, VK_FORMAT_D24_UNORM_S8_UINT);
-	renderTarget = afCreateDynamicTexture(colorFormat, size, nullptr);
+	renderPass = CreateRenderPassForOffscreen(colorFormat, VK_FORMAT_D24_UNORM_S8_UINT);
+	renderTarget = afCreateRenderTarget(colorFormat, size);
 	const VkImageView frameBufferAttachmentImageView[] = { renderTarget.view, deviceMan.GetDepthStencil().view };
 	const VkFramebufferCreateInfo framebufferInfo = { VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO, nullptr, 0, renderPass, arrayparam(frameBufferAttachmentImageView), (uint32_t)size.x, (uint32_t)size.y, 1 };
 	afHandleVKError(vkCreateFramebuffer(device, &framebufferInfo, nullptr, &framebuffer));
@@ -732,10 +801,18 @@ void AFRenderTarget::Destroy()
 
 void AFRenderTarget::BeginRenderToThis()
 {
+	VkCommandBuffer cmd = deviceMan.commandBuffer;
 	if (asDefault)
 	{
-
+		deviceMan.BeginScene(0, 0);
+		return;
 	}
+	deviceMan.BeginScene(renderPass, framebuffer);
+	//const VkRenderPassBeginInfo renderPassBeginInfo = { VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO, nullptr, renderPass, framebuffer,{ {},{ (uint32_t)texSize.x, (uint32_t)texSize.y } }, arrayparam(clearValues) };
+	//vkCmdBeginRenderPass(cmd, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+	//vkCmdSetViewport(cmd, 0, 1, &deviceMan.viewport);
+	//vkCmdSetScissor(cmd, 0, 1, &deviceMan.scissor);
 }
 
 #endif

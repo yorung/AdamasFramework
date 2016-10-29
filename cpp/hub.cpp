@@ -24,8 +24,5 @@ void Hub::Update()
 {
 	systemMisc.lastUpdateTime = GetTime();
 	app.Update();
-#ifdef AF_VULKAN
-	deviceMan.BeginScene();
-#endif
 	app.Draw();
 }

@@ -176,9 +176,10 @@ class DeviceManVK
 	VkPipelineCache pipelineCache = 0;
 	uint32_t frameIndex = 0;
 	RECT rc = {};
+	bool inRenderPass = false;
+public:
 	VkViewport viewport;
 	VkRect2D scissor;
-public:
 	VkPhysicalDeviceMemoryProperties physicalDeviceMemoryProperties;
 	VkPhysicalDevice physicalDevice = nullptr;
 	VkDevice GetDevice() { return device; }
@@ -194,7 +195,7 @@ public:
 	void Create(HWND hWnd);
 	void Present();
 	void Destroy();
-	void BeginScene();
+	void BeginScene(VkRenderPass nextRenderPass, VkFramebuffer nextFramebuffer);
 	void Flush();
 	VkPipeline CreatePipeline(const char* name, VkPipelineLayout pipelineLayout, uint32_t numAttributes, const VkVertexInputAttributeDescription attributes[], uint32_t flags);
 };
