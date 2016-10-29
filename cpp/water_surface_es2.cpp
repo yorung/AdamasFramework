@@ -210,7 +210,7 @@ AFRenderStates renderStateWater;
 
 void MakeWaterRenderState()
 {
-	renderStateWater.Create("water_es2", arrayparam(elements), AFRS_NONE, arrayparam(samplers));
+	renderStateWater.Create("water_es2", arrayparam(elements), AFRS_OFFSCREEN_PIPELINE, arrayparam(samplers));
 }
 
 void DestroyWaterRenderState()
@@ -344,4 +344,6 @@ void WaterSurfaceES2::Draw()
 	cmd.SetVertexBuffer(vboFullScr, sizeof(Vec2));
 #endif
 	cmd.Draw(4);
+	luaMan.Flush2DSprites();
+	luaMan.Flush2DSprites();
 }

@@ -430,7 +430,7 @@ VkPipeline DeviceManVK::CreatePipeline(const char* name, VkPipelineLayout pipeli
 	const VkPipelineColorBlendStateCreateInfo colorBlendState = { VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO, nullptr, 0, VK_FALSE, VK_LOGIC_OP_CLEAR, 1, (flags & AFRS_ALPHA_BLEND) ? &colorBlendAttachmentStateAlphaBlend : &colorBlendAttachmentStateNone };
 	const VkDynamicState dynamicStates[] = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
 	const VkPipelineDynamicStateCreateInfo pipelineDynamicStateCreateInfo = { VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO, nullptr, 0, arrayparam(dynamicStates) };
-	const VkGraphicsPipelineCreateInfo graphicsPipelineCreateInfos[] = { { VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO, nullptr, 0, arrayparam(shaderStageCreationInfos), &pipelineVertexInputStateCreateInfo, &pipelineInputAssemblyStateCreateInfo, nullptr, &viewportStateCreateInfo, &rasterizationStateCreateInfo, &multisampleStateCreateInfo, &depthStencilStateCreateInfo, &colorBlendState, &pipelineDynamicStateCreateInfo, pipelineLayout, renderPass } };
+	const VkGraphicsPipelineCreateInfo graphicsPipelineCreateInfos[] = { { VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO, nullptr, 0, arrayparam(shaderStageCreationInfos), &pipelineVertexInputStateCreateInfo, &pipelineInputAssemblyStateCreateInfo, nullptr, &viewportStateCreateInfo, &rasterizationStateCreateInfo, &multisampleStateCreateInfo, &depthStencilStateCreateInfo, &colorBlendState, &pipelineDynamicStateCreateInfo, pipelineLayout, (flags & AFRS_OFFSCREEN_PIPELINE) ? offscreenRenderPass : primaryRenderPass } };
 	VkPipeline pipeline = 0;
 	afHandleVKError(vkCreateGraphicsPipelines(device, pipelineCache, arrayparam(graphicsPipelineCreateInfos), nullptr, &pipeline));
 	afSafeDeleteVk(vkDestroyShaderModule, device, vertexShader);
@@ -546,13 +546,14 @@ void DeviceManVK::Create(HWND hWnd)
 	depthStencil = afCreateRenderTarget(VK_FORMAT_D24_UNORM_S8_UINT, IVec2(rc.right, rc.bottom));
 
 	// render pass
-	renderPass = CreateRenderPass(swapchainInfo.imageFormat, VK_FORMAT_D24_UNORM_S8_UINT);
+	primaryRenderPass = CreateRenderPass(swapchainInfo.imageFormat, VK_FORMAT_D24_UNORM_S8_UINT);
+	offscreenRenderPass = CreateRenderPassForOffscreen(AFF_R8G8B8A8_UNORM, VK_FORMAT_D24_UNORM_S8_UINT);
 	for (int i = 0; i < (int)swapChainCount; i++)
 	{
 		const VkImageViewCreateInfo imageViewCreateInfo = { VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, nullptr, 0, swapChainImages[i], VK_IMAGE_VIEW_TYPE_2D, surfaceFormats[0].format, colorComponentMapping, { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 } };
 		afHandleVKError(vkCreateImageView(device, &imageViewCreateInfo, nullptr, &imageViews[i]));
 		const VkImageView frameBufferAttachmentImageView[] = { imageViews[i], depthStencil.view };
-		const VkFramebufferCreateInfo framebufferInfo = { VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO, nullptr, 0, renderPass, arrayparam(frameBufferAttachmentImageView), (uint32_t)rc.right, (uint32_t)rc.bottom, 1 };
+		const VkFramebufferCreateInfo framebufferInfo = { VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO, nullptr, 0, primaryRenderPass, arrayparam(frameBufferAttachmentImageView), (uint32_t)rc.right, (uint32_t)rc.bottom, 1 };
 		afHandleVKError(vkCreateFramebuffer(device, &framebufferInfo, nullptr, &framebuffers[i]));
 	}
 	viewport = { 0, 0, (float)rc.right, (float)rc.bottom, 0, 1 };
@@ -577,7 +578,7 @@ void DeviceManVK::BeginScene(VkRenderPass nextRenderPass, VkFramebuffer nextFram
 	}
 	else
 	{
-		const VkRenderPassBeginInfo renderPassBeginInfo = { VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO, nullptr, renderPass, framebuffers[frameIndex],{ {},{ (uint32_t)rc.right, (uint32_t)rc.bottom } }, arrayparam(clearValues) };
+		const VkRenderPassBeginInfo renderPassBeginInfo = { VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO, nullptr, primaryRenderPass, framebuffers[frameIndex],{ {},{ (uint32_t)rc.right, (uint32_t)rc.bottom } }, arrayparam(clearValues) };
 		vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 	}
 	inRenderPass = true;
@@ -642,7 +643,8 @@ void DeviceManVK::Destroy()
 	}
 	afSafeDeleteVk(vkDestroyCommandPool, device, commandPool);
 	std::for_each(framebuffers, framebuffers + _countof(framebuffers), [&](VkFramebuffer& framebuffer) { afSafeDeleteVk(vkDestroyFramebuffer, device, framebuffer);	});
-	afSafeDeleteVk(vkDestroyRenderPass, device, renderPass);
+	afSafeDeleteVk(vkDestroyRenderPass, device, primaryRenderPass);
+	afSafeDeleteVk(vkDestroyRenderPass, device, offscreenRenderPass);
 	afSafeDeleteVk(vkDestroySwapchainKHR, device, swapchain);
 	if (surface)
 	{
@@ -784,17 +786,15 @@ void AFRenderTarget::Init(IVec2 size, AFFormat colorFormat, AFFormat depthStenci
 {
 	texSize = size;
 	VkDevice device = deviceMan.GetDevice();
-	renderPass = CreateRenderPassForOffscreen(colorFormat, VK_FORMAT_D24_UNORM_S8_UINT);
 	renderTarget = afCreateRenderTarget(colorFormat, size);
 	const VkImageView frameBufferAttachmentImageView[] = { renderTarget.view, deviceMan.GetDepthStencil().view };
-	const VkFramebufferCreateInfo framebufferInfo = { VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO, nullptr, 0, renderPass, arrayparam(frameBufferAttachmentImageView), (uint32_t)size.x, (uint32_t)size.y, 1 };
+	const VkFramebufferCreateInfo framebufferInfo = { VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO, nullptr, 0, deviceMan.offscreenRenderPass, arrayparam(frameBufferAttachmentImageView), (uint32_t)size.x, (uint32_t)size.y, 1 };
 	afHandleVKError(vkCreateFramebuffer(device, &framebufferInfo, nullptr, &framebuffer));
 }
 
 void AFRenderTarget::Destroy()
 {
 	VkDevice device = deviceMan.GetDevice();
-	afSafeDeleteVk(vkDestroyRenderPass, device, renderPass);
 	afSafeDeleteVk(vkDestroyFramebuffer, device, framebuffer);
 	afSafeDeleteTexture(renderTarget);
 }
@@ -807,7 +807,7 @@ void AFRenderTarget::BeginRenderToThis()
 		deviceMan.BeginScene(0, 0);
 		return;
 	}
-	deviceMan.BeginScene(renderPass, framebuffer);
+	deviceMan.BeginScene(deviceMan.offscreenRenderPass, framebuffer);
 	//const VkRenderPassBeginInfo renderPassBeginInfo = { VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO, nullptr, renderPass, framebuffer,{ {},{ (uint32_t)texSize.x, (uint32_t)texSize.y } }, arrayparam(clearValues) };
 	//vkCmdBeginRenderPass(cmd, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 

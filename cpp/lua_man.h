@@ -10,6 +10,7 @@ public:
 	void Update();
 	void Draw2D(AFCommandList& cmd);
 	void Draw3D();
+	void Flush2DSprites();
 	lua_State* GetState() { return L; }
 };
 

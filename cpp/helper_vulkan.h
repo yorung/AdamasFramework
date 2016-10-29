@@ -133,7 +133,6 @@ public:
 
 class AFRenderTarget
 {
-	VkRenderPass renderPass = 0;
 	VkFramebuffer framebuffer = 0;
 	IVec2 texSize;
 	TextureContext renderTarget;
@@ -172,12 +171,12 @@ class DeviceManVK
 	TextureContext depthStencil;
 	VkSemaphore semaphore = 0;
 	VkCommandPool commandPool = 0;
-	VkRenderPass renderPass = 0;
 	VkPipelineCache pipelineCache = 0;
 	uint32_t frameIndex = 0;
 	RECT rc = {};
 	bool inRenderPass = false;
 public:
+	VkRenderPass primaryRenderPass = 0, offscreenRenderPass = 0;
 	VkViewport viewport;
 	VkRect2D scissor;
 	VkPhysicalDeviceMemoryProperties physicalDeviceMemoryProperties;
