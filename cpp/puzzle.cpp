@@ -119,5 +119,5 @@ void Puzzle::Update()
 
 void Puzzle::Draw()
 {
-	spriteRenderer.Draw(cmds);
+	spriteRenderer.Draw(afGetCommandList(), cmds);
 }

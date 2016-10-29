@@ -8,7 +8,7 @@ public:
 	void Create();
 	void Destroy();
 	void Update();
-	void Draw2D();
+	void Draw2D(AFCommandList& cmd);
 	void Draw3D();
 	lua_State* GetState() { return L; }
 };

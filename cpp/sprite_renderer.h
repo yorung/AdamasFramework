@@ -26,7 +26,7 @@ public:
 	~SpriteRenderer();
 	void Destroy();
 	void Create();
-	void Draw(const SpriteCommands& sprites);
+	void Draw(AFCommandList& cmd, const SpriteCommands& sprites);
 };
 
 extern SpriteRenderer spriteRenderer;

@@ -54,7 +54,7 @@ void App::Draw()
 	luaMan.Draw3D();
 	meshRenderer.Flush();
 	skyMan.Draw(cmd);
-	luaMan.Draw2D();
+	luaMan.Draw2D(cmd);
 	fontMan.Draw(cmd);
 }
 

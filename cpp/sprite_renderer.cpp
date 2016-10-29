@@ -50,12 +50,11 @@ static void StoreVertices(SpriteVertex v[4], float width, float height, uint32_t
 	}
 }
 
-void SpriteRenderer::Draw(const SpriteCommands& sprites)
+void SpriteRenderer::Draw(AFCommandList& cmd, const SpriteCommands& sprites)
 {
 	Vec2 scrSize = systemMisc.GetScreenSize();
 	Mat proj = ortho(0, scrSize.x, scrSize.y, 0, -1000, 1000);
 
-	AFCommandList& cmd = afGetCommandList();
 	cmd.SetRenderStates(renderStates);
 	cmd.SetBuffer(sizeof(Mat), &proj, 1);
 

@@ -74,12 +74,12 @@ void LuaMan::Update()
 	CallGlobal("Update");
 }
 
-void LuaMan::Draw2D()
+void LuaMan::Draw2D(AFCommandList& cmd)
 {
 //	assert(luaSpriteCommands.empty());
 	CallGlobal("Draw2D");
 	std::stable_sort(luaSpriteCommands.begin(), luaSpriteCommands.end(), [](const SpriteCommand& l, const SpriteCommand& r){ return l.matW._43 < r.matW._43; });
-	spriteRenderer.Draw(luaSpriteCommands);
+	spriteRenderer.Draw(cmd, luaSpriteCommands);
 	luaSpriteCommands.clear();
 }
 
