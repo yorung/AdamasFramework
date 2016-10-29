@@ -3,6 +3,7 @@
 #ifdef VK_TRUE
 
 #pragma comment(lib, "vulkan-1.lib")
+static const uint32_t descriptorPoolSize = 32;
 
 static const VkComponentMapping colorComponentMapping = { VK_COMPONENT_SWIZZLE_R, VK_COMPONENT_SWIZZLE_G, VK_COMPONENT_SWIZZLE_B, VK_COMPONENT_SWIZZLE_A };
 static const VkComponentMapping depthComponentMapping = {};
@@ -441,7 +442,6 @@ void DeviceManVK::Create(HWND hWnd)
 	// preallocated resources and descriptors
 	uboAllocator.Create(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, 0x20000);
 	vertexBufferAllocator.Create(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, 0x20000);
-	static const uint32_t descriptorPoolSize = 10;
 	const VkDescriptorPoolSize descriptorPoolSizes[2] = { { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, descriptorPoolSize },{ VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, descriptorPoolSize } };
 	const VkDescriptorPoolCreateInfo descriptorPoolCreateInfo = { VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO, nullptr, VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT, descriptorPoolSize, arrayparam(descriptorPoolSizes) };
 	afHandleVKError(vkCreateDescriptorPool(device, &descriptorPoolCreateInfo, nullptr, &descriptorPool));
@@ -495,7 +495,7 @@ void DeviceManVK::Create(HWND hWnd)
 	assert(swapChainCount <= _countof(framebuffers));
 	afHandleVKError(vkGetSwapchainImagesKHR(device, swapchain, &swapChainCount, swapChainImages));
 
-	// depth stencil(WIP)
+	// depth stencil
 	depthStencil = afCreateDynamicTexture(VK_FORMAT_D24_UNORM_S8_UINT, IVec2(rc.right, rc.bottom), nullptr);
 
 	// render pass
@@ -655,7 +655,7 @@ void AFRenderStates::Create(const char* shaderName, int numInputElements, const 
 		const VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = { VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO, nullptr, 0, 1, &deviceMan.commonUboDescriptorSetLayout };
 		afHandleVKError(vkCreatePipelineLayout(device, &pipelineLayoutCreateInfo, nullptr, &pipelineLayout));
 	}
-	else if (!strcmp(shaderName, "sky_photosphere") || !strcmp(shaderName, "sky_cubemap") || !strcmp(shaderName, "projection_equirectangular_to_stereographic") || !strcmp(shaderName, "sprite"))
+	else if (!strcmp(shaderName, "sky_photosphere") || !strcmp(shaderName, "sky_cubemap") || !strcmp(shaderName, "projection_equirectangular_to_stereographic") || !strcmp(shaderName, "sprite") || !strcmp(shaderName, "vivid"))
 	{
 		VkDescriptorSetLayout layouts[] = { deviceMan.commonTextureDescriptorSetLayout, deviceMan.commonUboDescriptorSetLayout };
 		const VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = { VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO, nullptr, 0, arrayparam(layouts) };
@@ -670,6 +670,19 @@ void AFRenderStates::Create(const char* shaderName, int numInputElements, const 
 	else if (!strcmp(shaderName, "skin_instanced"))
 	{
 		VkDescriptorSetLayout layouts[] = { deviceMan.commonUboDescriptorSetLayout, deviceMan.commonUboDescriptorSetLayout, deviceMan.commonUboDescriptorSetLayout, deviceMan.commonTextureDescriptorSetLayout };
+		const VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = { VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO, nullptr, 0, arrayparam(layouts) };
+		afHandleVKError(vkCreatePipelineLayout(device, &pipelineLayoutCreateInfo, nullptr, &pipelineLayout));
+	}
+	else if (!strcmp(shaderName, "water_es2"))
+	{
+		VkDescriptorSetLayout layouts[] = {
+			deviceMan.commonTextureDescriptorSetLayout,
+			deviceMan.commonTextureDescriptorSetLayout,
+			deviceMan.commonTextureDescriptorSetLayout,
+			deviceMan.commonTextureDescriptorSetLayout,
+			deviceMan.commonTextureDescriptorSetLayout,
+			deviceMan.commonTextureDescriptorSetLayout,
+			deviceMan.commonUboDescriptorSetLayout };
 		const VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = { VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO, nullptr, 0, arrayparam(layouts) };
 		afHandleVKError(vkCreatePipelineLayout(device, &pipelineLayoutCreateInfo, nullptr, &pipelineLayout));
 	}
@@ -693,4 +706,36 @@ void AFRenderStates::Destroy()
 	afSafeDeleteVk(vkDestroyPipelineLayout, device, pipelineLayout);
 	afSafeDeleteVk(vkDestroyPipeline, device, pipeline);
 }
+
+void AFRenderTarget::InitForDefaultRenderTarget()
+{
+	bool asDefault = true;
+}
+
+void AFRenderTarget::Init(IVec2 size, AFFormat colorFormat, AFFormat depthStencilFormat)
+{
+	VkDevice device = deviceMan.GetDevice();
+	renderPass = CreateRenderPass(colorFormat, VK_FORMAT_D24_UNORM_S8_UINT);
+	renderTarget = afCreateDynamicTexture(colorFormat, size, nullptr);
+	const VkImageView frameBufferAttachmentImageView[] = { renderTarget.view, deviceMan.GetDepthStencil().view };
+	const VkFramebufferCreateInfo framebufferInfo = { VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO, nullptr, 0, renderPass, arrayparam(frameBufferAttachmentImageView), (uint32_t)size.x, (uint32_t)size.y, 1 };
+	afHandleVKError(vkCreateFramebuffer(device, &framebufferInfo, nullptr, &framebuffer));
+}
+
+void AFRenderTarget::Destroy()
+{
+	VkDevice device = deviceMan.GetDevice();
+	afSafeDeleteVk(vkDestroyRenderPass, device, renderPass);
+	afSafeDeleteVk(vkDestroyFramebuffer, device, framebuffer);
+	afSafeDeleteTexture(renderTarget);
+}
+
+void AFRenderTarget::BeginRenderToThis()
+{
+	if (asDefault)
+	{
+
+	}
+}
+
 #endif

@@ -131,6 +131,22 @@ public:
 	bool IsReady() { return pipeline != 0; }
 };
 
+class AFRenderTarget
+{
+	VkRenderPass renderPass = 0;
+	VkFramebuffer framebuffer = 0;
+	IVec2 texSize;
+	TextureContext renderTarget;
+	bool asDefault = false;
+public:
+	~AFRenderTarget() { Destroy(); }
+	void InitForDefaultRenderTarget();
+	void Init(IVec2 size, AFFormat colorFormat, AFFormat depthStencilFormat = AFF_INVALID);
+	void Destroy();
+	void BeginRenderToThis();
+	TextureContext& GetTexture() { return renderTarget; }
+};
+
 class AFBufferStackAllocator
 {
 	VkDeviceSize allocatedSize = 0;
@@ -174,6 +190,7 @@ public:
 	VkDescriptorSetLayout commonTextureDescriptorSetLayout = 0;
 	VkDescriptorSet commonUboDescriptorSet = 0;
 	VkSampler sampler = 0;
+	TextureContext& GetDepthStencil() { return depthStencil; }
 	void Create(HWND hWnd);
 	void Present();
 	void Destroy();
