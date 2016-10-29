@@ -196,7 +196,7 @@ void MeshRenderer::Flush()
 	matrixMan.Get(MatrixMan::PROJ, perDrawCallUBO.matP);
 
 	renderStates.Apply();
-	afBindBuffer(sizeof(PerDrawCallUBO), &perDrawCallUBO, 0);
+	afBindBuffer(renderStates, sizeof(PerDrawCallUBO), &perDrawCallUBO, 0);
 #ifdef AF_VULKAN
 	const uint32_t descritorSetIndex = 1;
 
@@ -209,7 +209,7 @@ void MeshRenderer::Flush()
 #else
 	afBindBuffer(uboForMaterials, 1);
 #endif
-	afBindBuffer(sizeof(Mat) * renderBoneMatrices.size(), &renderBoneMatrices[0], 2);
+	afBindBuffer(renderStates, sizeof(Mat) * renderBoneMatrices.size(), &renderBoneMatrices[0], 2);
 
 	const RenderCommand& c = perDrawCallUBO.commands[0];
 	RenderMesh* r = GetMeshByMRID(c.meshId);
@@ -220,7 +220,7 @@ void MeshRenderer::Flush()
 	for (auto it : r->materialMaps) {
 		const Material* mat = meshRenderer.GetMaterial(it.materialId);
 		assert(mat);
-		afBindTexture(texMan.IndexToTexture(mat->texture), 3);
+		afBindTexture(renderStates, texMan.IndexToTexture(mat->texture), 3);
 		int count = it.faces * 3;
 		int start = it.faceStartIndex * 3;
 		afDrawIndexed(count, start, nStoredCommands);

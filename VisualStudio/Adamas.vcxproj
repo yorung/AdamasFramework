@@ -302,6 +302,7 @@
     <Image Include="icon.ico" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\cpp\AFGraphicsCompatibilityLayer.inl" />
     <None Include="..\cpp\AFGraphicsDefinitions.inl" />
     <None Include="..\cpp\AFGraphicsFunctions.inl" />
   </ItemGroup>

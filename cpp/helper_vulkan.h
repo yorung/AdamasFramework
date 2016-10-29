@@ -101,9 +101,7 @@ void afWriteTexture(TextureContext& textureContext, const TexDesc& texDesc, void
 void afSafeDeleteTexture(TextureContext& textureContext);
 
 void afBindBuffer(VkPipelineLayout pipelineLayout, int size, const void* buf, int descritorSetIndex);
-void afBindBuffer(int size, const void* buf, int descritorSetIndex);
 void afBindTexture(VkPipelineLayout pipelineLayout, const TextureContext& textureContext, int descritorSetIndex);
-void afBindTexture(const TextureContext& textureContext, int descritorSetIndex);
 
 inline IVec2 afGetTextureSize(SRVID tex)
 {

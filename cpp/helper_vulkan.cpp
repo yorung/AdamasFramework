@@ -9,8 +9,6 @@ static const VkComponentMapping depthComponentMapping = {};
 
 DeviceManVK deviceMan;
 
-static VkPipelineLayout s_pipelineLayout = 0;
-
 VkResult _afHandleVKError(const char* file, const char* func, int line, const char* command, VkResult result)
 {
 	const char *err = nullptr;
@@ -269,20 +267,10 @@ void afBindBuffer(VkPipelineLayout pipelineLayout, int size, const void* buf, in
 	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, descritorSetIndex, 1, &deviceMan.commonUboDescriptorSet, 1, &dynamicOffset);
 }
 
-void afBindBuffer(int size, const void* buf, int descritorSetIndex)
-{
-	afBindBuffer(s_pipelineLayout, size, buf, descritorSetIndex);
-}
-
 void afBindTexture(VkPipelineLayout pipelineLayout, const TextureContext& textureContext, int descritorSetIndex)
 {
 	VkCommandBuffer commandBuffer = deviceMan.commandBuffer;
 	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, descritorSetIndex, 1, &textureContext.descriptorSet, 0, nullptr);
-}
-
-void afBindTexture(const TextureContext& textureContext, int descritorSetIndex)
-{
-	afBindTexture(s_pipelineLayout, textureContext, descritorSetIndex);
 }
 
 void afSetVertexBuffer(int size, const void* buffer, int stride)
@@ -691,7 +679,6 @@ void AFRenderStates::Apply()
 {
 	VkCommandBuffer commandBuffer = deviceMan.commandBuffer;
 	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
-	s_pipelineLayout = pipelineLayout;
 }
 
 void AFRenderStates::Destroy()

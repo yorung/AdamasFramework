@@ -64,14 +64,14 @@ void SpriteRenderer::Draw(const SpriteCommands& sprites)
 
 	renderStates.Apply();
 	quadListVertexBuffer.Apply();
-	afBindBuffer(sizeof(Mat), &proj, 1);
+	afBindBuffer(renderStates, sizeof(Mat), &proj, 1);
 
 	SpriteVertex v[MAX_SPRITES_IN_ONE_DRAW_CALL][4];
 	int numStoredSprites = 0;
 	SRVID curTex;
 	auto flush = [&] {
 		if (numStoredSprites > 0) {
-			afBindTexture(curTex, 0);
+			afBindTexture(renderStates, curTex, 0);
 			quadListVertexBuffer.Write(v, sizeof(SpriteVertex) * 4 * numStoredSprites);
 			afDrawIndexed(6 * numStoredSprites, 0);
 			numStoredSprites = 0;

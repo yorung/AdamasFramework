@@ -83,6 +83,8 @@ static const int BONE_MAX = 50;
 #include "helper_dx12.h"
 #endif
 
+#include "AFGraphicsCompatibilityLayer.inl"
+
 #include "matrix_man.h"
 #include "matrix_stack.h"
 #include "tex_man.h"
