@@ -39,10 +39,10 @@ void StockObjects::Destroy()
 #endif
 }
 
-void StockObjects::ApplyFullScreenVertexBuffer() const
+void StockObjects::ApplyFullScreenVertexBuffer(AFCommandList& cmd) const
 {
-	afSetVertexBuffer(vboFullScr, sizeof(Vec2));
-	afSetIndexBuffer(iboFullScr);
+	cmd.SetVertexBuffer(vboFullScr, sizeof(Vec2));
+	cmd.SetIndexBuffer(iboFullScr);
 }
 
 const InputElement* StockObjects::GetFullScreenInputElements(int& numElements) const

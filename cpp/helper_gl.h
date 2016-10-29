@@ -86,7 +86,6 @@ typedef AFGLName SRVID;
 void DiscardIntermediateGLBuffers();
 
 void afSetVertexAttributes(const InputElement elements[], int numElements, int numBuffers, VBOID const vertexBufferIds[], const int strides[]);
-void afSetVertexBuffer(VBOID id, int stride);
 void afSetIndexBuffer(IBOID indexBuffer);
 
 template <class BufName>
@@ -160,8 +159,8 @@ enum PrimitiveTopology {
 	PT_LINELIST = GL_LINES,
 };
 
-void afDrawIndexed(int numIndices, int start = 0, int instanceCount = 1);
-void afDraw(int numVertices, int start = 0, int instanceCount = 1);
+void afDrawIndexed(PrimitiveTopology primitiveTopology, int numIndices, int start = 0, int instanceCount = 1);
+void afDraw(PrimitiveTopology primitiveTopology, int numVertices, int start = 0, int instanceCount = 1);
 
 #ifdef AF_GLES31
 #define afBindVAO(vao) afHandleGLError(glBindVertexArray(vao))
@@ -227,6 +226,12 @@ class AFRenderStates
 public:
 	~AFRenderStates() { Destroy(); }
 	GLuint GetShaderId() { return shaderId; }
+	void GetInputElements(const InputElement*& elements_, int& numElements_) const
+	{
+		elements_ = elements;
+		numElements_ = numElements;
+	}
+	PrimitiveTopology GetPrimitiveTopology() const;
 	bool IsReady() { return shaderId != 0; }
 	void Create(const char* shaderName, int numInputElements = 0, const InputElement* inputElements = nullptr, uint32_t flags = AFRS_NONE, int numSamplerTypes_ = 0, const SamplerType samplerTypes_[] = nullptr);
 	void Apply() const;
@@ -257,8 +262,8 @@ public:
 	void Apply(AFCommandList& cmd, const void* buf, int size)
 	{
 		assert(size <= vertexBufferSize);
-		afSetVertexBuffer(vbo, vertexSize);
-		afSetIndexBuffer(ibo);
+		cmd.SetVertexBuffer(vbo, vertexSize);
+		cmd.SetIndexBuffer(ibo);
 		afWriteBuffer(vbo, size, buf);
 	}
 	void Destroy()

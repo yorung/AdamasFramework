@@ -37,7 +37,14 @@ public:
 #endif
 	void SetVertexBuffer(VBOID vertexBuffer, int stride)
 	{
+#ifdef AF_GLES31
+		const InputElement* elements;
+		int numElements;
+		currentRS->GetInputElements(elements, numElements);
+		afSetVertexAttributes(elements, numElements, 1, &vertexBuffer, &stride);
+#else
 		afSetVertexBuffer(vertexBuffer, stride);
+#endif
 	}
 	void SetIndexBuffer(IBOID indexBuffer)
 	{
@@ -45,11 +52,19 @@ public:
 	}
 	void Draw(int numVertices, int start = 0, int instanceCount = 1)
 	{
+#ifdef AF_GLES31
+		afDraw(currentRS->GetPrimitiveTopology(), numVertices, start, instanceCount);
+#else
 		afDraw(numVertices, start, instanceCount);
+#endif
 	}
 	void DrawIndexed(int numVertices, int start = 0, int instanceCount = 1)
 	{
+#ifdef AF_GLES31
+		afDrawIndexed(currentRS->GetPrimitiveTopology(), numVertices, start, instanceCount);
+#else
 		afDrawIndexed(numVertices, start, instanceCount);
+#endif
 	}
 };
 

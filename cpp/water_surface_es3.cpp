@@ -26,9 +26,9 @@ class WaterSurfaceES3
 	double lastTime = 0;
 	bool lastMouseDown = false;
 	void UpdateTime();
-	void UpdateHeightMap(const UniformBuffer&);
-	void UpdateNormalMap();
-	void RenderWater(const UniformBuffer&);
+	void UpdateHeightMap(AFCommandList& cmd, const UniformBuffer&);
+	void UpdateNormalMap(AFCommandList& cmd);
+	void RenderWater(AFCommandList& cmd, const UniformBuffer&);
 	void Init();
 	void Destroy();
 public:
@@ -203,12 +203,12 @@ void WaterSurfaceES3::Update()
 	}
 }
 
-void WaterSurfaceES3::UpdateHeightMap(const UniformBuffer& hmub)
+void WaterSurfaceES3::UpdateHeightMap(AFCommandList& cmd, const UniformBuffer& hmub)
 {
 	auto& heightR = heightMap[heightCurrentWriteTarget];
 	heightCurrentWriteTarget ^= 1;
 	auto& heightW = heightMap[heightCurrentWriteTarget];
-	afBindTexture(heightR.GetTexture(), 0);
+	cmd.SetTexture(heightR.GetTexture(), 0);
 	heightW.BeginRenderToThis();
 
 	renderStateHeightMap.Apply();
@@ -216,28 +216,27 @@ void WaterSurfaceES3::UpdateHeightMap(const UniformBuffer& hmub)
 //	aflog("shaderHeightMap loc = %d\n", loc);
 	afHandleGLError(glUniform4fv(0, sizeof(hmub) / (sizeof(GLfloat) * 4), (GLfloat*)&hmub));
 
-	stockObjects.ApplyFullScreenVertexBuffer();
-	afDraw(4);
-	afBindVAO(0);
+	stockObjects.ApplyFullScreenVertexBuffer(cmd);
+	cmd.Draw(4);
 }
 
-void WaterSurfaceES3::UpdateNormalMap()
+void WaterSurfaceES3::UpdateNormalMap(AFCommandList& cmd)
 {
 	auto& heightR = heightMap[heightCurrentWriteTarget];
-	afBindTexture(heightR.GetTexture(), 0);
+	cmd.SetTexture(heightR.GetTexture(), 0);
 	normalMap.BeginRenderToThis();
-	renderStateNormalMap.Apply();
-	stockObjects.ApplyFullScreenVertexBuffer();
-	afDraw(4);
-	afBindVAO(0);
+	cmd.SetRenderStates(renderStateNormalMap);
+	stockObjects.ApplyFullScreenVertexBuffer(cmd);
+	cmd.Draw(4);
 }
 
-void WaterSurfaceES3::RenderWater(const UniformBuffer& hmub)
+void WaterSurfaceES3::RenderWater(AFCommandList& cmd, const UniformBuffer& hmub)
 {
 	renderStateWaterLastPass.Apply();
 
-	for (int i = 0; i < (int)dimof(texFiles); i++) {
-		afBindTexture(texId[i], i);
+	for (int i = 0; i < (int)dimof(texFiles); i++)
+	{
+		cmd.SetTexture(texId[i], i);
 		afSetSampler(texFiles[i].clamp ? AFST_LINEAR_CLAMP : AFST_LINEAR_WRAP, i);
 	}
 
@@ -248,12 +247,10 @@ void WaterSurfaceES3::RenderWater(const UniformBuffer& hmub)
 	afHandleGLError(glUniform4fv(0, sizeof(hmub) / (sizeof(GLfloat) * 4), (GLfloat*)&hmub));
 
 	renderTarget[0].BeginRenderToThis();
-	stockObjects.ApplyFullScreenVertexBuffer();
-	afBindTexture(curHeightMap.GetTexture(), 6);
-	afBindTexture(normalMap.GetTexture(), 7);
-	afDraw(4);
-	afBindTexture(0, 6);
-	afBindVAO(0);
+	stockObjects.ApplyFullScreenVertexBuffer(cmd);
+	cmd.SetTexture(curHeightMap.GetTexture(), 6);
+	cmd.SetTexture(normalMap.GetTexture(), 7);
+	cmd.Draw(4);
 }
 
 void WaterSurfaceES3::Draw()
@@ -280,14 +277,14 @@ void WaterSurfaceES3::Draw()
 		lastMousePos = mousePos;
 	}
 
-
+	AFCommandList& cmd = afGetCommandList();
 	double dummy;
 	hmub.wrappedTime = (float)std::modf(elapsedTime * (1.0f / loopTime), &dummy) * loopTime;
 	fontMan.DrawString(Vec2(300, 20), 10, SPrintf("%f, %f", hmub.mousePos.x, hmub.mousePos.y));
 
-	UpdateHeightMap(hmub);
-	UpdateNormalMap();
-	RenderWater(hmub);
+	UpdateHeightMap(cmd, hmub);
+	UpdateNormalMap(cmd);
+	RenderWater(cmd, hmub);
 	glow.MakeGlow(renderTarget[1], renderTarget[0].GetTexture());
 
 	AFRenderTarget rt;
@@ -332,7 +329,7 @@ void WaterSurfaceES3::Draw()
 		break;
 	}
 
-	letterBox.Draw(rt, srcTex);
+	letterBox.Draw(cmd, rt, srcTex);
 
 	afBindVAO(0);
 }

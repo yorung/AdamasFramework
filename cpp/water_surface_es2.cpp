@@ -312,35 +312,37 @@ void WaterSurfaceES2::Draw()
 {
 	UpdateRipple();
 
-	renderStateWater.Apply();
-	for (int i = 0; i < (int)dimof(texFiles); i++) {
-		afBindTexture(texIds[i], i);
+	AFCommandList& cmd = afGetCommandList();
+	cmd.SetRenderStates(renderStateWater);
+	for (int i = 0; i < (int)dimof(texFiles); i++)
+	{
+		cmd.SetTexture(texIds[i], i);
 	}
 
 	AFRenderTarget rtWater;
 	rtWater.Init(systemMisc.GetScreenSize(), AFF_R8G8B8A8_UNORM);
 	rtWater.BeginRenderToThis();
-	afBindBuffer(sizeof(uboBuf), &uboBuf, 6);
+	cmd.SetBuffer(sizeof(uboBuf), &uboBuf, 6);
 
 	VBOID vertexBufferIdsFullScr[] = { vboFullScr };
 	int stridesFullScr[] = { sizeof(Vec2) };
 
-	afSetVertexBuffer(vbo, sizeof(WaterVert));
-	afSetIndexBuffer(ibo);
-	afDrawIndexed(nIndi);
+	cmd.SetVertexBuffer(vbo, sizeof(WaterVert));
+	cmd.SetIndexBuffer(ibo);
+	cmd.DrawIndexed(nIndi);
 
 	AFRenderTarget rtDefault;
 	rtDefault.InitForDefaultRenderTarget();
 	rtDefault.BeginRenderToThis();
 
-	renderStatePostProcess.Apply();
-	afBindTexture(rtWater.GetTexture(), 0);
+	cmd.SetRenderStates(renderStatePostProcess);
+	cmd.SetTexture(rtWater.GetTexture(), 0);
 #ifndef AF_DX12
-	afSetVertexBuffer(vboFullScr, sizeof(Vec2));
-	afSetIndexBuffer(iboFullScr);
-	afDrawIndexed(4);
+	cmd.SetVertexBuffer(vboFullScr, sizeof(Vec2));
+	cmd.SetIndexBuffer(iboFullScr);
+	cmd.DrawIndexed(4);
 #else
-	afDraw(4);
+	cmd.Draw(4);
 #endif
 }
 #endif

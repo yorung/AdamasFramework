@@ -42,25 +42,28 @@ void Glow::Destroy()
 void Glow::MakeGlow(AFRenderTarget& target, SRVID srcTex)
 {
 	LazyInit();
-	stockObjects.ApplyFullScreenVertexBuffer();
+	AFCommandList& cmd = afGetCommandList();
+	stockObjects.ApplyFullScreenVertexBuffer(cmd);
 	renderStateGlowExtraction.Apply();
 	glowMap[0].BeginRenderToThis();
-	afBindTexture(srcTex, 0);
-	afDraw(4);
+	cmd.SetTexture(srcTex, 0);
+	cmd.Draw(4);
 
 	renderStateGlowCopy.Apply();
-	for (int i = 1; i < (int)dimof(glowMap); i++) {
+	for (int i = 1; i < (int)dimof(glowMap); i++)
+	{
 		glowMap[i].BeginRenderToThis();
-		afBindTexture(glowMap[i - 1].GetTexture(), 0);
-		afDraw(4);
+		cmd.SetTexture(glowMap[i - 1].GetTexture(), 0);
+		cmd.Draw(4);
 	}
 
 	renderStateGlowLastPass.Apply();
 	target.BeginRenderToThis();
-	for (int i = 0; i < (int)dimof(glowMap); i++) {
-		afBindTexture(glowMap[i].GetTexture(), i);
+	for (int i = 0; i < (int)dimof(glowMap); i++)
+	{
+		cmd.SetTexture(glowMap[i].GetTexture(), i);
 	}
-	afBindTexture(srcTex, 6);
-	afDraw(4);
+	cmd.SetTexture(srcTex, 6);
+	cmd.Draw(4);
 }
 #endif

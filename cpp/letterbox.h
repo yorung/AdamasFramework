@@ -4,7 +4,7 @@ class LetterBox
 	AFRenderStates renderStates;
 	void LazyInit();
 public:
-	void Draw(AFRenderTarget& target, SRVID srcTex);
+	void Draw(AFCommandList& cmd, AFRenderTarget& target, SRVID srcTex);
 	void Destroy();
 };
 

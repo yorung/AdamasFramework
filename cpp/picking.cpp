@@ -159,7 +159,7 @@ void Picking::Draw3D()
 	matrixMan.Get(MatrixMan::PROJ, mProj);
 	Mat mVP = mView * mProj;
 	cmd.SetBuffer(sizeof(Mat), &mVP, 0);
-	afDraw(3);
+	cmd.Draw(3);
 }
 
 void Picking::Draw2D()
@@ -172,5 +172,5 @@ void Picking::Draw2D()
 	proj2d._22 = -1;
 #endif
 	cmd.SetBuffer(sizeof(Mat), &proj2d, 0);
-	afDraw(3);
+	cmd.Draw(3);
 }

@@ -34,7 +34,7 @@ void SkyMan::Draw(AFCommandList& cmd)
 	if (texDesc.isCubeMap)
 	{
 		afBindCubeMap(texId, 0);
-		afDraw(4);
+		cmd.Draw(4);
 		return;
 	}
 #endif

@@ -18,15 +18,15 @@ void LetterBox::LazyInit()
 	renderStates.Create("letterbox", numElements, elements, AFRS_NONE, arrayparam(samplers));
 }
 
-void LetterBox::Draw(AFRenderTarget& target, SRVID srcTex)
+void LetterBox::Draw(AFCommandList& cmd, AFRenderTarget& target, SRVID srcTex)
 {
 	LazyInit();
 
 	target.BeginRenderToThis();
-	afBindTexture(srcTex, 0);
+	cmd.SetTexture(srcTex, 0);
 	renderStates.Apply();
-	stockObjects.ApplyFullScreenVertexBuffer();
-	afDraw(4);
+	stockObjects.ApplyFullScreenVertexBuffer(cmd);
+	cmd.Draw(4);
 }
 
 void LetterBox::Destroy()

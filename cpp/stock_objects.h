@@ -8,7 +8,7 @@ class StockObjects {
 public:
 	void Create();
 	void Destroy();
-	void ApplyFullScreenVertexBuffer() const;
+	void ApplyFullScreenVertexBuffer(AFCommandList& cmd) const;
 	const InputElement* GetFullScreenInputElements(int& numElements) const;
 #if defined(AF_GLES31) || defined(AF_DX11)
 	SAMPLERID GetBuiltInSampler(SamplerType samplerType) { return builtInSamplers[samplerType]; }
