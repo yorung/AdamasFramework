@@ -162,10 +162,6 @@ enum PrimitiveTopology {
 void afDrawIndexed(PrimitiveTopology primitiveTopology, int numIndices, int start = 0, int instanceCount = 1);
 void afDraw(PrimitiveTopology primitiveTopology, int numVertices, int start = 0, int instanceCount = 1);
 
-#ifdef AF_GLES31
-#define afBindVAO(vao) afHandleGLError(glBindVertexArray(vao))
-#endif
-
 void afDumpCaps();
 void afDumpIsEnabled();
 

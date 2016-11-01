@@ -330,7 +330,5 @@ void WaterSurfaceES3::Draw()
 	}
 
 	letterBox.Draw(cmd, rt, srcTex);
-
-	afBindVAO(0);
 }
 #endif
