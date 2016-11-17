@@ -525,27 +525,37 @@ void afDumpCaps()
 	aflog("GL_VENDOR = %s\n", (char*)glGetString(GL_VENDOR));
 	aflog("GL_SHADING_LANGUAGE_VERSION = %s\n", (char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
 #ifdef AF_GLES31
+#define _(x) do { GLint i; glGetIntegerv(x, &i); aflog(#x " = %d\n", i); } while(0)
+	aflog("------ Uniform Buffers\n");
+	_(GL_MAX_UNIFORM_BUFFER_BINDINGS);
+	_(GL_MAX_VERTEX_UNIFORM_BLOCKS);
+	_(GL_MAX_FRAGMENT_UNIFORM_BLOCKS);
+	_(GL_MAX_COMPUTE_UNIFORM_BLOCKS);
+	//	_(GL_MAX_GEOMETRY_UNIFORM_BLOCKS);
+	_(GL_MAX_COMBINED_UNIFORM_BLOCKS);
+	_(GL_MAX_UNIFORM_BLOCK_SIZE);
+	//	_(GL_MAX_COMBINED_GEOMETRY_UNIFORM_COMPONENTS);
+	_(GL_MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS);
+	_(GL_MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS);
+	aflog("------ Uniform Variables\n");
+	_(GL_MAX_VERTEX_UNIFORM_COMPONENTS);
+	_(GL_MAX_FRAGMENT_UNIFORM_COMPONENTS);
+	aflog("------ SSBO\n");
+	_(GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS);
+	_(GL_MAX_SHADER_STORAGE_BLOCK_SIZE);
+	_(GL_MAX_VERTEX_SHADER_STORAGE_BLOCKS);
+	_(GL_MAX_FRAGMENT_SHADER_STORAGE_BLOCKS);
+//	_(GL_MAX_GEOMETRY_SHADER_STORAGE_BLOCKS);
+#undef _
 	aflog("------ GL_EXTENSIONS\n");
 
 	GLint num;
 	glGetIntegerv(GL_NUM_EXTENSIONS, &num);
-	for (int i = 0; i < num; i++) {
+	for (int i = 0; i < num; i++)
+	{
 		const GLubyte* ext = glGetStringi(GL_EXTENSIONS, i);
 		aflog("%s\n", ext);
 	}
-
-	aflog("------ glGet\n");
-#define _(x) do { GLint i; glGetIntegerv(x, &i); aflog(#x " = %d\n", i); } while(0)
-	_(GL_MAX_UNIFORM_BUFFER_BINDINGS);
-	_(GL_MAX_UNIFORM_BLOCK_SIZE);
-	_(GL_MAX_VERTEX_UNIFORM_BLOCKS);
-	_(GL_MAX_FRAGMENT_UNIFORM_BLOCKS);
-//	_(GL_MAX_GEOMETRY_UNIFORM_BLOCKS);
-
-	_(GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS);
-	_(GL_MAX_SHADER_STORAGE_BLOCK_SIZE);
-	_(GL_MAX_VERTEX_SHADER_STORAGE_BLOCKS);
-#undef _
 #endif
 }
 
