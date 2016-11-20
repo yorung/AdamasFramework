@@ -1,30 +1,18 @@
-#version 310 es
-
 precision mediump float;
-in vec2 position;
-in vec3 normal;
-in vec2 texcoord;
-in vec4 color;
-layout (binding = 0) uniform sampler2D sampler0;
-layout (binding = 1) uniform sampler2D sampler1;
-layout (binding = 2) uniform sampler2D sampler2;
-layout (binding = 3) uniform sampler2D sampler3;
-layout (binding = 4) uniform sampler2D sampler4;
-layout (binding = 5) uniform sampler2D sampler5;
-
-layout (std140, binding = 6) uniform matrices {
-	mat4 matW;
-	mat4 matV;
-	mat4 matP;
-	float time;
-};
+varying vec2 position;
+varying vec3 normal;
+varying vec2 texcoord;
+varying vec4 color;
+uniform sampler2D s0, s1, s2, s3, s4, s5;
+uniform vec4 b6[13];
 
 const float loopTime = 20.0;
 const float PI2 = 3.1415926 * 2.0;
 
-layout (location = 0) out vec4 fragColor;
+void main()
+{
+	float time = b6[12].x;
 
-void main() {
 	float dist1 = length(position + vec2(0.5, 0.5));
 	float dist2 = length(position - vec2(0.5, 0.5));
 
@@ -32,15 +20,15 @@ void main() {
 	vec2 coord = vec2(texcoord.x, texcoord.y + sin(dist1 * 8.7 + radTimeUnit * 25.0) / 800.0 + sin(dist2 * 10.0 + radTimeUnit * 48.0) / 800.0);
 //	vec2 coord = texcoord;
 
-	vec4 c1 = texture(sampler0, coord);
-	vec4 c2 = texture(sampler1, coord);
-	vec4 c3 = texture(sampler2, coord);
-	float delaymap = texture(sampler4, texcoord).x;
-	vec4 timeline = texture(sampler3, vec2((time - delaymap) / loopTime, 0));
+	vec4 c1 = texture2D(s0, coord);
+	vec4 c2 = texture2D(s1, coord);
+	vec4 c3 = texture2D(s2, coord);
+	float delaymap = texture2D(s4, texcoord).x;
+	vec4 timeline = texture2D(s3, vec2((time - delaymap) / loopTime, 0));
 	vec4 bg = c1 * timeline.x + c2 * timeline.y + c3 * timeline.z;
 
 //	vec3 normalForSample = cross(normal, vec3(1, 0, 0));
 	vec3 normalForSample = normal;
-	vec4 skyColor = texture(sampler5, normalForSample.xy * vec2(0.5, -0.5) + vec2(0.5, 0.5));
-	fragColor = mix(bg, skyColor * 1.5 + color, color.w);
+	vec4 skyColor = texture2D(s5, normalForSample.xy * vec2(0.5, -0.5) + vec2(0.5, 0.5));
+	gl_FragColor = mix(bg, skyColor * 1.5 + color, color.w);
 }
