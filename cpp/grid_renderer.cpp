@@ -103,7 +103,11 @@ void GridRenderer::Draw()
 	matrixMan.Get(MatrixMan::VIEW, matView);
 	matrixMan.Get(MatrixMan::PROJ, matProj);
 	Mat matVP = matView * matProj;
+#ifdef AF_GLES31
+	afHandleGLError(glUniform4fv(glGetUniformLocation(renderStates.GetShaderId(), "b0"), sizeof(Mat) / 16, (GLfloat*)&matVP));
+#else
 	cmd.SetBuffer(sizeof(Mat), &matVP, 0);
+#endif
 	cmd.SetVertexBuffer(vbo, sizeof(GridVert));
 	cmd.SetIndexBuffer(ibo);
 	cmd.Draw(lines * 2);

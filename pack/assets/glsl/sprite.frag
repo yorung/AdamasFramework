@@ -1,12 +1,9 @@
-#version 310 es
-
 precision lowp float;
-in vec2 texcoord;
-in vec4 color;
+varying vec2 texcoord;
+varying vec4 color;
+uniform sampler2D s0;
 
-layout (binding = 0) uniform sampler2D sampler;
-layout (location = 0) out vec4 fragColor;
-
-void main() {
-	fragColor = texture(sampler, texcoord) * color;
+void main()
+{
+	gl_FragColor = texture2D(s0, texcoord) * color;
 }

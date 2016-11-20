@@ -1,17 +1,15 @@
-#version 310 es
-
 precision highp float;
-in vec3 POSITION;
-in vec2 TEXCOORD;
-in vec4 COLOR;
-out vec2 texcoord;
-out vec4 color;
-layout (binding = 1) uniform matUbo {
-	layout (row_major) mat4 matProj;
-};
+attribute vec3 POSITION;
+attribute vec2 TEXCOORD;
+attribute vec4 COLOR;
+varying vec2 texcoord;
+varying vec4 color;
+uniform vec4 b1[4];
 
-void main() {
-	gl_Position = vec4(POSITION.xyz, 1) * matProj;
+void main()
+{
+	mat4 matProj = mat4(b1[0], b1[1], b1[2], b1[3]);
+	gl_Position = matProj * vec4(POSITION.xyz, 1);
 	texcoord = TEXCOORD;
 	color = COLOR;
 }

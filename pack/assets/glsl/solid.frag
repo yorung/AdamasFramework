@@ -1,10 +1,7 @@
-#version 310 es
-
 precision highp float;
-in vec3 color;
+varying vec3 color;
 
-layout (location = 0) out vec4 fragColor;
-
-void main() {
-	fragColor = vec4(color, 1.0);
+void main()
+{
+	gl_FragColor = vec4(color, 1.0);
 }
