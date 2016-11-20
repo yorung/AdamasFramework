@@ -9,11 +9,8 @@ StockObjects stockObjects;
 
 void StockObjects::CreateFullScreenVAO()
 {
-	AFIndex iboFullScrSrc[] = { 0, 1, 2, 3 };
 	Vec2 vboFullScrSrc[] = { { -1, 1 }, { -1, -1 }, { 1, 1 }, { 1, -1 } };
-
 	vboFullScr = afCreateVertexBuffer(sizeof(vboFullScrSrc), &vboFullScrSrc[0]);
-	iboFullScr = afCreateIndexBuffer(arrayparam(iboFullScrSrc));
 }
 
 void StockObjects::Create()
@@ -30,7 +27,6 @@ void StockObjects::Create()
 void StockObjects::Destroy()
 {
 	afSafeDeleteBuffer(vboFullScr);
-	afSafeDeleteBuffer(iboFullScr);
 #if defined(AF_GLES31) || defined(AF_DX11)
 	for (SAMPLERID& sampler : builtInSamplers)
 	{
@@ -42,7 +38,6 @@ void StockObjects::Destroy()
 void StockObjects::ApplyFullScreenVertexBuffer(AFCommandList& cmd) const
 {
 	cmd.SetVertexBuffer(vboFullScr, sizeof(Vec2));
-	cmd.SetIndexBuffer(iboFullScr);
 }
 
 const InputElement* StockObjects::GetFullScreenInputElements(int& numElements) const

@@ -1,6 +1,5 @@
 class StockObjects {
 	VBOID vboFullScr;
-	IBOID iboFullScr;
 #if defined(AF_GLES31) || defined(AF_DX11)
 	SAMPLERID builtInSamplers[AFST_MAX];
 #endif
