@@ -1,16 +1,5 @@
 #include "stdafx.h"
 
-static std::vector<UBOID> s_intermediateUniformBuffer;
-
-void DiscardIntermediateGLBuffers()
-{
-	for (auto& it : s_intermediateUniformBuffer)
-	{
-		afSafeDeleteBuffer(it);
-	}
-	s_intermediateUniformBuffer.clear();
-}
-
 static void SetSamplerLayoutByName(GLuint program)
 {
 	for(int i = 0; i <= 9; i++)
@@ -195,14 +184,14 @@ void afBindBuffer(UBOID ubo, GLuint uniformBlockBinding)
 	glBindBuffer(GL_UNIFORM_BUFFER, prev);
 }
 
-void afBindBuffer(int size, const void* buffer, GLuint uniformBlockBinding)
+void afUpdateUniformVariable(GLuint program, int size, const void* buffer, const char* name)
 {
-	UBOID ubo = afCreateUBO(size, buffer);
-	GLint prev;
-	glGetIntegerv(GL_UNIFORM_BUFFER_BINDING, &prev);
-	glBindBufferBase(GL_UNIFORM_BUFFER, uniformBlockBinding, ubo);
-	glBindBuffer(GL_UNIFORM_BUFFER, prev);
-	s_intermediateUniformBuffer.push_back(ubo);	// Must be kept before draw calls which refer this ubo.
+	assert(size % 16 == 0);
+	GLint location = glGetUniformLocation(program, name);
+	if (location >= 0)
+	{
+		afHandleGLError(glUniform4fv(location, size / 16, (GLfloat*)buffer));
+	}
 }
 #endif
 
@@ -703,7 +692,6 @@ void AFRenderStates::Apply() const
 	{
 		afSetSampler(samplerTypes[i], i);
 	}
-	DiscardIntermediateGLBuffers();
 }
 
 void AFRenderStates::Destroy()

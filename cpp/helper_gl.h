@@ -83,8 +83,6 @@ typedef TBufName<GL_ARRAY_BUFFER> VBOID;
 typedef AFGLName SAMPLERID;
 typedef AFGLName SRVID;
 
-void DiscardIntermediateGLBuffers();
-
 void afSetVertexAttributes(const InputElement elements[], int numElements, int numBuffers, VBOID const vertexBufferIds[], const int strides[]);
 void afSetIndexBuffer(IBOID indexBuffer);
 
@@ -188,7 +186,7 @@ SSBOID afCreateSSBO(int size);
 UBOID afCreateUBO(int size, const void* buf = nullptr);
 void afBindBuffer(SSBOID ssbo, GLuint storageBlockBinding);
 void afBindBuffer(UBOID ubo, GLuint uniformBlockBinding);
-void afBindBuffer(int size, const void* buffer, GLuint uniformBlockBinding);
+void afUpdateUniformVariable(GLuint program, int size, const void* buffer, const char* name);
 VAOID afCreateVAO(const InputElement elements[], int numElements, int numBuffers, VBOID const *vertexBufferIds, const int* strides, IBOID ibo);
 inline void afSafeDeleteVAO(VAOID& vao)
 {

@@ -4,11 +4,8 @@ precision highp float;
 
 in vec2 vfPosition;
 
-layout (std140, binding = 1, row_major) uniform inst {
-	mat4 invVP;
-};
+uniform sampler2D s0;
 
-layout (binding = 0) uniform sampler2D sampler;
 layout (location = 0) out vec4 fragColor;
 
 void main()
@@ -21,5 +18,5 @@ void main()
 
 	float longitude = atan(dir.x, dir.z) * (180.f / 3.14159265f);
 	float latitude = asin(dir.y) * (180.f / 3.14159265f);
-	fragColor = texture(sampler, vec2(longitude, latitude) / vec2(360.0, -180.0) + 0.5);
+	fragColor = texture(s0, vec2(longitude, latitude) / vec2(360.0, -180.0) + 0.5);
 }

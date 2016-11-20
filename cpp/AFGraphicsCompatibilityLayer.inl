@@ -17,7 +17,10 @@ public:
 	}
 	void SetBuffer(int size, const void* buf, int descritorSetIndex)
 	{
-#ifdef AF_VULKAN
+#ifdef AF_GLES31
+		char name[] = { 'b', (char)('0' + descritorSetIndex), '\0' };
+		afUpdateUniformVariable(currentRS->GetShaderId(), size, buf, name);
+#elif defined(AF_VULKAN)
 		afBindBuffer(currentRS->GetPipelineLayout(), size, buf, descritorSetIndex);
 #else
 		afBindBuffer(size, buf, descritorSetIndex);

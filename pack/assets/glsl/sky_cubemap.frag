@@ -2,14 +2,14 @@
 
 precision highp float;
 in vec2 vfPosition;
+uniform vec4 b1[4];
+uniform samplerCube s0;
 
 layout (location = 0) out vec4 fragColor;
-layout (std140, binding = 1, row_major) uniform inst {
-	mat4 invVP;
-};
-layout (binding = 0) uniform samplerCube tex;
 
-void main() {
-	vec3 dir = normalize((vec4(vfPosition, 0.0, 1.0) * invVP).xyz);
-	fragColor = texture(tex, dir);
+void main()
+{
+	mat4 invVP = mat4(b1[0], b1[1], b1[2], b1[3]);
+	vec3 dir = normalize((invVP * vec4(vfPosition, 0.0, 1.0)).xyz);
+	fragColor = texture(s0, dir);
 }
