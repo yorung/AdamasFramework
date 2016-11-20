@@ -57,7 +57,6 @@ void SpriteRenderer::Draw(AFCommandList& cmd, const SpriteCommands& sprites)
 
 	cmd.SetRenderStates(renderStates);
 #ifdef AF_GLES31
-	afLayoutSamplerBindingManually(renderStates.GetShaderId(), "s0", 0);
 	afHandleGLError(glUniform4fv(glGetUniformLocation(renderStates.GetShaderId(), "b1"), sizeof(Mat) / 16, (GLfloat*)&proj));
 #else
 	cmd.SetBuffer(sizeof(Mat), &proj, 1);

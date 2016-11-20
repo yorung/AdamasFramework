@@ -11,6 +11,15 @@ void DiscardIntermediateGLBuffers()
 	s_intermediateUniformBuffer.clear();
 }
 
+static void SetSamplerLayoutByName(GLuint program)
+{
+	for(int i = 0; i <= 9; i++)
+	{
+		char name[] = {'s', (char)('0' + i), '\0'};
+		afLayoutSamplerBindingManually(program, name, i);
+	}
+}
+
 static GLuint CompileShader(int type, const char *fileName)
 {
 	GLuint shader = glCreateShader(type);
@@ -91,6 +100,7 @@ static GLuint afCompileGLSL(const char* name, const InputElement elements[], int
 	{
 		aflog("CreateProgram(%s) succeess. id=%d\n", name, program);
 	}
+	SetSamplerLayoutByName(program);
 	return program;
 }
 
@@ -149,8 +159,12 @@ UBOID afCreateUBO(int size, const void* buf)
 // without "binding" Layout Qualifier
 void afLayoutSamplerBindingManually(GLuint program, const GLchar* name, GLuint samplerBinding)
 {
-	glUseProgram(program);
-	glUniform1i(glGetUniformLocation(program, name), samplerBinding);
+	afHandleGLError(glUseProgram(program));
+	GLint location = glGetUniformLocation(program, name);
+	if (location >= 0)
+	{
+		afHandleGLError(glUniform1i(location, samplerBinding));
+	}
 }
 #if 0
 void afLayoutSSBOBindingManually(GLuint program, const GLchar* name, GLuint storageBlockBinding)
