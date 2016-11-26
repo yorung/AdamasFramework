@@ -2,8 +2,6 @@
 
 MeshRenderer meshRenderer;
 
-static const size_t MAX_BONES_PER_DRAW_CALL = 100;
-
 static const InputElement elements[] =
 {
 	AF_INPUT_ELEMENT(0, "POSITION", AFF_R32G32B32_FLOAT, 0),

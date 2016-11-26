@@ -12,7 +12,7 @@ varying vec3 normal;
 
 uniform vec4 b0[4 * 3];		// matV, matP, matW;
 uniform vec4 b1[3];			// material
-uniform vec4 b2[100 * 4];	// bones
+uniform vec4 b2[50 * 4];	// bones
 
 mat4 GetMatFromB0(int begin)
 {
