@@ -5,7 +5,6 @@ struct VS_INPUT {
 	float4 vColor : vColor;
 	float3 vBlendWeights : vBlendWeights;
 	uint4 vBlendIndices : vBlendIndices;
-	uint materialId : materialId;
 };
 
 struct VS_OUTPUT {

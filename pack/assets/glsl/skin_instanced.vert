@@ -5,7 +5,6 @@ attribute vec2 vTexcoord;
 attribute vec4 vColor;
 attribute vec3 vBlendWeights;
 attribute vec4 vBlendIndices;
-attribute float materialId;
 varying vec2 texcoord;
 varying vec4 diffuse;
 varying vec3 emissive;

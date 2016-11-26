@@ -78,7 +78,6 @@ struct MeshVertex
 	Vec2 uv;
 	Vec3 blendWeights;
 	ubyte4 blendIndices;
-	uint32_t materialId;
 };
 
 struct MaterialMap

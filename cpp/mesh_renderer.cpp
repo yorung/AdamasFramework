@@ -12,7 +12,6 @@ static const InputElement elements[] =
 	AF_INPUT_ELEMENT(3, "vTexcoord", AFF_R32G32_FLOAT, 28),
 	AF_INPUT_ELEMENT(4, "vBlendWeights", AFF_R32G32B32_FLOAT, 36),
 	AF_INPUT_ELEMENT(5, "vBlendIndices", AFF_R8G8B8A8_UINT, 48),
-	AF_INPUT_ELEMENT(6, "materialId", AFF_R32_UINT, 52),
 };
 
 static const SamplerType samplers[] =

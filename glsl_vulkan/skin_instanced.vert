@@ -6,7 +6,6 @@ layout(location = 2) in vec4 vColor;
 layout(location = 3) in vec2 vTexcoord;
 layout(location = 4) in vec3 vBlendWeights;
 layout(location = 5) in uvec4 vBlendIndices;
-layout(location = 6) in uint materialId;
 
 layout (location = 0) out vec2 texcoord;
 layout (location = 1) out vec4 diffuse;
