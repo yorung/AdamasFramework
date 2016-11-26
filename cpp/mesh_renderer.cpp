@@ -64,10 +64,6 @@ void MeshRenderer::Create()
 {
 	Destroy();
 
-#ifdef AF_GLES31
-	uboPerDrawCall = afCreateUBO(sizeof(PerDrawCallUBO));
-#endif
-
 #if defined(_MSC_VER) && defined(AF_GLES31)
 	if (!!strstr((char*)glGetString(GL_VENDOR), "Intel"))
 	{
@@ -88,9 +84,6 @@ void MeshRenderer::Destroy()
 	renderMeshes.push_back(nullptr);	// render mesh ID must not be 0
 	materials.clear();
 	materials.push_back(Material());	// make id 0 invalid
-#ifdef AF_GLES31
-	afSafeDeleteBuffer(uboPerDrawCall);
-#endif
 	renderStates.Destroy();
 
 	nStoredCommands = 0;
@@ -179,10 +172,14 @@ void MeshRenderer::Flush()
 	cmd.SetRenderStates(renderStates);
 
 #ifdef AF_GLES31
-	afWriteBuffer(uboPerDrawCall, sizeof(PerDrawCallUBO), &perDrawCallUBO);
-//	afWriteBuffer(uboBones, sizeof(Mat) * renderBoneMatrices.size(), &renderBoneMatrices[0]);
-	cmd.SetBuffer(uboPerDrawCall, 0);
-//	cmd.SetBuffer(uboBones, 2);
+	struct PerDrawCallForES2
+	{
+		Mat v, p, w;
+	}perDrawCallForES2;
+	perDrawCallForES2.v = perDrawCallUBO.matV;
+	perDrawCallForES2.p = perDrawCallUBO.matP;
+	perDrawCallForES2.w = perDrawCallUBO.commands[0].matWorld;
+	cmd.SetBuffer(sizeof(PerDrawCallUBO), &perDrawCallForES2, 0);
 #else
 	cmd.SetBuffer(sizeof(PerDrawCallUBO), &perDrawCallUBO, 0);
 #endif

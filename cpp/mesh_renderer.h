@@ -43,8 +43,14 @@ public:
 	void Init(const Block& block);
 };
 
+#ifdef AF_GLES31
+static const size_t MAX_INSTANCES = 1;	// Disable instancing for ES 2.0
+#else
 static const size_t MAX_INSTANCES = 10;
-struct PerDrawCallUBO {
+#endif
+
+struct PerDrawCallUBO
+{
 	Mat matV, matP;
 	RenderCommand commands[MAX_INSTANCES];
 };
@@ -59,9 +65,6 @@ public:
 	std::vector<Mat> renderBoneMatrices;
 	std::vector<Material> materials;
 	RenderMesh* GetMeshByMRID(MRID id);
-#ifdef AF_GLES31
-	UBOID uboPerDrawCall;
-#endif
 public:
 	~MeshRenderer();
 	void Create();

@@ -12,24 +12,14 @@ out vec4 diffuse;
 out vec3 emissive;
 out vec3 normal;
 
-struct RenderCommand
-{
-	mat4 matWorld;
-	int meshId;
-	uint boneStartIndex;
-	int nBones;
-	int padding;
-};
+uniform vec4 b0[4 * 3];		// matV, matP, matW;
+uniform vec4 b1[3];			// material
+uniform vec4 b2[100 * 4];	// bones
 
-layout (std140, binding = 0) uniform perDrawCallUBO
+mat4 GetMatFromB0(int begin)
 {
-	mat4 matV;
-	mat4 matP;
-	RenderCommand renderCommands[10];
-};
-
-uniform vec4 b1[3];
-uniform vec4 b2[100 * 4];
+	return mat4(b0[begin + 0], b0[begin + 1], b0[begin + 2], b0[begin + 3]);
+}
 
 mat4 GetBone(uint index)
 {
@@ -39,12 +29,13 @@ mat4 GetBone(uint index)
 
 void main()
 {
+	mat4 matV = GetMatFromB0(0);
+	mat4 matP = GetMatFromB0(4);
+	mat4 matW = GetMatFromB0(8);
+
 	vec4 faceColor = b1[0];
 	emissive = b1[2].xyz;
-
-	RenderCommand cmd = renderCommands[gl_InstanceID];
-	uint boneStartIndex = cmd.boneStartIndex;
-	uvec4 boneIndices = boneStartIndex + uvec4(vBlendIndices);
+	uvec4 boneIndices = uvec4(vBlendIndices);
 	
 	mat4 comb =
 		GetBone(boneIndices.x) * vBlendWeights.x +
@@ -54,8 +45,8 @@ void main()
 
 	vec3 pos = POSITION.xyz;
 
-	gl_Position = matP * matV * cmd.matWorld * comb * vec4(pos, 1.0);
+	gl_Position = matP * matV * matW * comb * vec4(pos, 1.0);
 	texcoord = vTexcoord;
 	diffuse = vColor * vec4(faceColor.xyz, 1.0);
-	normal = mat3(cmd.matWorld * comb) * NORMAL;
+	normal = mat3(matW * comb) * NORMAL;
 }
