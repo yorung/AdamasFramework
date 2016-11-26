@@ -68,15 +68,6 @@ void MeshRenderer::Create()
 	uboBones = afCreateUBO(sizeof(Mat) * 100);
 	uboPerDrawCall = afCreateUBO(sizeof(PerDrawCallUBO));
 #endif
-#ifdef AF_VULKAN
-	VkDevice device = deviceMan.GetDevice();
-	const VkDescriptorSetAllocateInfo descriptorSetAllocateInfo = { VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO, nullptr, deviceMan.descriptorPool, 1, &deviceMan.commonUboDescriptorSetLayout };
-	afHandleVKError(vkAllocateDescriptorSets(deviceMan.GetDevice(), &descriptorSetAllocateInfo, &uboDescriptorSet));
-
-	const VkDescriptorBufferInfo descriptorBufferInfo = { uboForMaterials.buffer, 0, VK_WHOLE_SIZE };
-	const VkWriteDescriptorSet writeDescriptorSets[] = { { VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, uboDescriptorSet, 0, 0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, nullptr, &descriptorBufferInfo } };
-	vkUpdateDescriptorSets(device, arrayparam(writeDescriptorSets), 0, nullptr);
-#endif
 
 #if defined(_MSC_VER) && defined(AF_GLES31)
 	if (!!strstr((char*)glGetString(GL_VENDOR), "Intel"))
@@ -90,14 +81,6 @@ void MeshRenderer::Create()
 
 void MeshRenderer::Destroy()
 {
-#ifdef AF_VULKAN
-	if (uboDescriptorSet)
-	{
-		afHandleVKError(vkFreeDescriptorSets(deviceMan.GetDevice(), deviceMan.descriptorPool, 1, &uboDescriptorSet));
-		uboDescriptorSet = 0;
-	}
-#endif
-
 	for (int i = 0; i < (int)renderMeshes.size(); i++) {
 		RenderMesh* m = renderMeshes[i];
 		delete m;
@@ -196,16 +179,6 @@ void MeshRenderer::Flush()
 
 	AFCommandList& cmd = afGetCommandList();
 	cmd.SetRenderStates(renderStates);
-#ifdef AF_VULKAN
-	const uint32_t descritorSetIndex = 1;
-
-	//assert(materials.size() <= MAX_MATERIALS);
-	//afBindBuffer(sizeof(Material) * materials.size(), &materials[0], descritorSetIndex);
-
-	uint32_t dynamicOffset = 0;
-	VkCommandBuffer commandBuffer = deviceMan.commandBuffer;
-	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, renderStates.GetPipelineLayout(), descritorSetIndex, 1, &uboDescriptorSet, 1, &dynamicOffset);
-#endif
 
 #ifdef AF_GLES31
 	afWriteBuffer(uboPerDrawCall, sizeof(PerDrawCallUBO), &perDrawCallUBO);

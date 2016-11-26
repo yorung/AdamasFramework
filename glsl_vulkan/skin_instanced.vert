@@ -39,7 +39,7 @@ layout (std140, set = 0, binding = 0) uniform perDrawCallUBO
 };
 layout (std140, set = 1, binding = 0) uniform materialUBO
 {
-	Material materials[100];
+	Material material;
 };
 layout (std140, set = 2, binding = 0) uniform boneSSBO
 {
@@ -60,9 +60,7 @@ void main()
 
 	gl_Position = matP * matV * renderCommands[gl_InstanceIndex].matWorld * comb * vec4(pos, 1.0);
 	texcoord = vTexcoord;
-	diffuse = vColor * vec4(materials[materialId].faceColor.xyz, 1.0);
-	emissive = materials[materialId].emissive.xyz;
+	diffuse = vColor * vec4(material.faceColor.xyz, 1.0);
+	emissive = material.emissive.xyz;
 	normal = mat3(renderCommands[gl_InstanceIndex].matWorld * comb) * NORMAL;
-	//emissive = vec3(0.0, 0.0, 0.0);
-	//diffuse = vColor;
 }
