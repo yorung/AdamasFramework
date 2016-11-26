@@ -64,13 +64,6 @@ void MeshRenderer::Create()
 {
 	Destroy();
 
-#if defined(_MSC_VER) && defined(AF_GLES31)
-	if (!!strstr((char*)glGetString(GL_VENDOR), "Intel"))
-	{
-		renderStates.Create("skin_instanced_intel", arrayparam(elements), AFRS_DEPTH_ENABLE | AFRS_CULL_CW | AFRS_PRIMITIVE_TRIANGLELIST, arrayparam(samplers));
-		return;
-	}
-#endif
 	renderStates.Create("skin_instanced", arrayparam(elements), AFRS_DEPTH_ENABLE | AFRS_CULL_CW | AFRS_PRIMITIVE_TRIANGLELIST, arrayparam(samplers));
 }
 
