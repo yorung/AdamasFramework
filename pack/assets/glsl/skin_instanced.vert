@@ -1,16 +1,15 @@
-#version 310 es
 precision highp float;
-in vec3 POSITION;
-in vec3 NORMAL;
-in vec2 vTexcoord;
-in vec4 vColor;
-in vec3 vBlendWeights;
-in vec4 vBlendIndices;
-in float materialId;
-out vec2 texcoord;
-out vec4 diffuse;
-out vec3 emissive;
-out vec3 normal;
+attribute vec3 POSITION;
+attribute vec3 NORMAL;
+attribute vec2 vTexcoord;
+attribute vec4 vColor;
+attribute vec3 vBlendWeights;
+attribute vec4 vBlendIndices;
+attribute float materialId;
+varying vec2 texcoord;
+varying vec4 diffuse;
+varying vec3 emissive;
+varying vec3 normal;
 
 uniform vec4 b0[4 * 3];		// matV, matP, matW;
 uniform vec4 b1[3];			// material
@@ -21,10 +20,10 @@ mat4 GetMatFromB0(int begin)
 	return mat4(b0[begin + 0], b0[begin + 1], b0[begin + 2], b0[begin + 3]);
 }
 
-mat4 GetBone(uint index)
+mat4 GetBone(int index)
 {
-	uint i = index * 4u;
-	return mat4(b2[i + 0u], b2[i + 1u], b2[i + 2u], b2[i + 3u]);
+	int i = index * 4;
+	return mat4(b2[i + 0], b2[i + 1], b2[i + 2], b2[i + 3]);
 }
 
 void main()
@@ -35,7 +34,7 @@ void main()
 
 	vec4 faceColor = b1[0];
 	emissive = b1[2].xyz;
-	uvec4 boneIndices = uvec4(vBlendIndices);
+	ivec4 boneIndices = ivec4(vBlendIndices);
 	
 	mat4 comb =
 		GetBone(boneIndices.x) * vBlendWeights.x +
