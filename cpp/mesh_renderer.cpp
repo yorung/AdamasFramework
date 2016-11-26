@@ -2,9 +2,7 @@
 
 MeshRenderer meshRenderer;
 
-static const size_t MAX_MATERIALS = 100;
 static const size_t MAX_BONE_SSBOS = 100;
-static const size_t MATERIAL_UBO_SIZE = sizeof(Material) * MAX_MATERIALS;
 
 static const InputElement elements[] =
 {
@@ -65,7 +63,6 @@ MeshRenderer::~MeshRenderer()
 void MeshRenderer::Create()
 {
 	Destroy();
-	uboForMaterials = afCreateUBO(MATERIAL_UBO_SIZE);
 
 #ifdef AF_GLES31
 	uboBones = afCreateUBO(sizeof(Mat) * 100);
@@ -109,7 +106,6 @@ void MeshRenderer::Destroy()
 	renderMeshes.push_back(nullptr);	// render mesh ID must not be 0
 	materials.clear();
 	materials.push_back(Material());	// make id 0 invalid
-	afSafeDeleteBuffer(uboForMaterials);
 #ifdef AF_GLES31
 	afSafeDeleteBuffer(uboBones);
 	afSafeDeleteBuffer(uboPerDrawCall);
@@ -156,7 +152,7 @@ RenderMesh* MeshRenderer::GetMeshByMRID(MRID id)
 
 void MeshRenderer::DrawRenderMesh(MRID id, const Mat& worldMat, const Mat BoneMatrices[], int nBones, const Block& block)
 {
-	if (!uboForMaterials)
+	if (!renderStates.IsReady())
 	{
 		return;
 	}
@@ -188,7 +184,7 @@ void MeshRenderer::DrawRenderMesh(MRID id, const Mat& worldMat, const Mat BoneMa
 
 void MeshRenderer::Flush()
 {
-	if (!uboForMaterials) {
+	if (!renderStates.IsReady()) {
 		return;
 	}
 	if (!nStoredCommands) {
@@ -209,8 +205,6 @@ void MeshRenderer::Flush()
 	uint32_t dynamicOffset = 0;
 	VkCommandBuffer commandBuffer = deviceMan.commandBuffer;
 	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, renderStates.GetPipelineLayout(), descritorSetIndex, 1, &uboDescriptorSet, 1, &dynamicOffset);
-#else
-	cmd.SetBuffer(uboForMaterials, 1);
 #endif
 
 #ifdef AF_GLES31
@@ -234,6 +228,7 @@ void MeshRenderer::Flush()
 		const Material* mat = meshRenderer.GetMaterial(it.materialId);
 		assert(mat);
 		cmd.SetTexture(texMan.IndexToTexture(mat->texture), 3);
+		cmd.SetBuffer(sizeof(Material), mat, 1);
 		int count = it.faces * 3;
 		int start = it.faceStartIndex * 3;
 		cmd.DrawIndexed(count, start, nStoredCommands);
@@ -245,7 +240,7 @@ void MeshRenderer::Flush()
 
 MMID MeshRenderer::CreateMaterial(const Material& mat)
 {
-	if (!uboForMaterials)
+	if (!renderStates.IsReady())
 	{
 		return 0;
 	}
@@ -256,10 +251,6 @@ MMID MeshRenderer::CreateMaterial(const Material& mat)
 		return n;
 	}
 	materials.push_back(mat);
-
-	assert(materials.size() <= MAX_MATERIALS);
-	afWriteBuffer(uboForMaterials, sizeof(materials[0]) * materials.size(), &materials[0]);
-
 	return materials.size() - 1;
 }
 

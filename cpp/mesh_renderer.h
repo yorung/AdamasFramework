@@ -58,7 +58,6 @@ public:
 	int nStoredCommands = 0;
 	std::vector<Mat> renderBoneMatrices;
 	std::vector<Material> materials;
-	UBOID uboForMaterials;
 	RenderMesh* GetMeshByMRID(MRID id);
 #ifdef AF_VULKAN
 	VkDescriptorSet uboDescriptorSet = 0;

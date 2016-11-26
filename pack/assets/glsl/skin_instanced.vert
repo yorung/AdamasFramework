@@ -11,7 +11,9 @@ out vec2 texcoord;
 out vec4 diffuse;
 out vec3 emissive;
 out vec3 normal;
-struct RenderCommand {
+
+struct RenderCommand
+{
 	mat4 matWorld;
 	int meshId;
 	uint boneStartIndex;
@@ -19,7 +21,8 @@ struct RenderCommand {
 	int padding;
 };
 
-struct Material {
+struct Material
+{
 	vec4 faceColor;
 	vec3 specular;
 	float power;
@@ -27,23 +30,27 @@ struct Material {
 	int tmid;
 };
 
-layout (std140, binding = 0) uniform perDrawCallUBO {
+layout (std140, binding = 0) uniform perDrawCallUBO
+{
 	mat4 matV;
 	mat4 matP;
 	RenderCommand renderCommands[10];
 };
-layout (std140, binding = 1) uniform materialUBO {
-	Material materials[100];
-};
-layout (std140, binding = 2) uniform boneUBO {
+
+uniform vec4 b1[3];
+
+layout (std140, binding = 2) uniform boneUBO
+{
 	mat4 bonesBuffer[100];
 };
 
 void main()
 {
+	vec4 faceColor = b1[0];
+	emissive = b1[2].xyz;
+
 	RenderCommand cmd = renderCommands[gl_InstanceID];
 	uint boneStartIndex = cmd.boneStartIndex;
-	Material material = materials[int(materialId)];
 	uvec4 boneIndices = boneStartIndex + uvec4(vBlendIndices);
 	
 	mat4 comb =
@@ -56,7 +63,6 @@ void main()
 
 	gl_Position = matP * matV * cmd.matWorld * comb * vec4(pos, 1.0);
 	texcoord = vTexcoord;
-	diffuse = vColor * vec4(material.faceColor.xyz, 1.0);
-	emissive = material.emissive.xyz;
+	diffuse = vColor * vec4(faceColor.xyz, 1.0);
 	normal = mat3(cmd.matWorld * comb) * NORMAL;
 }

@@ -32,15 +32,20 @@ struct Material {
 	int tmid;
 };
 
-cbuffer perDrawCallUBO : register(b0) {
+cbuffer perDrawCallUBO : register(b0)
+{
 	matrix matV;
 	matrix matP;
 	RenderCommand renderCommands[10];
 };
-cbuffer materialUBO : register(b1) {
-	Material materials[100];
+
+cbuffer materialUBO : register(b1)
+{
+	Material material;
 };
-cbuffer boneUBO : register(b2) {
+
+cbuffer boneUBO : register(b2)
+{
 	matrix bonesBuffer[100];
 };
 
@@ -51,7 +56,6 @@ VS_OUTPUT VSMain(VS_INPUT _In, uint instanceId : SV_InstanceID)
 {
 	RenderCommand cmd = renderCommands[instanceId];
 	uint boneStartIndex = cmd.boneStartIndex;
-	Material material = materials[_In.materialId];
 
 	matrix comb =
 		mul(bonesBuffer[boneStartIndex + _In.vBlendIndices.x], _In.vBlendWeights.x) +
