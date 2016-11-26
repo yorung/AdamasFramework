@@ -21,15 +21,6 @@ struct RenderCommand
 	int padding;
 };
 
-struct Material
-{
-	vec4 faceColor;
-	vec3 specular;
-	float power;
-	vec3 emissive;
-	int tmid;
-};
-
 layout (std140, binding = 0) uniform perDrawCallUBO
 {
 	mat4 matV;
@@ -38,11 +29,13 @@ layout (std140, binding = 0) uniform perDrawCallUBO
 };
 
 uniform vec4 b1[3];
+uniform vec4 b2[100 * 4];
 
-layout (std140, binding = 2) uniform boneUBO
+mat4 GetBone(uint index)
 {
-	mat4 bonesBuffer[100];
-};
+	uint i = index * 4u;
+	return mat4(b2[i + 0u], b2[i + 1u], b2[i + 2u], b2[i + 3u]);
+}
 
 void main()
 {
@@ -54,10 +47,10 @@ void main()
 	uvec4 boneIndices = boneStartIndex + uvec4(vBlendIndices);
 	
 	mat4 comb =
-		bonesBuffer[boneIndices.x] * vBlendWeights.x +
-		bonesBuffer[boneIndices.y] * vBlendWeights.y +
-		bonesBuffer[boneIndices.z] * vBlendWeights.z +
-		bonesBuffer[boneIndices.w] * (1.0 - vBlendWeights.x - vBlendWeights.y - vBlendWeights.z);
+		GetBone(boneIndices.x) * vBlendWeights.x +
+		GetBone(boneIndices.y) * vBlendWeights.y +
+		GetBone(boneIndices.z) * vBlendWeights.z +
+		GetBone(boneIndices.w) * (1.0 - vBlendWeights.x - vBlendWeights.y - vBlendWeights.z);
 
 	vec3 pos = POSITION.xyz;
 

@@ -60,7 +60,6 @@ public:
 	std::vector<Material> materials;
 	RenderMesh* GetMeshByMRID(MRID id);
 #ifdef AF_GLES31
-	UBOID uboBones;
 	UBOID uboPerDrawCall;
 #endif
 public:

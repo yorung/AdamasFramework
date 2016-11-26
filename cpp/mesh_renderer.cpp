@@ -2,7 +2,7 @@
 
 MeshRenderer meshRenderer;
 
-static const size_t MAX_BONE_SSBOS = 100;
+static const size_t MAX_BONES_PER_DRAW_CALL = 100;
 
 static const InputElement elements[] =
 {
@@ -65,7 +65,6 @@ void MeshRenderer::Create()
 	Destroy();
 
 #ifdef AF_GLES31
-	uboBones = afCreateUBO(sizeof(Mat) * 100);
 	uboPerDrawCall = afCreateUBO(sizeof(PerDrawCallUBO));
 #endif
 
@@ -90,7 +89,6 @@ void MeshRenderer::Destroy()
 	materials.clear();
 	materials.push_back(Material());	// make id 0 invalid
 #ifdef AF_GLES31
-	afSafeDeleteBuffer(uboBones);
 	afSafeDeleteBuffer(uboPerDrawCall);
 #endif
 	renderStates.Destroy();
@@ -150,7 +148,7 @@ void MeshRenderer::DrawRenderMesh(MRID id, const Mat& worldMat, const Mat BoneMa
 	{
 		Flush();
 	}
-	if (nBones + renderBoneMatrices.size() > MAX_BONE_SSBOS)
+	if (nBones + renderBoneMatrices.size() > MAX_BONES_PER_DRAW_CALL)
 	{
 		Flush();
 	}
@@ -182,13 +180,13 @@ void MeshRenderer::Flush()
 
 #ifdef AF_GLES31
 	afWriteBuffer(uboPerDrawCall, sizeof(PerDrawCallUBO), &perDrawCallUBO);
-	afWriteBuffer(uboBones, sizeof(Mat) * renderBoneMatrices.size(), &renderBoneMatrices[0]);
+//	afWriteBuffer(uboBones, sizeof(Mat) * renderBoneMatrices.size(), &renderBoneMatrices[0]);
 	cmd.SetBuffer(uboPerDrawCall, 0);
-	cmd.SetBuffer(uboBones, 2);
+//	cmd.SetBuffer(uboBones, 2);
 #else
 	cmd.SetBuffer(sizeof(PerDrawCallUBO), &perDrawCallUBO, 0);
-	cmd.SetBuffer(sizeof(Mat) * renderBoneMatrices.size(), &renderBoneMatrices[0], 2);
 #endif
+	cmd.SetBuffer(sizeof(Mat) * renderBoneMatrices.size(), &renderBoneMatrices[0], 2);
 
 	const RenderCommand& c = perDrawCallUBO.commands[0];
 	RenderMesh* r = GetMeshByMRID(c.meshId);
