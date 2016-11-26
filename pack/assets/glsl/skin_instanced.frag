@@ -4,7 +4,7 @@ in vec2 texcoord;
 in vec4 diffuse;
 in vec3 normal;
 in vec3 emissive;
-layout (binding = 3) uniform sampler2D sampler;
+uniform sampler2D s3;
 
 layout (location = 0) out vec4 fragColor;
 
@@ -16,7 +16,8 @@ vec4 CalcColor()
 	return d;
 }
 
-void main() {
-	fragColor = texture(sampler, texcoord) * CalcColor();
+void main()
+{
+	fragColor = texture(s3, texcoord) * CalcColor();
 	fragColor.w = 1.0;
 }

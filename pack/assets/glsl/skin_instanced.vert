@@ -5,8 +5,8 @@ in vec3 NORMAL;
 in vec2 vTexcoord;
 in vec4 vColor;
 in vec3 vBlendWeights;
-in uvec4 vBlendIndices;
-in uint materialId;
+in vec4 vBlendIndices;
+in float materialId;
 out vec2 texcoord;
 out vec4 diffuse;
 out vec3 emissive;
@@ -27,7 +27,6 @@ struct Material {
 	int tmid;
 };
 
-
 layout (std140, binding = 0) uniform perDrawCallUBO {
 	mat4 matV;
 	mat4 matP;
@@ -36,20 +35,22 @@ layout (std140, binding = 0) uniform perDrawCallUBO {
 layout (std140, binding = 1) uniform materialUBO {
 	Material materials[100];
 };
-layout (std140, binding = 2) uniform boneSSBO {
+layout (std140, binding = 2) uniform boneUBO {
 	mat4 bonesBuffer[100];
 };
 
-void main() {
+void main()
+{
 	RenderCommand cmd = renderCommands[gl_InstanceID];
 	uint boneStartIndex = cmd.boneStartIndex;
-	Material material = materials[materialId];
-
+	Material material = materials[int(materialId)];
+	uvec4 boneIndices = boneStartIndex + uvec4(vBlendIndices);
+	
 	mat4 comb =
-		bonesBuffer[boneStartIndex + vBlendIndices.x] * vBlendWeights.x +
-		bonesBuffer[boneStartIndex + vBlendIndices.y] * vBlendWeights.y +
-		bonesBuffer[boneStartIndex + vBlendIndices.z] * vBlendWeights.z +
-		bonesBuffer[boneStartIndex + vBlendIndices.w] * (1.0 - vBlendWeights.x - vBlendWeights.y - vBlendWeights.z);
+		bonesBuffer[boneIndices.x] * vBlendWeights.x +
+		bonesBuffer[boneIndices.y] * vBlendWeights.y +
+		bonesBuffer[boneIndices.z] * vBlendWeights.z +
+		bonesBuffer[boneIndices.w] * (1.0 - vBlendWeights.x - vBlendWeights.y - vBlendWeights.z);
 
 	vec3 pos = POSITION.xyz;
 
