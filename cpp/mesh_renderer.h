@@ -63,6 +63,10 @@ public:
 #ifdef AF_VULKAN
 	VkDescriptorSet uboDescriptorSet = 0;
 #endif
+#ifdef AF_GLES31
+	UBOID uboBones;
+	UBOID uboPerDrawCall;
+#endif
 public:
 	~MeshRenderer();
 	void Create();

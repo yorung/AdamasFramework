@@ -67,6 +67,10 @@ void MeshRenderer::Create()
 	Destroy();
 	uboForMaterials = afCreateUBO(MATERIAL_UBO_SIZE);
 
+#ifdef AF_GLES31
+	uboBones = afCreateUBO(sizeof(Mat) * 100);
+	uboPerDrawCall = afCreateUBO(sizeof(PerDrawCallUBO));
+#endif
 #ifdef AF_VULKAN
 	VkDevice device = deviceMan.GetDevice();
 	const VkDescriptorSetAllocateInfo descriptorSetAllocateInfo = { VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO, nullptr, deviceMan.descriptorPool, 1, &deviceMan.commonUboDescriptorSetLayout };
@@ -106,6 +110,10 @@ void MeshRenderer::Destroy()
 	materials.clear();
 	materials.push_back(Material());	// make id 0 invalid
 	afSafeDeleteBuffer(uboForMaterials);
+#ifdef AF_GLES31
+	afSafeDeleteBuffer(uboBones);
+	afSafeDeleteBuffer(uboPerDrawCall);
+#endif
 	renderStates.Destroy();
 
 	nStoredCommands = 0;
@@ -192,7 +200,6 @@ void MeshRenderer::Flush()
 
 	AFCommandList& cmd = afGetCommandList();
 	cmd.SetRenderStates(renderStates);
-	cmd.SetBuffer(sizeof(PerDrawCallUBO), &perDrawCallUBO, 0);
 #ifdef AF_VULKAN
 	const uint32_t descritorSetIndex = 1;
 
@@ -205,7 +212,16 @@ void MeshRenderer::Flush()
 #else
 	cmd.SetBuffer(uboForMaterials, 1);
 #endif
+
+#ifdef AF_GLES31
+	afWriteBuffer(uboPerDrawCall, sizeof(PerDrawCallUBO), &perDrawCallUBO);
+	afWriteBuffer(uboBones, sizeof(Mat) * renderBoneMatrices.size(), &renderBoneMatrices[0]);
+	cmd.SetBuffer(uboPerDrawCall, 0);
+	cmd.SetBuffer(uboBones, 2);
+#else
+	cmd.SetBuffer(sizeof(PerDrawCallUBO), &perDrawCallUBO, 0);
 	cmd.SetBuffer(sizeof(Mat) * renderBoneMatrices.size(), &renderBoneMatrices[0], 2);
+#endif
 
 	const RenderCommand& c = perDrawCallUBO.commands[0];
 	RenderMesh* r = GetMeshByMRID(c.meshId);
