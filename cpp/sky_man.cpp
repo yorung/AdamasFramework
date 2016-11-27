@@ -30,7 +30,7 @@ void SkyMan::Draw(AFCommandList& cmd)
 	matV._41 = matV._42 = matV._43 = 0;
 	Mat invVP = inv(matV * matP);
 	cmd.SetBuffer(sizeof(invVP), &invVP, 1);
-#ifdef AF_GLES31
+#ifdef AF_GLES
 	if (texDesc.isCubeMap)
 	{
 		afBindCubeMap(texId, 0);

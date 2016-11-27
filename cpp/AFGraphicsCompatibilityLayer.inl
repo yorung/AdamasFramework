@@ -17,7 +17,7 @@ public:
 	}
 	void SetBuffer(int size, const void* buf, int descritorSetIndex)
 	{
-#ifdef AF_GLES31
+#ifdef AF_GLES
 		char name[] = { 'b', (char)('0' + descritorSetIndex), '\0' };
 		afUpdateUniformVariable(currentRS->GetShaderId(), size, buf, name);
 #elif defined(AF_VULKAN)
@@ -26,13 +26,13 @@ public:
 		afBindBuffer(size, buf, descritorSetIndex);
 #endif
 	}
-#ifndef AF_VULKAN
+#if defined(AF_DX11) || defined(AF_DX12) || defined(AF_GLES31)
 	void SetBuffer(UBOID uniformBuffer, int descriptorSetIndex)
 	{
 		afBindBuffer(uniformBuffer, descriptorSetIndex);
 	}
 #endif
-#ifndef AF_GLES31
+#ifndef AF_GLES
 	void SetVertexBuffer(int size, const void* buf, int stride)
 	{
 		afSetVertexBuffer(size, buf, stride);
@@ -40,7 +40,7 @@ public:
 #endif
 	void SetVertexBuffer(VBOID vertexBuffer, int stride)
 	{
-#ifdef AF_GLES31
+#ifdef AF_GLES
 		const InputElement* elements;
 		int numElements;
 		currentRS->GetInputElements(elements, numElements);
@@ -55,7 +55,7 @@ public:
 	}
 	void Draw(int numVertices, int start = 0, int instanceCount = 1)
 	{
-#ifdef AF_GLES31
+#ifdef AF_GLES
 		afDraw(currentRS->GetPrimitiveTopology(), numVertices, start, instanceCount);
 #else
 		afDraw(numVertices, start, instanceCount);
@@ -63,7 +63,7 @@ public:
 	}
 	void DrawIndexed(int numVertices, int start = 0, int instanceCount = 1)
 	{
-#ifdef AF_GLES31
+#ifdef AF_GLES
 		afDrawIndexed(currentRS->GetPrimitiveTopology(), numVertices, start, instanceCount);
 #else
 		afDrawIndexed(numVertices, start, instanceCount);

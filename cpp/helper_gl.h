@@ -186,7 +186,6 @@ SSBOID afCreateSSBO(int size);
 UBOID afCreateUBO(int size, const void* buf = nullptr);
 void afBindBuffer(SSBOID ssbo, GLuint storageBlockBinding);
 void afBindBuffer(UBOID ubo, GLuint uniformBlockBinding);
-void afUpdateUniformVariable(GLuint program, int size, const void* buffer, const char* name);
 VAOID afCreateVAO(const InputElement elements[], int numElements, int numBuffers, VBOID const *vertexBufferIds, const int* strides, IBOID ibo);
 inline void afSafeDeleteVAO(VAOID& vao)
 {
@@ -195,19 +194,19 @@ inline void afSafeDeleteVAO(VAOID& vao)
 		vao.x = 0;
 	}
 }
-IVec2 afGetTextureSize(SRVID tex);
 IVec2 afGetRenderbufferSize(GLuint renderbuffer);
-inline void afSetTextureName(SRVID, const char*) {}
-
-void afClear();
-
+SAMPLERID afCreateSampler(SamplerType type);
+void afSetSampler(SamplerType type, int slot);
 #endif
+
+IVec2 afGetTextureSize(SRVID tex);
+void afUpdateUniformVariable(GLuint program, int size, const void* buffer, const char* name);
+inline void afSetTextureName(SRVID, const char*) {}
+void afClear();
 
 void afCullMode(uint32_t flags);
 void afBlendMode(uint32_t flags);
 void afDepthStencilMode(uint32_t flags);
-SAMPLERID afCreateSampler(SamplerType type);
-void afSetSampler(SamplerType type, int slot);
 
 class AFRenderStates
 {

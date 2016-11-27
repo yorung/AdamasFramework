@@ -31,11 +31,10 @@ using Microsoft::WRL::ComPtr;
 #endif
 
 #else
-#include <jni.h>
 #include <android/log.h>
-extern JNIEnv* jniEnv;
-extern const char* boundJavaClass;
-#include <gles3/gl31.h>
+//#include <gles3/gl31.h>
+#include <gles2/gl2.h>
+#include <gles2/gl2ext.h>
 #endif
 
 #include <cmath>
@@ -65,7 +64,7 @@ static const int BONE_MAX = 50;
 #include "helper_win.h"
 #endif
 
-#ifdef AF_GLES31
+#ifdef AF_GLES
 #include "helper_gl.h"
 #endif
 

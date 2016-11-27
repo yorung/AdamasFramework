@@ -43,7 +43,7 @@ public:
 	void Init(const Block& block);
 };
 
-#ifdef AF_GLES31
+#ifdef AF_GLES
 static const size_t MAX_INSTANCES = 1;				// Disable instancing for ES 2.0
 static const size_t MAX_BONES_PER_DRAW_CALL = 50;	// This is limited by GL_MAX_VERTEX_UNIFORM_VECTORS. In case of Adreno GPU is 256.
 #else

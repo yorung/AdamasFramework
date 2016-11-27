@@ -1,4 +1,8 @@
 #include "stdafx.h"
+#include <jni.h>
+
+extern JNIEnv* jniEnv;
+extern const char* boundJavaClass;
 
 void *LoadFile(const char *fileName, int* size)
 {
@@ -77,7 +81,12 @@ SRVID LoadTextureViaOS(const char* name, IVec2& size)
 	}
 	SRVID id;
 	id.x = jniEnv->CallStaticIntMethod(myview, method, jniEnv->NewStringUTF(name));
+#ifdef AF_GLES31
 	size = afGetTextureSize(id);
+#else
+	size.x = 0;
+	size.y = 0;
+#endif
 	return id;
 }
 

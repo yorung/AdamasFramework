@@ -183,6 +183,7 @@ void afBindBuffer(UBOID ubo, GLuint uniformBlockBinding)
 	glBindBufferBase(GL_UNIFORM_BUFFER, uniformBlockBinding, ubo);
 	glBindBuffer(GL_UNIFORM_BUFFER, prev);
 }
+#endif
 
 void afUpdateUniformVariable(GLuint program, int size, const void* buffer, const char* name)
 {
@@ -193,7 +194,6 @@ void afUpdateUniformVariable(GLuint program, int size, const void* buffer, const
 		afHandleGLError(glUniform4fv(location, size / 16, (GLfloat*)buffer));
 	}
 }
-#endif
 
 void afBindTexture(GLuint tex, GLuint textureBindingPoint)
 {
@@ -617,16 +617,50 @@ void AFRenderTarget::BeginRenderToThis()
 	afHandleGLError(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT));
 }
 
-#ifdef AF_GLES31
 IVec2 afGetTextureSize(SRVID tex)
 {
-	GLint w, h;
-	glBindTexture(GL_TEXTURE_2D, tex);
-	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &w);
-	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &h);
+	return IVec2(512, 512);
+/*
+GLint w = 1, h = 1;
+glBindTexture(GL_TEXTURE_2D, tex);
+	GLenum glenum = glGetError();
+	for (;;)
+	{
+		uint32_t t;
+		glReadPixels(w - 1, h - 1, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &t);
+		GLenum glenum = glGetError();
+		if (glenum != GL_NO_ERROR)
+		{
+			break;
+		}
+		w++;
+	}
+	for (;;)
+	{
+		uint32_t t;
+		glTexSubImage2D(GL_TEXTURE_2D, 0, w - 1, h - 1, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &t);
+		if (glGetError() != GL_NO_ERROR)
+		{
+			break;
+		}
+		h++;
+	}
 	glBindTexture(GL_TEXTURE_2D, 0);
 	return IVec2(w, h);
+	*/
 }
+
+
+#ifdef AF_GLES31
+//IVec2 afGetTextureSize(SRVID tex)
+//{
+//	GLint w, h;
+//	glBindTexture(GL_TEXTURE_2D, tex);
+//	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &w);
+//	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &h);
+//	glBindTexture(GL_TEXTURE_2D, 0);
+//	return IVec2(w, h);
+//}
 
 IVec2 afGetRenderbufferSize(GLuint renderbuffer)
 {
@@ -678,10 +712,12 @@ void AFRenderStates::Apply() const
 	afBlendMode(flags);
 	afDepthStencilMode(flags);
 	afCullMode(flags);
+#ifdef AF_GLES31
 	for (int i = 0; i < numSamplerTypes; i++)
 	{
 		afSetSampler(samplerTypes[i], i);
 	}
+#endif
 }
 
 void AFRenderStates::Destroy()
@@ -693,7 +729,9 @@ void AFRenderStates::Destroy()
 	}
 }
 
+#ifdef AF_GLES31
 void afSetSampler(SamplerType type, int slot)
 {
 	afBindSamplerToBindingPoint(stockObjects.GetBuiltInSampler(type), slot);
 }
+#endif

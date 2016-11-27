@@ -324,11 +324,7 @@ void WaterSurfaceES2::Draw()
 		cmd.SetTexture(texIds[i], i);
 	}
 
-#ifdef AF_GLES31
-	afHandleGLError(glUniform4fv(glGetUniformLocation(renderStatesWater.GetShaderId(), "b6"), sizeof(uboBuf) / 16, (GLfloat*)&uboBuf));
-#else
 	cmd.SetBuffer(sizeof(uboBuf), &uboBuf, 6);
-#endif
 	cmd.SetVertexBuffer(vbo, sizeof(WaterVert));
 	cmd.SetIndexBuffer(ibo);
 	cmd.DrawIndexed(nIndi);
@@ -339,7 +335,7 @@ void WaterSurfaceES2::Draw()
 
 	cmd.SetRenderStates(renderStatesPostProcess);
 	cmd.SetTexture(rtWater.GetTexture(), 0);
-#ifdef AF_GLES31
+#ifdef AF_GLES
 	cmd.SetVertexBuffer(vboFullScr, sizeof(Vec2));
 #endif
 	cmd.Draw(4);

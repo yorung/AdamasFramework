@@ -56,11 +56,7 @@ void SpriteRenderer::Draw(AFCommandList& cmd, const SpriteCommands& sprites)
 	Mat proj = ortho(0, scrSize.x, scrSize.y, 0, -1000, 1000);
 
 	cmd.SetRenderStates(renderStates);
-#ifdef AF_GLES31
-	afHandleGLError(glUniform4fv(glGetUniformLocation(renderStates.GetShaderId(), "b1"), sizeof(Mat) / 16, (GLfloat*)&proj));
-#else
 	cmd.SetBuffer(sizeof(Mat), &proj, 1);
-#endif
 
 	SpriteVertex v[MAX_SPRITES_IN_ONE_DRAW_CALL][4];
 	int numStoredSprites = 0;

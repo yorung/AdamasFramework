@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <jni.h>
 
 JNIEnv* jniEnv;
 const char* boundJavaClass = "common/pinotnoir/Helper";
