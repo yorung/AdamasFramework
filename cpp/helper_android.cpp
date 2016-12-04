@@ -104,7 +104,7 @@ SRVID LoadTextureViaOS(const char* name, IVec2& size)
 	{
 		jint* pDescArray = jniEnv->GetIntArrayElements(descArray, NULL);
 		size.x = pDescArray[0];
-		size.y = pDescArray[0];
+		size.y = pDescArray[1];
 		jniEnv->ReleaseIntArrayElements(descArray, pDescArray, 0);
 	}
 	if (!arrayAsJObject)
@@ -122,7 +122,7 @@ SRVID LoadTextureViaOS(const char* name, IVec2& size)
 	int expectedLen = size.x * size.y * 4;
 	if (arrayLen != expectedLen)
 	{
-		aflog("wrong size! returned=%d expected=%d", arrayLen, expectedLen);
+		aflog("wrong size! name=%s returned=%d expected=%d w=%d h=%d", name, arrayLen, expectedLen, size.x, size.y);
 		afVerify(false);
 	}
 	else
@@ -130,7 +130,7 @@ SRVID LoadTextureViaOS(const char* name, IVec2& size)
 		TexDesc desc;
 		desc.size = size;
 		AFTexSubresourceData subresource = { byteArray, (uint32_t)size.x * 4, (uint32_t)size.x * 4 * size.y };
-		tex = afCreateTexture2D(AFF_B8G8R8A8_UNORM, desc, 1, &subresource);
+		tex = afCreateTexture2D(AFF_R8G8B8A8_UNORM, desc, 1, &subresource);	// AFF_R8G8B8A8_UNORM? not AFF_B8G8R8A8_UNORM?
 	}
 	jniEnv->ReleaseByteArrayElements(array, byteArray, 0);
 	return tex;

@@ -70,9 +70,34 @@ public class Helper {
 
     public static byte[] bitmapToByteArray(Bitmap b)
     {
+        if (Bitmap.Config.ARGB_8888 == b.getConfig())
+        {
+        //    Log.v(TAG, "bitmapToByteArray: ARGB_8888");
+        }
+        else if (Bitmap.Config.RGB_565 == b.getConfig())
+        {
+            Log.v(TAG, "bitmapToByteArray: RGB_565");
+        }
+        else if (Bitmap.Config.ARGB_4444 == b.getConfig())
+        {
+            Log.v(TAG, "bitmapToByteArray: ARGB_4444");
+        }
+        else
+        {
+            Log.v(TAG, "bitmapToByteArray: unknown");
+        }
         ByteBuffer buf = ByteBuffer.allocate(b.getWidth() * b.getHeight() * 4);
         buf.position(0);
         b.copyPixelsToBuffer(buf);
+        try
+        {
+            int cap = buf.capacity();
+        //    Log.v(TAG, "buf's capacity=" +  cap);
+        }
+        catch(Exception e)
+        {
+            Log.v(TAG, "exception thrown");
+        }
         return buf.array();
     }
 

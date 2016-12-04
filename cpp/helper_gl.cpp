@@ -299,6 +299,10 @@ SRVID afCreateTexture2D(AFFormat format, const TexDesc& desc, int mipCount, cons
 			} else if (format == AFF_B8G8R8A8_UNORM) {
 #ifdef _MSC_VER	// GL_EXT_texture_format_BGRA8888 is an extension for OpenGL ES, so should use this only on Windows.
 				afHandleGLError(glTexImage2D(targetFace + a, m, GL_BGRA_EXT, w, h, 0, GL_BGRA_EXT, GL_UNSIGNED_BYTE, datas[idx].ptr));
+#else
+				// to warn this is wrong format, store BGRA format as "GL_RGBA"
+				aflog("AFF_B8G8R8A8_UNORM is not supported!");
+				afHandleGLError(glTexImage2D(targetFace + a, m, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, datas[idx].ptr));
 #endif
 			} else {
 				afHandleGLError(glCompressedTexImage2D(targetFace + a, m, format, w, h, 0, datas[idx].pitchSlice, datas[idx].ptr));
