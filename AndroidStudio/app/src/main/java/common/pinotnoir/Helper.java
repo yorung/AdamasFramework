@@ -127,6 +127,19 @@ public class Helper {
         return bitmapToByteArray(b);
     }
 
+    public static byte[] loadImage(String s, int[] size)
+    {
+        Bitmap img;
+        try {
+            img = BitmapFactory.decodeStream(context.getAssets().open(s));
+        } catch (IOException e) {
+            return null;
+        }
+        size[0] = img.getWidth();
+        size[1] = img.getHeight();
+        return bitmapToByteArray(img);
+    }
+
     public static int loadTexture(String s){
         Bitmap img;
         try {

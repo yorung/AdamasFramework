@@ -72,7 +72,7 @@ void PostCommand(const char* cmdString)
 
 }
 
-SRVID LoadTextureViaOS(const char* name, IVec2& size)
+SRVID LoadTextureViaOS_old(const char* name, IVec2& size)
 {
 	jclass myview = jniEnv->FindClass(boundJavaClass);
 	jmethodID method = jniEnv->GetStaticMethodID(myview, "loadTexture", "(Ljava/lang/String;)I");
@@ -88,6 +88,52 @@ SRVID LoadTextureViaOS(const char* name, IVec2& size)
 	size.y = 0;
 #endif
 	return id;
+}
+
+SRVID LoadTextureViaOS(const char* name, IVec2& size)
+{
+	jclass myview = jniEnv->FindClass(boundJavaClass);
+	jmethodID method = jniEnv->GetStaticMethodID(myview, "loadImage", "(Ljava/lang/String;[I)[B");
+	if (method == 0)
+	{
+		return SRVID();
+	}
+
+	jintArray descArray = jniEnv->NewIntArray(2);
+	jobject arrayAsJObject = jniEnv->CallStaticObjectMethod(myview, method, jniEnv->NewStringUTF(name), descArray);
+	{
+		jint* pDescArray = jniEnv->GetIntArrayElements(descArray, NULL);
+		size.x = pDescArray[0];
+		size.y = pDescArray[0];
+		jniEnv->ReleaseIntArrayElements(descArray, pDescArray, 0);
+	}
+	if (!arrayAsJObject)
+	{
+		aflog("Java method returned null");
+		return SRVID();
+	}
+
+	jbyteArray array = (jbyteArray)arrayAsJObject;
+	jbyte* byteArray = jniEnv->GetByteArrayElements(array, NULL);
+	jsize arrayLen = jniEnv->GetArrayLength(array);
+	//	aflog("arrayLen=%d", arrayLen);
+
+	SRVID tex;
+	int expectedLen = size.x * size.y * 4;
+	if (arrayLen != expectedLen)
+	{
+		aflog("wrong size! returned=%d expected=%d", arrayLen, expectedLen);
+		afVerify(false);
+	}
+	else
+	{
+		TexDesc desc;
+		desc.size = size;
+		AFTexSubresourceData subresource = { byteArray, (uint32_t)size.x * 4, (uint32_t)size.x * 4 * size.y };
+		tex = afCreateTexture2D(AFF_B8G8R8A8_UNORM, desc, 1, &subresource);
+	}
+	jniEnv->ReleaseByteArrayElements(array, byteArray, 0);
+	return tex;
 }
 
 void MakeFontBitmap(const char* fontName, const CharSignature& sig, DIB& dib, CharDesc& cache)
