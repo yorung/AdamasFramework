@@ -106,5 +106,4 @@ static const int BONE_MAX = 50;
 #include "voice.h"
 #include "lua_man.h"
 #include "lua_bind.h"
-#include "hub.h"
 #include "app.h"

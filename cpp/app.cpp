@@ -56,7 +56,7 @@ void App::Draw()
 	fontMan.Draw(cmd);
 }
 
-void App::Init()
+void App::Create()
 {
 #ifdef _MSC_VER
 	GoMyDir();
@@ -108,9 +108,11 @@ void App::Destroy()
 
 void App::Update()
 {
+	systemMisc.lastUpdateTime = GetTime();
 	inputMan.Update();
 	matrixMan.Set(MatrixMan::VIEW, devCamera.CalcViewMatrix());
 	luaMan.Update();
 	fps.Update();
 	fontMan.DrawString(Vec2(20, 40), 20, SPrintf("FPS: %f", fps.Get()));
+	Draw();
 }

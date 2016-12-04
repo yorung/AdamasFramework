@@ -112,7 +112,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\cpp\helper_win.cpp" />
-    <ClCompile Include="..\cpp\hub.cpp" />
     <ClCompile Include="..\cpp\hub_android.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DX11Debug|Win32'">true</ExcludedFromBuild>
@@ -260,7 +259,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\cpp\helper_win.h" />
-    <ClInclude Include="..\cpp\hub.h" />
     <ClInclude Include="..\cpp\input_man.h" />
     <ClInclude Include="..\cpp\joint_db.h" />
     <ClInclude Include="..\cpp\letterbox.h" />

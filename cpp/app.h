@@ -2,7 +2,7 @@ class App {
 	MeshMan::MMID meshId;
 public:
 	App();
-	void Init();
+	void Create();
 	void LoadMesh(const char* fileName);
 	void Update();
 	void Draw();
