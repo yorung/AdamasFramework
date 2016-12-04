@@ -197,9 +197,9 @@ inline void afSafeDeleteVAO(VAOID& vao)
 IVec2 afGetRenderbufferSize(GLuint renderbuffer);
 SAMPLERID afCreateSampler(SamplerType type);
 void afSetSampler(SamplerType type, int slot);
+IVec2 afGetTextureSize(SRVID tex);
 #endif
 
-IVec2 afGetTextureSize(SRVID tex);
 void afUpdateUniformVariable(GLuint program, int size, const void* buffer, const char* name);
 inline void afSetTextureName(SRVID, const char*) {}
 void afClear();

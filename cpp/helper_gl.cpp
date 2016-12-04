@@ -617,50 +617,16 @@ void AFRenderTarget::BeginRenderToThis()
 	afHandleGLError(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT));
 }
 
+#ifdef AF_GLES31
 IVec2 afGetTextureSize(SRVID tex)
 {
-	return IVec2(512, 512);
-/*
-GLint w = 1, h = 1;
-glBindTexture(GL_TEXTURE_2D, tex);
-	GLenum glenum = glGetError();
-	for (;;)
-	{
-		uint32_t t;
-		glReadPixels(w - 1, h - 1, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &t);
-		GLenum glenum = glGetError();
-		if (glenum != GL_NO_ERROR)
-		{
-			break;
-		}
-		w++;
-	}
-	for (;;)
-	{
-		uint32_t t;
-		glTexSubImage2D(GL_TEXTURE_2D, 0, w - 1, h - 1, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &t);
-		if (glGetError() != GL_NO_ERROR)
-		{
-			break;
-		}
-		h++;
-	}
+	GLint w, h;
+	glBindTexture(GL_TEXTURE_2D, tex);
+	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &w);
+	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &h);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	return IVec2(w, h);
-	*/
 }
-
-
-#ifdef AF_GLES31
-//IVec2 afGetTextureSize(SRVID tex)
-//{
-//	GLint w, h;
-//	glBindTexture(GL_TEXTURE_2D, tex);
-//	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &w);
-//	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &h);
-//	glBindTexture(GL_TEXTURE_2D, 0);
-//	return IVec2(w, h);
-//}
 
 IVec2 afGetRenderbufferSize(GLuint renderbuffer)
 {

@@ -157,6 +157,7 @@ static void BindImage(lua_State* L)
 	class Image
 	{
 		SRVID texId;
+		TexDesc desc;
 		std::vector<Vec4> quads;
 #ifdef _DEBUG
 		std::string fileName;
@@ -169,7 +170,7 @@ static void BindImage(lua_State* L)
 
 		Image(const char *fileName)
 		{
-			texId = afLoadTexture(fileName);
+			texId = afLoadTexture(fileName, desc);
 #ifdef _DEBUG
 			this->fileName = fileName;
 #endif
@@ -183,7 +184,7 @@ static void BindImage(lua_State* L)
 			if (id >= (int)quads.size()) {
 				quads.resize(id + 1);
 			}
-			quads[id] = ltrb;
+			quads[id] = Vec4(ltrb.x / desc.size.x, ltrb.y / desc.size.y, ltrb.z / desc.size.x, ltrb.w / desc.size.y);
 		}
 
 		void Draw(lua_State* L, const MatrixStack* matrixStack, int id, const Vec4* color)
@@ -192,8 +193,9 @@ static void BindImage(lua_State* L)
 				return;
 			}
 			SpriteCommand s;
-			s.matW = matrixStack ? matrixStack->Get() : Mat();
 			s.quad = quads[id];
+			s.matW = matrixStack ? matrixStack->Get() : Mat();
+			s.matW = scale((float)desc.size.x * (s.quad.z - s.quad.x), (float)desc.size.y * (s.quad.w - s.quad.y), 1.0f) * s.matW;
 			s.tex = texId;
 			s.color = color ? Vec4ToUnorm(*color) : 0xffffffff;
 			luaSpriteCommands.push_back(s);

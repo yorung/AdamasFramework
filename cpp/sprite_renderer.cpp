@@ -76,18 +76,7 @@ void SpriteRenderer::Draw(AFCommandList& cmd, const SpriteCommands& sprites)
 		if (numStoredSprites == 0) {
 			curTex = it.tex;
 		}
-		IVec2 size = afGetTextureSize(it.tex);
-		StoreVertices(
-			v[numStoredSprites++],
-			float(it.quad.z - it.quad.x),
-			float(it.quad.w - it.quad.y),
-			it.color,
-			it.quad.x / (float)size.x,
-			it.quad.y / (float)size.y,
-			it.quad.z / (float)size.x,
-			it.quad.w / (float)size.y,
-			it.matW
-		);
+		StoreVertices(v[numStoredSprites++], 1.f, 1.f, it.color, it.quad.x, it.quad.y, it.quad.z, it.quad.w, it.matW);
 	}
 	flush();
 }
