@@ -151,9 +151,10 @@
       <CppLanguageStandard>c++1y</CppLanguageStandard>
       <AdditionalIncludeDirectories>../../../cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CLanguageStandard>c11</CLanguageStandard>
+      <PreprocessorDefinitions>AF_GLES</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <LibraryDependencies>%(LibraryDependencies);GLESv3;EGL;OpenSLES;m</LibraryDependencies>
+      <LibraryDependencies>%(LibraryDependencies);GLESv2;EGL;OpenSLES;m</LibraryDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
@@ -166,7 +167,7 @@
       <CLanguageStandard>c11</CLanguageStandard>
     </ClCompile>
     <Link>
-      <LibraryDependencies>%(LibraryDependencies);GLESv3;EGL;OpenSLES;m</LibraryDependencies>
+      <LibraryDependencies>%(LibraryDependencies);GLESv2;EGL;OpenSLES;m</LibraryDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
@@ -177,9 +178,10 @@
       <CppLanguageStandard>c++1y</CppLanguageStandard>
       <AdditionalIncludeDirectories>../../../cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CLanguageStandard>c11</CLanguageStandard>
+      <PreprocessorDefinitions>AF_GLES</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <LibraryDependencies>%(LibraryDependencies);GLESv3;EGL;OpenSLES;m</LibraryDependencies>
+      <LibraryDependencies>%(LibraryDependencies);GLESv2;EGL;OpenSLES;m</LibraryDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
@@ -192,7 +194,7 @@
       <CLanguageStandard>c11</CLanguageStandard>
     </ClCompile>
     <Link>
-      <LibraryDependencies>%(LibraryDependencies);GLESv3;EGL;OpenSLES;m</LibraryDependencies>
+      <LibraryDependencies>%(LibraryDependencies);GLESv2;EGL;OpenSLES;m</LibraryDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -203,9 +205,10 @@
       <CppLanguageStandard>c++1y</CppLanguageStandard>
       <AdditionalIncludeDirectories>../../../cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CLanguageStandard>c11</CLanguageStandard>
+      <PreprocessorDefinitions>AF_GLES</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <LibraryDependencies>%(LibraryDependencies);GLESv3;EGL;OpenSLES;m</LibraryDependencies>
+      <LibraryDependencies>%(LibraryDependencies);GLESv2;EGL;OpenSLES;m</LibraryDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -218,7 +221,7 @@
       <CLanguageStandard>c11</CLanguageStandard>
     </ClCompile>
     <Link>
-      <LibraryDependencies>%(LibraryDependencies);GLESv3;EGL;OpenSLES;m</LibraryDependencies>
+      <LibraryDependencies>%(LibraryDependencies);GLESv2;EGL;OpenSLES;m</LibraryDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
@@ -229,9 +232,10 @@
       <CppLanguageStandard>c++1y</CppLanguageStandard>
       <AdditionalIncludeDirectories>../../../cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CLanguageStandard>c11</CLanguageStandard>
+      <PreprocessorDefinitions>AF_GLES</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <LibraryDependencies>%(LibraryDependencies);GLESv3;EGL;OpenSLES;m</LibraryDependencies>
+      <LibraryDependencies>%(LibraryDependencies);GLESv2;EGL;OpenSLES;m</LibraryDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
@@ -244,7 +248,7 @@
       <CLanguageStandard>c11</CLanguageStandard>
     </ClCompile>
     <Link>
-      <LibraryDependencies>%(LibraryDependencies);GLESv3;EGL;OpenSLES;m</LibraryDependencies>
+      <LibraryDependencies>%(LibraryDependencies);GLESv2;EGL;OpenSLES;m</LibraryDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -253,15 +257,20 @@
     <ClInclude Include="..\..\..\cpp\app.h" />
     <ClInclude Include="..\..\..\cpp\bvh.h" />
     <ClInclude Include="..\..\..\cpp\debug_renderer.h" />
+    <ClInclude Include="..\..\..\cpp\device_man_dx11.h" />
+    <ClInclude Include="..\..\..\cpp\device_man_dx12.h" />
     <ClInclude Include="..\..\..\cpp\dev_camera.h" />
     <ClInclude Include="..\..\..\cpp\dib.h" />
     <ClInclude Include="..\..\..\cpp\font_man.h" />
     <ClInclude Include="..\..\..\cpp\fps.h" />
     <ClInclude Include="..\..\..\cpp\glow.h" />
     <ClInclude Include="..\..\..\cpp\helper.h" />
+    <ClInclude Include="..\..\..\cpp\helper_dx11.h" />
+    <ClInclude Include="..\..\..\cpp\helper_dx12.h" />
     <ClInclude Include="..\..\..\cpp\helper_gl.h" />
     <ClInclude Include="..\..\..\cpp\helper_text.h" />
-    <ClInclude Include="..\..\..\cpp\hub.h" />
+    <ClInclude Include="..\..\..\cpp\helper_vulkan.h" />
+    <ClInclude Include="..\..\..\cpp\helper_win.h" />
     <ClInclude Include="..\..\..\cpp\input_man.h" />
     <ClInclude Include="..\..\..\cpp\joint_db.h" />
     <ClInclude Include="..\..\..\cpp\letterbox.h" />
@@ -272,7 +281,6 @@
     <ClInclude Include="..\..\..\cpp\mesh_man.h" />
     <ClInclude Include="..\..\..\cpp\mesh_renderer.h" />
     <ClInclude Include="..\..\..\cpp\mesh_x.h" />
-    <ClInclude Include="..\..\..\cpp\shader_man.h" />
     <ClInclude Include="..\..\..\cpp\sky_man.h" />
     <ClInclude Include="..\..\..\cpp\sprite_renderer.h" />
     <ClInclude Include="..\..\..\cpp\stdafx.h" />
@@ -280,8 +288,6 @@
     <ClInclude Include="..\..\..\cpp\system_misc.h" />
     <ClInclude Include="..\..\..\cpp\tex_man.h" />
     <ClInclude Include="..\..\..\cpp\voice.h" />
-    <ClInclude Include="..\..\..\cpp\water_surface.h" />
-    <ClInclude Include="..\..\..\cpp\water_surface_classic.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
@@ -289,15 +295,21 @@
     <ClCompile Include="..\..\..\cpp\app.cpp" />
     <ClCompile Include="..\..\..\cpp\bvh.cpp" />
     <ClCompile Include="..\..\..\cpp\debug_renderer.cpp" />
+    <ClCompile Include="..\..\..\cpp\device_man_dx11.cpp" />
+    <ClCompile Include="..\..\..\cpp\device_man_dx12.cpp" />
     <ClCompile Include="..\..\..\cpp\dev_camera.cpp" />
     <ClCompile Include="..\..\..\cpp\dib.cpp" />
     <ClCompile Include="..\..\..\cpp\font_man.cpp" />
     <ClCompile Include="..\..\..\cpp\fps.cpp" />
     <ClCompile Include="..\..\..\cpp\glow.cpp" />
+    <ClCompile Include="..\..\..\cpp\grid_renderer.cpp" />
     <ClCompile Include="..\..\..\cpp\helper.cpp" />
     <ClCompile Include="..\..\..\cpp\helper_android.cpp" />
+    <ClCompile Include="..\..\..\cpp\helper_dx11.cpp" />
+    <ClCompile Include="..\..\..\cpp\helper_dx12.cpp" />
     <ClCompile Include="..\..\..\cpp\helper_gl.cpp" />
-    <ClCompile Include="..\..\..\cpp\hub.cpp" />
+    <ClCompile Include="..\..\..\cpp\helper_vulkan.cpp" />
+    <ClCompile Include="..\..\..\cpp\helper_win.cpp" />
     <ClCompile Include="..\..\..\cpp\hub_android.cpp" />
     <ClCompile Include="..\..\..\cpp\input_man.cpp" />
     <ClCompile Include="..\..\..\cpp\joint_db.cpp" />
@@ -309,17 +321,24 @@
     <ClCompile Include="..\..\..\cpp\mesh_man.cpp" />
     <ClCompile Include="..\..\..\cpp\mesh_renderer.cpp" />
     <ClCompile Include="..\..\..\cpp\mesh_x.cpp" />
+    <ClCompile Include="..\..\..\cpp\picking.cpp" />
     <ClCompile Include="..\..\..\cpp\puzzle.cpp" />
-    <ClCompile Include="..\..\..\cpp\shader_man.cpp" />
     <ClCompile Include="..\..\..\cpp\sky_man.cpp" />
     <ClCompile Include="..\..\..\cpp\sprite_renderer.cpp" />
+    <ClCompile Include="..\..\..\cpp\stdafx.cpp" />
     <ClCompile Include="..\..\..\cpp\stock_objects.cpp" />
     <ClCompile Include="..\..\..\cpp\system_misc.cpp" />
     <ClCompile Include="..\..\..\cpp\tex_man.cpp" />
     <ClCompile Include="..\..\..\cpp\voice.cpp" />
     <ClCompile Include="..\..\..\cpp\voice_android.cpp" />
-    <ClCompile Include="..\..\..\cpp\water_surface.cpp" />
-    <ClCompile Include="..\..\..\cpp\water_surface_classic.cpp" />
+    <ClCompile Include="..\..\..\cpp\water_surface_es2.cpp" />
+    <ClCompile Include="..\..\..\cpp\water_surface_es3.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\cpp\AFDynamicQuadListVertexBuffer.inl" />
+    <None Include="..\..\..\cpp\AFGraphicsCompatibilityLayer.inl" />
+    <None Include="..\..\..\cpp\AFGraphicsDefinitions.inl" />
+    <None Include="..\..\..\cpp\AFGraphicsFunctions.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
