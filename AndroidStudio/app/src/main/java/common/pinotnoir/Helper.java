@@ -68,7 +68,7 @@ public class Helper {
         return null;
     }
 
-    public static byte[] makeFontBitmap(String font, String code, int size, float[] arrayOfPos) {
+    public static byte[] makeFontBitmap(String font, String code, int size, int[] arrayOfPos) {
         Canvas c = new Canvas();
         Paint p = new Paint();
 //        Log.v(TAG, String.format("makeFontBitmap called(Java): font=%s code=%s density=%f", font, code, density));
