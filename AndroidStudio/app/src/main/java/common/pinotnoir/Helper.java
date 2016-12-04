@@ -68,6 +68,14 @@ public class Helper {
         return null;
     }
 
+    public static byte[] bitmapToByteArray(Bitmap b)
+    {
+        ByteBuffer buf = ByteBuffer.allocate(b.getWidth() * b.getHeight() * 4);
+        buf.position(0);
+        b.copyPixelsToBuffer(buf);
+        return buf.array();
+    }
+
     public static byte[] makeFontBitmap(String font, String code, int size, int[] arrayOfPos) {
         Canvas c = new Canvas();
         Paint p = new Paint();
@@ -116,13 +124,7 @@ public class Helper {
         c.drawText(code, -textBounds.left, -textBounds.top, p);
 //        Log.v(TAG, String.format("makeFontBitmap: w=%.2f h=%.2f", arrayOfPos[2], arrayOfPos[3]));
 
-        ByteBuffer buf = ByteBuffer.allocate(textBounds.width() * textBounds.height() * 4);
-//        Log.v(TAG, String.format("makeFontBitmap: b.getRowBytes() %d", b.getRowBytes()));
-        buf.position(0);
-        b.copyPixelsToBuffer(buf);
-//        Log.v(TAG, String.format("makeFontBitmap results: capacity=%d", buf.capacity()));
-
-        return buf.array();
+        return bitmapToByteArray(b);
     }
 
     public static int loadTexture(String s){
