@@ -3,7 +3,7 @@
 This is a study project of closs-platform game framework.
 Currently, this framework supports following platforms.
 
-* Android - OpenGL ES 3.1
+* Android - OpenGL ES 2.0
 * Windows - OpenGL ES 3.1
 * Windows - Vulkan
 * Windows - DirectX 11
