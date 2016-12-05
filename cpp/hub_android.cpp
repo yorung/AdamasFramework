@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <jni.h>
 
 JNIEnv* jniEnv;
 const char* boundJavaClass = "common/pinotnoir/Helper";
@@ -14,7 +15,7 @@ JNIEXPORT void JNICALL FUNC(init)(JNIEnv* env, jobject obj, jint screenW, jint s
 {
 	jniEnv = env;
 	systemMisc.SetScreenSize(IVec2(screenW, screenH));
-	hub.Init();
+	app.Create();
 	memset(&lastInputState, 0, sizeof(lastInputState));
 	jniEnv = nullptr;
 }
@@ -22,7 +23,7 @@ JNIEXPORT void JNICALL FUNC(init)(JNIEnv* env, jobject obj, jint screenW, jint s
 JNIEXPORT void JNICALL FUNC(destroy)(JNIEnv* env, jobject obj)
 {
 	jniEnv = env;
-	hub.Destroy();
+	app.Destroy();
 	jniEnv = nullptr;
 }
 
@@ -55,8 +56,7 @@ JNIEXPORT void JNICALL FUNC(update)(JNIEnv* env, jobject obj, jfloat inputX, jfl
 	systemMisc.SetMousePos(IVec2(inputX, inputY));
 	systemMisc.mouseDown = pressed;
 
-
-	hub.Update();
+	app.Update();
 	jniEnv = nullptr;
 }
 }

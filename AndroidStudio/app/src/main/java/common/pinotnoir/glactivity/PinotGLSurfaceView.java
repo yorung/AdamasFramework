@@ -8,7 +8,7 @@ public class PinotGLSurfaceView extends GLSurfaceView {
     public PinotGLSurfaceView(Context context)
     {
         super(context);
-        setEGLContextClientVersion(3);
+        setEGLContextClientVersion(2);
         renderer = new PinotGLRenderer();
         setRenderer(renderer);
     }

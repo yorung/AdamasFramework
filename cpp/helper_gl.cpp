@@ -183,6 +183,7 @@ void afBindBuffer(UBOID ubo, GLuint uniformBlockBinding)
 	glBindBufferBase(GL_UNIFORM_BUFFER, uniformBlockBinding, ubo);
 	glBindBuffer(GL_UNIFORM_BUFFER, prev);
 }
+#endif
 
 void afUpdateUniformVariable(GLuint program, int size, const void* buffer, const char* name)
 {
@@ -193,7 +194,6 @@ void afUpdateUniformVariable(GLuint program, int size, const void* buffer, const
 		afHandleGLError(glUniform4fv(location, size / 16, (GLfloat*)buffer));
 	}
 }
-#endif
 
 void afBindTexture(GLuint tex, GLuint textureBindingPoint)
 {
@@ -299,6 +299,10 @@ SRVID afCreateTexture2D(AFFormat format, const TexDesc& desc, int mipCount, cons
 			} else if (format == AFF_B8G8R8A8_UNORM) {
 #ifdef _MSC_VER	// GL_EXT_texture_format_BGRA8888 is an extension for OpenGL ES, so should use this only on Windows.
 				afHandleGLError(glTexImage2D(targetFace + a, m, GL_BGRA_EXT, w, h, 0, GL_BGRA_EXT, GL_UNSIGNED_BYTE, datas[idx].ptr));
+#else
+				// to warn this is wrong format, store BGRA format as "GL_RGBA"
+				aflog("AFF_B8G8R8A8_UNORM is not supported!");
+				afHandleGLError(glTexImage2D(targetFace + a, m, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, datas[idx].ptr));
 #endif
 			} else {
 				afHandleGLError(glCompressedTexImage2D(targetFace + a, m, format, w, h, 0, datas[idx].pitchSlice, datas[idx].ptr));
@@ -678,10 +682,12 @@ void AFRenderStates::Apply() const
 	afBlendMode(flags);
 	afDepthStencilMode(flags);
 	afCullMode(flags);
+#ifdef AF_GLES31
 	for (int i = 0; i < numSamplerTypes; i++)
 	{
 		afSetSampler(samplerTypes[i], i);
 	}
+#endif
 }
 
 void AFRenderStates::Destroy()
@@ -693,7 +699,9 @@ void AFRenderStates::Destroy()
 	}
 }
 
+#ifdef AF_GLES31
 void afSetSampler(SamplerType type, int slot)
 {
 	afBindSamplerToBindingPoint(stockObjects.GetBuiltInSampler(type), slot);
 }
+#endif

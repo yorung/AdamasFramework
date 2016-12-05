@@ -113,12 +113,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE,
 		if (w != lastW || h != lastH) {
 			lastW = w;
 			lastH = h;
-			hub.Destroy();
+			app.Destroy();
 			deviceMan.Destroy();
 			deviceMan.Create(hWnd);
-			hub.Init();
+			app.Create();
 		}
-		hub.Update();
+		app.Update();
 		deviceMan.Present();
 		Sleep(1);
 	}
@@ -217,8 +217,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			SendMessage(hWnd, WM_CLOSE, 0, 0);
 			break;
 		case IDM_RELOAD:
-			hub.Destroy();
-			hub.Init();
+			app.Destroy();
+			app.Create();
 			break;
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
@@ -230,7 +230,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		EndPaint(hWnd, &ps);
 		break;
 	case WM_CLOSE:
-		hub.Destroy();
+		app.Destroy();
 		deviceMan.Destroy();
 		DestroyWindow(hWnd);
 		return 0;

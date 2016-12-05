@@ -78,12 +78,11 @@ void Puzzle::Update()
 	cmd.tex = tex;
 
 	const float pitch = 0.25f;
-	const float sprW = 64;
 
 	Vec2 mouse = systemMisc.GetMousePos();
 	auto isHit = [&](const Mat& m) {
 		Vec3 v = transform(Vec3(mouse.x, mouse.y, 0), inv(m));
-		return v.x >= 0 && v.y >= 0 && v.x < sprW && v.y < sprW;
+		return v.x >= 0 && v.y >= 0 && v.x < 1 && v.y < 1;
 	};
 	Vec2 scrSize = systemMisc.GetScreenSize();
 	MatrixStack m;
@@ -98,10 +97,10 @@ void Puzzle::Update()
 			}
 			int xx = spr % 4;
 			int yy = spr / 4;
-			cmd.quad = Vec4(xx * sprW, yy * sprW, xx * sprW + sprW, yy * sprW + sprW);
+			cmd.quad = Vec4(xx * pitch, yy * pitch, xx * pitch + pitch, yy * pitch + pitch);
 			m.Push();
 			m.Mul(translate(pitch * x, pitch * y, 0));
-			m.Mul(scale(0.25f / sprW));
+			m.Mul(scale(0.25f));
 			cmd.matW = m.Get();
 			if (isHit(m.Get())) {
 				cmd.color = 0xff0000ff;

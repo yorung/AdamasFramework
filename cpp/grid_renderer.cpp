@@ -103,7 +103,7 @@ void GridRenderer::Draw()
 	matrixMan.Get(MatrixMan::VIEW, matView);
 	matrixMan.Get(MatrixMan::PROJ, matProj);
 	Mat matVP = matView * matProj;
-#ifdef AF_GLES31
+#ifdef AF_GLES
 	afHandleGLError(glUniform4fv(glGetUniformLocation(renderStates.GetShaderId(), "b0"), sizeof(Mat) / 16, (GLfloat*)&matVP));
 #else
 	cmd.SetBuffer(sizeof(Mat), &matVP, 0);
@@ -131,7 +131,6 @@ bool GridRenderer::GetMousePosInGrid(Vec2& v)
 	ScreenPosToRay(systemMisc.GetMousePos(), n, f);
 
 	// ray-grid intersection
-	Vec3 planeCenter = { 0, 0, 0 };
 	Vec3 planeNormal = { 0, 1, 0 };
 	float nDotPlane = dot(n, planeNormal);
 	float fDotPlane = dot(f, planeNormal);
@@ -139,7 +138,6 @@ bool GridRenderer::GetMousePosInGrid(Vec2& v)
 		nDotPlane = std::abs(nDotPlane);
 		fDotPlane = std::abs(fDotPlane);
 		Vec3 hitPos = n + (f - n) * nDotPlane / (nDotPlane + fDotPlane);
-		float half = pitch * numGrid / 2;
 		v = Vec2(dot(hitPos, Vec3(1, 0, 0)), dot(hitPos, Vec3(0, 0, 1)));
 		return true;
 	}

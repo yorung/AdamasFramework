@@ -161,7 +161,7 @@ void MeshRenderer::Flush()
 	AFCommandList& cmd = afGetCommandList();
 	cmd.SetRenderStates(renderStates);
 
-#ifdef AF_GLES31
+#ifdef AF_GLES
 	struct PerDrawCallForES2
 	{
 		Mat v, p, w;

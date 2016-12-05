@@ -158,11 +158,7 @@ void Picking::Draw3D()
 	matrixMan.Get(MatrixMan::VIEW, mView);
 	matrixMan.Get(MatrixMan::PROJ, mProj);
 	Mat mVP = mView * mProj;
-#ifdef AF_GLES31
-	afHandleGLError(glUniform4fv(glGetUniformLocation(renderStates.GetShaderId(), "b0"), sizeof(Mat) / 16, (GLfloat*)&mVP));
-#else
 	cmd.SetBuffer(sizeof(Mat), &mVP, 0);
-#endif
 	cmd.Draw(3);
 }
 
@@ -176,10 +172,6 @@ void Picking::Draw2D()
 	proj2d._22 = -1;
 #endif
 
-#ifdef AF_GLES31
-	afHandleGLError(glUniform4fv(glGetUniformLocation(renderStates.GetShaderId(), "b0"), sizeof(Mat) / 16, (GLfloat*)&proj2d));
-#else
 	cmd.SetBuffer(sizeof(Mat), &proj2d, 0);
-#endif
 	cmd.Draw(3);
 }

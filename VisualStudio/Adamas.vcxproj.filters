@@ -7,9 +7,6 @@
     <ClCompile Include="..\cpp\helper.cpp">
       <Filter>PlatformIndipendent</Filter>
     </ClCompile>
-    <ClCompile Include="..\cpp\hub.cpp">
-      <Filter>PlatformIndipendent</Filter>
-    </ClCompile>
     <ClCompile Include="..\cpp\stdafx.cpp">
       <Filter>PlatformIndipendent</Filter>
     </ClCompile>
@@ -151,9 +148,6 @@
       <Filter>PlatformIndipendent</Filter>
     </ClInclude>
     <ClInclude Include="..\cpp\helper_text.h">
-      <Filter>PlatformIndipendent</Filter>
-    </ClInclude>
-    <ClInclude Include="..\cpp\hub.h">
       <Filter>PlatformIndipendent</Filter>
     </ClInclude>
     <ClInclude Include="..\cpp\stdafx.h">
