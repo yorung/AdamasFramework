@@ -70,34 +70,13 @@ public class Helper {
 
     public static byte[] bitmapToByteArray(Bitmap b)
     {
-        if (Bitmap.Config.ARGB_8888 == b.getConfig())
+        if (Bitmap.Config.ARGB_8888 != b.getConfig())
         {
-        //    Log.v(TAG, "bitmapToByteArray: ARGB_8888");
-        }
-        else if (Bitmap.Config.RGB_565 == b.getConfig())
-        {
-            Log.v(TAG, "bitmapToByteArray: RGB_565");
-        }
-        else if (Bitmap.Config.ARGB_4444 == b.getConfig())
-        {
-            Log.v(TAG, "bitmapToByteArray: ARGB_4444");
-        }
-        else
-        {
-            Log.v(TAG, "bitmapToByteArray: unknown");
+            Log.v(TAG, "bitmapToByteArray() Unexpected format:" + b.getConfig().name());
         }
         ByteBuffer buf = ByteBuffer.allocate(b.getWidth() * b.getHeight() * 4);
         buf.position(0);
         b.copyPixelsToBuffer(buf);
-        try
-        {
-            int cap = buf.capacity();
-        //    Log.v(TAG, "buf's capacity=" +  cap);
-        }
-        catch(Exception e)
-        {
-            Log.v(TAG, "exception thrown");
-        }
         return buf.array();
     }
 
@@ -163,27 +142,6 @@ public class Helper {
         size[0] = img.getWidth();
         size[1] = img.getHeight();
         return bitmapToByteArray(img);
-    }
-
-    public static int loadTexture(String s){
-        Bitmap img;
-        try {
-            img = BitmapFactory.decodeStream(context.getAssets().open(s));
-        } catch (IOException e) {
-            return 0;
-        }
-        int tex[] = new int[1];
-        GLES20.glGenTextures(1, tex, 0);
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, tex[0]);
-        GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, img, 0);
-        GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D);
-        GLES20.glTexParameteri(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_LINEAR_MIPMAP_LINEAR);
-        GLES20.glTexParameteri(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
-        GLES20.glTexParameteri(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_S, GL10.GL_CLAMP_TO_EDGE);
-        GLES20.glTexParameteri(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_T, GL10.GL_CLAMP_TO_EDGE);
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
-        img.recycle();
-        return tex[0];
     }
 
     public static void playBgm(String fileName) {

@@ -72,24 +72,6 @@ void PostCommand(const char* cmdString)
 
 }
 
-SRVID LoadTextureViaOS_old(const char* name, IVec2& size)
-{
-	jclass myview = jniEnv->FindClass(boundJavaClass);
-	jmethodID method = jniEnv->GetStaticMethodID(myview, "loadTexture", "(Ljava/lang/String;)I");
-	if (method == 0) {
-		return SRVID();
-	}
-	SRVID id;
-	id.x = jniEnv->CallStaticIntMethod(myview, method, jniEnv->NewStringUTF(name));
-#ifdef AF_GLES31
-	size = afGetTextureSize(id);
-#else
-	size.x = 0;
-	size.y = 0;
-#endif
-	return id;
-}
-
 SRVID LoadTextureViaOS(const char* name, IVec2& size)
 {
 	jclass myview = jniEnv->FindClass(boundJavaClass);
