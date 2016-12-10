@@ -84,35 +84,33 @@ VBOID afCreateDynamicVertexBuffer(int size, const void* buf)
 	return afCreateBuffer(size, buf);
 }
 
-VBOID afCreateVertexBuffer(int size, const void* buf)
+static ComPtr<ID3D12Resource> afCreateBufferAs(int size, const void* buf, D3D12_RESOURCE_STATES as)
 {
 	D3D12_RESOURCE_DESC desc = { D3D12_RESOURCE_DIMENSION_BUFFER, 0, (UINT64)size, 1, 1, 1, DXGI_FORMAT_UNKNOWN,{ 1, 0 }, D3D12_TEXTURE_LAYOUT_ROW_MAJOR, D3D12_RESOURCE_FLAG_NONE };
 	VBOID o;
-	deviceMan.GetDevice()->CreateCommittedResource(&defaultHeapProperties, D3D12_HEAP_FLAG_NONE, &desc, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, nullptr, IID_PPV_ARGS(&o));
+	deviceMan.GetDevice()->CreateCommittedResource(&defaultHeapProperties, D3D12_HEAP_FLAG_NONE, &desc, D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(&o));
 	if (o) {
 		ComPtr<ID3D12Resource> intermediateBuffer = afCreateBuffer(size, buf);
-		deviceMan.GetCommandList()->CopyBufferRegion(o.Get(), 0, intermediateBuffer.Get(), 0, size);
+		ID3D12GraphicsCommandList* list = deviceMan.GetCommandList();
+		list->CopyBufferRegion(o.Get(), 0, intermediateBuffer.Get(), 0, size);
+		D3D12_RESOURCE_BARRIER transition = { D3D12_RESOURCE_BARRIER_TYPE_TRANSITION, D3D12_RESOURCE_BARRIER_FLAG_NONE,{ o.Get(), 0, D3D12_RESOURCE_STATE_COPY_DEST, as } };
+		list->ResourceBarrier(1, &transition);
 		deviceMan.AddIntermediateCommandlistDependentResource(intermediateBuffer);
 		deviceMan.AddIntermediateCommandlistDependentResource(o);
 	}
 	return o;
 }
 
+VBOID afCreateVertexBuffer(int size, const void* buf)
+{
+	return afCreateBufferAs(size, buf, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+}
+
 IBOID afCreateIndexBuffer(int numIndi, const AFIndex* indi)
 {
 	assert(indi);
 	int size = numIndi * sizeof(AFIndex);
-
-	D3D12_RESOURCE_DESC desc = { D3D12_RESOURCE_DIMENSION_BUFFER, 0, (UINT64)size, 1, 1, 1, DXGI_FORMAT_UNKNOWN,{ 1, 0 }, D3D12_TEXTURE_LAYOUT_ROW_MAJOR, D3D12_RESOURCE_FLAG_NONE };
-	IBOID o;
-	deviceMan.GetDevice()->CreateCommittedResource(&defaultHeapProperties, D3D12_HEAP_FLAG_NONE, &desc, D3D12_RESOURCE_STATE_INDEX_BUFFER, nullptr, IID_PPV_ARGS(&o));
-	if (o) {
-		ComPtr<ID3D12Resource> intermediateBuffer = afCreateBuffer(size, indi);
-		deviceMan.GetCommandList()->CopyBufferRegion(o.Get(), 0, intermediateBuffer.Get(), 0, size);
-		deviceMan.AddIntermediateCommandlistDependentResource(intermediateBuffer);
-		deviceMan.AddIntermediateCommandlistDependentResource(o);
-	}
-	return o;
+	return afCreateBufferAs(size, indi, D3D12_RESOURCE_STATE_INDEX_BUFFER);
 }
 
 UBOID afCreateUBO(int size)
