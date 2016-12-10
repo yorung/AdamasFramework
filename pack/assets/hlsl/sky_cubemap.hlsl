@@ -12,7 +12,7 @@ struct VsToPs
 	float3 dir : DIR;
 };
 
-#define RSDEF "DescriptorTable(SRV(t0)), CBV(b1), StaticSampler(s0)"
+#define RSDEF "RootFlags(ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT), DescriptorTable(SRV(t0)), CBV(b1), StaticSampler(s0)"
 
 [RootSignature(RSDEF)]
 VsToPs VSMain(uint id : SV_VertexID)
