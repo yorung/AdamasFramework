@@ -67,7 +67,7 @@ void afWriteBuffer(const IBOID id, int size, const void* buf)
 	id->Unmap(0, &wroteRange);
 }
 
-ComPtr<ID3D12Resource> afCreateBuffer(int size, const void* buf)
+static ComPtr<ID3D12Resource> afCreateUploadHeap(int size, const void* buf = nullptr)
 {
 	D3D12_RESOURCE_DESC desc = { D3D12_RESOURCE_DIMENSION_BUFFER, 0, (UINT64)size, 1, 1, 1, DXGI_FORMAT_UNKNOWN, { 1, 0 }, D3D12_TEXTURE_LAYOUT_ROW_MAJOR, D3D12_RESOURCE_FLAG_NONE };
 	UBOID o;
@@ -81,7 +81,7 @@ ComPtr<ID3D12Resource> afCreateBuffer(int size, const void* buf)
 
 VBOID afCreateDynamicVertexBuffer(int size, const void* buf)
 {
-	return afCreateBuffer(size, buf);
+	return afCreateUploadHeap(size, buf);
 }
 
 static ComPtr<ID3D12Resource> afCreateBufferAs(int size, const void* buf, D3D12_RESOURCE_STATES as)
@@ -90,7 +90,7 @@ static ComPtr<ID3D12Resource> afCreateBufferAs(int size, const void* buf, D3D12_
 	VBOID o;
 	deviceMan.GetDevice()->CreateCommittedResource(&defaultHeapProperties, D3D12_HEAP_FLAG_NONE, &desc, D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(&o));
 	if (o) {
-		ComPtr<ID3D12Resource> intermediateBuffer = afCreateBuffer(size, buf);
+		ComPtr<ID3D12Resource> intermediateBuffer = afCreateUploadHeap(size, buf);
 		ID3D12GraphicsCommandList* list = deviceMan.GetCommandList();
 		list->CopyBufferRegion(o.Get(), 0, intermediateBuffer.Get(), 0, size);
 		D3D12_RESOURCE_BARRIER transition = { D3D12_RESOURCE_BARRIER_TYPE_TRANSITION, D3D12_RESOURCE_BARRIER_FLAG_NONE,{ o.Get(), 0, D3D12_RESOURCE_STATE_COPY_DEST, as } };
@@ -115,7 +115,7 @@ IBOID afCreateIndexBuffer(int numIndi, const AFIndex* indi)
 
 UBOID afCreateUBO(int size)
 {
-	return afCreateBuffer((size + 0xff) & ~0xff);
+	return afCreateUploadHeap((size + 0xff) & ~0xff);
 }
 
 void afWriteTexture(SRVID tex, const TexDesc& desc, int mipCount, const AFTexSubresourceData datas[])
@@ -128,7 +128,7 @@ void afWriteTexture(SRVID tex, const TexDesc& desc, int mipCount, const AFTexSub
 	UINT numRows[maxSubresources];
 	D3D12_RESOURCE_BARRIER transitions1[maxSubresources], transitions2[maxSubresources];
 	deviceMan.GetDevice()->GetCopyableFootprints(&tex->GetDesc(), 0, subResources, 0, footprints, numRows, rowSizeInBytes, &uploadSize);
-	ComPtr<ID3D12Resource> uploadBuf = afCreateBuffer((int)uploadSize);
+	ComPtr<ID3D12Resource> uploadBuf = afCreateUploadHeap((int)uploadSize);
 	assert(uploadBuf);
 	uploadBuf->SetName(__FUNCTIONW__ L" intermediate buffer");
 	D3D12_RANGE readRange = {};
