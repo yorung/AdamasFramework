@@ -10,7 +10,8 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.pinotnoir.adamas"
+        resValue "string", "app_name", "Hasami Shogi"
+        applicationId "com.pinotnoir.hasami"
         minSdkVersion 16
         targetSdkVersion 22
         versionCode 1
