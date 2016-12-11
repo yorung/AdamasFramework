@@ -193,22 +193,30 @@ SRVID afCreateDynamicTexture(AFFormat format, const IVec2& size, void *image, bo
 
 	SRVID id;
 	D3D12_CLEAR_VALUE clearValue = { format };
+	D3D12_RESOURCE_STATES resourceState = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 
-	if (isRenderTargetOrDepthStencil) {
+	if (isRenderTargetOrDepthStencil)
+	{
 		textureDesc.Flags = isDepthStencil ? D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL : D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
-		if (isDepthStencil) {
+		if (isDepthStencil)
+		{
 			textureDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
 			clearValue.DepthStencil.Depth = 1.0f;
-		} else {
+			resourceState = D3D12_RESOURCE_STATE_DEPTH_WRITE;
+		}
+		else
+		{
 			textureDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
 			std::copy_n(clearColor, 4, clearValue.Color);
+			resourceState = D3D12_RESOURCE_STATE_RENDER_TARGET;
 		}
 	}
 
-	HRESULT hr = deviceMan.GetDevice()->CreateCommittedResource(&defaultHeapProperties, D3D12_HEAP_FLAG_NONE, &textureDesc, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, isRenderTargetOrDepthStencil ? &clearValue : nullptr, IID_PPV_ARGS(&id));
+	HRESULT hr = deviceMan.GetDevice()->CreateCommittedResource(&defaultHeapProperties, D3D12_HEAP_FLAG_NONE, &textureDesc, resourceState, isRenderTargetOrDepthStencil ? &clearValue : nullptr, IID_PPV_ARGS(&id));
 	TexDesc texDesc;
 	texDesc.size = size;
-	if (image) {
+	if (image)
+	{
 		afWriteTexture(id, texDesc, image);
 	}
 	return id;
