@@ -8,7 +8,7 @@ struct VsToPs {
 	float2 coord : TEXCOORD;
 };
 
-#define RSDEF "RootFlags(ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT), DescriptorTable(SRV(t0)), StaticSampler(s0)"
+#define RSDEF "RootFlags(ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT), DescriptorTable(SRV(t0), visibility=SHADER_VISIBILITY_PIXEL), StaticSampler(s0)"
 
 [RootSignature(RSDEF)]
 VsToPs VSMain(VsIn vsIn) {

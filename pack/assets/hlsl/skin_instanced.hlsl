@@ -48,7 +48,7 @@ cbuffer boneUBO : register(b2)
 	matrix bonesBuffer[100];
 };
 
-#define RSDEF "RootFlags(ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT), CBV(b0), CBV(b1), CBV(b2), DescriptorTable(SRV(t3)), StaticSampler(s3)"
+#define RSDEF "RootFlags(ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT), CBV(b0), CBV(b1), CBV(b2), DescriptorTable(SRV(t3), visibility=SHADER_VISIBILITY_PIXEL), StaticSampler(s3)"
 
 [RootSignature(RSDEF)]
 VS_OUTPUT VSMain(VS_INPUT _In, uint instanceId : SV_InstanceID)
