@@ -7,7 +7,7 @@ struct VsToPs
 	float4 screenPos : POS2;
 };
 
-#define RSDEF "DescriptorTable(SRV(t0)), StaticSampler(s0)"
+#define RSDEF "DescriptorTable(SRV(t0), visibility=SHADER_VISIBILITY_PIXEL), StaticSampler(s0)"
 
 [RootSignature(RSDEF)]
 VsToPs VSMain(uint id : SV_VertexID)

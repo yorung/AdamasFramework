@@ -22,7 +22,7 @@ static const float airToWater = 1.0 / 1.33333;
 static const float3 camDir = float3(0, 0, -1);
 static const float waterDepth = 0.2;
 
-#define RSDEF "RootFlags(ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT), DescriptorTable(SRV(t0)), DescriptorTable(SRV(t1)), DescriptorTable(SRV(t2)), DescriptorTable(SRV(t3)), DescriptorTable(SRV(t4)), DescriptorTable(SRV(t5)), CBV(b6), StaticSampler(s0), StaticSampler(s1), StaticSampler(s2), StaticSampler(s3), StaticSampler(s4), StaticSampler(s5)"
+#define RSDEF "RootFlags(ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT), DescriptorTable(SRV(t0), visibility=SHADER_VISIBILITY_PIXEL), DescriptorTable(SRV(t1), visibility=SHADER_VISIBILITY_PIXEL), DescriptorTable(SRV(t2), visibility=SHADER_VISIBILITY_PIXEL), DescriptorTable(SRV(t3), visibility=SHADER_VISIBILITY_PIXEL), DescriptorTable(SRV(t4), visibility=SHADER_VISIBILITY_PIXEL), DescriptorTable(SRV(t5), visibility=SHADER_VISIBILITY_PIXEL), CBV(b6), StaticSampler(s0), StaticSampler(s1), StaticSampler(s2), StaticSampler(s3), StaticSampler(s4), StaticSampler(s5)"
 
 [RootSignature(RSDEF)]
 VsToPs VSMain(VsIn vsIn)
