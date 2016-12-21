@@ -1,6 +1,6 @@
 precision highp float;
-in vec2 vfPosition;
-in vec2 vfCoord;
+varying vec2 vfPosition;
+varying vec2 vfCoord;
 uniform sampler2D s0;
 
 void main()
