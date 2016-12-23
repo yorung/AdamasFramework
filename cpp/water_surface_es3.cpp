@@ -156,13 +156,8 @@ void WaterSurfaceES3::Init()
 		renderStateNormalMap.Create("water_es3_normal", numElements, elements);
 	}
 
-	glUseProgram(renderStateNormalMap.GetShaderId());
-	Vec2 heightMapSize((float)HEIGHT_MAP_W, (float)HEIGHT_MAP_H);
-	glUniform2fv(glGetUniformLocation(renderStateNormalMap.GetShaderId(), "heightMapSize"), 1, (GLfloat*)&heightMapSize);
-
 	aflog("WaterSurface::Init shaders are ready!\n");
 
-	glActiveTexture(GL_TEXTURE0);
 	texId.resize(dimof(texFiles));
 	for (int i = 0; i < (int)dimof(texFiles); i++)
 	{
@@ -208,14 +203,11 @@ void WaterSurfaceES3::UpdateHeightMap(AFCommandList& cmd, const UniformBuffer& h
 	auto& heightR = heightMap[heightCurrentWriteTarget];
 	heightCurrentWriteTarget ^= 1;
 	auto& heightW = heightMap[heightCurrentWriteTarget];
-	cmd.SetTexture(heightR.GetTexture(), 0);
 	heightW.BeginRenderToThis();
 
-	renderStateHeightMap.Apply();
-//	GLint loc = glGetUniformLocation(shaderHeightMap, "fakeUBO");
-//	aflog("shaderHeightMap loc = %d\n", loc);
-	afHandleGLError(glUniform4fv(0, sizeof(hmub) / (sizeof(GLfloat) * 4), (GLfloat*)&hmub));
-
+	cmd.SetRenderStates(renderStateHeightMap);
+	cmd.SetTexture(heightR.GetTexture(), 0);
+	cmd.SetBuffer(sizeof(hmub), &hmub, 0);
 	stockObjects.ApplyFullScreenVertexBuffer(cmd);
 	cmd.Draw(4);
 }
@@ -226,26 +218,23 @@ void WaterSurfaceES3::UpdateNormalMap(AFCommandList& cmd)
 	cmd.SetTexture(heightR.GetTexture(), 0);
 	normalMap.BeginRenderToThis();
 	cmd.SetRenderStates(renderStateNormalMap);
+	Vec4 heightMapSize((float)HEIGHT_MAP_W, (float)HEIGHT_MAP_H, 0, 0);
+	cmd.SetBuffer(sizeof(heightMapSize), &heightMapSize, 0);
 	stockObjects.ApplyFullScreenVertexBuffer(cmd);
 	cmd.Draw(4);
 }
 
 void WaterSurfaceES3::RenderWater(AFCommandList& cmd, const UniformBuffer& hmub)
 {
-	renderStateWaterLastPass.Apply();
+	cmd.SetRenderStates(renderStateWaterLastPass);
 
 	for (int i = 0; i < (int)dimof(texFiles); i++)
 	{
 		cmd.SetTexture(texId[i], i);
-		afSetSampler(texFiles[i].clamp ? AFST_LINEAR_CLAMP : AFST_LINEAR_WRAP, i);
 	}
 
 	auto& curHeightMap = heightMap[heightCurrentWriteTarget];
-
-//	GLint loc = glGetUniformLocation(shaderWaterLastPass, "fakeUBO");
-//	aflog("shaderWaterLastPass loc = %d\n", loc);
-	afHandleGLError(glUniform4fv(0, sizeof(hmub) / (sizeof(GLfloat) * 4), (GLfloat*)&hmub));
-
+	cmd.SetBuffer(sizeof(hmub), &hmub, 0);
 	renderTarget[0].BeginRenderToThis();
 	stockObjects.ApplyFullScreenVertexBuffer(cmd);
 	cmd.SetTexture(curHeightMap.GetTexture(), 6);

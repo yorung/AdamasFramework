@@ -2,7 +2,7 @@ precision highp float;
 varying vec2 vfPosition;
 
 uniform sampler2D waterHeightmap;
-uniform vec2 heightMapSize;
+uniform vec4 b0;	// height map size
 
 float GetWaterHeight(vec2 position)
 {
@@ -17,8 +17,8 @@ vec3 MakeWater3DPos(vec2 position)
 
 vec3 GetSurfaceNormal()
 {
-	vec3 heightU = MakeWater3DPos(vfPosition + vec2(0, 1.0 / (heightMapSize.y * 0.5)));
-	vec3 heightL = MakeWater3DPos(vfPosition - vec2(1.0 / (heightMapSize.x * 0.5), 0));
+	vec3 heightU = MakeWater3DPos(vfPosition + vec2(0, 1.0 / (b0.y * 0.5)));
+	vec3 heightL = MakeWater3DPos(vfPosition - vec2(1.0 / (b0.x * 0.5), 0));
 	vec3 height = MakeWater3DPos(vfPosition);
 	vec3 normalFromHeightMap = cross(heightU - height, heightL - height);
 

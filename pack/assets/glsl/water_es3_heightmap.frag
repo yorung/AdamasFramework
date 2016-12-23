@@ -4,13 +4,13 @@ precision highp float;
 in vec2 vfPosition;
 
 layout (location = 0) out vec4 fragColor;
-layout (location = 0) uniform vec4 fakeUBO[2];
+layout (location = 0) uniform vec4 b0[2];
 layout (binding = 0) uniform sampler2D lastHeightMap;
 
-#define mousePos fakeUBO[0].xy
-#define mouseDown fakeUBO[0].z
-#define elapsedTime fakeUBO[1].x
-#define heightMapSize fakeUBO[1].zw
+#define mousePos b0[0].xy
+#define mouseDown b0[0].z
+#define elapsedTime b0[1].x
+#define heightMapSize b0[1].zw
 
 const float heightLimit = 0.4f;
 
