@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#ifdef AF_GLES31
 
 class WaterSurfaceES3
 {
@@ -320,4 +319,3 @@ void WaterSurfaceES3::Draw()
 
 	letterBox.Draw(cmd, rt, srcTex);
 }
-#endif
