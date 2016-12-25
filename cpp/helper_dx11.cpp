@@ -350,9 +350,7 @@ void AFRenderTarget::InitForDefaultRenderTarget()
 {
 	Destroy();
 	renderTargetView = deviceMan11.GetDefaultRenderTarget();
-	renderTargetView->AddRef();
 	depthStencilView = deviceMan11.GetDefaultDepthStencil();
-	depthStencilView->AddRef();
 }
 
 void AFRenderTarget::Init(IVec2 size, DXGI_FORMAT colorFormat, DXGI_FORMAT depthStencilFormat)
@@ -372,24 +370,34 @@ void AFRenderTarget::Init(IVec2 size, DXGI_FORMAT colorFormat, DXGI_FORMAT depth
 //	hr = deviceMan11.GetDevice()->CreateUnorderedAccessView(tex, &uDesc, &unorderedAccessView);
 	SAFE_RELEASE(tex);
 
-	depthStencilView = deviceMan11.GetDefaultDepthStencil();
-	depthStencilView->AddRef();
+	switch (depthStencilFormat)
+	{
+	case DXGI_FORMAT_D24_UNORM_S8_UINT:
+		depthStencilView = deviceMan11.GetDefaultDepthStencil();
+		return;
+	case DXGI_FORMAT_UNKNOWN:
+		return;
+	}
+	assert(0);
 }
 
 void AFRenderTarget::Destroy()
 {
-	SAFE_RELEASE(renderTargetView);
-	SAFE_RELEASE(shaderResourceView);
-//	SAFE_RELEASE(unorderedAccessView);
-	SAFE_RELEASE(depthStencilView);
+	renderTargetView.Reset();
+	shaderResourceView.Reset();
+	depthStencilView.Reset();
 }
 
 void AFRenderTarget::BeginRenderToThis()
 {
-	deviceMan11.GetContext()->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
+	ID3D11RenderTargetView* rtv = renderTargetView.Get();
+	deviceMan11.GetContext()->OMSetRenderTargets(1, &rtv, depthStencilView.Get());
 	float clearColor[4] = { 0.0f, 0.2f, 0.0f, 0.0f };
-	deviceMan11.GetContext()->ClearRenderTargetView(renderTargetView, clearColor);
-	deviceMan11.GetContext()->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	deviceMan11.GetContext()->ClearRenderTargetView(rtv, clearColor);
+	if (depthStencilView)
+	{
+		deviceMan11.GetContext()->ClearDepthStencilView(depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	}
 }
 
 void AFRenderStates::Create(const char* shaderName, int numInputElements, const InputElement* inputElements, uint32_t flags_, int numSamplerTypes_, const SamplerType samplerTypes_[])
