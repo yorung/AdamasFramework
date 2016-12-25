@@ -250,8 +250,8 @@ void WaterSurfaceES2::Init()
 
 	renderStatesWater.Create("water_es2", arrayparam(elements), AFRS_OFFSCREEN_PIPELINE, arrayparam(samplers));
 
-	const char* shaderName = "vivid";
-//	const char* shaderName = "letterbox";
+//	const char* shaderName = "vivid";
+	const char* shaderName = "letterbox";
 #ifdef AF_DX12
 	renderStatesPostProcess.Create(shaderName, 0, nullptr, AFRS_NONE, arrayparam(samplers));
 #else

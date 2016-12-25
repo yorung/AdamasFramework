@@ -6,7 +6,7 @@
 
 Texture2D waterHeightmap : register(t0);
 SamplerState samplerState : register(s0);
-#define texture(tex,coord) tex.Sample(samplerState, coord)
+#define texture(tex,coord) tex.Sample(samplerState, vec2(coord.x, 1.0 - coord.y))
 
 cbuffer uniformBuffer : register(b0)
 {
