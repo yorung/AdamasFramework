@@ -392,7 +392,7 @@ void AFRenderTarget::BeginRenderToThis()
 {
 	ID3D11RenderTargetView* rtv = renderTargetView.Get();
 	deviceMan11.GetContext()->OMSetRenderTargets(1, &rtv, depthStencilView.Get());
-	float clearColor[4] = { 0.0f, 0.2f, 0.0f, 0.0f };
+	float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 	deviceMan11.GetContext()->ClearRenderTargetView(rtv, clearColor);
 	if (depthStencilView)
 	{
