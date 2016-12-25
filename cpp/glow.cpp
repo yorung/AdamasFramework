@@ -66,10 +66,8 @@ void Glow::MakeGlow(AFRenderTarget& target, SRVID srcTex)
 	}
 	cmd.SetTexture(srcTex, 6);
 	cmd.Draw(4);
+#ifdef AF_DX11
 	cmd.SetTexture(SRVID(), 6);
-	for (int i = 0; i < (int)dimof(glowMap); i++)
-	{
-//		cmd.SetTexture(SRVID(), i);
-	}
+#endif
 }
 #endif

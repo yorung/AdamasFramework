@@ -209,7 +209,12 @@ void WaterSurfaceES3::UpdateHeightMap(AFCommandList& cmd, const UniformBuffer& h
 	cmd.SetBuffer(sizeof(hmub), &hmub, 0);
 	stockObjects.ApplyFullScreenVertexBuffer(cmd);
 	cmd.Draw(4);
+
+#ifdef AF_DX11
 	cmd.SetTexture(SRVID(), 0);
+	ID3D11RenderTargetView* view = nullptr;
+	deviceMan11.GetContext()->OMSetRenderTargets(1, &view, nullptr);	// prevent DEVICE_PSSETSHADERRESOURCES_HAZARD in next pass
+#endif
 }
 
 void WaterSurfaceES3::UpdateNormalMap(AFCommandList& cmd)
@@ -222,7 +227,9 @@ void WaterSurfaceES3::UpdateNormalMap(AFCommandList& cmd)
 	cmd.SetBuffer(sizeof(heightMapSize), &heightMapSize, 0);
 	stockObjects.ApplyFullScreenVertexBuffer(cmd);
 	cmd.Draw(4);
+#ifdef AF_DX11
 	cmd.SetTexture(SRVID(), 0);
+#endif
 }
 
 void WaterSurfaceES3::RenderWater(AFCommandList& cmd, const UniformBuffer& hmub)
@@ -241,8 +248,10 @@ void WaterSurfaceES3::RenderWater(AFCommandList& cmd, const UniformBuffer& hmub)
 	cmd.SetTexture(curHeightMap.GetTexture(), 6);
 	cmd.SetTexture(normalMap.GetTexture(), 7);
 	cmd.Draw(4);
+#ifdef AF_DX11
 	cmd.SetTexture(SRVID(), 6);
 	cmd.SetTexture(SRVID(), 7);
+#endif
 }
 
 void WaterSurfaceES3::Draw()
