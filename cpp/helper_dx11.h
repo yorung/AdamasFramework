@@ -72,7 +72,7 @@ typedef D3D11_SUBRESOURCE_DATA AFTexSubresourceData;
 
 SRVID afCreateTexture2D(AFFormat format, const struct TexDesc& desc, int mipCount, const AFTexSubresourceData datas[]);
 SRVID afCreateDynamicTexture(AFFormat format, const IVec2& size);
-IVec2 afGetTextureSize(SRVID tex);
+IVec2 afGetTextureSize(ComPtr<ID3D11View> view);
 void afSetTextureName(SRVID tex, const char* name);
 
 class AFRenderTarget

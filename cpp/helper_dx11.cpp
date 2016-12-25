@@ -321,10 +321,10 @@ void afDepthStencilMode(uint32_t flags)
 	deviceMan11.GetContext()->OMSetDepthStencilState(ds.Get(), 1);
 }
 
-IVec2 afGetTextureSize(SRVID srv)
+IVec2 afGetTextureSize(ComPtr<ID3D11View> view)
 {
 	ComPtr<ID3D11Resource> res;
-	srv->GetResource(&res);
+	view->GetResource(&res);
 	assert(res);
 	ComPtr<ID3D11Texture2D> tx;
 	res.As(&tx);
