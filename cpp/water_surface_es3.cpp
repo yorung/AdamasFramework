@@ -95,6 +95,9 @@ static TexFiles texFiles[] = {
 };
 #endif
 
+static const SamplerType samplersLastPass[] = { AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP, AFST_LINEAR_WRAP, AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP, AFST_POINT_CLAMP, AFST_LINEAR_CLAMP};
+static const SamplerType samplersHeightMap[] = { AFST_LINEAR_CLAMP };
+static const SamplerType samplerNormalMap[] = { AFST_LINEAR_CLAMP };
 
 WaterSurfaceES3::WaterSurfaceES3()
 {
@@ -143,14 +146,13 @@ void WaterSurfaceES3::Init()
 	rt.BeginRenderToThis();
 
 	lastTime = GetTime();
-
-	renderStateWaterLastPass.Create("water_es3_lastpass");
-	renderStateHeightMap.Create("water_es3_heightmap");
+	renderStateWaterLastPass.Create("water_es3_lastpass", 0, nullptr, AFRS_NONE, arrayparam(samplersLastPass));
+	renderStateHeightMap.Create("water_es3_heightmap", 0, nullptr, AFRS_NONE, arrayparam(samplersHeightMap));
 
 	{
 		int numElements = 0;
 		const InputElement* elements = stockObjects.GetFullScreenInputElements(numElements);
-		renderStateNormalMap.Create("water_es3_normal", numElements, elements);
+		renderStateNormalMap.Create("water_es3_normal", numElements, elements, AFRS_NONE, arrayparam(samplerNormalMap));
 	}
 
 	aflog("WaterSurface::Init shaders are ready!\n");
