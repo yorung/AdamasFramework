@@ -207,6 +207,7 @@ void WaterSurfaceES3::UpdateHeightMap(AFCommandList& cmd, const UniformBuffer& h
 	cmd.SetBuffer(sizeof(hmub), &hmub, 0);
 	stockObjects.ApplyFullScreenVertexBuffer(cmd);
 	cmd.Draw(4);
+	cmd.SetTexture(SRVID(), 0);
 }
 
 void WaterSurfaceES3::UpdateNormalMap(AFCommandList& cmd)
@@ -219,6 +220,7 @@ void WaterSurfaceES3::UpdateNormalMap(AFCommandList& cmd)
 	cmd.SetBuffer(sizeof(heightMapSize), &heightMapSize, 0);
 	stockObjects.ApplyFullScreenVertexBuffer(cmd);
 	cmd.Draw(4);
+	cmd.SetTexture(SRVID(), 0);
 }
 
 void WaterSurfaceES3::RenderWater(AFCommandList& cmd, const UniformBuffer& hmub)
@@ -237,6 +239,8 @@ void WaterSurfaceES3::RenderWater(AFCommandList& cmd, const UniformBuffer& hmub)
 	cmd.SetTexture(curHeightMap.GetTexture(), 6);
 	cmd.SetTexture(normalMap.GetTexture(), 7);
 	cmd.Draw(4);
+	cmd.SetTexture(SRVID(), 6);
+	cmd.SetTexture(SRVID(), 7);
 }
 
 void WaterSurfaceES3::Draw()
