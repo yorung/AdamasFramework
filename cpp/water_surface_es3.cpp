@@ -67,8 +67,6 @@ const int HEIGHT_MAP_H = tileMax;
 
 const float loopTime = 20.0;
 
-#define V afHandleGLError
-
 extern AFRenderTarget glowMap[6];
 
 struct TexFiles
