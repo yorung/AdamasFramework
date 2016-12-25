@@ -282,22 +282,30 @@ void WaterSurfaceES3::Draw()
 	AFRenderTarget rt;
 	rt.InitForDefaultRenderTarget();
 
-	static int num = 8;
-	if (inputMan.GetInputCount('\t') == 1) {
-		num = (num + 1) % 9;
+	static int num = 0;
+	if (inputMan.GetInputCount('\t') == 1)
+	{
+		num = (num + 1) % 4;
 	}
 
 	SRVID srcTex;
 	switch (num) {
 	case 0:
-		srcTex = renderTarget[0].GetTexture();
+		srcTex = renderTarget[1].GetTexture();
 		break;
 	case 1:
+		srcTex = renderTarget[0].GetTexture();
+		break;
+	case 2:
 	{
 		auto& curHeightMap = heightMap[heightCurrentWriteTarget];
 		srcTex = curHeightMap.GetTexture();
 		break;
 	}
+	case 3:
+		srcTex = normalMap.GetTexture();
+		break;
+/*
 	case 2:
 		srcTex = glowMap[0].GetTexture();
 		break;
@@ -316,10 +324,10 @@ void WaterSurfaceES3::Draw()
 	case 7:
 		srcTex = glowMap[5].GetTexture();
 		break;
-	case 8:
-		srcTex = renderTarget[1].GetTexture();
-		break;
+*/
 	}
+
+	IVec2 size = afGetTextureSize(srcTex);
 
 	letterBox.Draw(cmd, rt, srcTex);
 }
