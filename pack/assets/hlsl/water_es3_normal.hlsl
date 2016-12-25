@@ -40,7 +40,7 @@ void VSMain(out float4 pos : SV_POSITION, out vec2 vfPosition : vfPosition, uint
 	vfPosition = pos.xy;
 }
 
-void PSMain(vec2 vfPosition : vfPosition, out float4 fragColor: SV_Target)
+void PSMain(float4 pos : SV_POSITION, vec2 vfPosition : vfPosition, out float4 fragColor: SV_Target)
 {
 	vec2 normXYEncoded = pow(GetSurfaceNormal(vfPosition).xy * 0.5 + 0.5, vec2(1.0 / 2.0, 1.0 / 2.0));
 	vec2 normXY256 = normXYEncoded * 256.0;

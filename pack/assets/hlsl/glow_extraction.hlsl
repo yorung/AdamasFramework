@@ -9,7 +9,7 @@ Texture2D texSrc : register(t0);
 SamplerState samplerState : register(s0);
 #define texture2D(tex,coord) tex.Sample(samplerState, coord)
 
-void VSMain(out vec4 pos : SV_POSITION, out vec2 vfPosition : vfPosition, out vec2 vfCoord : vfCoord, uint id : SV_VertexID)
+void VSMain(out vec2 vfPosition : vfPosition, out vec2 vfCoord : vfCoord, out vec4 pos : SV_POSITION, uint id : SV_VertexID)
 {
 	pos = float4(id & 2 ? 1 : -1, id & 1 ? -1 : 1, 1, 1);
 	vfPosition = pos.xy;

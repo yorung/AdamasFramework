@@ -132,7 +132,7 @@ vec3 GetBGColor(vec2 vfPosition, vec2 coord)
 	return bg;
 }
 
-void PSMain(vec2 vfPosition : vfPosition, out float4 fragColor: SV_Target)
+void PSMain(float4 pos : SV_POSITION, vec2 vfPosition : vfPosition, out float4 fragColor: SV_Target)
 {
 	fragColor.w = 1.0;
 
