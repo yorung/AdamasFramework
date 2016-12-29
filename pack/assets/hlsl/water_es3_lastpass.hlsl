@@ -1,42 +1,64 @@
-#version 310 es
+#define vec4 float4
+#define vec3 float3
+#define vec2 float2
+#define mod fmod
+#define fract frac
+#define mix lerp
 
-precision highp float;
-in vec2 vfPosition;
-layout (binding = 0) uniform sampler2D sampler0;
-layout (binding = 1) uniform sampler2D sampler1;
-layout (binding = 2) uniform sampler2D sampler2;
-layout (binding = 3) uniform sampler2D sampler3;
-layout (binding = 4) uniform sampler2D sampler4;
-layout (binding = 5) uniform sampler2D sampler5;
-layout (binding = 6) uniform sampler2D waterHeightmap;
-layout (binding = 7) uniform sampler2D waterNormalmap;
+Texture2D sampler0 : register(t0);
+Texture2D sampler1 : register(t1);
+Texture2D sampler2 : register(t2);
+Texture2D sampler3 : register(t3);
+Texture2D sampler4 : register(t4);
+Texture2D sampler5 : register(t5);
+Texture2D waterHeightmap : register(t6);
+Texture2D waterNormalmap : register(t7);
+SamplerState samplerState0 : register(s0);
+SamplerState samplerState1 : register(s1);
+SamplerState samplerState2 : register(s2);
+SamplerState samplerState3 : register(s3);
+SamplerState samplerState4 : register(s4);
+SamplerState samplerState5 : register(s5);
+SamplerState waterHeightmapSamplerState : register(s6);
+SamplerState waterNormalmapSamplerState : register(s7);
+#define textureFromFile(tex,samplerState,coord) tex.Sample(samplerState, coord)
+#define texture(tex,samplerState,coord) tex.Sample(samplerState, vec2(coord.x, 1.0 - coord.y))
 
-layout (location = 0) uniform vec4 b0[2];
+cbuffer uniformBuffer : register(b0)
+{
+	vec2 mousePos;
+	float mouseDown;
+	float padding;
+	float elapsedTime;
+	float wrappedTime;
+	vec2 heightMapSize;
+}
 
-#define wrappedTime b0[1].y
-#define heightMapSize b0[1].zw
+static const float loopTime = 20.0;
+static const float PI2 = 3.1415926 * 2.0;
 
-const float loopTime = 20.0;
-const float PI2 = 3.1415926 * 2.0;
+static const float airToWater = 1.0 / 1.33333;
 
-const float airToWater = 1.0 / 1.33333;
+static const vec3 invGamma3 = vec3(1.0 / 2.2, 1.0 / 2.2, 1.0 / 2.2);
+static const vec3 gamma3 = vec3(2.2, 2.2, 2.2);
 
-const vec3 invGamma3 = vec3(1.0 / 2.2, 1.0 / 2.2, 1.0 / 2.2);
-const vec3 gamma3 = vec3(2.2, 2.2, 2.2);
+static const vec3 camDir = vec3(0, 0, -1);
+static const float waterDepth = 0.8;
 
-const vec3 camDir = vec3(0, 0, -1);
-const float waterDepth = 0.8;
+static const vec3 lightPos = vec3(1.4, 1.4, 16.0);
 
-const vec3 lightPos = vec3(1.4, 1.4, 16.0);
-
-layout (location = 0) out vec4 fragColor;
+void VSMain(out float4 pos : SV_POSITION, out vec2 vfPosition : vfPosition, uint id : SV_VertexID)
+{
+	pos = float4(id & 2 ? 1 : -1, id & 1 ? -1 : 1, 1, 1);
+	vfPosition = pos.xy;
+}
 
 vec3 GetSurfaceNormal(vec2 position)
 {
 	vec2 coord = position * 0.5 + 0.5;
-	vec4 normEncoded = texture(waterNormalmap, coord);
+	vec4 normEncoded = texture(waterNormalmap, waterNormalmapSamplerState, coord);
 //	vec2 normXY = asin(normEncoded.xy + normEncoded.zw / 256.0) / (3.1415926 / 2.0) * 2.0 - 1.0;
-	vec2 normXY = pow(normEncoded.xy + normEncoded.zw / 256.0, vec2(2.0)) * 2.0 - 1.0;
+	vec2 normXY = pow(normEncoded.xy + normEncoded.zw / 256.0, 2.0) * 2.0 - 1.0;
 //	vec2 normXY = (normEncoded.xy + normEncoded.zw / 256.0) * 2.0 - 1.0;
 //	vec2 normXY = (normEncoded.xy) * 2.0 - 1.0;
 	return vec3(normXY, sqrt(1.0 - dot(normXY, normXY)));
@@ -98,7 +120,7 @@ float GetCaustics1(vec2 position)
 	return dot(refractedRay, refractedRayOrg);
 }
 
-vec2 GetModulatedBGCoordOffset()
+vec2 GetModulatedBGCoordOffset(vec2 vfPosition)
 {
 	float radTimeUnit = wrappedTime / loopTime * PI2;
 	float dist1 = length(vfPosition + vec2(0.5, 0.5));
@@ -106,19 +128,20 @@ vec2 GetModulatedBGCoordOffset()
 	return vec2(0.0, sin(dist1 * 8.7 + radTimeUnit * 25.0) / 800.0 + sin(dist2 * 10.0 + radTimeUnit * 48.0) / 800.0);
 }
 
-vec3 GetBGColor(vec2 coord)
+vec3 GetBGColor(vec2 vfPosition, vec2 coord)
 {
-	coord += GetModulatedBGCoordOffset();
-	vec3 c1 = texture(sampler0, coord).xyz;
-	vec3 c2 = texture(sampler1, coord).xyz;
-	vec3 c3 = texture(sampler2, coord).xyz;
-	float delaymap = texture(sampler4, coord).x;
-	vec4 timeline = texture(sampler3, vec2((wrappedTime - delaymap) / loopTime, 0));
+	coord += GetModulatedBGCoordOffset(vfPosition);
+	vec3 c1 = textureFromFile(sampler0, samplerState0, coord).xyz;
+	vec3 c2 = textureFromFile(sampler1, samplerState1, coord).xyz;
+	vec3 c3 = textureFromFile(sampler2, samplerState2, coord).xyz;
+	float delaymap = textureFromFile(sampler4, samplerState4, coord).x;
+	vec4 timeline = textureFromFile(sampler3, samplerState3, vec2((wrappedTime - delaymap) / loopTime, 0));
 	vec3 bg = c1 * timeline.x + c2 * timeline.y + c3 * timeline.z;
 	return bg;
 }
 
-void main() {
+void PSMain(float4 pos : SV_POSITION, vec2 vfPosition : vfPosition, out float4 fragColor: SV_Target)
+{
 	fragColor.w = 1.0;
 
 	vec3 normal = GetSurfaceNormal(vfPosition);
@@ -129,9 +152,9 @@ void main() {
 
 	vec2 fakeWaterEdgeOffset = normal.xy * 0.5;
 
-	vec3 bg = GetBGColor(texcoord + fakeWaterEdgeOffset);
+	vec3 bg = GetBGColor(vfPosition, texcoord + fakeWaterEdgeOffset);
 
-	vec3 skyColor = texture(sampler5, normal.xy * vec2(0.5, -0.5) + vec2(0.5, 0.5)).xyz;
+	vec3 skyColor = textureFromFile(sampler5, samplerState5, normal.xy * vec2(0.5, -0.5) + vec2(0.5, 0.5)).xyz;
 
 	// gamma -> linear
 	bg = pow(abs(bg), invGamma3) * 0.5;

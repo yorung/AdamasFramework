@@ -44,20 +44,21 @@ void Glow::MakeGlow(AFRenderTarget& target, SRVID srcTex)
 	LazyInit();
 	AFCommandList& cmd = afGetCommandList();
 	stockObjects.ApplyFullScreenVertexBuffer(cmd);
-	renderStateGlowExtraction.Apply();
+	cmd.SetRenderStates(renderStateGlowExtraction);
 	glowMap[0].BeginRenderToThis();
 	cmd.SetTexture(srcTex, 0);
 	cmd.Draw(4);
 
-	renderStateGlowCopy.Apply();
+	cmd.SetRenderStates(renderStateGlowCopy);
 	for (int i = 1; i < (int)dimof(glowMap); i++)
 	{
 		glowMap[i].BeginRenderToThis();
 		cmd.SetTexture(glowMap[i - 1].GetTexture(), 0);
 		cmd.Draw(4);
+		cmd.SetTexture(SRVID(), 0);
 	}
 
-	renderStateGlowLastPass.Apply();
+	cmd.SetRenderStates(renderStateGlowLastPass);
 	target.BeginRenderToThis();
 	for (int i = 0; i < (int)dimof(glowMap); i++)
 	{
@@ -65,5 +66,8 @@ void Glow::MakeGlow(AFRenderTarget& target, SRVID srcTex)
 	}
 	cmd.SetTexture(srcTex, 6);
 	cmd.Draw(4);
+#ifdef AF_DX11
+	cmd.SetTexture(SRVID(), 6);
+#endif
 }
 #endif

@@ -72,24 +72,22 @@ typedef D3D11_SUBRESOURCE_DATA AFTexSubresourceData;
 
 SRVID afCreateTexture2D(AFFormat format, const struct TexDesc& desc, int mipCount, const AFTexSubresourceData datas[]);
 SRVID afCreateDynamicTexture(AFFormat format, const IVec2& size);
-IVec2 afGetTextureSize(SRVID tex);
+IVec2 afGetTextureSize(ComPtr<ID3D11View> view);
 void afSetTextureName(SRVID tex, const char* name);
 
 class AFRenderTarget
 {
 	IVec2 texSize;
-	ID3D11RenderTargetView* renderTargetView = nullptr;
-	ID3D11ShaderResourceView* shaderResourceView = nullptr;
-//	ID3D11UnorderedAccessView* unorderedAccessView = nullptr;
-	ID3D11DepthStencilView* depthStencilView = nullptr;
+	ComPtr<ID3D11RenderTargetView> renderTargetView;
+	ComPtr<ID3D11ShaderResourceView> shaderResourceView;
+	ComPtr<ID3D11DepthStencilView> depthStencilView;
 public:
 	~AFRenderTarget() { Destroy(); }
 	void InitForDefaultRenderTarget();
 	void Init(IVec2 size, AFFormat colorFormat, AFFormat depthStencilFormat = AFF_INVALID);
 	void Destroy();
 	void BeginRenderToThis();
-	ID3D11ShaderResourceView* GetTexture() { return shaderResourceView; }
-//	ID3D11UnorderedAccessView* GetUnorderedAccessView() { return unorderedAccessView; }
+	ComPtr<ID3D11ShaderResourceView> GetTexture() { return shaderResourceView; }
 };
 
 void afCullMode(uint32_t flags);

@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#ifdef AF_GLES31
 
 class WaterSurfaceES3
 {
@@ -68,8 +67,6 @@ const int HEIGHT_MAP_H = tileMax;
 
 const float loopTime = 20.0;
 
-#define V afHandleGLError
-
 extern AFRenderTarget glowMap[6];
 
 struct TexFiles
@@ -98,6 +95,9 @@ static TexFiles texFiles[] = {
 };
 #endif
 
+static const SamplerType samplersLastPass[] = { AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP, AFST_LINEAR_WRAP, AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP, AFST_POINT_CLAMP, AFST_LINEAR_CLAMP};
+static const SamplerType samplersHeightMap[] = { AFST_LINEAR_CLAMP };
+static const SamplerType samplerNormalMap[] = { AFST_LINEAR_CLAMP };
 
 WaterSurfaceES3::WaterSurfaceES3()
 {
@@ -146,14 +146,13 @@ void WaterSurfaceES3::Init()
 	rt.BeginRenderToThis();
 
 	lastTime = GetTime();
-
-	renderStateWaterLastPass.Create("water_es3_lastpass");
-	renderStateHeightMap.Create("water_es3_heightmap");
+	renderStateWaterLastPass.Create("water_es3_lastpass", 0, nullptr, AFRS_NONE, arrayparam(samplersLastPass));
+	renderStateHeightMap.Create("water_es3_heightmap", 0, nullptr, AFRS_NONE, arrayparam(samplersHeightMap));
 
 	{
 		int numElements = 0;
 		const InputElement* elements = stockObjects.GetFullScreenInputElements(numElements);
-		renderStateNormalMap.Create("water_es3_normal", numElements, elements);
+		renderStateNormalMap.Create("water_es3_normal", numElements, elements, AFRS_NONE, arrayparam(samplerNormalMap));
 	}
 
 	aflog("WaterSurface::Init shaders are ready!\n");
@@ -210,6 +209,12 @@ void WaterSurfaceES3::UpdateHeightMap(AFCommandList& cmd, const UniformBuffer& h
 	cmd.SetBuffer(sizeof(hmub), &hmub, 0);
 	stockObjects.ApplyFullScreenVertexBuffer(cmd);
 	cmd.Draw(4);
+
+#ifdef AF_DX11
+	cmd.SetTexture(SRVID(), 0);
+	ID3D11RenderTargetView* view = nullptr;
+	deviceMan11.GetContext()->OMSetRenderTargets(1, &view, nullptr);	// prevent DEVICE_PSSETSHADERRESOURCES_HAZARD in next pass
+#endif
 }
 
 void WaterSurfaceES3::UpdateNormalMap(AFCommandList& cmd)
@@ -222,6 +227,9 @@ void WaterSurfaceES3::UpdateNormalMap(AFCommandList& cmd)
 	cmd.SetBuffer(sizeof(heightMapSize), &heightMapSize, 0);
 	stockObjects.ApplyFullScreenVertexBuffer(cmd);
 	cmd.Draw(4);
+#ifdef AF_DX11
+	cmd.SetTexture(SRVID(), 0);
+#endif
 }
 
 void WaterSurfaceES3::RenderWater(AFCommandList& cmd, const UniformBuffer& hmub)
@@ -240,6 +248,10 @@ void WaterSurfaceES3::RenderWater(AFCommandList& cmd, const UniformBuffer& hmub)
 	cmd.SetTexture(curHeightMap.GetTexture(), 6);
 	cmd.SetTexture(normalMap.GetTexture(), 7);
 	cmd.Draw(4);
+#ifdef AF_DX11
+	cmd.SetTexture(SRVID(), 6);
+	cmd.SetTexture(SRVID(), 7);
+#endif
 }
 
 void WaterSurfaceES3::Draw()
@@ -320,4 +332,3 @@ void WaterSurfaceES3::Draw()
 
 	letterBox.Draw(cmd, rt, srcTex);
 }
-#endif
