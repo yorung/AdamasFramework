@@ -157,8 +157,8 @@ void PSMain(float4 pos : SV_POSITION, vec2 vfPosition : vfPosition, out float4 f
 	vec3 skyColor = textureFromFile(sampler5, samplerState5, normal.xy * vec2(0.5, -0.5) + vec2(0.5, 0.5)).xyz;
 
 	// gamma -> linear
-	bg = pow(bg, invGamma3) * 0.5;
-	skyColor = pow(skyColor, invGamma3) * 0.5;
+	bg = pow(abs(bg), invGamma3) * 0.5;
+	skyColor = pow(abs(skyColor), invGamma3) * 0.5;
 
 	// sun color
 	const vec3 sunColor = vec3(1.0, 0.8, 0.6);
@@ -189,8 +189,8 @@ void PSMain(float4 pos : SV_POSITION, vec2 vfPosition : vfPosition, out float4 f
 // 	fragColor = bg;
 
 	// linear -> gamma
-	fragColor.rgb = pow(outCol * 1.5, gamma3);
-//	fragColor.rgb = pow(outCol * 0.2, gamma3);
+	fragColor.rgb = pow(abs(outCol) * 1.5, gamma3);
+//	fragColor.rgb = pow(abs(outCol) * 0.2, gamma3);
 
 //	fragColor.rgb = IntersectRayWithBottom(vfPosition, GetSurfaceNormal(vfPosition));
 }
