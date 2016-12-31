@@ -88,13 +88,14 @@ class AFRenderTarget
 	IVec2 texSize;
 	ComPtr<ID3D12Resource> renderTarget;
 	bool asDefault = false;
+	D3D12_RESOURCE_STATES currentState;
 public:
 	~AFRenderTarget() { Destroy(); }
 	void InitForDefaultRenderTarget();
 	void Init(IVec2 size, AFFormat colorFormat, AFFormat depthStencilFormat = AFF_INVALID);
 	void Destroy();
 	void BeginRenderToThis();
-	ComPtr<ID3D12Resource> GetTexture() { return renderTarget; }
+	ComPtr<ID3D12Resource> GetTexture();
 };
 
 void afBindBuffer(int size, const void* buf, int rootParameterIndex);

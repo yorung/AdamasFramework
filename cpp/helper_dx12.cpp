@@ -393,6 +393,7 @@ void AFRenderTarget::Init(IVec2 size, AFFormat colorFormat, AFFormat depthStenci
 {
 	texSize = size;
 	renderTarget = afCreateDynamicTexture(colorFormat, size, nullptr, true);
+	currentState = D3D12_RESOURCE_STATE_RENDER_TARGET;
 	deviceMan.AddIntermediateCommandlistDependentResource(renderTarget);
 	afSetTextureName(renderTarget, __FUNCTION__);
 	ID3D12GraphicsCommandList* commandList = deviceMan.GetCommandList();
@@ -411,9 +412,16 @@ void AFRenderTarget::BeginRenderToThis()
 		return;
 	}
 
+	ID3D12GraphicsCommandList* commandList = deviceMan.GetCommandList();
+	if (currentState != D3D12_RESOURCE_STATE_RENDER_TARGET)
+	{
+		D3D12_RESOURCE_BARRIER transition = { D3D12_RESOURCE_BARRIER_TYPE_TRANSITION, D3D12_RESOURCE_BARRIER_FLAG_NONE,{ renderTarget.Get(), 0, currentState, D3D12_RESOURCE_STATE_RENDER_TARGET } };
+		commandList->ResourceBarrier(1, &transition);
+		currentState = D3D12_RESOURCE_STATE_RENDER_TARGET;
+	}
+
 	D3D12_VIEWPORT vp = { 0.f, 0.f, (float)texSize.x, (float)texSize.y, 0.f, 1.f };
 	D3D12_RECT rc = { 0, 0, (LONG)texSize.x, (LONG)texSize.y };
-	ID3D12GraphicsCommandList* commandList = deviceMan.GetCommandList();
 	commandList->RSSetViewports(1, &vp);
 	commandList->RSSetScissorRects(1, &rc);
 
@@ -424,6 +432,19 @@ void AFRenderTarget::BeginRenderToThis()
 	commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, &dsvHandle);
 	commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
 	commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+}
+
+ComPtr<ID3D12Resource> AFRenderTarget::GetTexture()
+{
+	if (currentState != D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE)
+	{
+		D3D12_RESOURCE_BARRIER transition = { D3D12_RESOURCE_BARRIER_TYPE_TRANSITION, D3D12_RESOURCE_BARRIER_FLAG_NONE,{ renderTarget.Get(), 0, currentState, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE } };
+		ID3D12GraphicsCommandList* commandList = deviceMan.GetCommandList();
+		commandList->ResourceBarrier(1, &transition);
+		currentState = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+	}
+
+	return renderTarget;
 }
 
 void afBindBuffer(int size, const void* buf, int rootParameterIndex)
