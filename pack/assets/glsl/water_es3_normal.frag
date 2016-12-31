@@ -1,13 +1,13 @@
 precision highp float;
 varying vec2 vfPosition;
 
-uniform sampler2D waterHeightmap;
+uniform sampler2D s1;
 uniform vec4 b0;	// height map size
 
 float GetWaterHeight(vec2 position)
 {
 	vec2 coord = position * 0.5 + 0.5;
-	return texture2D(waterHeightmap, coord).x;
+	return texture2D(s1, coord).x;
 }
 
 vec3 MakeWater3DPos(vec2 position)

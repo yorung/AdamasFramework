@@ -4,7 +4,7 @@
 
 static const D3D12_HEAP_PROPERTIES defaultHeapProperties = { D3D12_HEAP_TYPE_DEFAULT, D3D12_CPU_PAGE_PROPERTY_UNKNOWN, D3D12_MEMORY_POOL_UNKNOWN, 1, 1 };
 static const D3D12_HEAP_PROPERTIES uploadHeapProperties = { D3D12_HEAP_TYPE_UPLOAD, D3D12_CPU_PAGE_PROPERTY_UNKNOWN, D3D12_MEMORY_POOL_UNKNOWN, 1, 1 };
-static const float clearColor[] = { 0.0f, 0.2f, 0.3f, 1.0f };
+static const float clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 
 void afSetDescriptorHeap(ComPtr<ID3D12DescriptorHeap> heap)
 {
@@ -294,11 +294,16 @@ ComPtr<ID3D12PipelineState> afCreatePSO(const char *shaderName, const InputEleme
 	psoDesc.SampleMask = UINT_MAX;
 	psoDesc.PrimitiveTopologyType = ToD3D12PrimitiveTopologyType(RenderFlagsToPrimitiveTopology(flags));
 	psoDesc.NumRenderTargets = 1;
-	psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+	psoDesc.RTVFormats[0] = (flags & AFRS_RENDER_TARGET_HALF_FLOAT) ? DXGI_FORMAT_R16G16B16A16_FLOAT : DXGI_FORMAT_R8G8B8A8_UNORM;
 	psoDesc.DSVFormat = AFF_DEPTH_STENCIL;
 	psoDesc.SampleDesc.Count = 1;
 	ComPtr<ID3D12PipelineState> pso;
+	assert(psoDesc.pRootSignature);
 	HRESULT hr = deviceMan.GetDevice()->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&pso));
+	if (hr != S_OK)
+	{
+		aflog("Failed to create PSO with %s", shaderName);
+	}
 	assert(hr == S_OK);
 	return pso;
 }
@@ -372,6 +377,7 @@ IVec2 afGetTextureSize(SRVID tex)
 
 void afBindTexture(SRVID srv, int rootParameterIndex)
 {
+	assert(srv);
 	int descriptorHeapIndex = deviceMan.AssignDescriptorHeap(1);
 	deviceMan.AssignSRV(descriptorHeapIndex, srv);
 	deviceMan.SetAssignedDescriptorHeap(descriptorHeapIndex, rootParameterIndex);
@@ -393,6 +399,7 @@ void AFRenderTarget::Init(IVec2 size, AFFormat colorFormat, AFFormat depthStenci
 {
 	texSize = size;
 	renderTarget = afCreateDynamicTexture(colorFormat, size, nullptr, true);
+	currentState = D3D12_RESOURCE_STATE_RENDER_TARGET;
 	deviceMan.AddIntermediateCommandlistDependentResource(renderTarget);
 	afSetTextureName(renderTarget, __FUNCTION__);
 	ID3D12GraphicsCommandList* commandList = deviceMan.GetCommandList();
@@ -411,19 +418,40 @@ void AFRenderTarget::BeginRenderToThis()
 		return;
 	}
 
+	ID3D12GraphicsCommandList* commandList = deviceMan.GetCommandList();
+	if (currentState != D3D12_RESOURCE_STATE_RENDER_TARGET)
+	{
+		D3D12_RESOURCE_BARRIER transition = { D3D12_RESOURCE_BARRIER_TYPE_TRANSITION, D3D12_RESOURCE_BARRIER_FLAG_NONE,{ renderTarget.Get(), 0, currentState, D3D12_RESOURCE_STATE_RENDER_TARGET } };
+		commandList->ResourceBarrier(1, &transition);
+		currentState = D3D12_RESOURCE_STATE_RENDER_TARGET;
+	}
+
 	D3D12_VIEWPORT vp = { 0.f, 0.f, (float)texSize.x, (float)texSize.y, 0.f, 1.f };
 	D3D12_RECT rc = { 0, 0, (LONG)texSize.x, (LONG)texSize.y };
-	ID3D12GraphicsCommandList* commandList = deviceMan.GetCommandList();
 	commandList->RSSetViewports(1, &vp);
 	commandList->RSSetScissorRects(1, &rc);
 
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = deviceMan.GetDepthStencilView();
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = deviceMan.GetRenderTargetView();
+
 	deviceMan.GetDevice()->CreateRenderTargetView(renderTarget.Get(), nullptr, rtvHandle);
 
 	commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, &dsvHandle);
 	commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
 	commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+}
+
+ComPtr<ID3D12Resource> AFRenderTarget::GetTexture()
+{
+	if (currentState != D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE)
+	{
+		D3D12_RESOURCE_BARRIER transition = { D3D12_RESOURCE_BARRIER_TYPE_TRANSITION, D3D12_RESOURCE_BARRIER_FLAG_NONE,{ renderTarget.Get(), 0, currentState, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE } };
+		ID3D12GraphicsCommandList* commandList = deviceMan.GetCommandList();
+		commandList->ResourceBarrier(1, &transition);
+		currentState = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+	}
+
+	return renderTarget;
 }
 
 void afBindBuffer(int size, const void* buf, int rootParameterIndex)

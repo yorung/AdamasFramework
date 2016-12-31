@@ -4,8 +4,8 @@
 #define mod fmod
 #define fract frac
 
-Texture2D waterHeightmap : register(t0);
-SamplerState samplerState : register(s0);
+Texture2D waterHeightmap : register(t1);
+SamplerState samplerState : register(s1);
 #define texture(tex,coord) tex.Sample(samplerState, vec2(coord.x, 1.0 - coord.y))
 
 cbuffer uniformBuffer : register(b0)
@@ -34,12 +34,18 @@ vec3 GetSurfaceNormal(vec2 vfPosition)
 	return normalize(normalFromHeightMap);
 }
 
+#define RSDEF \
+	"RootFlags(ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT),"\
+	"CBV(b0), DescriptorTable(SRV(t1), visibility=SHADER_VISIBILITY_PIXEL), StaticSampler(s1)"
+
+[RootSignature(RSDEF)]
 void VSMain(out float4 pos : SV_POSITION, out vec2 vfPosition : vfPosition, uint id : SV_VertexID)
 {
 	pos = float4(id & 2 ? 1 : -1, id & 1 ? -1 : 1, 1, 1);
 	vfPosition = pos.xy;
 }
 
+[RootSignature(RSDEF)]
 void PSMain(float4 pos : SV_POSITION, vec2 vfPosition : vfPosition, out float4 fragColor: SV_Target)
 {
 	vec2 normXYEncoded = pow(GetSurfaceNormal(vfPosition).xy * 0.5 + 0.5, vec2(1.0 / 2.0, 1.0 / 2.0));

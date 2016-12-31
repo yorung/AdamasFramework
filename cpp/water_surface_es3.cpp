@@ -147,7 +147,7 @@ void WaterSurfaceES3::Init()
 
 	lastTime = GetTime();
 	renderStateWaterLastPass.Create("water_es3_lastpass", 0, nullptr, AFRS_NONE, arrayparam(samplersLastPass));
-	renderStateHeightMap.Create("water_es3_heightmap", 0, nullptr, AFRS_NONE, arrayparam(samplersHeightMap));
+	renderStateHeightMap.Create("water_es3_heightmap", 0, nullptr, AFRS_RENDER_TARGET_HALF_FLOAT, arrayparam(samplersHeightMap));
 
 	{
 		int numElements = 0;
@@ -199,14 +199,14 @@ void WaterSurfaceES3::Update()
 
 void WaterSurfaceES3::UpdateHeightMap(AFCommandList& cmd, const UniformBuffer& hmub)
 {
+	cmd.SetRenderStates(renderStateHeightMap);
 	auto& heightR = heightMap[heightCurrentWriteTarget];
 	heightCurrentWriteTarget ^= 1;
 	auto& heightW = heightMap[heightCurrentWriteTarget];
 	heightW.BeginRenderToThis();
 
-	cmd.SetRenderStates(renderStateHeightMap);
 	cmd.SetTexture(heightR.GetTexture(), 0);
-	cmd.SetBuffer(sizeof(hmub), &hmub, 0);
+	cmd.SetBuffer(sizeof(hmub), &hmub, 1);
 	stockObjects.ApplyFullScreenVertexBuffer(cmd);
 	cmd.Draw(4);
 
@@ -219,10 +219,10 @@ void WaterSurfaceES3::UpdateHeightMap(AFCommandList& cmd, const UniformBuffer& h
 
 void WaterSurfaceES3::UpdateNormalMap(AFCommandList& cmd)
 {
-	auto& heightR = heightMap[heightCurrentWriteTarget];
-	cmd.SetTexture(heightR.GetTexture(), 0);
-	normalMap.BeginRenderToThis();
 	cmd.SetRenderStates(renderStateNormalMap);
+	auto& heightR = heightMap[heightCurrentWriteTarget];
+	cmd.SetTexture(heightR.GetTexture(), 1);
+	normalMap.BeginRenderToThis();
 	Vec4 heightMapSize((float)HEIGHT_MAP_W, (float)HEIGHT_MAP_H, 0, 0);
 	cmd.SetBuffer(sizeof(heightMapSize), &heightMapSize, 0);
 	stockObjects.ApplyFullScreenVertexBuffer(cmd);
@@ -242,7 +242,7 @@ void WaterSurfaceES3::RenderWater(AFCommandList& cmd, const UniformBuffer& hmub)
 	}
 
 	auto& curHeightMap = heightMap[heightCurrentWriteTarget];
-	cmd.SetBuffer(sizeof(hmub), &hmub, 0);
+	cmd.SetBuffer(sizeof(hmub), &hmub, 8);
 	renderTarget[0].BeginRenderToThis();
 	stockObjects.ApplyFullScreenVertexBuffer(cmd);
 	cmd.SetTexture(curHeightMap.GetTexture(), 6);

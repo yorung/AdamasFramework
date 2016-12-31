@@ -3,7 +3,7 @@
 #define vec2 float2
 #define mod fmod
 
-cbuffer uniformBuffer : register(b0)
+cbuffer uniformBuffer : register(b1)
 {
 	vec2 mousePos;
 	float mouseDown;
@@ -19,12 +19,16 @@ SamplerState samplerState : register(s0);
 
 static const float heightLimit = 0.4f;
 
+#define RSDEF "DescriptorTable(SRV(t0), visibility=SHADER_VISIBILITY_PIXEL), CBV(b1), StaticSampler(s0)"
+
+[RootSignature(RSDEF)]
 void VSMain(out float4 pos : SV_POSITION, out vec2 vfPosition : vfPosition, uint id : SV_VertexID)
 {
 	pos = float4(id & 2 ? 1 : -1, id & 1 ? -1 : 1, 1, 1);
 	vfPosition = pos.xy;
 }
 
+[RootSignature(RSDEF)]
 void PSMain(float4 pos : SV_POSITION, vec2 vfPosition : vfPosition, out float4 fragColor: SV_Target)
 {
 	vec2 texcoord = vfPosition * 0.5 + 0.5;
