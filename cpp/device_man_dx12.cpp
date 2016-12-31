@@ -148,6 +148,7 @@ int DeviceManDX12::AssignDescriptorHeap(int numRequired)
 
 void DeviceManDX12::AssignSRV(int descriptorHeapIndex, ComPtr<ID3D12Resource> resToSrv)
 {
+	assert(resToSrv);
 	FrameResources& res = frameResources[frameIndex];
 	D3D12_CPU_DESCRIPTOR_HANDLE ptr = res.srvHeap->GetCPUDescriptorHandleForHeapStart();
 	ptr.ptr += device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV) * descriptorHeapIndex;

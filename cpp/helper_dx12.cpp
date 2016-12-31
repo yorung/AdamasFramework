@@ -4,7 +4,7 @@
 
 static const D3D12_HEAP_PROPERTIES defaultHeapProperties = { D3D12_HEAP_TYPE_DEFAULT, D3D12_CPU_PAGE_PROPERTY_UNKNOWN, D3D12_MEMORY_POOL_UNKNOWN, 1, 1 };
 static const D3D12_HEAP_PROPERTIES uploadHeapProperties = { D3D12_HEAP_TYPE_UPLOAD, D3D12_CPU_PAGE_PROPERTY_UNKNOWN, D3D12_MEMORY_POOL_UNKNOWN, 1, 1 };
-static const float clearColor[] = { 0.0f, 0.2f, 0.3f, 1.0f };
+static const float clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 
 void afSetDescriptorHeap(ComPtr<ID3D12DescriptorHeap> heap)
 {
@@ -294,11 +294,16 @@ ComPtr<ID3D12PipelineState> afCreatePSO(const char *shaderName, const InputEleme
 	psoDesc.SampleMask = UINT_MAX;
 	psoDesc.PrimitiveTopologyType = ToD3D12PrimitiveTopologyType(RenderFlagsToPrimitiveTopology(flags));
 	psoDesc.NumRenderTargets = 1;
-	psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+	psoDesc.RTVFormats[0] = (flags & AFRS_RENDER_TARGET_HALF_FLOAT) ? DXGI_FORMAT_R16G16B16A16_FLOAT : DXGI_FORMAT_R8G8B8A8_UNORM;
 	psoDesc.DSVFormat = AFF_DEPTH_STENCIL;
 	psoDesc.SampleDesc.Count = 1;
 	ComPtr<ID3D12PipelineState> pso;
+	assert(psoDesc.pRootSignature);
 	HRESULT hr = deviceMan.GetDevice()->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&pso));
+	if (hr != S_OK)
+	{
+		aflog("Failed to create PSO with %s", shaderName);
+	}
 	assert(hr == S_OK);
 	return pso;
 }
@@ -372,6 +377,7 @@ IVec2 afGetTextureSize(SRVID tex)
 
 void afBindTexture(SRVID srv, int rootParameterIndex)
 {
+	assert(srv);
 	int descriptorHeapIndex = deviceMan.AssignDescriptorHeap(1);
 	deviceMan.AssignSRV(descriptorHeapIndex, srv);
 	deviceMan.SetAssignedDescriptorHeap(descriptorHeapIndex, rootParameterIndex);
@@ -427,6 +433,7 @@ void AFRenderTarget::BeginRenderToThis()
 
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = deviceMan.GetDepthStencilView();
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = deviceMan.GetRenderTargetView();
+
 	deviceMan.GetDevice()->CreateRenderTargetView(renderTarget.Get(), nullptr, rtvHandle);
 
 	commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, &dsvHandle);

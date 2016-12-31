@@ -24,7 +24,7 @@ SamplerState waterNormalmapSamplerState : register(s7);
 #define textureFromFile(tex,samplerState,coord) tex.Sample(samplerState, coord)
 #define texture(tex,samplerState,coord) tex.Sample(samplerState, vec2(coord.x, 1.0 - coord.y))
 
-cbuffer uniformBuffer : register(b0)
+cbuffer uniformBuffer : register(b8)
 {
 	vec2 mousePos;
 	float mouseDown;
@@ -47,6 +47,20 @@ static const float waterDepth = 0.8;
 
 static const vec3 lightPos = vec3(1.4, 1.4, 16.0);
 
+#define RSDEF\
+	"RootFlags(ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT),"\
+	"DescriptorTable(SRV(t0), visibility=SHADER_VISIBILITY_PIXEL),"\
+	"DescriptorTable(SRV(t1), visibility=SHADER_VISIBILITY_PIXEL),"\
+	"DescriptorTable(SRV(t2), visibility=SHADER_VISIBILITY_PIXEL),"\
+	"DescriptorTable(SRV(t3), visibility=SHADER_VISIBILITY_PIXEL),"\
+	"DescriptorTable(SRV(t4), visibility=SHADER_VISIBILITY_PIXEL),"\
+	"DescriptorTable(SRV(t5), visibility=SHADER_VISIBILITY_PIXEL),"\
+	"DescriptorTable(SRV(t6), visibility=SHADER_VISIBILITY_PIXEL),"\
+	"DescriptorTable(SRV(t7), visibility=SHADER_VISIBILITY_PIXEL),"\
+	"CBV(b8),"\
+	"StaticSampler(s0), StaticSampler(s1), StaticSampler(s2), StaticSampler(s3), StaticSampler(s4), StaticSampler(s5), StaticSampler(s6), StaticSampler(s7)"
+
+[RootSignature(RSDEF)]
 void VSMain(out float4 pos : SV_POSITION, out vec2 vfPosition : vfPosition, uint id : SV_VertexID)
 {
 	pos = float4(id & 2 ? 1 : -1, id & 1 ? -1 : 1, 1, 1);
@@ -140,6 +154,7 @@ vec3 GetBGColor(vec2 vfPosition, vec2 coord)
 	return bg;
 }
 
+[RootSignature(RSDEF)]
 void PSMain(float4 pos : SV_POSITION, vec2 vfPosition : vfPosition, out float4 fragColor: SV_Target)
 {
 	fragColor.w = 1.0;
