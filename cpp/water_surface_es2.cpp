@@ -36,7 +36,7 @@ class WaterSurfaceES2
 	double elapsedTime = 0;
 	double lastTime;
 	double nextTime;
-	VBOID vbo, vboFullScr;
+	VBOID vbo;
 	IBOID ibo;
 	int nIndi;
 	std::vector<SRVID> texIds;
@@ -187,7 +187,6 @@ void WaterSurfaceES2::Destroy()
 {
 	afSafeDeleteBuffer(vbo);
 	afSafeDeleteBuffer(ibo);
-	afSafeDeleteBuffer(vboFullScr);
 	for (auto& it : texIds) {
 		afSafeDeleteTexture(it);
 	}
@@ -199,11 +198,6 @@ static const InputElement elements[] =
 {
 	AF_INPUT_ELEMENT(0, "vPosition", AFF_R32G32B32_FLOAT, 0),
 	AF_INPUT_ELEMENT(1, "vNormal", AFF_R32G32B32_FLOAT, 12),
-};
-
-static const InputElement elementsFullScr[] =
-{
-	AF_INPUT_ELEMENT(0, "POSITION", AFF_R32G32_FLOAT, 0),
 };
 
 static const SamplerType samplers[] =
@@ -244,18 +238,16 @@ void WaterSurfaceES2::Init()
 
 	vbo = afCreateDynamicVertexBuffer(vert.size() * sizeof(WaterVert));
 	ibo = afCreateIndexBuffer(indi.size(), &indi[0]);
-
-	Vec2 vboFullScrSrc[] = {{-1, 1}, {-1, -1}, {1, 1}, {1, -1}};
-	vboFullScr = afCreateVertexBuffer(sizeof(vboFullScrSrc), &vboFullScrSrc[0]);
-
 	renderStatesWater.Create("water_es2", arrayparam(elements), AFRS_OFFSCREEN_PIPELINE, arrayparam(samplers));
 
 //	const char* shaderName = "vivid";
 	const char* shaderName = "letterbox";
+	int numElements = 0;
+	const InputElement* elements = stockObjects.GetFullScreenInputElements(numElements);
 #ifdef AF_DX12
 	renderStatesPostProcess.Create(shaderName, 0, nullptr, AFRS_NONE, arrayparam(samplers));
 #else
-	renderStatesPostProcess.Create(shaderName, arrayparam(elementsFullScr), AFRS_NONE, arrayparam(samplers));
+	renderStatesPostProcess.Create(shaderName, numElements, elements, AFRS_NONE, arrayparam(samplers));
 #endif
 
 	texIds.resize(dimof(texFiles));
@@ -336,7 +328,7 @@ void WaterSurfaceES2::Draw()
 	cmd.SetRenderStates(renderStatesPostProcess);
 	cmd.SetTexture(rtWater.GetTexture(), 0);
 #ifdef AF_GLES
-	cmd.SetVertexBuffer(vboFullScr, sizeof(Vec2));
+	stockObjects.ApplyFullScreenVertexBuffer(cmd);
 #endif
 	cmd.Draw(4);
 }

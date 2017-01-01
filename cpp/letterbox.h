@@ -1,4 +1,3 @@
-#ifndef AF_VULKAN
 class LetterBox
 {
 	AFRenderStates renderStates;
@@ -9,4 +8,3 @@ public:
 };
 
 extern LetterBox letterBox;
-#endif

@@ -161,7 +161,7 @@ void WaterSurfaceES3::Init()
 	for (int i = 0; i < (int)dimof(texFiles); i++)
 	{
 		texId[i] = afLoadTexture(texFiles[i].name);
-		aflog("WaterSurface::Init tex %s %s\n", texFiles[i].name, (texId[i] ? "OK" : "NG"));
+		aflog("WaterSurface::Init tex %s %s\n", texFiles[i].name, (!!texId[i] ? "OK" : "NG"));
 	}
 
 	aflog("WaterSurface::Init finished!\n");

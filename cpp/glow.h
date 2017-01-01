@@ -1,4 +1,3 @@
-#ifndef AF_VULKAN
 class Glow
 {
 	AFRenderStates renderStateGlowExtraction;
@@ -11,4 +10,3 @@ public:
 };
 
 extern Glow glow;
-#endif
