@@ -720,47 +720,48 @@ void AFRenderStates::Create(const char* shaderName, int numInputElements, const 
 	VkDevice device = deviceMan.GetDevice();
 
 	// FIXME: hard corded pipeline layout
+	const char* layout = nullptr;
 	if (!strcmp(shaderName, "solid"))
 	{
-		const VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = { VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO, nullptr, 0, 1, &deviceMan.commonUboDescriptorSetLayout };
-		afHandleVKError(vkCreatePipelineLayout(device, &pipelineLayoutCreateInfo, nullptr, &pipelineLayout));
+		layout = "U";
 	}
 	else if (!strcmp(shaderName, "sky_photosphere") || !strcmp(shaderName, "sky_cubemap") || !strcmp(shaderName, "projection_equirectangular_to_stereographic") || !strcmp(shaderName, "sprite") || !strcmp(shaderName, "vivid") || !strcmp(shaderName, "letterbox"))
 	{
-		VkDescriptorSetLayout layouts[] = { deviceMan.commonTextureDescriptorSetLayout, deviceMan.commonUboDescriptorSetLayout };
-		const VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = { VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO, nullptr, 0, arrayparam(layouts) };
-		afHandleVKError(vkCreatePipelineLayout(device, &pipelineLayoutCreateInfo, nullptr, &pipelineLayout));
+		layout = "TU";
 	}
 	else if (!strcmp(shaderName, "font"))
 	{
-		VkDescriptorSetLayout layouts[] = { deviceMan.commonTextureDescriptorSetLayout };
-		const VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = { VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO, nullptr, 0, arrayparam(layouts) };
-		afHandleVKError(vkCreatePipelineLayout(device, &pipelineLayoutCreateInfo, nullptr, &pipelineLayout));
+		layout = "T";
 	}
 	else if (!strcmp(shaderName, "skin_instanced"))
 	{
-		VkDescriptorSetLayout layouts[] = { deviceMan.commonUboDescriptorSetLayout, deviceMan.commonUboDescriptorSetLayout, deviceMan.commonUboDescriptorSetLayout, deviceMan.commonTextureDescriptorSetLayout };
-		const VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = { VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO, nullptr, 0, arrayparam(layouts) };
-		afHandleVKError(vkCreatePipelineLayout(device, &pipelineLayoutCreateInfo, nullptr, &pipelineLayout));
+		layout = "UUUT";
 	}
 	else if (!strcmp(shaderName, "water_es2"))
 	{
-		VkDescriptorSetLayout layouts[] = {
-			deviceMan.commonTextureDescriptorSetLayout,
-			deviceMan.commonTextureDescriptorSetLayout,
-			deviceMan.commonTextureDescriptorSetLayout,
-			deviceMan.commonTextureDescriptorSetLayout,
-			deviceMan.commonTextureDescriptorSetLayout,
-			deviceMan.commonTextureDescriptorSetLayout,
-			deviceMan.commonUboDescriptorSetLayout };
-		const VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = { VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO, nullptr, 0, arrayparam(layouts) };
-		afHandleVKError(vkCreatePipelineLayout(device, &pipelineLayoutCreateInfo, nullptr, &pipelineLayout));
+		layout = "TTTTTTU";
 	}
 	else
 	{
 		assert(0);
 	}
 
+	std::vector<VkDescriptorSetLayout> descriptorLayouts;
+	for (size_t i = 0; i < strlen(layout); i++)
+	{
+		switch(layout[i])
+		{
+		case 'U':
+			descriptorLayouts.push_back(deviceMan.commonUboDescriptorSetLayout);
+			break;
+		case 'T':
+			descriptorLayouts.push_back(deviceMan.commonTextureDescriptorSetLayout);
+			break;
+		}
+	}
+
+	VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = { VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO, nullptr, 0, descriptorLayouts.size(), descriptorLayouts.data() };
+	afHandleVKError(vkCreatePipelineLayout(device, &pipelineLayoutCreateInfo, nullptr, &pipelineLayout));
 	pipeline = deviceMan.CreatePipeline(shaderName, pipelineLayout, numInputElements, inputElements, flags);
 }
 
