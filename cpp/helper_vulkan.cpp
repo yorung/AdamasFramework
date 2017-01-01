@@ -346,24 +346,12 @@ void afDraw(int numVertices, int start, int instanceCount)
 	vkCmdDraw(commandBuffer, numVertices, instanceCount, 0, 0);
 }
 
-static VkRenderPass CreateRenderPass(VkFormat colorBufferFormat, VkFormat depthStencilFormat)
+static VkRenderPass CreateRenderPass(VkFormat colorBufferFormat, VkFormat depthStencilFormat, bool presentSrc)
 {
 	const VkAttachmentReference colorAttachmentReference = { 0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL };
 	const VkAttachmentReference depthStencilAttachmentReference = { 1, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL };
 	const VkSubpassDescription subpassDescriptions[] = { { 0, VK_PIPELINE_BIND_POINT_GRAPHICS, 0, nullptr, 1, &colorAttachmentReference, nullptr, &depthStencilAttachmentReference } };
-	const VkAttachmentDescription attachments[2] = { { 0, colorBufferFormat, VK_SAMPLE_COUNT_1_BIT, VK_ATTACHMENT_LOAD_OP_CLEAR, VK_ATTACHMENT_STORE_OP_STORE, VK_ATTACHMENT_LOAD_OP_DONT_CARE, VK_ATTACHMENT_STORE_OP_DONT_CARE, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR },{ 0, depthStencilFormat, VK_SAMPLE_COUNT_1_BIT, VK_ATTACHMENT_LOAD_OP_CLEAR, VK_ATTACHMENT_STORE_OP_STORE, VK_ATTACHMENT_LOAD_OP_CLEAR, VK_ATTACHMENT_STORE_OP_STORE, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL } };
-	const VkRenderPassCreateInfo renderPassInfo = { VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO, nullptr, 0, arrayparam(attachments), arrayparam(subpassDescriptions) };
-	VkRenderPass renderPass = 0;
-	afHandleVKError(vkCreateRenderPass(deviceMan.GetDevice(), &renderPassInfo, nullptr, &renderPass));
-	return renderPass;
-}
-
-static VkRenderPass CreateRenderPassForOffscreen(VkFormat colorBufferFormat, VkFormat depthStencilFormat)
-{
-	const VkAttachmentReference colorAttachmentReference = { 0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL };
-	const VkAttachmentReference depthStencilAttachmentReference = { 1, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL };
-	const VkSubpassDescription subpassDescriptions[] = { { 0, VK_PIPELINE_BIND_POINT_GRAPHICS, 0, nullptr, 1, &colorAttachmentReference, nullptr, &depthStencilAttachmentReference } };
-	const VkAttachmentDescription attachments[2] = { { 0, colorBufferFormat, VK_SAMPLE_COUNT_1_BIT, VK_ATTACHMENT_LOAD_OP_CLEAR, VK_ATTACHMENT_STORE_OP_STORE, VK_ATTACHMENT_LOAD_OP_DONT_CARE, VK_ATTACHMENT_STORE_OP_DONT_CARE, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL },{ 0, depthStencilFormat, VK_SAMPLE_COUNT_1_BIT, VK_ATTACHMENT_LOAD_OP_CLEAR, VK_ATTACHMENT_STORE_OP_STORE, VK_ATTACHMENT_LOAD_OP_CLEAR, VK_ATTACHMENT_STORE_OP_STORE, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL } };
+	const VkAttachmentDescription attachments[2] = { { 0, colorBufferFormat, VK_SAMPLE_COUNT_1_BIT, VK_ATTACHMENT_LOAD_OP_CLEAR, VK_ATTACHMENT_STORE_OP_STORE, VK_ATTACHMENT_LOAD_OP_DONT_CARE, VK_ATTACHMENT_STORE_OP_DONT_CARE, VK_IMAGE_LAYOUT_UNDEFINED, presentSrc ? VK_IMAGE_LAYOUT_PRESENT_SRC_KHR : VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL },{ 0, depthStencilFormat, VK_SAMPLE_COUNT_1_BIT, VK_ATTACHMENT_LOAD_OP_CLEAR, VK_ATTACHMENT_STORE_OP_STORE, VK_ATTACHMENT_LOAD_OP_CLEAR, VK_ATTACHMENT_STORE_OP_STORE, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL } };
 	const VkRenderPassCreateInfo renderPassInfo = { VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO, nullptr, 0, arrayparam(attachments), arrayparam(subpassDescriptions) };
 	VkRenderPass renderPass = 0;
 	afHandleVKError(vkCreateRenderPass(deviceMan.GetDevice(), &renderPassInfo, nullptr, &renderPass));
@@ -546,8 +534,8 @@ void DeviceManVK::Create(HWND hWnd)
 	depthStencil = afCreateRenderTarget(VK_FORMAT_D24_UNORM_S8_UINT, IVec2(rc.right, rc.bottom));
 
 	// render pass
-	primaryRenderPass = CreateRenderPass(swapchainInfo.imageFormat, VK_FORMAT_D24_UNORM_S8_UINT);
-	offscreenRenderPass = CreateRenderPassForOffscreen(AFF_R8G8B8A8_UNORM, VK_FORMAT_D24_UNORM_S8_UINT);
+	primaryRenderPass = CreateRenderPass(swapchainInfo.imageFormat, VK_FORMAT_D24_UNORM_S8_UINT, true);
+	offscreenRenderPass = CreateRenderPass(AFF_R8G8B8A8_UNORM, VK_FORMAT_D24_UNORM_S8_UINT, false);
 	for (int i = 0; i < (int)swapChainCount; i++)
 	{
 		const VkImageViewCreateInfo imageViewCreateInfo = { VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, nullptr, 0, swapChainImages[i], VK_IMAGE_VIEW_TYPE_2D, surfaceFormats[0].format, colorComponentMapping, { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 } };
