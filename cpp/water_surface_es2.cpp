@@ -238,7 +238,7 @@ void WaterSurfaceES2::Init()
 
 	vbo = afCreateDynamicVertexBuffer(vert.size() * sizeof(WaterVert));
 	ibo = afCreateIndexBuffer(indi.size(), &indi[0]);
-	renderStatesWater.Create("water_es2", arrayparam(elements), AFRS_OFFSCREEN_PIPELINE, arrayparam(samplers));
+	renderStatesWater.Create("water_es2", arrayparam(elements), AFRS_OFFSCREEN_RENDER_TARGET_B8G8R8A8_UNORM, arrayparam(samplers));
 
 //	const char* shaderName = "vivid";
 	const char* shaderName = "letterbox";

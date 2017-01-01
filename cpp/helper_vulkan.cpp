@@ -385,6 +385,32 @@ static VkPrimitiveTopology RenderFlagsToPrimitiveTopology(uint32_t flags)
 	return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
 }
 
+static VkRenderPass RenderFlagsToRenderPass(uint32_t flags)
+{
+	if (flags & AFRS_OFFSCREEN_RENDER_TARGET_B8G8R8A8_UNORM)
+	{
+		return deviceMan.offscreen32BPPRenderPass;
+	}
+	if (flags & AFRS_OFFSCREEN_RENDER_TARGET_R16G16B16A16_FLOAT)
+	{
+		return deviceMan.offscreenHalfFloatRenderPass;
+	}
+	return deviceMan.primaryRenderPass;
+}
+
+static VkRenderPass VkFormatToRenderPassForOffScreenRenderTarget(VkFormat format)
+{
+	switch (format)
+	{
+	case VK_FORMAT_R8G8B8A8_UNORM:
+		return deviceMan.offscreen32BPPRenderPass;
+	case VK_FORMAT_R16G16B16A16_SFLOAT:
+		return deviceMan.offscreenHalfFloatRenderPass;
+	}
+	assert(0);
+	return 0;
+}
+
 static bool IsPresentModeSupported(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, VkPresentModeKHR presentMode)
 {
 	uint32_t numPresentModes = 0;
@@ -418,7 +444,7 @@ VkPipeline DeviceManVK::CreatePipeline(const char* name, VkPipelineLayout pipeli
 	const VkPipelineColorBlendStateCreateInfo colorBlendState = { VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO, nullptr, 0, VK_FALSE, VK_LOGIC_OP_CLEAR, 1, (flags & AFRS_ALPHA_BLEND) ? &colorBlendAttachmentStateAlphaBlend : &colorBlendAttachmentStateNone };
 	const VkDynamicState dynamicStates[] = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
 	const VkPipelineDynamicStateCreateInfo pipelineDynamicStateCreateInfo = { VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO, nullptr, 0, arrayparam(dynamicStates) };
-	const VkGraphicsPipelineCreateInfo graphicsPipelineCreateInfos[] = { { VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO, nullptr, 0, arrayparam(shaderStageCreationInfos), &pipelineVertexInputStateCreateInfo, &pipelineInputAssemblyStateCreateInfo, nullptr, &viewportStateCreateInfo, &rasterizationStateCreateInfo, &multisampleStateCreateInfo, &depthStencilStateCreateInfo, &colorBlendState, &pipelineDynamicStateCreateInfo, pipelineLayout, (flags & AFRS_OFFSCREEN_PIPELINE) ? offscreenRenderPass : primaryRenderPass } };
+	const VkGraphicsPipelineCreateInfo graphicsPipelineCreateInfos[] = { { VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO, nullptr, 0, arrayparam(shaderStageCreationInfos), &pipelineVertexInputStateCreateInfo, &pipelineInputAssemblyStateCreateInfo, nullptr, &viewportStateCreateInfo, &rasterizationStateCreateInfo, &multisampleStateCreateInfo, &depthStencilStateCreateInfo, &colorBlendState, &pipelineDynamicStateCreateInfo, pipelineLayout, RenderFlagsToRenderPass(flags) } };
 	VkPipeline pipeline = 0;
 	afHandleVKError(vkCreateGraphicsPipelines(device, pipelineCache, arrayparam(graphicsPipelineCreateInfos), nullptr, &pipeline));
 	afSafeDeleteVk(vkDestroyShaderModule, device, vertexShader);
@@ -535,7 +561,8 @@ void DeviceManVK::Create(HWND hWnd)
 
 	// render pass
 	primaryRenderPass = CreateRenderPass(swapchainInfo.imageFormat, VK_FORMAT_D24_UNORM_S8_UINT, true);
-	offscreenRenderPass = CreateRenderPass(AFF_R8G8B8A8_UNORM, VK_FORMAT_D24_UNORM_S8_UINT, false);
+	offscreen32BPPRenderPass = CreateRenderPass(AFF_R8G8B8A8_UNORM, VK_FORMAT_D24_UNORM_S8_UINT, false);
+	offscreenHalfFloatRenderPass = CreateRenderPass(AFF_R16G16B16A16_FLOAT, VK_FORMAT_D24_UNORM_S8_UINT, false);
 	for (int i = 0; i < (int)swapChainCount; i++)
 	{
 		const VkImageViewCreateInfo imageViewCreateInfo = { VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, nullptr, 0, swapChainImages[i], VK_IMAGE_VIEW_TYPE_2D, surfaceFormats[0].format, colorComponentMapping, { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 } };
@@ -632,7 +659,8 @@ void DeviceManVK::Destroy()
 	afSafeDeleteVk(vkDestroyCommandPool, device, commandPool);
 	std::for_each(framebuffers, framebuffers + _countof(framebuffers), [&](VkFramebuffer& framebuffer) { afSafeDeleteVk(vkDestroyFramebuffer, device, framebuffer);	});
 	afSafeDeleteVk(vkDestroyRenderPass, device, primaryRenderPass);
-	afSafeDeleteVk(vkDestroyRenderPass, device, offscreenRenderPass);
+	afSafeDeleteVk(vkDestroyRenderPass, device, offscreen32BPPRenderPass);
+	afSafeDeleteVk(vkDestroyRenderPass, device, offscreenHalfFloatRenderPass);
 	afSafeDeleteVk(vkDestroySwapchainKHR, device, swapchain);
 	if (surface)
 	{
@@ -777,7 +805,7 @@ void AFRenderTarget::Init(IVec2 size, AFFormat colorFormat, AFFormat depthStenci
 	VkDevice device = deviceMan.GetDevice();
 	renderTarget = afCreateRenderTarget(colorFormat, size);
 	const VkImageView frameBufferAttachmentImageView[] = { renderTarget.view, deviceMan.GetDepthStencil().view };
-	const VkFramebufferCreateInfo framebufferInfo = { VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO, nullptr, 0, deviceMan.offscreenRenderPass, arrayparam(frameBufferAttachmentImageView), (uint32_t)size.x, (uint32_t)size.y, 1 };
+	const VkFramebufferCreateInfo framebufferInfo = { VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO, nullptr, 0, VkFormatToRenderPassForOffScreenRenderTarget(colorFormat), arrayparam(frameBufferAttachmentImageView), (uint32_t)size.x, (uint32_t)size.y, 1 };
 	afHandleVKError(vkCreateFramebuffer(device, &framebufferInfo, nullptr, &framebuffer));
 }
 
@@ -796,7 +824,7 @@ void AFRenderTarget::BeginRenderToThis()
 		deviceMan.BeginScene(0, 0);
 		return;
 	}
-	deviceMan.BeginScene(deviceMan.offscreenRenderPass, framebuffer);
+	deviceMan.BeginScene(VkFormatToRenderPassForOffScreenRenderTarget(renderTarget.format), framebuffer);
 	//const VkRenderPassBeginInfo renderPassBeginInfo = { VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO, nullptr, renderPass, framebuffer,{ {},{ (uint32_t)texSize.x, (uint32_t)texSize.y } }, arrayparam(clearValues) };
 	//vkCmdBeginRenderPass(cmd, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 

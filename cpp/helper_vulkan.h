@@ -177,7 +177,7 @@ class DeviceManVK
 	RECT rc = {};
 	bool inRenderPass = false;
 public:
-	VkRenderPass primaryRenderPass = 0, offscreenRenderPass = 0;
+	VkRenderPass primaryRenderPass = 0, offscreen32BPPRenderPass = 0, offscreenHalfFloatRenderPass = 0;
 	VkViewport viewport;
 	VkRect2D scissor;
 	VkPhysicalDeviceMemoryProperties physicalDeviceMemoryProperties;

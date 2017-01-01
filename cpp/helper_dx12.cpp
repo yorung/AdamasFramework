@@ -294,7 +294,7 @@ ComPtr<ID3D12PipelineState> afCreatePSO(const char *shaderName, const InputEleme
 	psoDesc.SampleMask = UINT_MAX;
 	psoDesc.PrimitiveTopologyType = ToD3D12PrimitiveTopologyType(RenderFlagsToPrimitiveTopology(flags));
 	psoDesc.NumRenderTargets = 1;
-	psoDesc.RTVFormats[0] = (flags & AFRS_RENDER_TARGET_HALF_FLOAT) ? DXGI_FORMAT_R16G16B16A16_FLOAT : DXGI_FORMAT_R8G8B8A8_UNORM;
+	psoDesc.RTVFormats[0] = (flags & AFRS_OFFSCREEN_RENDER_TARGET_R16G16B16A16_FLOAT) ? DXGI_FORMAT_R16G16B16A16_FLOAT : DXGI_FORMAT_R8G8B8A8_UNORM;
 	psoDesc.DSVFormat = AFF_DEPTH_STENCIL;
 	psoDesc.SampleDesc.Count = 1;
 	ComPtr<ID3D12PipelineState> pso;
