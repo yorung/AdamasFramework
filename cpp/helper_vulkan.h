@@ -183,6 +183,7 @@ public:
 	VkPhysicalDeviceMemoryProperties physicalDeviceMemoryProperties;
 	VkPhysicalDevice physicalDevice = nullptr;
 	VkDevice GetDevice() { return device; }
+	VkPipelineCache GetPipelineCache() { return pipelineCache; }
 	VkCommandBuffer commandBuffer = 0;
 	VkDescriptorPool descriptorPool = 0;
 	AFBufferStackAllocator uboAllocator;
@@ -197,7 +198,6 @@ public:
 	void Destroy();
 	void BeginScene(VkRenderPass nextRenderPass, VkFramebuffer nextFramebuffer);
 	void Flush();
-	VkPipeline CreatePipeline(const char* name, VkPipelineLayout pipelineLayout, uint32_t numAttributes, const VkVertexInputAttributeDescription attributes[], uint32_t flags);
 };
 extern DeviceManVK deviceMan;
 

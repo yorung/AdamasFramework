@@ -423,7 +423,7 @@ static bool IsPresentModeSupported(VkPhysicalDevice physicalDevice, VkSurfaceKHR
 	return it != presentModes + numPresentModes;
 }
 
-VkPipeline DeviceManVK::CreatePipeline(const char* name, VkPipelineLayout pipelineLayout, uint32_t numAttributes, const VkVertexInputAttributeDescription attributes[], uint32_t flags)
+static VkPipeline afCreatePipeline(VkDevice device, VkPipelineCache pipelineCache, const char* name, VkPipelineLayout pipelineLayout, uint32_t numAttributes, const VkVertexInputAttributeDescription attributes[], uint32_t flags)
 {
 	char path[MAX_PATH];
 	sprintf_s(path, sizeof(path), "spv/%s.vert.spv", name);
@@ -778,7 +778,7 @@ void AFRenderStates::Create(const char* shaderName, int numInputElements, const 
 
 	VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = { VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO, nullptr, 0, descriptorLayouts.size(), descriptorLayouts.data() };
 	afHandleVKError(vkCreatePipelineLayout(device, &pipelineLayoutCreateInfo, nullptr, &pipelineLayout));
-	pipeline = deviceMan.CreatePipeline(shaderName, pipelineLayout, numInputElements, inputElements, flags);
+	pipeline = afCreatePipeline(device, deviceMan.GetPipelineCache(), shaderName, pipelineLayout, numInputElements, inputElements, flags);
 }
 
 void AFRenderStates::Apply()
