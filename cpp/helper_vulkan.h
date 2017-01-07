@@ -196,7 +196,7 @@ public:
 	void Create(HWND hWnd);
 	void Present();
 	void Destroy();
-	void BeginScene(VkRenderPass nextRenderPass, VkFramebuffer nextFramebuffer);
+	void BeginScene(VkRenderPass nextRenderPass, VkFramebuffer nextFramebuffer, IVec2 size);
 	void Flush();
 };
 extern DeviceManVK deviceMan;
