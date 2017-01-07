@@ -112,10 +112,10 @@ vec2 GetModulatedBGCoordOffset()
 vec3 GetBGColor(vec2 coord)
 {
 	coord += GetModulatedBGCoordOffset();
-	vec3 c1 = texture(sampler0, coord * vec2(1.0, -1.0)).xyz;
-	vec3 c2 = texture(sampler1, coord * vec2(1.0, -1.0)).xyz;
-	vec3 c3 = texture(sampler2, coord * vec2(1.0, -1.0)).xyz;
-	float delaymap = texture(sampler4, coord * vec2(1.0, -1.0)).x;
+	vec3 c1 = texture(sampler0, coord).xyz;
+	vec3 c2 = texture(sampler1, coord).xyz;
+	vec3 c3 = texture(sampler2, coord).xyz;
+	float delaymap = texture(sampler4, coord).x;
 	vec4 timeline = texture(sampler3, vec2((wrappedTime - delaymap) / loopTime, 0));
 	vec3 bg = c1 * timeline.x + c2 * timeline.y + c3 * timeline.z;
 	return bg;
