@@ -736,31 +736,20 @@ void AFRenderStates::Create(const char* shaderName, int numInputElements, const 
 	VkDevice device = deviceMan.GetDevice();
 
 	// FIXME: hard corded pipeline layout
-	const char* layout = nullptr;
-	if (!strcmp(shaderName, "solid"))
+	std::map<std::string, std::string> shaderToLayout =
 	{
-		layout = "U";
-	}
-	else if (!strcmp(shaderName, "sky_photosphere") || !strcmp(shaderName, "sky_cubemap") || !strcmp(shaderName, "projection_equirectangular_to_stereographic") || !strcmp(shaderName, "sprite") || !strcmp(shaderName, "vivid") || !strcmp(shaderName, "letterbox"))
-	{
-		layout = "TU";
-	}
-	else if (!strcmp(shaderName, "font"))
-	{
-		layout = "T";
-	}
-	else if (!strcmp(shaderName, "skin_instanced"))
-	{
-		layout = "UUUT";
-	}
-	else if (!strcmp(shaderName, "water_es2"))
-	{
-		layout = "TTTTTTU";
-	}
-	else
-	{
-		assert(0);
-	}
+		{ "solid", "U" },
+		{ "sky_photosphere", "TU" },
+		{ "sky_cubemap", "TU" },
+		{ "projection_equirectangular_to_stereographic", "TU" },
+		{ "sprite", "TU" },
+		{ "vivid", "TU" },
+		{ "letterbox", "TU" },
+		{ "font", "T" },
+		{ "skin_instanced", "UUUT" },
+		{ "water_es2", "TTTTTTU" },
+	};
+	const char* layout = shaderToLayout[shaderName].c_str();
 
 	std::vector<VkDescriptorSetLayout> descriptorLayouts;
 	for (size_t i = 0; i < strlen(layout); i++)
