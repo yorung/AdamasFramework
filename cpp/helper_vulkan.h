@@ -178,8 +178,6 @@ class DeviceManVK
 	bool inRenderPass = false;
 public:
 	VkRenderPass primaryRenderPass = 0, offscreen32BPPRenderPass = 0, offscreenHalfFloatRenderPass = 0;
-	VkViewport viewport;
-	VkRect2D scissor;
 	VkPhysicalDeviceMemoryProperties physicalDeviceMemoryProperties;
 	VkPhysicalDevice physicalDevice = nullptr;
 	VkDevice GetDevice() { return device; }
@@ -196,7 +194,7 @@ public:
 	void Create(HWND hWnd);
 	void Present();
 	void Destroy();
-	void BeginScene(VkRenderPass nextRenderPass, VkFramebuffer nextFramebuffer);
+	void BeginScene(VkRenderPass nextRenderPass, VkFramebuffer nextFramebuffer, IVec2 size);
 	void Flush();
 };
 extern DeviceManVK deviceMan;

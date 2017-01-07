@@ -11,20 +11,18 @@ Texture2D sampler2 : register(t2);
 Texture2D sampler3 : register(t3);
 Texture2D sampler4 : register(t4);
 Texture2D sampler5 : register(t5);
-Texture2D waterHeightmap : register(t6);
-Texture2D waterNormalmap : register(t7);
+Texture2D waterNormalmap : register(t6);
 SamplerState samplerState0 : register(s0);
 SamplerState samplerState1 : register(s1);
 SamplerState samplerState2 : register(s2);
 SamplerState samplerState3 : register(s3);
 SamplerState samplerState4 : register(s4);
 SamplerState samplerState5 : register(s5);
-SamplerState waterHeightmapSamplerState : register(s6);
-SamplerState waterNormalmapSamplerState : register(s7);
+SamplerState waterNormalmapSamplerState : register(s6);
 #define textureFromFile(tex,samplerState,coord) tex.Sample(samplerState, coord)
 #define texture(tex,samplerState,coord) tex.Sample(samplerState, vec2(coord.x, 1.0 - coord.y))
 
-cbuffer uniformBuffer : register(b8)
+cbuffer uniformBuffer : register(b7)
 {
 	vec2 mousePos;
 	float mouseDown;
@@ -56,9 +54,8 @@ static const vec3 lightPos = vec3(1.4, 1.4, 16.0);
 	"DescriptorTable(SRV(t4), visibility=SHADER_VISIBILITY_PIXEL),"\
 	"DescriptorTable(SRV(t5), visibility=SHADER_VISIBILITY_PIXEL),"\
 	"DescriptorTable(SRV(t6), visibility=SHADER_VISIBILITY_PIXEL),"\
-	"DescriptorTable(SRV(t7), visibility=SHADER_VISIBILITY_PIXEL),"\
-	"CBV(b8),"\
-	"StaticSampler(s0), StaticSampler(s1), StaticSampler(s2), StaticSampler(s3), StaticSampler(s4), StaticSampler(s5), StaticSampler(s6), StaticSampler(s7)"
+	"CBV(b7),"\
+	"StaticSampler(s0), StaticSampler(s1), StaticSampler(s2), StaticSampler(s3), StaticSampler(s4), StaticSampler(s5), StaticSampler(s6)"
 
 [RootSignature(RSDEF)]
 void VSMain(out float4 pos : SV_POSITION, out vec2 vfPosition : vfPosition, uint id : SV_VertexID)

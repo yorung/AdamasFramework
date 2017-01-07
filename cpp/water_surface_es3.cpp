@@ -75,8 +75,8 @@ struct TexFiles
 	bool clamp;
 };
 
-#if 1
-static TexFiles texFiles[] = {
+static TexFiles texFiles[] =
+{
 	{ "rose.jpg", true },
 	{ "autumn.jpg", true },
 	{ "pangyo.jpg", true },
@@ -84,18 +84,8 @@ static TexFiles texFiles[] = {
 	{ "delaymap.png", true },
 	{ "sphere.jpg", true },
 };
-#else
-static TexFiles texFiles[] = {
-	{ "D:\\github\\BingmuWP\\app\\src\\summer\\assets\\hyomu_sm_1.jpg", true },
-	{ "D:\\github\\BingmuWP\\app\\src\\summer\\assets\\hyomu_sm_2.jpg", true },
-	{ "D:\\github\\BingmuWP\\app\\src\\summer\\assets\\hyomu_sm_3.jpg", true },
-	{ "timeline.png", false },
-	{ "delaymap.png", true },
-	{ "sphere.jpg", true },
-};
-#endif
 
-static const SamplerType samplersLastPass[] = { AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP, AFST_LINEAR_WRAP, AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP, AFST_POINT_CLAMP, AFST_LINEAR_CLAMP};
+static const SamplerType samplersLastPass[] = { AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP, AFST_LINEAR_WRAP, AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP };
 static const SamplerType samplersHeightMap[] = { AFST_LINEAR_CLAMP };
 static const SamplerType samplerNormalMap[] = { AFST_LINEAR_CLAMP };
 
@@ -130,20 +120,28 @@ void WaterSurfaceES3::Destroy()
 void WaterSurfaceES3::Init()
 {
 	Destroy();
-	for (auto& it : renderTarget) {
+	for (auto& it : renderTarget)
+	{
 		it.Init(min(IVec2(1024, 1024), systemMisc.GetScreenSize()), AFF_R8G8B8A8_UNORM, AFF_INVALID);
+#ifndef AF_VULKAN
 		it.BeginRenderToThis();	// clear textures
+#endif
 	}
-	for (auto& it : heightMap) {
+	for (auto& it : heightMap)
+	{
 		it.Init(IVec2(HEIGHT_MAP_W, HEIGHT_MAP_H), AFF_R16G16B16A16_FLOAT, AFF_INVALID);
+#ifndef AF_VULKAN
 		it.BeginRenderToThis();	// clear textures
+#endif
 	}
 	normalMap.Init(IVec2(HEIGHT_MAP_W, HEIGHT_MAP_H), AFF_R8G8B8A8_UNORM, AFF_INVALID);
+#ifndef AF_VULKAN
 	normalMap.BeginRenderToThis();	// clear textures
 
 	AFRenderTarget rt;
 	rt.InitForDefaultRenderTarget();
 	rt.BeginRenderToThis();
+#endif
 
 	lastTime = GetTime();
 	renderStateWaterLastPass.Create("water_es3_lastpass", 0, nullptr, AFRS_OFFSCREEN_RENDER_TARGET_B8G8R8A8_UNORM, arrayparam(samplersLastPass));
@@ -242,11 +240,10 @@ void WaterSurfaceES3::RenderWater(AFCommandList& cmd, const UniformBuffer& hmub)
 	}
 
 	auto& curHeightMap = heightMap[heightCurrentWriteTarget];
-	cmd.SetBuffer(sizeof(hmub), &hmub, 8);
+	cmd.SetBuffer(sizeof(hmub), &hmub, 7);
 	renderTarget[0].BeginRenderToThis();
 	stockObjects.ApplyFullScreenVertexBuffer(cmd);
-	cmd.SetTexture(curHeightMap.GetTexture(), 6);
-	cmd.SetTexture(normalMap.GetTexture(), 7);
+	cmd.SetTexture(normalMap.GetTexture(), 6);
 	cmd.Draw(4);
 #ifdef AF_DX11
 	cmd.SetTexture(SRVID(), 6);
