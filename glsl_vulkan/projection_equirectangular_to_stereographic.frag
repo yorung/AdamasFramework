@@ -1,6 +1,6 @@
 #version 450
 
-in vec2 vfPosition;
+layout (location = 0) in vec2 vfPosition;
 
 layout (std140, set = 1, binding = 0, row_major) uniform inst {
 	mat4 invVP;

@@ -1,6 +1,6 @@
 #version 450
 
-out vec2 vfPosition;
+layout (location = 0) out vec2 vfPosition;
 
 void main()
 {
