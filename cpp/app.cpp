@@ -98,10 +98,8 @@ void App::Destroy()
 	meshRenderer.Destroy();
 	meshMan.Destroy();
 	skyMan.Destroy();
-#ifndef AF_VULKAN
 	glow.Destroy();
 	letterBox.Destroy();
-#endif
 	ClearMenu();
 	meshId = MeshMan::INVALID_MMID;
 }

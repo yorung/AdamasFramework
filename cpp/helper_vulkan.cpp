@@ -3,7 +3,7 @@
 #ifdef VK_TRUE
 
 #pragma comment(lib, "vulkan-1.lib")
-static const uint32_t descriptorPoolSize = 32;
+static const uint32_t descriptorPoolSize = 64;
 
 static const VkComponentMapping colorComponentMapping = { VK_COMPONENT_SWIZZLE_R, VK_COMPONENT_SWIZZLE_G, VK_COMPONENT_SWIZZLE_B, VK_COMPONENT_SWIZZLE_A };
 static const VkComponentMapping depthComponentMapping = {};
