@@ -748,6 +748,12 @@ void AFRenderStates::Create(const char* shaderName, int numInputElements, const 
 		{ "font", "T" },
 		{ "skin_instanced", "UUUT" },
 		{ "water_es2", "TTTTTTU" },
+		{ "glow_extraction", "T" },
+		{ "glow_copy", "T" },
+		{ "glow_lastpass", "TTTTTTT" },
+		{ "water_es3_heightmap", "TU" },
+		{ "water_es3_normal", "UT" },
+		{ "water_es3_lastpass", "TTTTTTTTU" },
 	};
 	const char* layout = shaderToLayout[shaderName].c_str();
 
