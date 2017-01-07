@@ -753,7 +753,7 @@ void AFRenderStates::Create(const char* shaderName, int numInputElements, const 
 		{ "glow_lastpass", "TTTTTTT" },
 		{ "water_es3_heightmap", "TU" },
 		{ "water_es3_normal", "UT" },
-		{ "water_es3_lastpass", "TTTTTTTTU" },
+		{ "water_es3_lastpass", "TTTTTTTU" },
 	};
 	const char* layout = shaderToLayout[shaderName].c_str();
 

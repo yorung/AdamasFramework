@@ -7,10 +7,9 @@ layout (set = 2, binding = 0) uniform sampler2D sampler2;
 layout (set = 3, binding = 0) uniform sampler2D sampler3;
 layout (set = 4, binding = 0) uniform sampler2D sampler4;
 layout (set = 5, binding = 0) uniform sampler2D sampler5;
-layout (set = 6, binding = 0) uniform sampler2D waterHeightmap;
-layout (set = 7, binding = 0) uniform sampler2D waterNormalmap;
+layout (set = 6, binding = 0) uniform sampler2D waterNormalmap;
 
-layout (std140, set = 8, binding = 0) uniform b8
+layout (std140, set = 7, binding = 0) uniform b8
 {
 		vec2 mousePos;
 		float mouseDown;

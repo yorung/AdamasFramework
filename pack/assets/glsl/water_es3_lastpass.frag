@@ -8,13 +8,12 @@ layout (binding = 2) uniform sampler2D sampler2;
 layout (binding = 3) uniform sampler2D sampler3;
 layout (binding = 4) uniform sampler2D sampler4;
 layout (binding = 5) uniform sampler2D sampler5;
-layout (binding = 6) uniform sampler2D waterHeightmap;
-layout (binding = 7) uniform sampler2D waterNormalmap;
+layout (binding = 6) uniform sampler2D waterNormalmap;
 
-layout (location = 0) uniform vec4 b8[2];
+layout (location = 0) uniform vec4 b7[2];
 
-#define wrappedTime b8[1].y
-#define heightMapSize b8[1].zw
+#define wrappedTime b7[1].y
+#define heightMapSize b7[1].zw
 
 const float loopTime = 20.0;
 const float PI2 = 3.1415926 * 2.0;

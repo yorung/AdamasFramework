@@ -75,8 +75,8 @@ struct TexFiles
 	bool clamp;
 };
 
-#if 1
-static TexFiles texFiles[] = {
+static TexFiles texFiles[] =
+{
 	{ "rose.jpg", true },
 	{ "autumn.jpg", true },
 	{ "pangyo.jpg", true },
@@ -84,18 +84,8 @@ static TexFiles texFiles[] = {
 	{ "delaymap.png", true },
 	{ "sphere.jpg", true },
 };
-#else
-static TexFiles texFiles[] = {
-	{ "D:\\github\\BingmuWP\\app\\src\\summer\\assets\\hyomu_sm_1.jpg", true },
-	{ "D:\\github\\BingmuWP\\app\\src\\summer\\assets\\hyomu_sm_2.jpg", true },
-	{ "D:\\github\\BingmuWP\\app\\src\\summer\\assets\\hyomu_sm_3.jpg", true },
-	{ "timeline.png", false },
-	{ "delaymap.png", true },
-	{ "sphere.jpg", true },
-};
-#endif
 
-static const SamplerType samplersLastPass[] = { AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP, AFST_LINEAR_WRAP, AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP, AFST_POINT_CLAMP, AFST_LINEAR_CLAMP};
+static const SamplerType samplersLastPass[] = { AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP, AFST_LINEAR_WRAP, AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP, AFST_LINEAR_CLAMP };
 static const SamplerType samplersHeightMap[] = { AFST_LINEAR_CLAMP };
 static const SamplerType samplerNormalMap[] = { AFST_LINEAR_CLAMP };
 
@@ -242,11 +232,10 @@ void WaterSurfaceES3::RenderWater(AFCommandList& cmd, const UniformBuffer& hmub)
 	}
 
 	auto& curHeightMap = heightMap[heightCurrentWriteTarget];
-	cmd.SetBuffer(sizeof(hmub), &hmub, 8);
+	cmd.SetBuffer(sizeof(hmub), &hmub, 7);
 	renderTarget[0].BeginRenderToThis();
 	stockObjects.ApplyFullScreenVertexBuffer(cmd);
-	cmd.SetTexture(curHeightMap.GetTexture(), 6);
-	cmd.SetTexture(normalMap.GetTexture(), 7);
+	cmd.SetTexture(normalMap.GetTexture(), 6);
 	cmd.Draw(4);
 #ifdef AF_DX11
 	cmd.SetTexture(SRVID(), 6);
