@@ -571,8 +571,6 @@ void DeviceManVK::Create(HWND hWnd)
 		const VkFramebufferCreateInfo framebufferInfo = { VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO, nullptr, 0, primaryRenderPass, arrayparam(frameBufferAttachmentImageView), (uint32_t)rc.right, (uint32_t)rc.bottom, 1 };
 		afHandleVKError(vkCreateFramebuffer(device, &framebufferInfo, nullptr, &framebuffers[i]));
 	}
-	viewport = { 0, 0, (float)rc.right, (float)rc.bottom, 0, 1 };
-	scissor = { 0, 0, (uint32_t)rc.right, (uint32_t)rc.bottom };
 
 	afHandleVKError(vkAcquireNextImageKHR(device, swapchain, UINT64_MAX, semaphore, VK_NULL_HANDLE, &frameIndex));
 	inRenderPass = false;
@@ -590,16 +588,26 @@ void DeviceManVK::BeginScene(VkRenderPass nextRenderPass, VkFramebuffer nextFram
 	{
 		const VkRenderPassBeginInfo renderPassBeginInfo = { VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO, nullptr, nextRenderPass, nextFramebuffer,{ {},{ (uint32_t)size.x, (uint32_t)size.y } }, arrayparam(clearValues) };
 		vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+		VkViewport v = { 0, 0, (float)size.x, (float)size.y, 0, 1 };
+		VkRect2D s = { 0, 0, (uint32_t)size.x, (uint32_t)size.y };
+
+		vkCmdSetViewport(commandBuffer, 0, 1, &v);
+		vkCmdSetScissor(commandBuffer, 0, 1, &s);
+
 	}
 	else
 	{
 		const VkRenderPassBeginInfo renderPassBeginInfo = { VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO, nullptr, primaryRenderPass, framebuffers[frameIndex],{ {},{ (uint32_t)rc.right, (uint32_t)rc.bottom } }, arrayparam(clearValues) };
 		vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+		VkViewport v = { 0, 0, (float)depthStencil.texDesc.size.x, (float)depthStencil.texDesc.size.y, 0, 1 };
+		VkRect2D s = { 0, 0, (uint32_t)depthStencil.texDesc.size.x, (uint32_t)depthStencil.texDesc.size.y };
+
+		vkCmdSetViewport(commandBuffer, 0, 1, &v);
+		vkCmdSetScissor(commandBuffer, 0, 1, &s);
 	}
 	inRenderPass = true;
-
-	vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
-	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 }
 
 void DeviceManVK::Present()
@@ -820,11 +828,6 @@ void AFRenderTarget::BeginRenderToThis()
 		return;
 	}
 	deviceMan.BeginScene(VkFormatToRenderPassForOffScreenRenderTarget(renderTarget.format), framebuffer, texSize);
-	//const VkRenderPassBeginInfo renderPassBeginInfo = { VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO, nullptr, renderPass, framebuffer,{ {},{ (uint32_t)texSize.x, (uint32_t)texSize.y } }, arrayparam(clearValues) };
-	//vkCmdBeginRenderPass(cmd, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-	//vkCmdSetViewport(cmd, 0, 1, &deviceMan.viewport);
-	//vkCmdSetScissor(cmd, 0, 1, &deviceMan.scissor);
 }
 
 #endif
