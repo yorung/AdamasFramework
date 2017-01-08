@@ -195,6 +195,7 @@ public:
 	void Present();
 	void Destroy();
 	void BeginScene(VkRenderPass nextRenderPass, VkFramebuffer nextFramebuffer, IVec2 size);
+	void BeginSceneToCurrentBackBuffer();
 	void Flush();
 };
 extern DeviceManVK deviceMan;

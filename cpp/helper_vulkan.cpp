@@ -576,38 +576,28 @@ void DeviceManVK::Create(HWND hWnd)
 	inRenderPass = false;
 }
 
+void DeviceManVK::BeginSceneToCurrentBackBuffer()
+{
+	BeginScene(primaryRenderPass, framebuffers[frameIndex], { (int)rc.right, (int)rc.bottom });
+}
+
 void DeviceManVK::BeginScene(VkRenderPass nextRenderPass, VkFramebuffer nextFramebuffer, IVec2 size)
 {
 	if (inRenderPass)
 	{
 		vkCmdEndRenderPass(commandBuffer);
-		inRenderPass = false;
-	}
-
-	if (nextRenderPass)
-	{
-		const VkRenderPassBeginInfo renderPassBeginInfo = { VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO, nullptr, nextRenderPass, nextFramebuffer,{ {},{ (uint32_t)size.x, (uint32_t)size.y } }, arrayparam(clearValues) };
-		vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-		VkViewport v = { 0, 0, (float)size.x, (float)size.y, 0, 1 };
-		VkRect2D s = { 0, 0, (uint32_t)size.x, (uint32_t)size.y };
-
-		vkCmdSetViewport(commandBuffer, 0, 1, &v);
-		vkCmdSetScissor(commandBuffer, 0, 1, &s);
-
 	}
 	else
 	{
-		const VkRenderPassBeginInfo renderPassBeginInfo = { VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO, nullptr, primaryRenderPass, framebuffers[frameIndex],{ {},{ (uint32_t)rc.right, (uint32_t)rc.bottom } }, arrayparam(clearValues) };
-		vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-		VkViewport v = { 0, 0, (float)depthStencil.texDesc.size.x, (float)depthStencil.texDesc.size.y, 0, 1 };
-		VkRect2D s = { 0, 0, (uint32_t)depthStencil.texDesc.size.x, (uint32_t)depthStencil.texDesc.size.y };
-
-		vkCmdSetViewport(commandBuffer, 0, 1, &v);
-		vkCmdSetScissor(commandBuffer, 0, 1, &s);
+		inRenderPass = true;
 	}
-	inRenderPass = true;
+
+	const VkRenderPassBeginInfo renderPassBeginInfo = { VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO, nullptr, nextRenderPass, nextFramebuffer,{ {},{ (uint32_t)size.x, (uint32_t)size.y } }, arrayparam(clearValues) };
+	vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+	VkViewport v = { 0, 0, (float)size.x, (float)size.y, 0, 1 };
+	VkRect2D s = { 0, 0, (uint32_t)size.x, (uint32_t)size.y };
+	vkCmdSetViewport(commandBuffer, 0, 1, &v);
+	vkCmdSetScissor(commandBuffer, 0, 1, &s);
 }
 
 void DeviceManVK::Present()
@@ -824,7 +814,7 @@ void AFRenderTarget::BeginRenderToThis()
 	VkCommandBuffer cmd = deviceMan.commandBuffer;
 	if (asDefault)
 	{
-		deviceMan.BeginScene(0, 0, IVec2());
+		deviceMan.BeginSceneToCurrentBackBuffer();
 		return;
 	}
 	deviceMan.BeginScene(VkFormatToRenderPassForOffScreenRenderTarget(renderTarget.format), framebuffer, texSize);
