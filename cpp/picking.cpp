@@ -87,34 +87,17 @@ bool RayVsTriangle(const Vec3& ray1, const Vec3& ray2, const Vec3 triangle[])
 	return (inner[0] < 0 && inner[1] < 0 && inner[2] < 0) || (inner[0] > 0 && inner[1] > 0 && inner[2] > 0);
 }
 
-
 bool RayVsTriangleMollerTrumbore(const Vec3& ray1, const Vec3& ray2, const Vec3 triangle[])
 {
 	Vec3 rayDir = ray2 - ray1;
 	Vec3 edge1 = triangle[1] - triangle[0];
 	Vec3 edge2 = triangle[2] - triangle[0];
-	Vec3 p = cross(rayDir, edge2);
-	float det = dot(edge1, p);
-	const float epsilon = 0.000001f;
-	if (std::abs(det) < epsilon)
-	{
-		return false;
-	}
-	Vec3 t = ray1 - triangle[0];
-	float u = dot(t, p) / det;
-	if (u < 0.f || u > 1.f)
-	{
-		return false;
-	}
-	Vec3 q = cross(t, edge1);
-	float v = dot(rayDir, q) / det;
-	if (v < 0.f || u + v > 1.f)
-	{
-		return false;
-	}
-	return true;
-//	float tt = dot(edge2, q) * invDet;
-//	return (tt > epsilon);
+	Vec3 rayXEdge2 = cross(rayDir, edge2);
+	float invDet = 1.f / std::max(dot(edge1, rayXEdge2), 0.000001f);
+	Vec3 rayOriginFromTriangle = ray1 - triangle[0];
+	float u = dot(rayOriginFromTriangle, rayXEdge2) * invDet;
+	float v = dot(rayDir, cross(rayOriginFromTriangle, edge1)) * invDet;
+	return u >= 0 && v >= 0 && (u + v) <= 1.f;
 }
 
 void Picking::Update()
