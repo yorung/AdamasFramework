@@ -125,6 +125,7 @@ class AFRenderStates {
 	VkPipeline pipeline = 0;
 	VkPipelineLayout pipelineLayout = 0;
 public:
+	~AFRenderStates() { Destroy(); }
 	VkPipelineLayout GetPipelineLayout() { return pipelineLayout; }
 	void Create(const char* shaderName, int numInputElements = 0, const InputElement* inputElements = nullptr, uint32_t flags = AFRS_NONE, int numSamplers = 0, const SamplerType samplerTypes[] = nullptr);
 	void Apply();
