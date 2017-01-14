@@ -87,6 +87,36 @@ bool RayVsTriangle(const Vec3& ray1, const Vec3& ray2, const Vec3 triangle[])
 	return (inner[0] < 0 && inner[1] < 0 && inner[2] < 0) || (inner[0] > 0 && inner[1] > 0 && inner[2] > 0);
 }
 
+
+bool RayVsTriangleMollerTrumbore(const Vec3& ray1, const Vec3& ray2, const Vec3 triangle[])
+{
+	Vec3 rayDir = ray2 - ray1;
+	Vec3 edge1 = triangle[1] - triangle[0];
+	Vec3 edge2 = triangle[2] - triangle[0];
+	Vec3 p = cross(rayDir, edge2);
+	float det = dot(edge1, p);
+	const float epsilon = 0.000001f;
+	if (std::abs(det) < epsilon)
+	{
+		return false;
+	}
+	Vec3 t = ray1 - triangle[0];
+	float u = dot(t, p) / det;
+	if (u < 0.f || u > 1.f)
+	{
+		return false;
+	}
+	Vec3 q = cross(t, edge1);
+	float v = dot(rayDir, q) / det;
+	if (v < 0.f || u + v > 1.f)
+	{
+		return false;
+	}
+	return true;
+//	float tt = dot(edge2, q) * invDet;
+//	return (tt > epsilon);
+}
+
 void Picking::Update()
 {
 	Vertex v[3];
@@ -141,7 +171,7 @@ void Picking::Update()
 
 	Vec3 n, f;
 	ScreenPosToRay(systemMisc.GetMousePos(), n, f);
-	hit = RayVsTriangle(n, f, triangle);
+	hit = RayVsTriangleMollerTrumbore(n, f, triangle);
 	for (int i = 0; i < 3; i++) {
 		v[i].color = hit ? Vec3(i == 0, i == 1, i == 2) : Vec3(0.5, 0.5, 0.5);
 	}
