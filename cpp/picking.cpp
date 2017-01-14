@@ -89,15 +89,11 @@ bool RayVsTriangle(const Vec3& ray1, const Vec3& ray2, const Vec3 triangle[])
 
 bool RayVsTriangleMollerTrumbore(const Vec3& ray1, const Vec3& ray2, const Vec3 triangle[])
 {
-	Vec3 _rayDir = ray1 - ray2;
-	Vec3 edge1 = triangle[1] - triangle[0];
-	Vec3 edge2 = triangle[2] - triangle[0];
-	Vec3 rayOriginFromTriangle = ray1 - triangle[0];
-	Vec3 edge2X_rayDir = cross(edge2, _rayDir);
-	float invDet = 1.f / std::max(dot(edge1, edge2X_rayDir), 0.000001f);
-	float u = dot(rayOriginFromTriangle, edge2X_rayDir) * invDet;
-	float v = dot(_rayDir, cross(edge1, rayOriginFromTriangle)) * invDet;
-	return u >= 0 && v >= 0 && (u + v) <= 1.f;
+	Vec3 ray1relative = ray1 - triangle[0];
+	Vec3 axes[] = { triangle[1] - triangle[0], triangle[2] - triangle[0], ray1 - ray2 };
+	Vec3 crosses[] = { cross(axes[1], axes[2]), cross(axes[2], axes[0]) };
+	Vec2 uv = Vec2(dot(ray1relative, crosses[0]), dot(ray1relative, crosses[1])) / std::max(dot(axes[0], crosses[0]), 0.000001f);
+	return uv.x >= 0 && uv.y >= 0 && (uv.x + uv.y) <= 1.f;
 }
 
 void Picking::Update()
