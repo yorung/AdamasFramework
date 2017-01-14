@@ -89,14 +89,14 @@ bool RayVsTriangle(const Vec3& ray1, const Vec3& ray2, const Vec3 triangle[])
 
 bool RayVsTriangleMollerTrumbore(const Vec3& ray1, const Vec3& ray2, const Vec3 triangle[])
 {
-	Vec3 rayDir = ray2 - ray1;
+	Vec3 _rayDir = ray1 - ray2;
 	Vec3 edge1 = triangle[1] - triangle[0];
 	Vec3 edge2 = triangle[2] - triangle[0];
-	Vec3 rayXEdge2 = cross(rayDir, edge2);
-	float invDet = 1.f / std::max(dot(edge1, rayXEdge2), 0.000001f);
 	Vec3 rayOriginFromTriangle = ray1 - triangle[0];
-	float u = dot(rayOriginFromTriangle, rayXEdge2) * invDet;
-	float v = dot(rayDir, cross(rayOriginFromTriangle, edge1)) * invDet;
+	Vec3 edge2X_rayDir = cross(edge2, _rayDir);
+	float invDet = 1.f / std::max(dot(edge1, edge2X_rayDir), 0.000001f);
+	float u = dot(rayOriginFromTriangle, edge2X_rayDir) * invDet;
+	float v = dot(_rayDir, cross(edge1, rayOriginFromTriangle)) * invDet;
 	return u >= 0 && v >= 0 && (u + v) <= 1.f;
 }
 
