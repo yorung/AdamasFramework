@@ -14,11 +14,12 @@ struct Vertex
 
 class Picking
 {
-	AFRenderStates renderStates;
+	AFRenderStates polygonRenderStates;
+	AFRenderStates lineRenderStates;
 public:
 	Picking();
 	void Update2D(Vertex v[3]);
-	void Update3D(Vertex v[3]);
+	void Update3D(Vertex poly[3], Vertex lines[6]);
 	void Draw2D();
 	void Draw3D();
 };
@@ -48,7 +49,8 @@ public:
 
 Picking::Picking()
 {
-	renderStates.Create("solid", arrayparam(elements), AFRS_DEPTH_ENABLE);
+	polygonRenderStates.Create("solid", arrayparam(elements), AFRS_DEPTH_ENABLE);
+	lineRenderStates.Create("solid", arrayparam(elements), AFRS_DEPTH_ENABLE | AFRS_PRIMITIVE_LINELIST);
 }
 
 void ScreenPosToRay(const Vec2& scrPos, Vec3& nearPos, Vec3& farPos)
@@ -76,13 +78,14 @@ bool RayVsTriangle(const Vec3& ray1, const Vec3& ray2, const Vec3 triangle[])
 	return (inner[0] < 0 && inner[1] < 0 && inner[2] < 0) || (inner[0] > 0 && inner[1] > 0 && inner[2] > 0);
 }
 
-bool RayVsTriangleMollerTrumbore(const Vec3& ray1, const Vec3& ray2, const Vec3 triangle[])
+bool RayVsTriangleMollerTrumbore(const Vec3& ray1, const Vec3& ray2, const Vec3 triangle[], Vec3& hitPos)
 {
 	Vec3 ray1relative = ray1 - triangle[0];
 	Vec3 axes[] = { triangle[1] - triangle[0], triangle[2] - triangle[0], ray1 - ray2 };
-	Vec3 crosses[] = { cross(axes[1], axes[2]), cross(axes[2], axes[0]) };
-	Vec2 uv = Vec2(dot(ray1relative, crosses[0]), dot(ray1relative, crosses[1])) / std::max(dot(axes[0], crosses[0]), 0.000001f);
-	return uv.x >= 0 && uv.y >= 0 && (uv.x + uv.y) <= 1.f;
+	Vec3 crosses[] = { cross(axes[1], axes[2]), cross(axes[2], axes[0]), cross(axes[0], axes[1]) };
+	Vec3 uvt = Vec3(dot(ray1relative, crosses[0]), dot(ray1relative, crosses[1]), dot(ray1relative, crosses[2])) / std::max(dot(axes[0], crosses[0]), 0.000001f);
+	hitPos = lerp(ray1, ray2, uvt.z);
+	return uvt.x >= 0 && uvt.y >= 0 && (uvt.x + uvt.y) <= 1.f;
 }
 
 void Picking::Update2D(Vertex v[3])
@@ -125,44 +128,60 @@ void Picking::Update2D(Vertex v[3])
 	}
 }
 
-void Picking::Update3D(Vertex v[3])
+void Picking::Update3D(Vertex poly[3], Vertex lines[6])
 {
 	float radian = (float)(std::fmod(GetTime(), 10) * M_PI * 2 / 10);
 	float radius = 50.f;
 	Vec3 triangle[3];
 	for (int i = 0; i < 3; i++) {
 		radian += (float)M_PI * 2 / 3;
-		triangle[i] = v[i].pos = Vec3(std::sin(radian) * radius, std::cos(radian) * radius, 50.f);
-		v[i].color = Vec3(0.5, 0.5, 0.5);
+		triangle[i] = poly[i].pos = Vec3(std::sin(radian) * radius, std::cos(radian) * radius, 50.f);
+		poly[i].color = Vec3(0.5, 0.5, 0.5);
 	}
 
 	Vec3 n, f;
 	ScreenPosToRay(systemMisc.GetMousePos(), n, f);
-	bool hit = RayVsTriangleMollerTrumbore(n, f, triangle);
-	for (int i = 0; i < 3; i++) {
-		v[i].color = hit ? Vec3(i == 0, i == 1, i == 2) : Vec3(0.5, 0.5, 0.5);
+	Vec3 hitPos;
+	bool hit = RayVsTriangleMollerTrumbore(n, f, triangle, hitPos);
+	for (int i = 0; i < 3; i++)
+	{
+		poly[i].color = hit ? Vec3(i == 0, i == 1, i == 2) : Vec3(0.5, 0.5, 0.5);
+	}
+
+	for (int i = 0; i < 3; i++)
+	{
+		Vec3 axis = Vec3(i == 0, i == 1, i == 2);
+		lines[i * 2].color = lines[i * 2 + 1].color = axis;
+		lines[i * 2].pos = hitPos + axis * 10;
+		lines[i * 2 + 1].pos = hitPos + axis * -10;
 	}
 }
 
 void Picking::Draw3D()
 {
-	AFCommandList& cmd = afGetCommandList();
-	cmd.SetRenderStates(renderStates);
-	Vertex v[3];
-	Update3D(v);
-	cmd.SetVertexBuffer(sizeof(v), v, sizeof(Vertex));
+	Vertex poly[3], lines[6];
+	Update3D(poly, lines);
 	Mat mView, mProj;
 	matrixMan.Get(MatrixMan::VIEW, mView);
 	matrixMan.Get(MatrixMan::PROJ, mProj);
 	Mat mVP = mView * mProj;
+
+	AFCommandList& cmd = afGetCommandList();
+	cmd.SetRenderStates(polygonRenderStates);
+	cmd.SetVertexBuffer(sizeof(poly), poly, sizeof(Vertex));
 	cmd.SetBuffer(sizeof(Mat), &mVP, 0);
 	cmd.Draw(3);
+
+	cmd.SetRenderStates(lineRenderStates);
+	cmd.SetVertexBuffer(sizeof(lines), lines, sizeof(Vertex));
+	cmd.SetBuffer(sizeof(Mat), &mVP, 0);
+	cmd.Draw(6);
 }
 
 void Picking::Draw2D()
 {
 	AFCommandList& cmd = afGetCommandList();
-	cmd.SetRenderStates(renderStates);
+	cmd.SetRenderStates(polygonRenderStates);
 	Vertex v[3];
 	Update2D(v);
 	cmd.SetVertexBuffer(sizeof(v), v, sizeof(Vertex));
