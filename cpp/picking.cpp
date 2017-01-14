@@ -14,12 +14,11 @@ struct Vertex
 
 class Picking
 {
-	VBOID vbo2d, vbo3d;
 	AFRenderStates renderStates;
 public:
 	Picking();
-	~Picking();
-	void Update();
+	void Update2D(Vertex v[3]);
+	void Update3D(Vertex v[3]);
 	void Draw2D();
 	void Draw3D();
 };
@@ -35,8 +34,8 @@ class PickingBinder {
 public:
 	PickingBinder() {
 		GetLuaBindFuncContainer().push_back([](lua_State* L) {
-			static luaL_Reg methods[] = {
-				{ "Update", [](lua_State* L) { GET_PICKING p->Update(); return 0; } },
+			static luaL_Reg methods[] =
+			{
 				{ "Draw2D", [](lua_State* L) { GET_PICKING p->Draw2D(); return 0; } },
 				{ "Draw3D", [](lua_State* L) { GET_PICKING p->Draw3D(); return 0; } },
 				{ "__gc", [](lua_State* L) { GET_PICKING p->~Picking(); return 0; } },
@@ -49,17 +48,7 @@ public:
 
 Picking::Picking()
 {
-	vbo2d = afCreateDynamicVertexBuffer(sizeof(Vertex) * 3);
-	int strides = sizeof(Vertex);
-	vbo3d = afCreateDynamicVertexBuffer(sizeof(Vertex) * 3);
 	renderStates.Create("solid", arrayparam(elements), AFRS_DEPTH_ENABLE);
-	Update();
-}
-
-Picking::~Picking()
-{
-	afSafeDeleteBuffer(vbo2d);
-	afSafeDeleteBuffer(vbo3d);
 }
 
 void ScreenPosToRay(const Vec2& scrPos, Vec3& nearPos, Vec3& farPos)
@@ -96,9 +85,8 @@ bool RayVsTriangleMollerTrumbore(const Vec3& ray1, const Vec3& ray2, const Vec3 
 	return uv.x >= 0 && uv.y >= 0 && (uv.x + uv.y) <= 1.f;
 }
 
-void Picking::Update()
+void Picking::Update2D(Vertex v[3])
 {
-	Vertex v[3];
 	float radian = (float)(std::fmod(GetTime(), 3) * M_PI * 2 / 3);
 	float radius = 0.5f;
 	float aspect = (float)systemMisc.GetScreenSize().x / systemMisc.GetScreenSize().y;
@@ -115,7 +103,6 @@ void Picking::Update()
 
 	Vec2 curPosIn2D = curPos / scrPos * Vec2(2, -2) + Vec2(-1, 1);
 
-	// test
 	Mat proj2d;
 #ifdef AF_VULKAN
 	proj2d._22 = -1;
@@ -136,11 +123,12 @@ void Picking::Update()
 	for (int i = 0; i < 3; i++) {
 		v[i].color = hit ? Vec3(i == 0, i == 1, i == 2) : Vec3(0.5, 0.5, 0.5);
 	}
+}
 
-	afWriteBuffer(vbo2d, sizeof(v), v);
-
-	radian = (float)(std::fmod(GetTime(), 10) * M_PI * 2 / 10);
-	radius = 50.f;
+void Picking::Update3D(Vertex v[3])
+{
+	float radian = (float)(std::fmod(GetTime(), 10) * M_PI * 2 / 10);
+	float radius = 50.f;
 	Vec3 triangle[3];
 	for (int i = 0; i < 3; i++) {
 		radian += (float)M_PI * 2 / 3;
@@ -150,19 +138,19 @@ void Picking::Update()
 
 	Vec3 n, f;
 	ScreenPosToRay(systemMisc.GetMousePos(), n, f);
-	hit = RayVsTriangleMollerTrumbore(n, f, triangle);
+	bool hit = RayVsTriangleMollerTrumbore(n, f, triangle);
 	for (int i = 0; i < 3; i++) {
 		v[i].color = hit ? Vec3(i == 0, i == 1, i == 2) : Vec3(0.5, 0.5, 0.5);
 	}
-
-	afWriteBuffer(vbo3d, sizeof(v), v);
 }
 
 void Picking::Draw3D()
 {
 	AFCommandList& cmd = afGetCommandList();
 	cmd.SetRenderStates(renderStates);
-	cmd.SetVertexBuffer(vbo3d, sizeof(Vertex));
+	Vertex v[3];
+	Update3D(v);
+	cmd.SetVertexBuffer(sizeof(v), v, sizeof(Vertex));
 	Mat mView, mProj;
 	matrixMan.Get(MatrixMan::VIEW, mView);
 	matrixMan.Get(MatrixMan::PROJ, mProj);
@@ -175,7 +163,9 @@ void Picking::Draw2D()
 {
 	AFCommandList& cmd = afGetCommandList();
 	cmd.SetRenderStates(renderStates);
-	cmd.SetVertexBuffer(vbo2d, sizeof(Vertex));
+	Vertex v[3];
+	Update2D(v);
+	cmd.SetVertexBuffer(sizeof(v), v, sizeof(Vertex));
 	Mat proj2d;
 #ifdef AF_VULKAN
 	proj2d._22 = -1;
