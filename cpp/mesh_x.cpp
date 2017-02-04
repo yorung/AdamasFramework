@@ -496,7 +496,7 @@ bool MeshX::ParseMesh(char* imgFrame, Block& block, BONE_ID frameId)
 	}
 
 	char *p = imgMesh;
-	int nVertices = _getI(p);
+	const int nVertices = _getI(p);
 	std::vector<Vec3> vertPos;
 	_getFloat3Array(p, vertPos, nVertices);
 	int nOrgFaces = _getI(p);
@@ -557,11 +557,11 @@ bool MeshX::ParseMesh(char* imgFrame, Block& block, BONE_ID frameId)
 		}
 		SkinWeights skin;
 		skin.frameName = _getString(p);
-		int nVertices = _getI(p);
-		for (int i = 0; i < nVertices; i++) {
+		const int nVert = _getI(p);
+		for (int i = 0; i < nVert; i++) {
 			skin.vertexIndices.push_back(_getI(p));
 		}
-		for (int i = 0; i < nVertices; i++) {
+		for (int i = 0; i < nVert; i++) {
 			skin.vertexWeight.push_back(_getF(p));
 		}
 		_getMatrix(p, skin.mtx);

@@ -223,11 +223,11 @@ void WaterSurfaceES2::Init()
 //	const char* shaderName = "vivid";
 	const char* shaderName = "letterbox";
 	int numElements = 0;
-	const InputElement* elements = stockObjects.GetFullScreenInputElements(numElements);
+	const InputElement* fullScreenElements = stockObjects.GetFullScreenInputElements(numElements);
 #ifdef AF_DX12
 	renderStatesPostProcess.Create(shaderName, 0, nullptr, AFRS_NONE, arrayparam(samplers));
 #else
-	renderStatesPostProcess.Create(shaderName, numElements, elements, AFRS_NONE, arrayparam(samplers));
+	renderStatesPostProcess.Create(shaderName, numElements, fullScreenElements, AFRS_NONE, arrayparam(samplers));
 #endif
 
 	texIds.resize(dimof(texFiles));

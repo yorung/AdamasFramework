@@ -154,8 +154,8 @@ inline SRVID afLoadDDSTexture(const char* name, TexDesc& texDesc)
 		for (int m = 0; m < mipCnt; m++) {
 			int w = std::max(1, hdr->w >> m);
 			int h = std::max(1, hdr->h >> m);
-			int size = pitchCalcurator(w, h);
-			r.push_back({ (char*)img + offset, (uint32_t)pitchCalcurator(w, 1), (uint32_t)size });
+			int pitch = pitchCalcurator(w, h);
+			r.push_back({ (char*)img + offset, (uint32_t)pitchCalcurator(w, 1), (uint32_t)pitch });
 			offset += size;
 		}
 	}
