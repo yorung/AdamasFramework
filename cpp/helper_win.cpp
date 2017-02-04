@@ -159,11 +159,15 @@ bool ProcessWindowMessage(HWND hWnd, HACCEL hAccelTable)
 	}
 }
 
-namespace Gdiplus {
+namespace Gdiplus
+{
 	using std::min;
 	using std::max;
 }
+#pragma warning(push)
+#pragma warning(disable:4458)
 #include <gdiplus.h>
+#pragma warning(pop)
 #pragma comment(lib, "gdiplus.lib")
 
 bool LoadImageViaGdiPlus(const char* name, IVec2& size, std::vector<uint32_t>& col)
