@@ -29,7 +29,7 @@ static int LLookAt(lua_State* L)
 	return 0;
 }
 
-static IVec2 GetScreenPos(lua_State* L, const MatrixStack* ms)
+static IVec2 GetScreenPos(const MatrixStack* ms)
 {
 	Mat mW, mV, mP;
 	mW = ms ? ms->Get() : Mat();
@@ -187,7 +187,7 @@ static void BindImage(lua_State* L)
 			quads[id] = Vec4(ltrb.x / desc.size.x, ltrb.y / desc.size.y, ltrb.z / desc.size.x, ltrb.w / desc.size.y);
 		}
 
-		void Draw(lua_State* L, const MatrixStack* matrixStack, int id, const Vec4* color)
+		void Draw(lua_State*, const MatrixStack* matrixStack, int id, const Vec4* color)
 		{
 			if (id < 0 || id >= (int)quads.size()) {
 				return;
@@ -258,10 +258,12 @@ static void BindMesh(lua_State* L)
 	{
 		MeshMan::MMID mmid;
 	public:
-		LMesh(const char *fileName) {
+		LMesh(const char *fileName)
+		{
 			mmid = meshMan.Create(fileName);
 		}
-		void Draw(lua_State* L, const MatrixStack* m, int animId, double time) {
+		void Draw(lua_State*, const MatrixStack* m, int animId, double time)
+		{
 			MeshX* mesh = (MeshX*)meshMan.Get(mmid);
 			if (!mesh) {
 				return;
@@ -317,7 +319,7 @@ static void BindGlobalFuncs(lua_State* L)
 		{ "LookAt", LLookAt },
 		{ "LoadSkyBox", [](lua_State* L) { skyMan.Create(lua_tostring(L, 1), lua_tostring(L, 2)); return 0; } },
 		{ "GetMousePos", [](lua_State* L) { aflPushIVec2(L, systemMisc.GetMousePos()); return 1; } },
-		{ "GetScreenPos", [](lua_State* L) { aflPushIVec2(L, GetScreenPos(L, (MatrixStack*)luaL_testudata(L, 1, matrixStackClassName))); return 1; } },
+		{ "GetScreenPos", [](lua_State* L) { aflPushIVec2(L, GetScreenPos((MatrixStack*)luaL_testudata(L, 1, matrixStackClassName))); return 1; } },
 		{ "MessageBox", [](lua_State* L) { lua_pushstring(L, StrMessageBox(lua_tostring(L, -2), lua_tostring(L, -1))); return 1; } },
 		{ "PostCommand", [](lua_State* L) { PostCommand(lua_tostring(L, -1)); return 0; } },
 		{ nullptr, nullptr },

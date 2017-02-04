@@ -26,8 +26,9 @@ void InputMan::HandleTouch(bool touched)
 }
 
 #ifdef _MSC_VER
-BOOL InputMan::HandleWindowMessage(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+BOOL InputMan::HandleWindowMessage(HWND, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	(void)lParam;
 	switch (message){
 	case WM_ACTIVATE:
 		Reset();
@@ -46,8 +47,6 @@ BOOL InputMan::HandleWindowMessage(HWND hWnd, UINT message, WPARAM wParam, LPARA
 			return TRUE;
 		}
 		break;
-		HandleEdge(wParam & 0xff, message == WM_SYSKEYUP);
-		return TRUE;
 	case WM_LBUTTONDOWN:
 	case WM_LBUTTONUP:
 		HandleEdge(VK_LBUTTON, message == WM_LBUTTONUP);

@@ -48,8 +48,6 @@ void RenderMesh::Init(const Block& block)
 	ibo = afCreateIndexBuffer(numIndices, indices);
 
 	materialMaps = block.materialMaps;
-	VBOID verts[] = { vbo };
-	int strides[] = { sizeof(MeshVertex) };
 }
 
 MeshRenderer::~MeshRenderer()

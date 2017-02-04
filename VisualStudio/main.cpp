@@ -4,7 +4,7 @@
 #define MAX_LOADSTRING 100
 
 // Global Variables:
-HWND hWnd;
+static HWND s_hWnd;
 HINSTANCE hInst;								// current instance
 TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
 TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
@@ -16,13 +16,13 @@ static std::map<int, std::string> g_menuTbl;
 void PostCommand(const char* cmdString)
 {
 	if (!strcmp(cmdString, "exit")) {
-		PostMessage(hWnd, WM_COMMAND, IDM_EXIT, 0);
+		PostMessage(s_hWnd, WM_COMMAND, IDM_EXIT, 0);
 	}
 }
 
 void AddMenu(const char *name, const char *cmd)
 {
-	HMENU hMenu = GetMenu(hWnd);
+	HMENU hMenu = GetMenu(s_hWnd);
 	MENUITEMINFOA mii;
 	mii.cbSize = sizeof(MENUITEMINFOA);
 	mii.fMask = MIIM_TYPE | MIIM_ID;
@@ -32,13 +32,13 @@ void AddMenu(const char *name, const char *cmd)
 	mii.dwTypeData = (char*)name;
 	InsertMenuItemA(hMenu, g_menuTbl.size(), TRUE, &mii);
 	g_menuTbl[mii.wID] = cmd;
-	SetMenu(hWnd, hMenu);
-	DrawMenuBar(hWnd);
+	SetMenu(s_hWnd, hMenu);
+	DrawMenuBar(s_hWnd);
 }
 
 void ClearMenu()
 {
-	HMENU hMenu = GetMenu(hWnd);
+	HMENU hMenu = GetMenu(s_hWnd);
 	std::for_each(g_menuTbl.begin(), g_menuTbl.end(), [hMenu](std::pair<int, std::string> m)
 	{
 		BOOL r = RemoveMenu(hMenu, m.first, MF_BYCOMMAND);
@@ -48,8 +48,8 @@ void ClearMenu()
 	}
 	);
 
-	SetMenu(hWnd, hMenu);
-	DrawMenuBar(hWnd);
+	SetMenu(s_hWnd, hMenu);
+	DrawMenuBar(s_hWnd);
 	g_menuTbl.clear();
 }
 
@@ -80,8 +80,8 @@ INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
 int main(int, char**)
 #else
 int APIENTRY wWinMain(_In_ HINSTANCE,
-	_In_opt_ HINSTANCE hPrevInstance,
-	_In_ LPTSTR    lpCmdLine,
+	_In_opt_ HINSTANCE,
+	_In_ LPTSTR,
 	_In_ int)
 #endif
 
@@ -104,10 +104,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE,
 	int lastW = 0;
 	int lastH = 0;
 
-	while (ProcessWindowMessage(hWnd, hAccelTable))
+	while (ProcessWindowMessage(s_hWnd, hAccelTable))
 	{
 		RECT rc;
-		GetClientRect(hWnd, &rc);
+		GetClientRect(s_hWnd, &rc);
 		int w = rc.right - rc.left;
 		int h = rc.bottom - rc.top;
 		if (w != lastW || h != lastH) {
@@ -115,7 +115,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE,
 			lastH = h;
 			app.Destroy();
 			deviceMan.Destroy();
-			deviceMan.Create(hWnd);
+			deviceMan.Create(s_hWnd);
 			app.Create();
 		}
 		app.Update();
@@ -165,18 +165,18 @@ BOOL InitInstance(HINSTANCE hInstance)
 {
    hInst = hInstance; // Store instance handle in our global variable
 
-   hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
+   s_hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
       CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL);
 
-   if (!hWnd)
+   if (!s_hWnd)
    {
       return FALSE;
    }
 
-   ShowWindow(hWnd, SW_SHOWNORMAL);
-   UpdateWindow(hWnd);
+   ShowWindow(s_hWnd, SW_SHOWNORMAL);
+   UpdateWindow(s_hWnd);
 
-   DragAcceptFiles(hWnd, TRUE);
+   DragAcceptFiles(s_hWnd, TRUE);
    return TRUE;
 }
 

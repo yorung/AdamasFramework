@@ -239,7 +239,6 @@ void WaterSurfaceES3::RenderWater(AFCommandList& cmd, const UniformBuffer& hmub)
 		cmd.SetTexture(texId[i], i);
 	}
 
-	auto& curHeightMap = heightMap[heightCurrentWriteTarget];
 	cmd.SetBuffer(sizeof(hmub), &hmub, 7);
 	renderTarget[0].BeginRenderToThis();
 	stockObjects.ApplyFullScreenVertexBuffer(cmd);

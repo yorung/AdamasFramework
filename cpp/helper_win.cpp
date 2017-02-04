@@ -240,7 +240,7 @@ static HFONT CreateAsianFont(int code, int height)
 		fontName);						// Font Name
 }
 
-void MakeFontBitmap(const char* fontName, const CharSignature& sig, DIB& dib, CharDesc& cache)
+void MakeFontBitmap(const char* /*fontName*/, const CharSignature& sig, DIB& dib, CharDesc& cache)
 {
 	bool result = false;
 
