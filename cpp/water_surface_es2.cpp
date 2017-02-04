@@ -28,7 +28,6 @@ class WaterSurfaceES2
 	WaterSurfaceClassicUBO uboBuf;
 	AFRenderStates renderStatesWater;
 	AFRenderStates renderStatesPostProcess;
-	int lines;
 	void UpdateVert(std::vector<WaterVert>& vert);
 	void UpdateRipple();
 	WaterRipple ripples[2];
@@ -214,30 +213,11 @@ void WaterSurfaceES2::Init()
 
 	lastTime = GetTime();
 
-	std::vector<AFIndex> indi;
 	std::vector<WaterVert> vert;
 	UpdateVert(vert);
 
-	for (int z = 0; z < tileMax; z++) {
-		if (z != 0) {
-			indi.push_back(z * vertMax);
-		}
-		indi.push_back(z * vertMax);
-		for (int x = 0; x < tileMax; x++) {
-			indi.push_back((z + 1) * vertMax + x);
-			indi.push_back(z * vertMax + x + 1);
-		}
-		indi.push_back((z + 1) * vertMax + vertMax - 1);
-		if (z != tileMax - 1) {
-			indi.push_back((z + 1) * vertMax + vertMax - 1);
-		}
-	}
-
-	lines = indi.size() / 2;
-	nIndi = indi.size();
-
 	vbo = afCreateDynamicVertexBuffer(vert.size() * sizeof(WaterVert));
-	ibo = afCreateIndexBuffer(indi.size(), &indi[0]);
+	ibo = afCreateTiledPlaneIBO(tileMax, &nIndi);
 	renderStatesWater.Create("water_es2", arrayparam(elements), AFRS_OFFSCREEN_RENDER_TARGET_B8G8R8A8_UNORM, arrayparam(samplers));
 
 //	const char* shaderName = "vivid";
