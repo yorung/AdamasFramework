@@ -67,7 +67,7 @@ struct AnimationSet
 
 struct ubyte4
 {
-	unsigned char x, y, z, w;
+	uint8_t x, y, z, w;
 };
 
 struct MeshVertex

@@ -34,13 +34,13 @@ BOOL InputMan::HandleWindowMessage(HWND hWnd, UINT message, WPARAM wParam, LPARA
 		break;
 	case WM_KEYDOWN:
 	case WM_KEYUP:
-		HandleEdge(wParam & 0xff, message == WM_KEYUP);
+		HandleEdge(int(wParam & 0xff), message == WM_KEYUP);
 		return TRUE;
 	case WM_SYSKEYDOWN:
 	case WM_SYSKEYUP:
 		switch ((int)wParam){
 		case VK_F10:	// F10 is an system key
-			HandleEdge(wParam & 0xff, message == WM_SYSKEYUP);
+			HandleEdge(int(wParam & 0xff), message == WM_SYSKEYUP);
 			return TRUE;
 		case VK_MENU:	// prevent entering system menu loop when ALT key pressed
 			return TRUE;

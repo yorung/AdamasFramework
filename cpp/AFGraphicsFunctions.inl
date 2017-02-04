@@ -3,22 +3,28 @@ inline IBOID afCreateTiledPlaneIBO(int numTiles, int* numIndies)
 	const int numVert = numTiles + 1;
 
 	std::vector<AFIndex> indi;
-	for (int y = 0; y < numTiles; y++) {
-		if (y != 0) {
-			indi.push_back(y * numVert);
+
+	for (int y = 0; y < numTiles; y++)
+	{
+		if (y != 0)
+		{
+			indi.push_back(AFIndex(y * numVert));
 		}
-		indi.push_back(y * numVert);
-		for (int x = 0; x < numTiles; x++) {
-			indi.push_back((y + 1) * numVert + x);
-			indi.push_back(y * numVert + x + 1);
+		indi.push_back(AFIndex(y * numVert));
+		for (int x = 0; x < numTiles; x++)
+		{
+			indi.push_back(AFIndex((y + 1) * numVert + x));
+			indi.push_back(AFIndex(y * numVert + x + 1));
 		}
-		indi.push_back((y + 1) * numVert + numVert - 1);
-		if (y != numTiles - 1) {
-			indi.push_back((y + 1) * numVert + numVert - 1);
+		indi.push_back(AFIndex((y + 1) * numVert + numVert - 1));
+		if (y != numTiles - 1)
+		{
+			indi.push_back(AFIndex((y + 1) * numVert + numVert - 1));
 		}
 	}
 
-	if (numIndies) {
+	if (numIndies)
+	{
 		*numIndies = (int)indi.size();
 	}
 
@@ -46,7 +52,7 @@ inline IBOID afCreateQuadListIndexBuffer(int numQuads)
 		static int tbl[] = { 0, 1, 2, 1, 3, 2 };
 		int rectIdx = i / 6;
 		int vertIdx = i % 6;
-		indi[i] = rectIdx * 4 + tbl[vertIdx];
+		indi[i] = AFIndex(rectIdx * 4 + tbl[vertIdx]);
 	}
 	return afCreateIndexBuffer(numIndi, &indi[0]);
 }

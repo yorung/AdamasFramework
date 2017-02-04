@@ -129,18 +129,20 @@ static void _getMatrix(char*& p, Mat& m)
 static int _getIndices(char*& p, std::vector<AFIndex>& indices, int nOrgFaces, std::vector<bool>& isOrgFace4Vertices)
 {
 	int nDividedTotalFaces = 0;
-	for (int i = 0; i < nOrgFaces; i++) {
+	for (int i = 0; i < nOrgFaces; i++)
+	{
 		int nVertices = _getI(p);
 		assert(nVertices == 3 || nVertices == 4);
 		int begin = indices.size();
-		indices.push_back(_getI(p));
-		indices.push_back(_getI(p));
-		indices.push_back(_getI(p));
+		indices.push_back((AFIndex)_getI(p));
+		indices.push_back((AFIndex)_getI(p));
+		indices.push_back((AFIndex)_getI(p));
 		nDividedTotalFaces++;
-		if (nVertices == 4) {
-			indices.push_back(indices[begin + 2]);
-			indices.push_back(_getI(p));
-			indices.push_back(indices[begin]);
+		if (nVertices == 4)
+		{
+			indices.push_back((AFIndex)indices[begin + 2]);
+			indices.push_back((AFIndex)_getI(p));
+			indices.push_back((AFIndex)indices[begin]);
 			nDividedTotalFaces++;
 		}
 		isOrgFace4Vertices.push_back(nVertices == 4);
@@ -458,22 +460,26 @@ struct SkinWeights {
 
 void MeshX::_storeWeight(MeshVertex& v, int frameId, float weight)
 {
-	if (v.blendWeights.x == 0) {
+	assert(frameId <= std::numeric_limits<uint8_t>::max());
+	if (v.blendWeights.x == 0)
+	{
 		v.blendWeights.x = weight;
-		v.blendIndices.x = frameId;
+		v.blendIndices.x = (uint8_t)frameId;
 		return;
 	}
-	if (v.blendWeights.y == 0) {
+	if (v.blendWeights.y == 0)
+	{
 		v.blendWeights.y = weight;
-		v.blendIndices.y = frameId;
+		v.blendIndices.y = (uint8_t)frameId;
 		return;
 	}
-	if (v.blendWeights.z == 0) {
+	if (v.blendWeights.z == 0)
+	{
 		v.blendWeights.z = weight;
-		v.blendIndices.z = frameId;
+		v.blendIndices.z = (uint8_t)frameId;
 		return;
 	}
-	v.blendIndices.w = frameId;
+	v.blendIndices.w = (uint8_t)frameId;
 }
 
 bool MeshX::ParseMesh(char* imgFrame, Block& block, BONE_ID frameId)
@@ -610,7 +616,7 @@ bool MeshX::ParseMesh(char* imgFrame, Block& block, BONE_ID frameId)
 		v.blendIndices.x = 0;
 		v.blendIndices.y = 0;
 		v.blendIndices.z = 0;
-		v.blendIndices.w = frameId;
+		v.blendIndices.w = (uint8_t)frameId;
 		vertices.push_back(v);
 	}
 
@@ -652,7 +658,7 @@ void MeshX::_mergeBlocks(Block& d, const Block& s)
 	int verticeBase = d.vertices.size();
 	int indicesBase = d.indices.size();
 	std::for_each(s.vertices.begin(), s.vertices.end(), [&](const MeshVertex& v) { d.vertices.push_back(v); });
-	std::for_each(s.indices.begin(), s.indices.end(), [&](unsigned i) { d.indices.push_back(i + verticeBase); });
+	std::for_each(s.indices.begin(), s.indices.end(), [&](unsigned i) { d.indices.push_back(AFIndex(i + verticeBase)); });
 	std::for_each(s.materialMaps.begin(), s.materialMaps.end(), [&](MaterialMap m) {
 		m.faceStartIndex += indicesBase / 3;
 		d.materialMaps.push_back(m);

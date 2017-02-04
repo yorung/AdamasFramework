@@ -81,11 +81,11 @@ bool DIB::Create(int w, int h, int bits, int level)
 	bh->biWidth = w;
 	bh->biHeight = -h;	// top down
 	bh->biPlanes = 1;
-	bh->biBitCount = bits;
+	bh->biBitCount = (WORD)bits;
 
 	if (bits == 8) {
 		for (int i = 0; i < 256; i++) {
-			int v = std::min(i * 255 / level, 255);
+			BYTE v = (BYTE)std::min(i * 255 / level, 255);
 			bmi.bmiColors[i].rgbRed = v;
 			bmi.bmiColors[i].rgbGreen = v;
 			bmi.bmiColors[i].rgbBlue = v;

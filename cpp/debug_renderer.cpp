@@ -10,7 +10,7 @@ static void InitVertex(MeshVertex& v, uint32_t color, BONE_ID boneId)
 	v.xyz.x = v.xyz.y = v.xyz.z = 0;
 	v.color = color;
 	v.uv.x = v.uv.y = 0;
-	v.blendIndices.x = v.blendIndices.y = v.blendIndices.z = v.blendIndices.w = boneId;
+	v.blendIndices.x = v.blendIndices.y = v.blendIndices.z = v.blendIndices.w = (uint8_t)boneId;
 	v.blendWeights.x = v.blendWeights.y = v.blendWeights.z = 0;
 }
 
