@@ -438,13 +438,15 @@ BONE_ID MeshX::CreateFrameId(const char* name)
 	return m_frames.size() - 1;
 }
 
-struct SkinWeights {
+struct SkinWeights
+{
 	std::vector<int> vertexIndices;
 	std::vector<float> vertexWeight;
 	std::string frameName;
 	int frameId;
 	Mat mtx;
-	const SkinWeights& operator=(const SkinWeights& r) {
+	const SkinWeights& operator=(const SkinWeights& r)
+	{
 		vertexIndices = r.vertexIndices;
 		vertexWeight = r.vertexWeight;
 		frameName = r.frameName;
@@ -1096,10 +1098,10 @@ void MeshX::Draw(const MeshXAnimResult& animResult, const Mat& worldMat) const
 		}
 
 		if (g_type == "mesh") {
-			meshRenderer.DrawRenderMesh(renderMeshId, worldMat, vertexTransformMat, m_frames.size(), m_block);
+			meshRenderer.DrawRenderMesh(renderMeshId, worldMat, vertexTransformMat, m_frames.size());
 		}
 		if (g_type == "bone") {
-			meshRenderer.DrawRenderMesh(boneRenderMeshId, worldMat, vertexTransformMat, m_frames.size(), bones);
+			meshRenderer.DrawRenderMesh(boneRenderMeshId, worldMat, vertexTransformMat, m_frames.size());
 		}
 	}
 }

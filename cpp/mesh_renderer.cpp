@@ -112,14 +112,13 @@ RenderMesh* MeshRenderer::GetMeshByMRID(MRID id)
 	return r;
 }
 
-void MeshRenderer::DrawRenderMesh(MRID id, const Mat& worldMat, const Mat BoneMatrices[], int nBones, const Block& block)
+void MeshRenderer::DrawRenderMesh(MRID id, const Mat& worldMat, const Mat BoneMatrices[], int nBones)
 {
 	if (!renderStates.IsReady())
 	{
 		return;
 	}
 	assert(GetMeshByMRID(id));
-	assert(!block.materialMaps.empty());
 
 	if (nStoredCommands && id != perDrawCallUBO.commands[0].meshId)
 	{
