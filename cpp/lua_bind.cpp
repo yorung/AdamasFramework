@@ -293,7 +293,7 @@ void BindWin(lua_State *L)
 {
 	aflDumpStack();
 	int r = luaL_newmetatable(L, rectClassName);
-	assert(r);
+	afVerify(r);
 	aflDumpStack();
 
 	static struct luaL_Reg indexMethods[] =

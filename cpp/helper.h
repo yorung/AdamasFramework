@@ -41,4 +41,5 @@ struct CharDesc {
 };
 void MakeFontBitmap(const char* fontName, const CharSignature& code, class DIB& dib, CharDesc& desc);
 
-void afVerify(bool ok);
+void _afVerify(const char* file, const char* func, int line, const char* command, bool result);
+#define afVerify(command) do{ _afVerify(__FILE__, __FUNCTION__, __LINE__, #command, !!(command)); } while(0)

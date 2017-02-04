@@ -46,6 +46,7 @@ using Microsoft::WRL::ComPtr;
 #include <stack>
 #include <chrono>
 #include <memory>
+#include <limits>
 
 #include <assert.h>
 #include <stdint.h>

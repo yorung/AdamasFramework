@@ -15,12 +15,14 @@ double GetTime()
 	return std::chrono::duration_cast<std::chrono::duration<double, std::ratio<1, 1>>>(now - start).count();
 }
 
-void afVerify(bool ok)
+void _afVerify(const char* file, const char* func, int line, const char* command, bool ok)
 {
-	if (ok) {
+	if (ok)
+	{
 		return;
 	}
-	aflog("afVerify: Fatal");
-	while (strlen(" ")) {
+	aflog("afVerify Fatal: %s %s %d %s", file, func, line, command);
+	while (strlen(" "))
+	{
 	}
 }

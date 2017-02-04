@@ -38,13 +38,11 @@ void Voice::Create(const char *fileName)
 {
 	Destroy();
 	context = new WaveContext;
-	bool result = false;
-	result = !!(context->fileImg = LoadFile(fileName));
-	assert(result);
+	context->fileImg = LoadFile(fileName);
+	assert(context->fileImg);
 	const WAVEFORMATEX* wfx = (WAVEFORMATEX*)RiffFindChunk(context->fileImg, "fmt ");
 	assert(wfx);
-	result = FindAndFillWavehdr(&context->wavehdr, context->fileImg);
-	assert(result);
+	afVerify(FindAndFillWavehdr(&context->wavehdr, context->fileImg));
 	mmresultVerify(waveOutOpen(&context->hWaveOut, WAVE_MAPPER, wfx, 0, 0, CALLBACK_NULL));
 	mmresultVerify(waveOutPrepareHeader(context->hWaveOut, &context->wavehdr, sizeof(WAVEHDR)));
 }

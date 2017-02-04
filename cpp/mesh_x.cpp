@@ -486,6 +486,7 @@ void MeshX::_storeWeight(MeshVertex& v, int frameId, float weight)
 
 bool MeshX::ParseMesh(char* imgFrame, Block& block, BONE_ID frameId)
 {
+	assert(frameId <= std::numeric_limits<uint8_t>::max());
 	auto& vertices = block.vertices;
 	auto& indices = block.indices;
 	vertices.clear();
@@ -529,8 +530,8 @@ bool MeshX::ParseMesh(char* imgFrame, Block& block, BONE_ID frameId)
 	std::vector<AFIndex> normalIndices;
 	int nDividedTotalFacesNormal = _getIndices(p, normalIndices, nOrgNormalFaces, isOrgFace4VerticesNormal);
 	if (p) {
-		assert(nDividedTotalFacesNormal == nDividedTotalFaces);
-		assert(nOrgNormalFaces == nOrgFaces);
+		afVerify(nDividedTotalFacesNormal == nDividedTotalFaces);
+		afVerify(nOrgNormalFaces == nOrgFaces);
 	}
 
 	p = _searchChildTag(imgMesh, "MeshMaterialList");
@@ -869,7 +870,7 @@ static void ParseAnimationKeys(char* p, Animation& animation)
 			int nValues = _getI(key);
 			switch(keys.keyType) {
 			case 0:		// rotation
-				assert(nValues == 4);
+				afVerify(nValues == 4);
 				{
 					Quat q;
 					q.w = _getF(key);
@@ -880,19 +881,19 @@ static void ParseAnimationKeys(char* p, Animation& animation)
 				}
 				break;
 			case 1:		// scale
-				assert(nValues == 3);
+				afVerify(nValues == 3);
 				k.mat._11 = _getF(key);
 				k.mat._22 = _getF(key);
 				k.mat._33 = _getF(key);
 				break;
 			case 2:		// position
-				assert(nValues == 3);
+				afVerify(nValues == 3);
 				k.mat._41 = _getF(key);
 				k.mat._42 = _getF(key);
 				k.mat._43 = _getF(key);
 				break;
 			case 3:		// matrix
-				assert(nValues == 16);
+				afVerify(nValues == 16);
 				_getMatrix(key, k.mat);
 				break;
 			}

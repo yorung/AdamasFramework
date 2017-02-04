@@ -9,7 +9,7 @@ void _aflDumpStack(lua_State* L, const char* func, int line)
 		int negative = -(i + 1);
 		int type = lua_type(L, positive);
 		int typeN = lua_type(L, negative);
-		assert(type == typeN);
+		afVerify(type == typeN);
 		char buf[48] = "";
 		switch (type) {
 		case LUA_TNUMBER:
@@ -47,7 +47,7 @@ static int CreateCppClassInstance(lua_State* L)
 static void CreateClassMetatable(lua_State* L, const char* className, luaL_Reg methods[])
 {
 	int r = luaL_newmetatable(L, className);
-	assert(r);
+	afVerify(r);
 
 	lua_pushstring(L, "__index");
 	lua_pushvalue(L, -2);
@@ -112,23 +112,26 @@ int aflDoFileForReplace(lua_State* L)
 {
 	const char* fileName = lua_tostring(L, -1);
 	char* img = (char*)LoadFile(fileName);
-	if (!img) {
-		luaL_error(L, "aflDoFileForReplace: could not load file %s", fileName);
-		return false;
-	}
 	bool ok = true;
-	if (luaL_loadbuffer(L, img, strlen(img), fileName)) {
+	if (!img)
+	{
+		luaL_error(L, "aflDoFileForReplace: could not load file %s", fileName);
+		ok = false;
+	}
+	if (luaL_loadbuffer(L, img, strlen(img), fileName))
+	{
 		luaL_error(L, "luaL_loadbuffer failed!\n%s", lua_tostring(L, -1));
 		lua_pop(L, 1);
 		ok = false;
 	}
 	free(img);
-	if (ok && lua_pcall(L, 0, LUA_MULTRET, 0)) {
+	if (ok && lua_pcall(L, 0, LUA_MULTRET, 0))
+	{
 		luaL_error(L, "lua_pcall failed!\n%s", lua_tostring(L, -1));
 		lua_pop(L, 1);
 		ok = false;
 	}
-	return lua_gettop(L) - 1;
+	return ok ? lua_gettop(L) - 1 : 0;
 }
 
 int aflPrintForReplace(lua_State* L)

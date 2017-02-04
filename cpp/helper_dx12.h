@@ -64,8 +64,10 @@ class AFRenderStates {
 	PrimitiveTopology primitiveTopology = PT_TRIANGLESTRIP;
 public:
 	bool IsReady() { return !!pipelineState; }
-	void Create(const char* shaderName, int numInputElements, const InputElement* inputElements, uint32_t flags, int numSamplerTypes_ = 0, const SamplerType samplerTypes_[] = nullptr, PrimitiveTopology primitiveTopology_ = PT_TRIANGLESTRIP)
+	void Create(const char* shaderName, int numInputElements, const InputElement* inputElements, uint32_t flags, int numSamplerTypes_ = 0, const SamplerType samplerTypes_[] = nullptr)
 	{
+		(void)samplerTypes_;
+		(void)numSamplerTypes_;
 		primitiveTopology = RenderFlagsToPrimitiveTopology(flags);
 		pipelineState = afCreatePSO(shaderName, inputElements, numInputElements, flags, rootSignature);
 	}

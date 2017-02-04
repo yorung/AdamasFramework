@@ -5,6 +5,7 @@
 #include <D3DCommon.h>
 #pragma comment(lib, "dxguid.lib")
 #pragma comment(lib, "d3d11.lib")
+#pragma warning(disable:4238) // nonstandard extension used : class rvalue used as lvalue
 
 DeviceMan11 deviceMan11;
 
@@ -142,7 +143,7 @@ SRVID afCreateTexture2D(AFFormat format, const TexDesc& afDesc, int mipCount, co
 	ComPtr<ID3D11Texture2D> tex;
 	CD3D11_TEXTURE2D_DESC desc(format, afDesc.size.x, afDesc.size.y, afDesc.arraySize, mipCount, D3D11_BIND_SHADER_RESOURCE, D3D11_USAGE_DEFAULT, 0, 1, 0, afDesc.isCubeMap ? D3D11_RESOURCE_MISC_TEXTURECUBE : 0);
 	deviceMan11.GetDevice()->CreateTexture2D(&desc, datas, &tex);
-	CD3D11_SHADER_RESOURCE_VIEW_DESC srvDesc(afDesc.isCubeMap ? D3D_SRV_DIMENSION_TEXTURECUBE : D3D_SRV_DIMENSION_TEXTURE2D, desc.Format, 0, -1);
+	CD3D11_SHADER_RESOURCE_VIEW_DESC srvDesc(afDesc.isCubeMap ? D3D_SRV_DIMENSION_TEXTURECUBE : D3D_SRV_DIMENSION_TEXTURE2D, desc.Format);
 	ComPtr<ID3D11ShaderResourceView> srv;
 	deviceMan11.GetDevice()->CreateShaderResourceView(tex.Get(), &srvDesc, &srv);
 	return srv;
@@ -218,7 +219,7 @@ void afWriteBuffer(const IBOID p, int size, const void* buf)
 	}
 #endif
 	D3D11_MAPPED_SUBRESOURCE m;
-	HRESULT hr = deviceMan11.GetContext()->Map(p.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &m);
+	afHandleDXError(deviceMan11.GetContext()->Map(p.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &m));
 	memcpy(m.pData, buf, size);
 	deviceMan11.GetContext()->Unmap(p.Get(), 0);
 }
@@ -236,7 +237,7 @@ void afWriteTexture(SRVID srv, const TexDesc& desc, const void* buf)
 //	tx->GetDesc(&desc);
 
 	D3D11_MAPPED_SUBRESOURCE m;
-	HRESULT hr = deviceMan11.GetContext()->Map(tx.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &m);
+	afHandleDXError(deviceMan11.GetContext()->Map(tx.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &m));
 	memcpy(m.pData, buf, desc.size.x * desc.size.y * 4);
 	deviceMan11.GetContext()->Unmap(tx.Get(), 0);
 }

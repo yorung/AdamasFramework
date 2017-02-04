@@ -242,8 +242,6 @@ static HFONT CreateAsianFont(int code, int height)
 
 void MakeFontBitmap(const char* /*fontName*/, const CharSignature& sig, DIB& dib, CharDesc& cache)
 {
-	bool result = false;
-
 	HFONT font = CreateAsianFont(sig.code, sig.fontSize);
 	assert(font);
 
@@ -255,21 +253,25 @@ void MakeFontBitmap(const char* /*fontName*/, const CharSignature& sig, DIB& dib
 	const MAT2 mat = { { 0,1 },{ 0,0 },{ 0,0 },{ 0,1 } };
 	GLYPHMETRICS met;
 	memset(&met, 0, sizeof(met));
-	DWORD sizeReq = GetGlyphOutlineW(hdc, (UINT)sig.code, GGO_GRAY8_BITMAP, &met, 0, nullptr, &mat);
+	int sizeReq = (int)GetGlyphOutlineW(hdc, (UINT)sig.code, GGO_GRAY8_BITMAP, &met, 0, nullptr, &mat);
 	if (sizeReq) {
 		DIB dib3;
 		afVerify(dib3.Create(met.gmBlackBoxX, met.gmBlackBoxY, 8, 64));
 		afVerify(dib.Create(met.gmBlackBoxX, met.gmBlackBoxY));
 		int sizeBuf = dib3.GetByteSize();
-		if (sizeReq != sizeBuf) {
+		if (sizeReq != sizeBuf)
+		{
 			aflog("FontMan::Build() buf size mismatch! code=%d req=%d dib=%d\n", sig.code, sizeReq, sizeBuf);
 			int fakeBlackBoxY = met.gmBlackBoxY + 1;
 			afVerify(dib3.Create(met.gmBlackBoxX, fakeBlackBoxY, 8, 64));
 			afVerify(dib.Create(met.gmBlackBoxX, fakeBlackBoxY));
-			int sizeBuf = dib3.GetByteSize();
-			if (sizeReq != sizeBuf) {
+			sizeBuf = dib3.GetByteSize();
+			if (sizeReq != sizeBuf)
+			{
 				afVerify(false);
-			} else {
+			}
+			else
+			{
 				aflog("FontMan::Build() buf size matched by increasing Y, but it is an awful workaround. code=%d req=%d dib=%d\n", sig.code, sizeReq, sizeBuf);
 			}
 		}
@@ -295,6 +297,29 @@ void MakeFontBitmap(const char* /*fontName*/, const CharSignature& sig, DIB& dib
 #endif
 
 #if defined(__d3d11_h__) || defined(__d3d12_h__)
+HRESULT _afHandleDXError(const char* file, const char* func, int line, const char* command, HRESULT r)
+{
+	if (r != S_OK)
+	{
+		const char *err = nullptr;
+		switch (r)
+		{
+#define E(er) case er: err = #er; break
+			E(E_INVALIDARG);
+			E(E_OUTOFMEMORY);
+			E(DXGI_ERROR_UNSUPPORTED);
+			E(DXGI_ERROR_DEVICE_RESET);
+			E(DXGI_ERROR_DEVICE_REMOVED);
+#undef E
+		default:
+			aflog("%s %s(%d): err=%08x %s\n", file, func, line, r, command);
+			return r;
+		}
+		aflog("%s %s(%d): err=%08x %s %s\n", file, func, line, r, err, command);
+	}
+	return r;
+}
+
 #include <D3Dcompiler.h>
 #pragma comment(lib, "d3dcompiler.lib")
 ComPtr<ID3DBlob> afCompileHLSL(const char* name, const char* entryPoint, const char* target)
@@ -313,6 +338,10 @@ ComPtr<ID3DBlob> afCompileHLSL(const char* name, const char* entryPoint, const c
 	if (err)
 	{
 		MessageBoxA(nullptr, (const char*)err->GetBufferPointer(), name, MB_OK | MB_ICONERROR);
+	}
+	else if (hr != S_OK)
+	{
+		MessageBoxA(nullptr, "D3DCompileFromFile error", name, MB_OK | MB_ICONERROR);
 	}
 	return blob;
 }

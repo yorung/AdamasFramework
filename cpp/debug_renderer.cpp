@@ -4,6 +4,7 @@ DebugRenderer debugRenderer;
 
 static void InitVertex(MeshVertex& v, uint32_t color, BONE_ID boneId)
 {
+	assert(boneId <= std::numeric_limits<uint8_t>::max());
 	v.normal.x = 1;
 	v.normal.y = 0;
 	v.normal.z = 0;

@@ -59,8 +59,7 @@ void afWriteBuffer(const IBOID id, int size, const void* buf)
 #endif
 	void* p;
 	D3D12_RANGE readRange = {};
-	HRESULT hr = id->Map(0, &readRange, &p);
-	assert(hr == S_OK);
+	afHandleDXError(id->Map(0, &readRange, &p));
 	assert(p);
 	memcpy(p, buf, size);
 	D3D12_RANGE wroteRange = {0, (SIZE_T)size};
@@ -71,9 +70,9 @@ static ComPtr<ID3D12Resource> afCreateUploadHeap(int size, const void* buf = nul
 {
 	D3D12_RESOURCE_DESC desc = { D3D12_RESOURCE_DIMENSION_BUFFER, 0, (UINT64)size, 1, 1, 1, DXGI_FORMAT_UNKNOWN, { 1, 0 }, D3D12_TEXTURE_LAYOUT_ROW_MAJOR, D3D12_RESOURCE_FLAG_NONE };
 	UBOID o;
-	HRESULT hr = deviceMan.GetDevice()->CreateCommittedResource(&uploadHeapProperties, D3D12_HEAP_FLAG_NONE, &desc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&o));
-	assert(hr == S_OK);
-	if (buf) {
+	afHandleDXError(deviceMan.GetDevice()->CreateCommittedResource(&uploadHeapProperties, D3D12_HEAP_FLAG_NONE, &desc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&o)));
+	if (buf)
+	{
 		afWriteBuffer(o, size, buf);
 	}
 	return o;
@@ -127,13 +126,14 @@ void afWriteTexture(SRVID tex, const TexDesc& desc, int mipCount, const AFTexSub
 	UINT64 rowSizeInBytes[maxSubresources], uploadSize;
 	UINT numRows[maxSubresources];
 	D3D12_RESOURCE_BARRIER transitions1[maxSubresources], transitions2[maxSubresources];
-	deviceMan.GetDevice()->GetCopyableFootprints(&tex->GetDesc(), 0, subResources, 0, footprints, numRows, rowSizeInBytes, &uploadSize);
+	D3D12_RESOURCE_DESC texDesc = tex->GetDesc();
+	deviceMan.GetDevice()->GetCopyableFootprints(&texDesc, 0, subResources, 0, footprints, numRows, rowSizeInBytes, &uploadSize);
 	ComPtr<ID3D12Resource> uploadBuf = afCreateUploadHeap((int)uploadSize);
 	assert(uploadBuf);
 	uploadBuf->SetName(__FUNCTIONW__ L" intermediate buffer");
 	D3D12_RANGE readRange = {};
 	BYTE* ptr;
-	HRESULT hr = uploadBuf->Map(0, &readRange, (void**)&ptr);
+	afHandleDXError(uploadBuf->Map(0, &readRange, (void**)&ptr));
 	assert(ptr);
 	for (UINT i = 0; i < subResources; i++)
 	{
@@ -212,7 +212,7 @@ SRVID afCreateDynamicTexture(AFFormat format, const IVec2& size, void *image, bo
 		}
 	}
 
-	HRESULT hr = deviceMan.GetDevice()->CreateCommittedResource(&defaultHeapProperties, D3D12_HEAP_FLAG_NONE, &textureDesc, resourceState, isRenderTargetOrDepthStencil ? &clearValue : nullptr, IID_PPV_ARGS(&id));
+	afHandleDXError(deviceMan.GetDevice()->CreateCommittedResource(&defaultHeapProperties, D3D12_HEAP_FLAG_NONE, &textureDesc, resourceState, isRenderTargetOrDepthStencil ? &clearValue : nullptr, IID_PPV_ARGS(&id)));
 	TexDesc texDesc;
 	texDesc.size = size;
 	if (image)
@@ -227,6 +227,7 @@ SRVID afCreateTexture2D(AFFormat format, const struct TexDesc& desc, int mipCoun
 	D3D12_RESOURCE_DESC resourceDesc = { D3D12_RESOURCE_DIMENSION_TEXTURE2D, 0, (UINT64)desc.size.x, (UINT)desc.size.y, (UINT16)desc.arraySize, (UINT16)mipCount, format, {1, 0} };
 	SRVID tex;
 	HRESULT hr = deviceMan.GetDevice()->CreateCommittedResource(&defaultHeapProperties, D3D12_HEAP_FLAG_NONE, &resourceDesc, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, nullptr, IID_PPV_ARGS(&tex));
+	assert(hr == S_OK);
 	afWriteTexture(tex, desc, mipCount, datas);
 	return tex;
 }
@@ -267,6 +268,7 @@ ComPtr<ID3D12PipelineState> afCreatePSO(const char *shaderName, const InputEleme
 	{
 		if (rootSignatureBlob) {
 			HRESULT hr = deviceMan.GetDevice()->CreateRootSignature(0, rootSignatureBlob->GetBufferPointer(), rootSignatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature));
+			assert(hr == S_OK);
 		}
 	}
 
@@ -397,12 +399,12 @@ void AFRenderTarget::InitForDefaultRenderTarget()
 
 void AFRenderTarget::Init(IVec2 size, AFFormat colorFormat, AFFormat depthStencilFormat)
 {
+	(void)depthStencilFormat;
 	texSize = size;
 	renderTarget = afCreateDynamicTexture(colorFormat, size, nullptr, true);
 	currentState = D3D12_RESOURCE_STATE_RENDER_TARGET;
 	deviceMan.AddIntermediateCommandlistDependentResource(renderTarget);
 	afSetTextureName(renderTarget, __FUNCTION__);
-	ID3D12GraphicsCommandList* commandList = deviceMan.GetCommandList();
 }
 
 void AFRenderTarget::Destroy()

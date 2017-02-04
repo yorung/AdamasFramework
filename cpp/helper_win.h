@@ -48,3 +48,6 @@ typedef DXGI_FORMAT AFFormat;
 void ShowLastWinAPIError();
 bool ProcessWindowMessage(HWND hWnd, HACCEL hAccelTable);
 bool LoadImageViaGdiPlus(const char* name, IVec2& size, std::vector<uint32_t>& col);
+
+HRESULT _afHandleDXError(const char* file, const char* func, int line, const char* command, HRESULT result);
+#define afHandleDXError(command) do{ _afHandleDXError(__FILE__, __FUNCTION__, __LINE__, #command, command); } while(0)
