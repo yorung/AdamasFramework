@@ -1,7 +1,7 @@
 class AFDynamicQuadListVertexBuffer
 {
 	IBOID ibo;
-	UINT stride;
+	uint32_t stride;
 	int vertexBufferSize;
 public:
 	~AFDynamicQuadListVertexBuffer() { Destroy(); }
