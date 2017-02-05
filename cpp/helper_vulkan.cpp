@@ -479,6 +479,7 @@ void DeviceManVK::Create(HWND hWnd)
 	uint32_t numDevices = _countof(devices);
 	afHandleVKError(vkEnumeratePhysicalDevices(inst, &numDevices, devices));
 	physicalDevice = devices[0];
+	afVerify(physicalDevice);
 
 	float priorities[] = { 0 };
 	const VkDeviceQueueCreateInfo devQueueInfos[] = { { VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO, nullptr, 0, 0, 1, priorities } };

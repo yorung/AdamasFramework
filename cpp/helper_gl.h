@@ -231,9 +231,53 @@ public:
 	void Destroy();
 };
 
+class AFCommandList
+{
+	AFRenderStates* currentRS = nullptr;
+public:
+	void SetRenderStates(AFRenderStates& rs)
+	{
+		rs.Apply();
+		currentRS = &rs;
+	}
+	void SetTexture(SRVID texId, int descritorSetIndex)
+	{
+		afBindTexture(texId, descritorSetIndex);
+	}
+	void SetBuffer(int size, const void* buf, int descritorSetIndex)
+	{
+		char name[] = { 'b', (char)('0' + descritorSetIndex), '\0' };
+		afUpdateUniformVariable(currentRS->GetShaderId(), size, buf, name);
+	}
+#if defined(AF_GLES31)
+	void SetBuffer(UBOID uniformBuffer, int descriptorSetIndex)
+	{
+		afBindBuffer(uniformBuffer, descriptorSetIndex);
+	}
+#endif
+	void SetVertexBuffer(VBOID vertexBuffer, int stride)
+	{
+		const InputElement* elements;
+		int numElements;
+		currentRS->GetInputElements(elements, numElements);
+		afSetVertexAttributes(elements, numElements, 1, &vertexBuffer, &stride);
+	}
+	void SetIndexBuffer(IBOID indexBuffer)
+	{
+		afSetIndexBuffer(indexBuffer);
+	}
+	void Draw(int numVertices, int start = 0, int instanceCount = 1)
+	{
+		afDraw(currentRS->GetPrimitiveTopology(), numVertices, start, instanceCount);
+	}
+	void DrawIndexed(int numVertices, int start = 0, int instanceCount = 1)
+	{
+		afDrawIndexed(currentRS->GetPrimitiveTopology(), numVertices, start, instanceCount);
+	}
+};
+
 #include "AFGraphicsFunctions.inl"
 
-template<class AFCommandList>	// workaround: AFCommandList is not exist here
 class AFDynamicQuadListVertexBuffer
 {
 	IBOID ibo;

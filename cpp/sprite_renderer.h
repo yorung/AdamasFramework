@@ -21,7 +21,7 @@ typedef std::vector<SpriteCommand> SpriteCommands;
 class SpriteRenderer
 {
 	AFRenderStates renderStates;
-	AFDynamicQuadListVertexBuffer<AFCommandList> quadListVertexBuffer;
+	AFDynamicQuadListVertexBuffer quadListVertexBuffer;
 public:
 	~SpriteRenderer();
 	void Destroy();

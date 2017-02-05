@@ -103,5 +103,46 @@ void afBindBuffer(int size, const void* buf, int rootParameterIndex);
 void afBindBuffer(UBOID ubo, int rootParameterIndex);
 void afBindTexture(SRVID srv, int rootParameterIndex);
 
+class AFCommandList
+{
+public:
+	void SetRenderStates(AFRenderStates& rs)
+	{
+		rs.Apply();
+	}
+	void SetTexture(SRVID texId, int descritorSetIndex)
+	{
+		afBindTexture(texId, descritorSetIndex);
+	}
+	void SetBuffer(int size, const void* buf, int descritorSetIndex)
+	{
+		afBindBuffer(size, buf, descritorSetIndex);
+	}
+	void SetBuffer(UBOID uniformBuffer, int descriptorSetIndex)
+	{
+		afBindBuffer(uniformBuffer, descriptorSetIndex);
+	}
+	void SetVertexBuffer(int size, const void* buf, int stride)
+	{
+		afSetVertexBuffer(size, buf, stride);
+	}
+	void SetVertexBuffer(VBOID vertexBuffer, int stride)
+	{
+		afSetVertexBuffer(vertexBuffer, stride);
+	}
+	void SetIndexBuffer(IBOID indexBuffer)
+	{
+		afSetIndexBuffer(indexBuffer);
+	}
+	void Draw(int numVertices, int start = 0, int instanceCount = 1)
+	{
+		afDraw(numVertices, start, instanceCount);
+	}
+	void DrawIndexed(int numVertices, int start = 0, int instanceCount = 1)
+	{
+		afDrawIndexed(numVertices, start, instanceCount);
+	}
+};
+
 #include "AFGraphicsFunctions.inl"
 #include "AFDynamicQuadListVertexBuffer.inl"

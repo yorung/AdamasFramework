@@ -201,5 +201,44 @@ public:
 };
 extern DeviceManVK deviceMan;
 
+class AFCommandList
+{
+	AFRenderStates* currentRS = nullptr;
+public:
+	void SetRenderStates(AFRenderStates& rs)
+	{
+		rs.Apply();
+		currentRS = &rs;
+	}
+	void SetTexture(SRVID texId, int descritorSetIndex)
+	{
+		afBindTexture(currentRS->GetPipelineLayout(), texId, descritorSetIndex);
+	}
+	void SetBuffer(int size, const void* buf, int descritorSetIndex)
+	{
+		afBindBuffer(currentRS->GetPipelineLayout(), size, buf, descritorSetIndex);
+	}
+	void SetVertexBuffer(int size, const void* buf, int stride)
+	{
+		afSetVertexBuffer(size, buf, stride);
+	}
+	void SetVertexBuffer(VBOID vertexBuffer, int stride)
+	{
+		afSetVertexBuffer(vertexBuffer, stride);
+	}
+	void SetIndexBuffer(IBOID indexBuffer)
+	{
+		afSetIndexBuffer(indexBuffer);
+	}
+	void Draw(int numVertices, int start = 0, int instanceCount = 1)
+	{
+		afDraw(numVertices, start, instanceCount);
+	}
+	void DrawIndexed(int numVertices, int start = 0, int instanceCount = 1)
+	{
+		afDrawIndexed(numVertices, start, instanceCount);
+	}
+};
+
 #include "AFGraphicsFunctions.inl"
 #include "AFDynamicQuadListVertexBuffer.inl"

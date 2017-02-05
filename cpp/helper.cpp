@@ -21,8 +21,6 @@ void _afVerify(const char* file, const char* func, int line, const char* command
 	{
 		return;
 	}
-	aflog("afVerify Fatal: %s %s %d %s", file, func, line, command);
-	while (strlen(" "))
-	{
-	}
+	aflog("afVerify Fatal: %s %d %s %s", file, line, func, command);
+	*(uint32_t*)(4) = 1;	// crash
 }

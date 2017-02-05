@@ -1,4 +1,3 @@
-template <class AFCommandList>	// workaround: AFCommandList is not exist here
 class AFDynamicQuadListVertexBuffer
 {
 	IBOID ibo;
