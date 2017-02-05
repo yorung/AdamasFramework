@@ -159,15 +159,8 @@ void Picking::Update3D(Vertex poly[3], Vertex lines[6])
 
 static void DrawDynamicVertexBuffer(AFCommandList& cmd, int nVertices, Vertex vertices[])
 {
-#ifdef AF_GLES
-	VBOID vbo = afCreateVertexBuffer(sizeof(Vertex) * nVertices, vertices);
-	cmd.SetVertexBuffer(vbo, sizeof(Vertex));
-	cmd.Draw(nVertices);
-	afSafeDeleteBuffer(vbo);
-#else
 	cmd.SetVertexBuffer(sizeof(Vertex) * nVertices, vertices, sizeof(Vertex));
 	cmd.Draw(nVertices);
-#endif
 }
 
 void Picking::Draw3D()

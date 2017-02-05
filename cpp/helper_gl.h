@@ -84,6 +84,7 @@ typedef AFGLName SAMPLERID;
 typedef AFGLName SRVID;
 
 void afSetVertexAttributes(const InputElement elements[], int numElements, int numBuffers, VBOID const vertexBufferIds[], const int strides[]);
+void afSetVertexAttributes(const InputElement elements[], int numElements, int numBuffers, void const* vertexBuffers[], const int strides[]);
 void afSetIndexBuffer(IBOID indexBuffer);
 
 template <class BufName>
@@ -255,6 +256,13 @@ public:
 		afBindBuffer(uniformBuffer, descriptorSetIndex);
 	}
 #endif
+	void SetVertexBuffer(int size, const void* buf, int stride)
+	{
+		const InputElement* elements;
+		int numElements;
+		currentRS->GetInputElements(elements, numElements);
+		afSetVertexAttributes(elements, numElements, 1, &buf, &stride);
+	}
 	void SetVertexBuffer(VBOID vertexBuffer, int stride)
 	{
 		const InputElement* elements;
@@ -277,35 +285,4 @@ public:
 };
 
 #include "AFGraphicsFunctions.inl"
-
-class AFDynamicQuadListVertexBuffer
-{
-	IBOID ibo;
-	VBOID vbo;
-	int nQuad;
-	int vertexSize;
-	int vertexBufferSize;
-public:
-	~AFDynamicQuadListVertexBuffer() { Destroy(); }
-	void Create(int vertexSize_, int nQuad_)
-	{
-		Destroy();
-		nQuad = nQuad_;
-		vertexSize = vertexSize_;
-		vertexBufferSize = nQuad * vertexSize * 4;
-		ibo = afCreateQuadListIndexBuffer(nQuad);
-		vbo = afCreateDynamicVertexBuffer(vertexBufferSize);
-	}
-	void Apply(AFCommandList& cmd, const void* buf, int size)
-	{
-		assert(size <= vertexBufferSize);
-		cmd.SetVertexBuffer(vbo, vertexSize);
-		cmd.SetIndexBuffer(ibo);
-		afWriteBuffer(vbo, size, buf);
-	}
-	void Destroy()
-	{
-		afSafeDeleteBuffer(ibo);
-		afSafeDeleteBuffer(vbo);
-	}
-};
+#include "AFDynamicQuadListVertexBuffer.inl"

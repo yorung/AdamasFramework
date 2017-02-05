@@ -405,6 +405,28 @@ void afSetVertexAttributes(const InputElement elements[], int numElements, int n
 	afHandleGLError(glBindBuffer(GL_ARRAY_BUFFER, 0));
 }
 
+void afSetVertexAttributes(const InputElement elements[], int numElements, int numBuffers, void const* vertexBuffers[], const int strides[])
+{
+	afHandleGLError(glBindBuffer(GL_ARRAY_BUFFER, 0));
+	for (int i = 0; i < numElements; i++)
+	{
+		const InputElement& d = elements[i];
+		GLenum r = glGetError();
+		if (r != GL_NO_ERROR)
+		{
+			aflog("glBindBuffer error! i=%d inputSlot=%d buf=%p\n", i, d.inputSlot, vertexBuffers[d.inputSlot]);
+		}
+		afHandleGLError(glEnableVertexAttribArray(i));
+		afVertexAttribPointer(i, d.format, strides[d.inputSlot], (uint8_t*)vertexBuffers[d.inputSlot] + d.offset);
+#ifdef AF_GLES31
+		if (d.perInstance)
+		{
+			afHandleGLError(glVertexAttribDivisor(i, 1));
+		}
+#endif
+	}
+}
+
 void afSetIndexBuffer(IBOID indexBuffer)
 {
 	afHandleGLError(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer));
