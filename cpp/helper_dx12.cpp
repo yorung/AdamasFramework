@@ -320,46 +320,6 @@ public:
 	}
 };
 
-class CDescriptorSRV : public D3D12_DESCRIPTOR_RANGE {
-public:
-	CDescriptorSRV(int shaderRegister) {
-		RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-		NumDescriptors = 1;
-		BaseShaderRegister = shaderRegister;
-		RegisterSpace = 0;
-		OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
-	}
-};
-
-ComPtr<ID3D12DescriptorHeap> afCreateDescriptorHeap(int numSrvs, SRVID srvs[])
-{
-	ComPtr<ID3D12DescriptorHeap> heap;
-	D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
-	srvHeapDesc.NumDescriptors = numSrvs;
-	srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-	srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-	afHandleDXError(deviceMan.GetDevice()->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&heap)));
-	for (int i = 0; i < numSrvs; i++)
-	{
-		D3D12_RESOURCE_DESC desc = srvs[i]->GetDesc();
-		auto ptr = heap->GetCPUDescriptorHandleForHeapStart();
-		ptr.ptr += deviceMan.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV) * i;
-		if (desc.Dimension == D3D12_RESOURCE_DIMENSION_BUFFER)
-		{
-			D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
-			cbvDesc.BufferLocation = srvs[i]->GetGPUVirtualAddress();
-			cbvDesc.SizeInBytes = (UINT)desc.Width;
-			assert((cbvDesc.SizeInBytes & 0xff) == 0);
-			deviceMan.GetDevice()->CreateConstantBufferView(&cbvDesc, ptr);
-		}
-		else
-		{
-			deviceMan.GetDevice()->CreateShaderResourceView(srvs[i].Get(), nullptr, ptr);
-		}
-	}
-	return heap;
-}
-
 void afWaitFenceValue(ComPtr<ID3D12Fence> fence, UINT64 value)
 {
 	if (fence->GetCompletedValue() >= value) {

@@ -52,7 +52,6 @@ void afSetTextureName(SRVID tex, const char* name);
 void afWriteTexture(SRVID srv, const TexDesc& desc, const void* buf);
 void afWriteTexture(SRVID id, const TexDesc& desc, int mipCount, const AFTexSubresourceData datas[]);
 
-ComPtr<ID3D12DescriptorHeap> afCreateDescriptorHeap(int numSrvs, SRVID srvs[]);
 void afWaitFenceValue(ComPtr<ID3D12Fence> fence, UINT64 value);
 IVec2 afGetTextureSize(SRVID tex);
 
