@@ -157,6 +157,19 @@ void Picking::Update3D(Vertex poly[3], Vertex lines[6])
 	}
 }
 
+static void DrawDynamicVertexBuffer(AFCommandList& cmd, int nVertices, Vertex vertices[])
+{
+#ifdef AF_GLES
+	VBOID vbo = afCreateVertexBuffer(sizeof(Vertex) * nVertices, vertices);
+	cmd.SetVertexBuffer(vbo, sizeof(Vertex));
+	cmd.Draw(nVertices);
+	afSafeDeleteBuffer(vbo);
+#else
+	cmd.SetVertexBuffer(sizeof(Vertex) * nVertices, vertices, sizeof(Vertex));
+	cmd.Draw(nVertices);
+#endif
+}
+
 void Picking::Draw3D()
 {
 	Vertex poly[3], lines[6];
@@ -168,14 +181,12 @@ void Picking::Draw3D()
 
 	AFCommandList& cmd = afGetCommandList();
 	cmd.SetRenderStates(polygonRenderStates);
-	cmd.SetVertexBuffer(sizeof(poly), poly, sizeof(Vertex));
 	cmd.SetBuffer(sizeof(Mat), &mVP, 0);
-	cmd.Draw(3);
+	DrawDynamicVertexBuffer(cmd, arrayparam(poly));
 
 	cmd.SetRenderStates(lineRenderStates);
-	cmd.SetVertexBuffer(sizeof(lines), lines, sizeof(Vertex));
 	cmd.SetBuffer(sizeof(Mat), &mVP, 0);
-	cmd.Draw(6);
+	DrawDynamicVertexBuffer(cmd, arrayparam(lines));
 }
 
 void Picking::Draw2D()
@@ -184,12 +195,10 @@ void Picking::Draw2D()
 	cmd.SetRenderStates(polygonRenderStates);
 	Vertex v[3];
 	Update2D(v);
-	cmd.SetVertexBuffer(sizeof(v), v, sizeof(Vertex));
 	Mat proj2d;
 #ifdef AF_VULKAN
 	proj2d._22 = -1;
 #endif
-
 	cmd.SetBuffer(sizeof(Mat), &proj2d, 0);
-	cmd.Draw(3);
+	DrawDynamicVertexBuffer(cmd, arrayparam(v));
 }
