@@ -15,7 +15,13 @@ static void err(char *msg)
 #ifdef _DEBUG
 static void APIENTRY debugMessageHandler(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam)
 {
-	switch (type) {
+	(void)id;
+	(void)length;
+	(void)severity;
+	(void)source;
+	(void)userParam;
+	switch (type)
+	{
 	case GL_DEBUG_TYPE_OTHER_ARB:
 		return;
 	}
@@ -34,20 +40,25 @@ void DeviceManWgl::CreateWGLInternal(HDC hdc)
 	pfd.cColorBits = 24;
 	pfd.cDepthBits = 32;
 	pfd.iLayerType = PFD_MAIN_PLANE;
-	int pixelFormat;
-	if (!(pixelFormat = ChoosePixelFormat(hdc, &pfd))) {
+	int pixelFormat = ChoosePixelFormat(hdc, &pfd);
+	if (!pixelFormat)
+	{
 		err("ChoosePixelFormat failed.");
 		goto END;
 	}
-	if (!SetPixelFormat(hdc, pixelFormat, &pfd)) {
+	if (!SetPixelFormat(hdc, pixelFormat, &pfd))
+	{
 		err("SetPixelFormat failed.");
 		goto END;
 	}
-	if (!(hglrc = wglCreateContext(hdc))) {
+	hglrc = wglCreateContext(hdc);
+	if (!hglrc)
+	{
 		err("wglCreateContext failed.");
 		goto END;
 	}
-	if (!wglMakeCurrent(hdc, hglrc)) {
+	if (!wglMakeCurrent(hdc, hglrc))
+	{
 		err("wglMakeCurrent failed.");
 		goto END;
 	}
@@ -106,9 +117,10 @@ END:
 void DeviceManWgl::Create(HWND hWnd)
 {
 	HDC hdc = GetDC(hWnd);
-	dcDeleter = [hWnd](HDC hdc) {
+	dcDeleter = [hWnd](HDC hdc)
+	{
 		int r = ReleaseDC(hWnd, hdc);
-		assert(r == 1);
+		afVerify(r == 1);
 	};
 	CreateWGLInternal(hdc);
 }

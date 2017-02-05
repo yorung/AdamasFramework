@@ -170,28 +170,6 @@ void DIB::Clear(pixel color)
 }
 
 #ifdef _MSC_VER
-static bool dibCopy32(DIB *dib, BITMAPINFO *bi, void *bits)
-{
-	int srcH = bi->bmiHeader.biHeight;
-	if (dib->getW() != bi->bmiHeader.biWidth || dib->getH() != abs(srcH)) {
-		return false;
-	}
-
-	if (bi->bmiHeader.biBitCount != 32) {
-		return false;
-	}
-
-	for (int y = 0; y < dib->getH(); y++) {
-		int srcY = srcH > 0 ? srcH - 1 - y : y;	// support both bottom-up and top-down
-		void *dst = dib->referPixel(0, y);
-		void *src = (DWORD*)bits + dib->getW() * srcY;
-		memcpy(dst, src, dib->getW() * sizeof(DWORD));
-	}
-	return true;
-}
-#endif
-
-#ifdef _MSC_VER
 bool DIB::LoadFromBmp(const char *file)
 {
 	bool result = false;

@@ -116,12 +116,12 @@ void afSetVertexBuffer(int size, const void* buffer, int stride);
 void afDrawIndexed(int numIndices, int start = 0, int instanceCount = 1);
 void afDraw(int numVertices, int start = 0, int instanceCount = 1);
 
-inline void afSetTextureName(const TextureContext& tex, const char* name)
+inline void afSetTextureName(const TextureContext&, const char* /*name*/)
 {
 }
 
-class AFRenderStates {
-	uint32_t flags = AFRS_NONE;
+class AFRenderStates
+{
 	VkPipeline pipeline = 0;
 	VkPipelineLayout pipelineLayout = 0;
 public:

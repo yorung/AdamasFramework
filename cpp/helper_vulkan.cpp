@@ -53,8 +53,8 @@ static uint32_t GetCompatibleMemoryTypeIndex(const VkPhysicalDeviceMemoryPropert
 			return i;
 		}
 	}
-	assert(0);
-	return -1;	// dummy
+	afVerify(0);
+	return 0;	// Unreachable code
 }
 
 void afSafeDeleteBuffer(BufferContext& buffer)
@@ -334,14 +334,14 @@ void afSetIndexBuffer(IBOID indexBuffer)
 
 void afDrawIndexed(int numIndices, int start, int instanceCount)
 {
-	assert(!start);
+	afVerify(!start);
 	VkCommandBuffer commandBuffer = deviceMan.commandBuffer;
 	vkCmdDrawIndexed(commandBuffer, numIndices, instanceCount, 0, 0, 0);
 }
 
 void afDraw(int numVertices, int start, int instanceCount)
 {
-	assert(!start);
+	afVerify(!start);
 	VkCommandBuffer commandBuffer = deviceMan.commandBuffer;
 	vkCmdDraw(commandBuffer, numVertices, instanceCount, 0, 0);
 }
@@ -732,6 +732,8 @@ void AFBufferStackAllocator::Destroy()
 
 void AFRenderStates::Create(const char* shaderName, int numInputElements, const InputElement* inputElements, uint32_t flags, int numSamplers, const SamplerType samplerTypes[])
 {
+	(void)numSamplers;
+	(void)samplerTypes;
 	VkDevice device = deviceMan.GetDevice();
 
 	// FIXME: hard corded pipeline layout
@@ -793,7 +795,7 @@ void AFRenderTarget::InitForDefaultRenderTarget()
 	asDefault = true;
 }
 
-void AFRenderTarget::Init(IVec2 size, AFFormat colorFormat, AFFormat depthStencilFormat)
+void AFRenderTarget::Init(IVec2 size, AFFormat colorFormat, AFFormat /*depthStencilFormat*/)
 {
 	texSize = size;
 	VkDevice device = deviceMan.GetDevice();
@@ -812,7 +814,6 @@ void AFRenderTarget::Destroy()
 
 void AFRenderTarget::BeginRenderToThis()
 {
-	VkCommandBuffer cmd = deviceMan.commandBuffer;
 	if (asDefault)
 	{
 		deviceMan.BeginSceneToCurrentBackBuffer();

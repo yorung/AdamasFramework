@@ -46,15 +46,12 @@ static GLuint CompileShader(int type, const char *fileName)
 
 static GLuint afCompileGLSL(const char* name, const InputElement elements[], int numElements)
 {
-	char buf[256];
-	snprintf(buf, dimof(buf), "glsl/%s.vert", name);
-	GLuint vertexShader = CompileShader(GL_VERTEX_SHADER, buf);
+	GLuint vertexShader = CompileShader(GL_VERTEX_SHADER, SPrintf("glsl/%s.vert", name));
 	if (!vertexShader)
 	{
 		return 0;
 	}
-	snprintf(buf, dimof(buf), "glsl/%s.frag", name);
-	GLuint fragmentShader = CompileShader(GL_FRAGMENT_SHADER, buf);
+	GLuint fragmentShader = CompileShader(GL_FRAGMENT_SHADER,  SPrintf("glsl/%s.frag", name));
 	if (!fragmentShader)
 	{
 		return 0;
@@ -384,9 +381,11 @@ static void afVertexAttribPointer(GLuint index, AFFormat format, GLsizei stride,
 
 void afSetVertexAttributes(const InputElement elements[], int numElements, int numBuffers, VBOID const vertexBufferIds[], const int strides[])
 {
+	(void)numBuffers;
 	for (int i = 0; i < numElements; i++)
 	{
 		const InputElement& d = elements[i];
+		assert(d.inputSlot < numBuffers);
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferIds[d.inputSlot]);
 		GLenum r = glGetError();
 		if (r != GL_NO_ERROR)
@@ -407,10 +406,12 @@ void afSetVertexAttributes(const InputElement elements[], int numElements, int n
 
 void afSetVertexAttributes(const InputElement elements[], int numElements, int numBuffers, void const* vertexBuffers[], const int strides[])
 {
+	(void)numBuffers;
 	afHandleGLError(glBindBuffer(GL_ARRAY_BUFFER, 0));
 	for (int i = 0; i < numElements; i++)
 	{
 		const InputElement& d = elements[i];
+		assert(d.inputSlot < numBuffers);
 		GLenum r = glGetError();
 		if (r != GL_NO_ERROR)
 		{
@@ -648,7 +649,7 @@ void AFRenderTarget::BeginRenderToThis()
 	afHandleGLError(glViewport(0, 0, texSize.x, texSize.y));
 	afHandleGLError(glBindFramebuffer(GL_FRAMEBUFFER, framebufferObject));
 	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-	assert(status == GL_FRAMEBUFFER_COMPLETE);
+	afVerify(status == GL_FRAMEBUFFER_COMPLETE);
 	afHandleGLError(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT));
 }
 
