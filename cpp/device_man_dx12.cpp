@@ -289,9 +289,8 @@ void DeviceManDX12::Create(HWND hWnd)
 
 		res.constantBuffer = afCreateUBO(maxConstantBufferBlocks * 0x100);
 		D3D12_RANGE readRange = {};
-		HRESULT hr = res.constantBuffer->Map(0, &readRange, (void**)&res.mappedConstantBuffer);
-		assert(hr == S_OK);
-		assert(res.mappedConstantBuffer);
+		afHandleDXError(res.constantBuffer->Map(0, &readRange, (void**)&res.mappedConstantBuffer));
+		afVerify(res.mappedConstantBuffer);
 	}
 
 	IVec2 size = { (int)sd.BufferDesc.Width, (int)sd.BufferDesc.Height };

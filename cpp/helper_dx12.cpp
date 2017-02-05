@@ -226,8 +226,7 @@ SRVID afCreateTexture2D(AFFormat format, const struct TexDesc& desc, int mipCoun
 {
 	D3D12_RESOURCE_DESC resourceDesc = { D3D12_RESOURCE_DIMENSION_TEXTURE2D, 0, (UINT64)desc.size.x, (UINT)desc.size.y, (UINT16)desc.arraySize, (UINT16)mipCount, format, {1, 0} };
 	SRVID tex;
-	HRESULT hr = deviceMan.GetDevice()->CreateCommittedResource(&defaultHeapProperties, D3D12_HEAP_FLAG_NONE, &resourceDesc, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, nullptr, IID_PPV_ARGS(&tex));
-	assert(hr == S_OK);
+	afHandleDXError(deviceMan.GetDevice()->CreateCommittedResource(&defaultHeapProperties, D3D12_HEAP_FLAG_NONE, &resourceDesc, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, nullptr, IID_PPV_ARGS(&tex)));
 	afWriteTexture(tex, desc, mipCount, datas);
 	return tex;
 }
@@ -266,9 +265,9 @@ ComPtr<ID3D12PipelineState> afCreatePSO(const char *shaderName, const InputEleme
 	ComPtr<ID3DBlob> rootSignatureBlob;
 	if (S_OK == D3DGetBlobPart(vertexShader->GetBufferPointer(), vertexShader->GetBufferSize(), D3D_BLOB_ROOT_SIGNATURE, 0, &rootSignatureBlob))
 	{
-		if (rootSignatureBlob) {
-			HRESULT hr = deviceMan.GetDevice()->CreateRootSignature(0, rootSignatureBlob->GetBufferPointer(), rootSignatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature));
-			assert(hr == S_OK);
+		if (rootSignatureBlob)
+		{
+			afHandleDXError(deviceMan.GetDevice()->CreateRootSignature(0, rootSignatureBlob->GetBufferPointer(), rootSignatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature)));
 		}
 	}
 
@@ -339,23 +338,25 @@ ComPtr<ID3D12DescriptorHeap> afCreateDescriptorHeap(int numSrvs, SRVID srvs[])
 	srvHeapDesc.NumDescriptors = numSrvs;
 	srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 	srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-	HRESULT hr = deviceMan.GetDevice()->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&heap));
-	assert(hr == S_OK);
-	for (int i = 0; i < numSrvs; i++) {
+	afHandleDXError(deviceMan.GetDevice()->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&heap)));
+	for (int i = 0; i < numSrvs; i++)
+	{
 		D3D12_RESOURCE_DESC desc = srvs[i]->GetDesc();
 		auto ptr = heap->GetCPUDescriptorHandleForHeapStart();
 		ptr.ptr += deviceMan.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV) * i;
-		if (desc.Dimension == D3D12_RESOURCE_DIMENSION_BUFFER) {
+		if (desc.Dimension == D3D12_RESOURCE_DIMENSION_BUFFER)
+		{
 			D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
 			cbvDesc.BufferLocation = srvs[i]->GetGPUVirtualAddress();
 			cbvDesc.SizeInBytes = (UINT)desc.Width;
 			assert((cbvDesc.SizeInBytes & 0xff) == 0);
 			deviceMan.GetDevice()->CreateConstantBufferView(&cbvDesc, ptr);
-		} else {
+		}
+		else
+		{
 			deviceMan.GetDevice()->CreateShaderResourceView(srvs[i].Get(), nullptr, ptr);
 		}
 	}
-
 	return heap;
 }
 
