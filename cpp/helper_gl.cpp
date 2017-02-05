@@ -342,53 +342,62 @@ void afDraw(PrimitiveTopology primitiveTopology, int numVertices, int start, int
 #endif
 }
 
+static void afVertexAttribPointer(GLuint index, AFFormat format, GLsizei stride, void* pointer)
+{
+	switch (format)
+	{
+	case AFF_R32_FLOAT:
+	case AFF_R32G32_FLOAT:
+	case AFF_R32G32B32_FLOAT:
+	case AFF_R32G32B32A32_FLOAT:
+		afHandleGLError(glVertexAttribPointer(index, format - AFF_R32_FLOAT + 1, GL_FLOAT, GL_FALSE, stride, pointer));
+		break;
+	case AFF_R8_UNORM:
+	case AFF_R8G8_UNORM:
+	case AFF_R8G8B8_UNORM:
+	case AFF_R8G8B8A8_UNORM:
+		afHandleGLError(glVertexAttribPointer(index, format - AFF_R8_UNORM + 1, GL_UNSIGNED_BYTE, GL_TRUE, stride, pointer));
+		break;
+	case AFF_R8_UINT:
+	case AFF_R8G8_UINT:
+	case AFF_R8G8B8_UINT:
+	case AFF_R8G8B8A8_UINT:
+		afHandleGLError(glVertexAttribPointer(index, format - AFF_R8_UINT + 1, GL_UNSIGNED_BYTE, GL_FALSE, stride, pointer));
+		break;
+	case AFF_R16_UINT:
+	case AFF_R16G16_UINT:
+	case AFF_R16G16B16_UINT:
+	case AFF_R16G16B16A16_UINT:
+		afHandleGLError(glVertexAttribPointer(index, format - AFF_R16_UINT + 1, GL_UNSIGNED_SHORT, GL_FALSE, stride, pointer));
+		break;
+	case AFF_R32_UINT:
+	case AFF_R32G32_UINT:
+	case AFF_R32G32B32_UINT:
+	case AFF_R32G32B32A32_UINT:
+		afHandleGLError(glVertexAttribPointer(index, format - AFF_R32_UINT + 1, GL_UNSIGNED_INT, GL_FALSE, stride, pointer));
+		break;
+	default:
+		assert(0);
+		break;
+	}
+}
+
 void afSetVertexAttributes(const InputElement elements[], int numElements, int numBuffers, VBOID const vertexBufferIds[], const int strides[])
 {
-	for (int i = 0; i < numElements; i++) {
+	for (int i = 0; i < numElements; i++)
+	{
 		const InputElement& d = elements[i];
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferIds[d.inputSlot]);
 		GLenum r = glGetError();
-		if (r != GL_NO_ERROR) {
+		if (r != GL_NO_ERROR)
+		{
 			aflog("glBindBuffer error! i=%d inputSlot=%d vbo=%d\n", i, d.inputSlot, vertexBufferIds[d.inputSlot].x);
 		}
 		afHandleGLError(glEnableVertexAttribArray(i));
-		switch (d.format) {
-		case AFF_R32_FLOAT:
-		case AFF_R32G32_FLOAT:
-		case AFF_R32G32B32_FLOAT:
-		case AFF_R32G32B32A32_FLOAT:
-			afHandleGLError(glVertexAttribPointer(i, d.format - AFF_R32_FLOAT + 1, GL_FLOAT, GL_FALSE, strides[d.inputSlot], (void*)d.offset));
-			break;
-		case AFF_R8_UNORM:
-		case AFF_R8G8_UNORM:
-		case AFF_R8G8B8_UNORM:
-		case AFF_R8G8B8A8_UNORM:
-			afHandleGLError(glVertexAttribPointer(i, d.format - AFF_R8_UNORM + 1, GL_UNSIGNED_BYTE, GL_TRUE, strides[d.inputSlot], (void*)d.offset));
-			break;
-		case AFF_R8_UINT:
-		case AFF_R8G8_UINT:
-		case AFF_R8G8B8_UINT:
-		case AFF_R8G8B8A8_UINT:
-			afHandleGLError(glVertexAttribPointer(i, d.format - AFF_R8_UINT + 1, GL_UNSIGNED_BYTE, GL_FALSE, strides[d.inputSlot], (void*)d.offset));
-			break;
-		case AFF_R16_UINT:
-		case AFF_R16G16_UINT:
-		case AFF_R16G16B16_UINT:
-		case AFF_R16G16B16A16_UINT:
-			afHandleGLError(glVertexAttribPointer(i, d.format - AFF_R16_UINT + 1, GL_UNSIGNED_SHORT, GL_FALSE, strides[d.inputSlot], (void*)d.offset));
-			break;
-		case AFF_R32_UINT:
-		case AFF_R32G32_UINT:
-		case AFF_R32G32B32_UINT:
-		case AFF_R32G32B32A32_UINT:
-			afHandleGLError(glVertexAttribPointer(i, d.format - AFF_R32_UINT + 1, GL_UNSIGNED_INT, GL_FALSE, strides[d.inputSlot], (void*)d.offset));
-			break;
-		default:
-			assert(0);
-			break;
-		}
+		afVertexAttribPointer(i, d.format, strides[d.inputSlot], (void*)d.offset);
 #ifdef AF_GLES31
-		if (d.perInstance) {
+		if (d.perInstance)
+		{
 			afHandleGLError(glVertexAttribDivisor(i, 1));
 		}
 #endif
