@@ -256,7 +256,9 @@ public:
 		afBindBuffer(uniformBuffer, descriptorSetIndex);
 	}
 #endif
-	void SetVertexBuffer(int size, const void* buf, int stride)
+	// The driver doesn't know the size of buffer before draw calls.
+	// This means driver only keeps the pointer of buf, so caller must care to keep whole buf until draw calls.
+	void SetVertexBuffer(int /*size*/, const void* buf, int stride)
 	{
 		const InputElement* elements;
 		int numElements;
