@@ -42,17 +42,15 @@ void DeviceMan11::Create(HWND hWnd)
 #endif
 	D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, flags, featureLevels, dimof(featureLevels), D3D11_SDK_VERSION, &sd, &pSwapChain, &pDevice, &supportLevel, &pImmediateContext);
 
-	ID3D11Texture2D* pBackBuffer = nullptr;
+	ComPtr<ID3D11Texture2D> pBackBuffer;
 	pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&pBackBuffer);
-	pDevice->CreateRenderTargetView(pBackBuffer, nullptr, &pRenderTargetView);
-	SAFE_RELEASE(pBackBuffer);
+	pDevice->CreateRenderTargetView(pBackBuffer.Get(), nullptr, &pRenderTargetView);
 
-	ID3D11Texture2D* pDepthStencil;
+	ComPtr<ID3D11Texture2D> pDepthStencil;
 	pDevice->CreateTexture2D(&CD3D11_TEXTURE2D_DESC(DXGI_FORMAT_D24_UNORM_S8_UINT, sd.BufferDesc.Width, sd.BufferDesc.Height, 1, 0, D3D11_BIND_DEPTH_STENCIL), nullptr, &pDepthStencil);
-	pDevice->CreateDepthStencilView(pDepthStencil, &CD3D11_DEPTH_STENCIL_VIEW_DESC(D3D11_DSV_DIMENSION_TEXTURE2D, DXGI_FORMAT_D24_UNORM_S8_UINT), &pDepthStencilView);
-	SAFE_RELEASE(pDepthStencil);
-
-	pImmediateContext->OMSetRenderTargets(1, &pRenderTargetView, pDepthStencilView);
+	pDevice->CreateDepthStencilView(pDepthStencil.Get(), &CD3D11_DEPTH_STENCIL_VIEW_DESC(D3D11_DSV_DIMENSION_TEXTURE2D, DXGI_FORMAT_D24_UNORM_S8_UINT), &pDepthStencilView);
+	ID3D11RenderTargetView* renderTargetViews[] = { pRenderTargetView.Get() };
+	pImmediateContext->OMSetRenderTargets(arrayparam(renderTargetViews), pDepthStencilView.Get());
 }
 
 void DeviceMan11::Present()
@@ -66,10 +64,10 @@ void DeviceMan11::Destroy()
 	{
 		pImmediateContext->ClearState();
 	}
-	SAFE_RELEASE(pImmediateContext);
-	SAFE_RELEASE(pRenderTargetView);
-	SAFE_RELEASE(pDepthStencilView);
-	SAFE_RELEASE(pSwapChain);
+	pImmediateContext.Reset();
+	pRenderTargetView.Reset();
+	pDepthStencilView.Reset();
+	pSwapChain.Reset();
 
 	if (pDevice)
 	{
@@ -254,7 +252,6 @@ void afDraw(int numVertices, int start, int instanceCount)
 
 void afCullMode(uint32_t flags)
 {
-	ID3D11RasterizerState* rs;
 	CD3D11_RASTERIZER_DESC rasterDesc(D3D11_DEFAULT);
 	if (flags & AFRS_CULL_CCW)
 	{
@@ -270,14 +267,15 @@ void afCullMode(uint32_t flags)
 	{
 		rasterDesc.CullMode = D3D11_CULL_NONE;
 	}
+	ComPtr<ID3D11RasterizerState> rs;
 	deviceMan11.GetDevice()->CreateRasterizerState(&rasterDesc, &rs);
-	deviceMan11.GetContext()->RSSetState(rs);
-	SAFE_RELEASE(rs);
+	deviceMan11.GetContext()->RSSetState(rs.Get());
 }
 
 void afBlendMode(uint32_t flags)
 {
-	if (!(flags & AFRS_ALPHA_BLEND)) {
+	if (!(flags & AFRS_ALPHA_BLEND))
+	{
 		deviceMan11.GetContext()->OMSetBlendState(nullptr, nullptr, 0xffffffff);
 		return;
 	}
@@ -291,11 +289,10 @@ void afBlendMode(uint32_t flags)
 	bdesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
 	bdesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 	bdesc.RenderTarget[0].RenderTargetWriteMask = D3D10_COLOR_WRITE_ENABLE_ALL;
-	ID3D11BlendState* bs;
+	ComPtr<ID3D11BlendState> bs;
 	deviceMan11.GetDevice()->CreateBlendState(&bdesc, &bs);
 	FLOAT factor[] = {0, 0, 0, 0};
-	deviceMan11.GetContext()->OMSetBlendState(bs, factor, 0xffffffff);
-	SAFE_RELEASE(bs);
+	deviceMan11.GetContext()->OMSetBlendState(bs.Get(), factor, 0xffffffff);
 }
 
 void afDepthStencilMode(uint32_t flags)
@@ -354,21 +351,14 @@ void AFRenderTarget::InitForDefaultRenderTarget()
 
 void AFRenderTarget::Init(IVec2 size, DXGI_FORMAT colorFormat, DXGI_FORMAT depthStencilFormat)
 {
-	(void)depthStencilFormat;
-
 	Destroy();
 	texSize = size;
 	CD3D11_TEXTURE2D_DESC tDesc(colorFormat, size.x, size.y, 1, 1, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE/* | D3D11_BIND_UNORDERED_ACCESS*/);
-	ID3D11Texture2D* tex;
+	ComPtr<ID3D11Texture2D> tex;
 	HRESULT hr = deviceMan11.GetDevice()->CreateTexture2D(&tDesc, NULL, &tex);
-	CD3D11_RENDER_TARGET_VIEW_DESC rDesc(D3D11_RTV_DIMENSION_TEXTURE2D, tDesc.Format);
-	hr = deviceMan11.GetDevice()->CreateRenderTargetView(tex, &rDesc, &renderTargetView);
-	CD3D11_SHADER_RESOURCE_VIEW_DESC sDesc(D3D11_SRV_DIMENSION_TEXTURE2D, tDesc.Format);
-	hr = deviceMan11.GetDevice()->CreateShaderResourceView(tex, &sDesc, &shaderResourceView);
-//	CD3D11_UNORDERED_ACCESS_VIEW_DESC uDesc(D3D11_UAV_DIMENSION_TEXTURE2D, tDesc.Format);
-//	hr = deviceMan11.GetDevice()->CreateUnorderedAccessView(tex, &uDesc, &unorderedAccessView);
-	SAFE_RELEASE(tex);
-
+	hr = deviceMan11.GetDevice()->CreateRenderTargetView(tex.Get(), &CD3D11_RENDER_TARGET_VIEW_DESC(D3D11_RTV_DIMENSION_TEXTURE2D, tDesc.Format), &renderTargetView);
+	hr = deviceMan11.GetDevice()->CreateShaderResourceView(tex.Get(), &CD3D11_SHADER_RESOURCE_VIEW_DESC(D3D11_SRV_DIMENSION_TEXTURE2D, tDesc.Format), &shaderResourceView);
+//	hr = deviceMan11.GetDevice()->CreateUnorderedAccessView(tex.Get(), &CD3D11_UNORDERED_ACCESS_VIEW_DESC(D3D11_UAV_DIMENSION_TEXTURE2D, tDesc.Format), &unorderedAccessView);
 	switch (depthStencilFormat)
 	{
 	case DXGI_FORMAT_D24_UNORM_S8_UINT:

@@ -3,10 +3,10 @@
 class DeviceMan11
 {
 	ID3D11Device* pDevice = nullptr;
-	IDXGISwapChain* pSwapChain = nullptr;
-	ID3D11DeviceContext* pImmediateContext = nullptr;
-	ID3D11RenderTargetView*	pRenderTargetView = nullptr;
-	ID3D11DepthStencilView* pDepthStencilView = nullptr;
+	ComPtr<IDXGISwapChain> pSwapChain;
+	ComPtr<ID3D11DeviceContext> pImmediateContext;
+	ComPtr<ID3D11RenderTargetView> pRenderTargetView;
+	ComPtr<ID3D11DepthStencilView> pDepthStencilView;
 public:
 	~DeviceMan11();
 
@@ -16,9 +16,9 @@ public:
 	void Present();
 
 	ID3D11Device* GetDevice() { return pDevice; }
-	ID3D11DeviceContext* GetContext() { return pImmediateContext; }
-	ID3D11RenderTargetView*	GetDefaultRenderTarget() { return pRenderTargetView; }
-	ID3D11DepthStencilView* GetDefaultDepthStencil() { return pDepthStencilView; }
+	ID3D11DeviceContext* GetContext() { return pImmediateContext.Get(); }
+	ID3D11RenderTargetView*	GetDefaultRenderTarget() { return pRenderTargetView.Get(); }
+	ID3D11DepthStencilView* GetDefaultDepthStencil() { return pDepthStencilView.Get(); }
 };
 
 extern DeviceMan11 deviceMan11;
