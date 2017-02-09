@@ -93,7 +93,7 @@ void MeshRenderer::SafeDestroyRenderMesh(MRID& id)
 	}
 	if (id != INVALID_MRID)
 	{
-		SAFE_DELETE(renderMeshes[id]);
+		afSafeDelete(renderMeshes[id]);
 		id = INVALID_MRID;
 	}
 }

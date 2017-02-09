@@ -147,12 +147,14 @@ void Voice::Stop()
 
 void Voice::Destroy()
 {
-	if (!IsReady()) {
+	if (!IsReady())
+	{
 		return;
 	}
 	SafeDestroy(context->playerObject);
-	if (context->fileImg) {
+	if (context->fileImg)
+	{
 		free(context->fileImg);
 	}
-	SAFE_DELETE(context);
+	afSafeDelete(context);
 }

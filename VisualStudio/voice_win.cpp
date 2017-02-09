@@ -72,11 +72,13 @@ void Voice::Destroy()
 	}
 	Stop();
 	waveOutUnprepareHeader(context->hWaveOut, &context->wavehdr, sizeof(WAVEHDR));
-	if (context->hWaveOut) {
+	if (context->hWaveOut)
+	{
 		waveOutClose(context->hWaveOut);
 	}
-	if (context->fileImg) {
+	if (context->fileImg)
+	{
 		free(context->fileImg);
 	}
-	SAFE_DELETE(context);
+	afSafeDelete(context);
 }

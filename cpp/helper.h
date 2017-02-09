@@ -13,7 +13,7 @@ void ClearMenu();
 void AddMenu(const char *name, const char *cmd);
 void PostCommand(const char* cmdString);
 
-template <class T> inline void SAFE_DELETE(T& p)
+template <class T> inline void afSafeDelete(T& p)
 {
 	delete p;
 	p = nullptr;
