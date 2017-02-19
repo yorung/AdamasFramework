@@ -113,8 +113,8 @@ inline AFFormat ArrangeRawDDS(void* img, int size)
 
 inline SRVID afLoadDDSTexture(const char* name, TexDesc& texDesc)
 {
-	int size;
-	void* img = LoadFile(name, &size);
+	int fileSize;
+	void* img = LoadFile(name, &fileSize);
 	if (!img) {
 		aflog("afLoadDDSTexture failed! %s", name);
 		return SRVID();
@@ -137,7 +137,7 @@ inline SRVID afLoadDDSTexture(const char* name, TexDesc& texDesc)
 		pitchCalcurator = [](int w, int h) { return ((w + 3) / 4) * ((h + 3) / 4) * 16; };
 		break;
 	default:
-		format = ArrangeRawDDS(img, size);
+		format = ArrangeRawDDS(img, fileSize);
 		pitchCalcurator = [](int w, int h) { return w * h * 4; };
 		break;
 	}
@@ -156,7 +156,7 @@ inline SRVID afLoadDDSTexture(const char* name, TexDesc& texDesc)
 			int h = std::max(1, hdr->h >> m);
 			int pitch = pitchCalcurator(w, h);
 			r.push_back({ (char*)img + offset, (uint32_t)pitchCalcurator(w, 1), (uint32_t)pitch });
-			offset += size;
+			offset += pitch;
 		}
 	}
 
