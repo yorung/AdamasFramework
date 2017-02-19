@@ -57,7 +57,8 @@ inline IBOID afCreateQuadListIndexBuffer(int numQuads)
 	return afCreateIndexBuffer(numIndi, &indi[0]);
 }
 
-struct DDSHeader {
+struct DDSHeader
+{
 	uint32_t h3[3];
 	int h, w;
 	uint32_t h2[2];
@@ -87,6 +88,7 @@ inline void bitScanForward(uint32_t* result, uint32_t mask)
 inline AFFormat ArrangeRawDDS(void* img, int size)
 {
 	const DDSHeader* hdr = (DDSHeader*)img;
+	assert(hdr->bitsPerPixel == 32);
 #ifdef _MSC_VER	// GL_EXT_texture_format_BGRA8888 is an extension for OpenGL ES, so should use this only on Windows.
 	if (hdr->rMask == 0xff0000 && hdr->gMask == 0x00ff00 && hdr->bMask == 0x0000ff)
 	{
@@ -111,6 +113,32 @@ inline AFFormat ArrangeRawDDS(void* img, int size)
 	return AFF_R8G8B8A8_UNORM;
 }
 
+inline void Convert24To32(void*& img, int& size)
+{
+	const DDSHeader* hdr = (DDSHeader*)img;
+	if (hdr->bitsPerPixel != 24)
+	{
+		return;
+	}
+	int numPixels = (size - 128) / 3;
+	int newSize = 128 + numPixels * 4;
+	void* newImg = malloc(newSize);
+	*(DDSHeader*)newImg = *hdr;
+	((DDSHeader*)newImg)->bitsPerPixel = 32;
+	uint8_t* dst = (uint8_t*)newImg + sizeof(DDSHeader);
+	uint8_t* src = (uint8_t*)img + sizeof(DDSHeader);
+	for (int i = 0; i < numPixels; i++)
+	{
+		*dst++ = *src++;
+		*dst++ = *src++;
+		*dst++ = *src++;
+		*dst++ = 255;
+	}
+	free(img);
+	img = newImg;
+	size = newSize;
+}
+
 inline SRVID afLoadDDSTexture(const char* name, TexDesc& texDesc)
 {
 	int fileSize;
@@ -119,6 +147,7 @@ inline SRVID afLoadDDSTexture(const char* name, TexDesc& texDesc)
 		aflog("afLoadDDSTexture failed! %s", name);
 		return SRVID();
 	}
+	Convert24To32(img, fileSize);
 	const DDSHeader* hdr = (DDSHeader*)img;
 
 	AFFormat format = AFF_INVALID;
@@ -159,6 +188,7 @@ inline SRVID afLoadDDSTexture(const char* name, TexDesc& texDesc)
 			offset += pitch;
 		}
 	}
+	assert(offset <= fileSize);
 
 	SRVID srv = afCreateTexture2D(format, texDesc, mipCnt, &r[0]);
 	assert(srv);
@@ -176,7 +206,8 @@ inline SRVID afLoadTexture(const char* name, TexDesc& desc)
 	if (len > 4 && !stricmp(name + len - 4, ".dds"))
 	{
 		tex = afLoadDDSTexture(name, desc);
-	} else
+	}
+	else
 	{
 		tex = LoadTextureViaOS(name, desc.size);
 	}
