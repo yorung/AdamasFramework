@@ -38,7 +38,7 @@ class WaterSurfaceES2
 	VBOID vbo;
 	IBOID ibo;
 	int nIndi;
-	std::vector<SRVID> texIds;
+	std::vector<AFTexRef> texIds;
 public:
 	WaterSurfaceES2();
 	~WaterSurfaceES2();

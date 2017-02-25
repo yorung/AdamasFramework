@@ -4,10 +4,11 @@ public:
 	Mat matW;
 	Vec4 quad;
 	uint32_t color = 0;
-	SRVID tex;
+	AFTexRef tex;
 	SpriteCommand() {}
 	SpriteCommand(const SpriteCommand& r) { *this = r; }
-	const SpriteCommand& operator=(const SpriteCommand& r) {
+	const SpriteCommand& operator=(const SpriteCommand& r)
+	{
 		matW = r.matW;
 		quad = r.quad;
 		color = r.color;

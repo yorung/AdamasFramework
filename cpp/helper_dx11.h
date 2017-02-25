@@ -55,7 +55,7 @@ void afSetVertexBuffer(int size, const void* buf, int stride);
 void afSetIndexBuffer(IBOID indexBuffer);
 
 void afWriteBuffer(const IBOID p, int size, const void* buf);
-void afWriteTexture(SRVID srv, const struct TexDesc& desc, const void* buf);
+void afWriteTexture(AFTexRef srv, const struct TexDesc& desc, const void* buf);
 
 IBOID afCreateIndexBuffer(int numIndi, const AFIndex* indi);
 VBOID afCreateVertexBuffer(int size, const void* buf);
@@ -73,10 +73,10 @@ void afDraw(int numVertices, int start = 0, int instanceCount = 1);
 
 typedef D3D11_SUBRESOURCE_DATA AFTexSubresourceData;
 
-SRVID afCreateTexture2D(AFFormat format, const struct TexDesc& desc, int mipCount, const AFTexSubresourceData datas[]);
-SRVID afCreateDynamicTexture(AFFormat format, const IVec2& size);
+AFTexRef afCreateTexture2D(AFFormat format, const struct TexDesc& desc, int mipCount, const AFTexSubresourceData datas[]);
+AFTexRef afCreateDynamicTexture(AFFormat format, const IVec2& size);
 IVec2 afGetTextureSize(ComPtr<ID3D11View> view);
-void afSetTextureName(SRVID tex, const char* name);
+void afSetTextureName(AFTexRef tex, const char* name);
 
 class AFRenderTarget
 {

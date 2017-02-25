@@ -13,14 +13,7 @@ SkyMan::~SkyMan()
 void SkyMan::Create(const char *texFileName, const char* shader)
 {
 	Destroy();
-#ifdef AF_DX11
-	SRVID srv = afLoadTexture(texFileName, texDesc);
-	srv->GetResource(&texRef);
-	assert(texRef);
-#else
 	texRef = afLoadTexture(texFileName, texDesc);
-#endif
-
 	int numElements = 0;
 	const InputElement* elements = stockObjects.GetFullScreenInputElements(numElements);
 	renderStates.Create(shader, numElements, elements, AFRS_DEPTH_CLOSEREQUAL_READONLY, arrayparam(samplers));

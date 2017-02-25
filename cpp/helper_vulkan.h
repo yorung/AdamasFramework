@@ -95,6 +95,7 @@ struct TextureContext
 	bool operator ==(const TextureContext& r) const { return image == r.image; }
 };
 typedef TextureContext SRVID;
+typedef SRVID AFTexRef;
 
 SRVID afCreateDynamicTexture(VkFormat format, const IVec2& size, void *image = nullptr);
 SRVID afCreateTexture2D(AFFormat format, const struct TexDesc& desc, int mipCount, const AFTexSubresourceData datas[]);

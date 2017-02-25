@@ -199,11 +199,12 @@ bool LoadImageViaGdiPlus(const char* name, IVec2& size, std::vector<uint32_t>& c
 	return w && h;
 }
 
-SRVID LoadTextureViaOS(const char* name, IVec2& size)
+AFTexRef LoadTextureViaOS(const char* name, IVec2& size)
 {
 	std::vector<uint32_t> col;
-	if (!LoadImageViaGdiPlus(name, size, col)) {
-		return SRVID();
+	if (!LoadImageViaGdiPlus(name, size, col))
+	{
+		return AFTexRef();
 	}
 	TexDesc desc;
 	desc.size = size;

@@ -139,13 +139,13 @@ inline void Convert24To32(void*& img, int& size)
 	size = newSize;
 }
 
-inline SRVID afLoadDDSTexture(const char* name, TexDesc& texDesc)
+inline AFTexRef afLoadDDSTexture(const char* name, TexDesc& texDesc)
 {
 	int fileSize;
 	void* img = LoadFile(name, &fileSize);
 	if (!img) {
 		aflog("afLoadDDSTexture failed! %s", name);
-		return SRVID();
+		return AFTexRef();
 	}
 	Convert24To32(img, fileSize);
 	const DDSHeader* hdr = (DDSHeader*)img;
@@ -190,19 +190,19 @@ inline SRVID afLoadDDSTexture(const char* name, TexDesc& texDesc)
 	}
 	assert(offset <= fileSize);
 
-	SRVID srv = afCreateTexture2D(format, texDesc, mipCnt, &r[0]);
-	assert(srv);
+	AFTexRef tex = afCreateTexture2D(format, texDesc, mipCnt, &r[0]);
+	assert(tex);
 	free(img);
-	return srv;
+	return tex;
 }
 
-SRVID LoadTextureViaOS(const char* name, IVec2& size);
+AFTexRef LoadTextureViaOS(const char* name, IVec2& size);
 
-inline SRVID afLoadTexture(const char* name, TexDesc& desc)
+inline AFTexRef afLoadTexture(const char* name, TexDesc& desc)
 {
 	desc = TexDesc();
 	size_t len = strlen(name);
-	SRVID tex;
+	AFTexRef tex;
 	if (len > 4 && !stricmp(name + len - 4, ".dds"))
 	{
 		tex = afLoadDDSTexture(name, desc);
@@ -215,7 +215,7 @@ inline SRVID afLoadTexture(const char* name, TexDesc& desc)
 	return tex;
 }
 
-inline SRVID afLoadTexture(const char* name)
+inline AFTexRef afLoadTexture(const char* name)
 {
 	TexDesc dummy;
 	return afLoadTexture(name, dummy);

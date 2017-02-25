@@ -15,7 +15,7 @@ class WaterSurfaceES3
 	AFRenderStates renderStateHeightMap;
 	AFRenderStates renderStateNormalMap;
 	AFRenderStates renderStateWaterLastPass;
-	std::vector<SRVID> texId;
+	std::vector<AFTexRef> texId;
 	AFRenderTarget renderTarget[2];
 	AFRenderTarget heightMap[2];
 	AFRenderTarget normalMap;

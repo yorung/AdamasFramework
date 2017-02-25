@@ -2,7 +2,7 @@
 
 class Puzzle
 {
-	SRVID tex;
+	AFTexRef tex;
 	int panels[16];
 	SpriteCommands cmds;
 	void TryMove(int x, int y);

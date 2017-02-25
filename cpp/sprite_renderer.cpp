@@ -4,7 +4,8 @@ SpriteRenderer spriteRenderer;
 
 static const int MAX_SPRITES_IN_ONE_DRAW_CALL = 10;
 
-struct SpriteVertex {
+struct SpriteVertex
+{
 	Vec3 pos;
 	uint32_t color;
 	Vec2 uv;
@@ -60,20 +61,24 @@ void SpriteRenderer::Draw(AFCommandList& cmd, const SpriteCommands& sprites)
 
 	SpriteVertex v[MAX_SPRITES_IN_ONE_DRAW_CALL][4];
 	int numStoredSprites = 0;
-	SRVID curTex;
+	AFTexRef curTex;
 	auto flush = [&] {
-		if (numStoredSprites > 0) {
+		if (numStoredSprites > 0)
+		{
 			cmd.SetTexture(curTex, 0);
 			quadListVertexBuffer.Apply(cmd, v, sizeof(SpriteVertex) * 4 * numStoredSprites);
 			cmd.DrawIndexed(6 * numStoredSprites, 0);
 			numStoredSprites = 0;
 		}
 	};
-	for (auto it : sprites) {
-		if (curTex != it.tex || numStoredSprites == MAX_SPRITES_IN_ONE_DRAW_CALL) {
+	for (auto it : sprites)
+	{
+		if (curTex != it.tex || numStoredSprites == MAX_SPRITES_IN_ONE_DRAW_CALL)
+		{
 			flush();
 		}
-		if (numStoredSprites == 0) {
+		if (numStoredSprites == 0)
+		{
 			curTex = it.tex;
 		}
 		StoreVertices(v[numStoredSprites++], 1.f, 1.f, it.color, it.quad.x, it.quad.y, it.quad.z, it.quad.w, it.matW);

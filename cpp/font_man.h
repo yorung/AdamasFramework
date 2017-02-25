@@ -1,17 +1,19 @@
 class FontMan
 {
-	struct CharCache {
+	struct CharCache
+	{
 		Vec2 srcPos;
 		CharDesc desc;
 	};
-	struct CharSprite {
+	struct CharSprite
+	{
 		Vec2 pos;
 		CharSignature signature;
 	};
 	typedef std::map<CharSignature, CharCache> Caches;
 	Caches caches;
 	int curX, curY, curLineMaxH;
-	SRVID texture;
+	AFTexRef texture;
 	DIB texSrc;
 
 	static const int SPRITE_MAX = 4096;

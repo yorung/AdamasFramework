@@ -5,11 +5,11 @@ public:
 	~TexMan();
 	int Create(const char *name);
 	int CreateWhiteTexture();
-	SRVID IndexToTexture(int index);
+	AFTexRef IndexToTexture(int index);
 	void Destroy();
 private:
 	std::map<std::string, int> nameToIndex;
-	std::vector<SRVID> srvids;
+	std::vector<AFTexRef> srvids;
 };
 
 extern TexMan texMan;

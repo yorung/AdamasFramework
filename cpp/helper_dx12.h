@@ -19,6 +19,7 @@ typedef ComPtr<ID3D12Resource> IBOID;
 typedef ComPtr<ID3D12Resource> VBOID;
 typedef ComPtr<ID3D12Resource> UBOID;
 typedef ComPtr<ID3D12Resource> SRVID;
+typedef SRVID AFTexRef;
 inline void afSafeDeleteBuffer(ComPtr<ID3D12Resource>& p) { p.Reset(); }
 inline void afSafeDeleteTexture(SRVID& p) { p.Reset(); }
 

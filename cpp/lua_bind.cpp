@@ -156,7 +156,7 @@ static void BindImage(lua_State* L)
 {
 	class Image
 	{
-		SRVID texId;
+		AFTexRef texId;
 		TexDesc desc;
 		std::vector<Vec4> quads;
 #ifdef _DEBUG

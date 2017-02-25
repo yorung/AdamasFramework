@@ -36,17 +36,17 @@ int TexMan::CreateWhiteTexture()
 	{
 		return it->second;
 	}
-	SRVID tex = afCreateTexture2D(AFF_R8G8B8A8_UNORM, desc, 1, &data);
+	AFTexRef tex = afCreateTexture2D(AFF_R8G8B8A8_UNORM, desc, 1, &data);
 	afSetTextureName(tex, __FUNCTION__);
 	srvids.push_back(tex);
 	return nameToIndex[name] = srvids.size() - 1;
 }
 
-SRVID TexMan::IndexToTexture(int index)
+AFTexRef TexMan::IndexToTexture(int index)
 {
 	if (index < 0 || index >= (int)srvids.size())
 	{
-		return SRVID();
+		return AFTexRef();
 	}
 	return srvids[index];
 }
@@ -58,6 +58,6 @@ void TexMan::Destroy()
 		afSafeDeleteTexture(it);
 	}
 	srvids.clear();
-	srvids.push_back(SRVID());	// invalidate index 0
+	srvids.push_back(AFTexRef());	// invalidate index 0
 	nameToIndex.clear();
 }

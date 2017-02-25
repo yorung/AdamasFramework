@@ -10,7 +10,3 @@ inline AFCommandList& afGetCommandList()
 #else
 #define AF_INPUT_ELEMENT(index,name,format,offset) CInputElement(name, format, offset)
 #endif
-
-#ifndef AF_DX11
-typedef SRVID AFTexRef;
-#endif
