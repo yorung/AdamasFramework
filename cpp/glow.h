@@ -6,7 +6,7 @@ class Glow
 	void LazyInit();
 public:
 	void Destroy();
-	void MakeGlow(AFRenderTarget& target, SRVID srcTex);
+	void MakeGlow(AFRenderTarget& target, AFTexRef srcTex);
 };
 
 extern Glow glow;

@@ -292,7 +292,7 @@ void WaterSurfaceES3::Draw()
 		num = (num + 1) % 9;
 	}
 
-	SRVID srcTex;
+	AFTexRef srcTex;
 	switch (num) {
 	case 0:
 		srcTex = renderTarget[0].GetTexture();

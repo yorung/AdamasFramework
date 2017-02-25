@@ -16,7 +16,7 @@ void LetterBox::LazyInit()
 	renderStates.Create("letterbox", numElements, elements, AFRS_NONE, arrayparam(samplers));
 }
 
-void LetterBox::Draw(AFCommandList& cmd, AFRenderTarget& target, SRVID srcTex)
+void LetterBox::Draw(AFCommandList& cmd, AFRenderTarget& target, AFTexRef srcTex)
 {
 	LazyInit();
 

@@ -37,7 +37,7 @@ void Glow::Destroy()
 	renderStateGlowCopy.Destroy();
 }
 
-void Glow::MakeGlow(AFRenderTarget& target, SRVID srcTex)
+void Glow::MakeGlow(AFRenderTarget& target, AFTexRef srcTex)
 {
 	LazyInit();
 	AFCommandList& cmd = afGetCommandList();

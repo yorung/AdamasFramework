@@ -5,7 +5,7 @@ class DeviceMan11
 	ID3D11Device* pDevice = nullptr;
 	ComPtr<IDXGISwapChain> pSwapChain;
 	ComPtr<ID3D11DeviceContext> pImmediateContext;
-	ComPtr<ID3D11RenderTargetView> pRenderTargetView;
+	ComPtr<ID3D11Texture2D> renderTarget;
 	ComPtr<ID3D11DepthStencilView> pDepthStencilView;
 public:
 	~DeviceMan11();
@@ -17,7 +17,7 @@ public:
 
 	ID3D11Device* GetDevice() { return pDevice; }
 	ID3D11DeviceContext* GetContext() { return pImmediateContext.Get(); }
-	ID3D11RenderTargetView*	GetDefaultRenderTarget() { return pRenderTargetView.Get(); }
+	ComPtr<ID3D11Texture2D>	GetDefaultRenderTarget() { return renderTarget.Get(); }
 	ID3D11DepthStencilView* GetDefaultDepthStencil() { return pDepthStencilView.Get(); }
 };
 
@@ -76,13 +76,14 @@ typedef D3D11_SUBRESOURCE_DATA AFTexSubresourceData;
 AFTexRef afCreateTexture2D(AFFormat format, const struct TexDesc& desc, int mipCount, const AFTexSubresourceData datas[]);
 AFTexRef afCreateDynamicTexture(AFFormat format, const IVec2& size);
 IVec2 afGetTextureSize(ComPtr<ID3D11View> view);
+IVec2 afGetTextureSize(ComPtr<ID3D11Texture2D> tex);
 void afSetTextureName(AFTexRef tex, const char* name);
 
 class AFRenderTarget
 {
 	IVec2 texSize;
-	ComPtr<ID3D11RenderTargetView> renderTargetView;
-	ComPtr<ID3D11ShaderResourceView> shaderResourceView;
+	ComPtr<ID3D11Texture2D> renderTarget;
+//	ComPtr<ID3D11RenderTargetView> renderTargetView;
 	ComPtr<ID3D11DepthStencilView> depthStencilView;
 public:
 	~AFRenderTarget() { Destroy(); }
@@ -90,7 +91,7 @@ public:
 	void Init(IVec2 size, AFFormat colorFormat, AFFormat depthStencilFormat = AFF_INVALID);
 	void Destroy();
 	void BeginRenderToThis();
-	ComPtr<ID3D11ShaderResourceView> GetTexture() { return shaderResourceView; }
+	AFTexRef GetTexture() { return renderTarget; }
 };
 
 void afCullMode(uint32_t flags);
