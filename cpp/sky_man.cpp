@@ -6,14 +6,20 @@ static const SamplerType samplers[] = { AFST_LINEAR_WRAP };
 
 SkyMan::~SkyMan()
 {
-	assert(!texId);
+	assert(!texRef);
 	assert(!renderStates.IsReady());
 }
 
 void SkyMan::Create(const char *texFileName, const char* shader)
 {
 	Destroy();
-	texId = afLoadTexture(texFileName, texDesc);
+#ifdef AF_DX11
+	SRVID srv = afLoadTexture(texFileName, texDesc);
+	srv->GetResource(&texRef);
+	assert(texRef);
+#else
+	texRef = afLoadTexture(texFileName, texDesc);
+#endif
 
 	int numElements = 0;
 	const InputElement* elements = stockObjects.GetFullScreenInputElements(numElements);
@@ -37,17 +43,17 @@ void SkyMan::Draw(AFCommandList& cmd)
 #ifdef AF_GLES
 	if (texDesc.isCubeMap)
 	{
-		afBindCubeMap(texId, 0);
+		afBindCubeMap(texRef, 0);
 		cmd.Draw(4);
 		return;
 	}
 #endif
-	cmd.SetTexture(texId, 0);
+	cmd.SetTexture(texRef, 0);
 	cmd.Draw(4);
 }
 
 void SkyMan::Destroy()
 {
-	afSafeDeleteTexture(texId);
+	afSafeDeleteTexture(texRef);
 	renderStates.Destroy();
 }

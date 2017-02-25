@@ -196,9 +196,23 @@ void afBindBuffer(int size, const void* buf, UINT slot)
 	afBindBuffer(id, slot);
 }
 
-void afBindTexture(SRVID srv, UINT slot)
+void afBindTexture(SRVID srv, uint32_t slot)
 {
 	deviceMan11.GetContext()->PSSetShaderResources(slot, 1, srv.GetAddressOf());
+}
+
+void afBindTexture(ComPtr<ID3D11Resource> tex, uint32_t slot)
+{
+	ComPtr<ID3D11Texture2D> tx;
+	tex.As(&tx);
+	assert(tx);
+
+	D3D11_TEXTURE2D_DESC desc;
+	tx->GetDesc(&desc);
+
+	ComPtr<ID3D11ShaderResourceView> srv;
+	afHandleDXError(deviceMan11.GetDevice()->CreateShaderResourceView(tex.Get(), &CD3D11_SHADER_RESOURCE_VIEW_DESC(desc.ArraySize == 6 ? D3D11_SRV_DIMENSION_TEXTURECUBE : D3D11_SRV_DIMENSION_TEXTURE2D, desc.Format), &srv));
+	afBindTexture(srv, slot);
 }
 
 void afBindSamplerToBindingPoint(SAMPLERID sampler, UINT slot)

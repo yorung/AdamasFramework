@@ -1,6 +1,6 @@
 class SkyMan
 {
-	SRVID texId;
+	AFTexRef texRef;
 	TexDesc texDesc;
 	AFRenderStates renderStates;
 public:

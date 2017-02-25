@@ -44,9 +44,11 @@ typedef ComPtr<ID3D11Buffer> VBOID;
 typedef ComPtr<ID3D11Buffer> UBOID;
 typedef ComPtr<ID3D11SamplerState> SAMPLERID;
 typedef ComPtr<ID3D11ShaderResourceView> SRVID;
+typedef ComPtr<ID3D11Resource> AFTexRef;
 inline void afSafeDeleteBuffer(ComPtr<ID3D11Buffer>& p) { p.Reset(); }
 inline void afSafeDeleteSampler(SAMPLERID& p) { p.Reset(); }
 inline void afSafeDeleteTexture(SRVID& p) { p.Reset(); }
+inline void afSafeDeleteTexture(AFTexRef& p) { p.Reset(); }
 
 void afSetVertexBuffer(VBOID vertexBuffer, int stride);
 void afSetVertexBuffer(int size, const void* buf, int stride);
@@ -62,7 +64,8 @@ UBOID afCreateUBO(int size, const void* buf = nullptr);
 
 void afBindBuffer(UBOID ubo, UINT slot);
 void afBindBuffer(int size, const void* buf, UINT slot);
-void afBindTexture(SRVID srv, UINT slot);
+void afBindTexture(SRVID srv, uint32_t slot);
+void afBindTexture(ComPtr<ID3D11Resource> tex, uint32_t slot);
 void afBindSamplerToBindingPoint(SAMPLERID sampler, UINT slot);
 
 void afDrawIndexed(int numIndices, int start = 0, int instanceCount = 1);
@@ -117,9 +120,13 @@ public:
 	{
 		rs.Apply();
 	}
-	void SetTexture(SRVID texId, int descritorSetIndex)
+	void SetTexture(SRVID texId, uint32_t slot)
 	{
-		afBindTexture(texId, descritorSetIndex);
+		afBindTexture(texId, slot);
+	}
+	void SetTexture(AFTexRef tex, uint32_t slot)
+	{
+		afBindTexture(tex, slot);
 	}
 	void SetBuffer(int size, const void* buf, int descritorSetIndex)
 	{
