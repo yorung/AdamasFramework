@@ -6,7 +6,7 @@ class DeviceMan11
 	ComPtr<IDXGISwapChain> pSwapChain;
 	ComPtr<ID3D11DeviceContext> pImmediateContext;
 	ComPtr<ID3D11Texture2D> renderTarget;
-	ComPtr<ID3D11DepthStencilView> pDepthStencilView;
+	ComPtr<ID3D11Texture2D> depthStencil;
 public:
 	~DeviceMan11();
 
@@ -18,7 +18,7 @@ public:
 	ID3D11Device* GetDevice() { return pDevice; }
 	ID3D11DeviceContext* GetContext() { return pImmediateContext.Get(); }
 	ComPtr<ID3D11Texture2D>	GetDefaultRenderTarget() { return renderTarget.Get(); }
-	ID3D11DepthStencilView* GetDefaultDepthStencil() { return pDepthStencilView.Get(); }
+	ComPtr<ID3D11Texture2D> GetDefaultDepthStencil() { return depthStencil.Get(); }
 };
 
 extern DeviceMan11 deviceMan11;
@@ -82,9 +82,9 @@ void afSetTextureName(AFTexRef tex, const char* name);
 class AFRenderTarget
 {
 	IVec2 texSize;
-	ComPtr<ID3D11Texture2D> renderTarget;
+	ComPtr<ID3D11Texture2D> renderTarget, depthStencil;
 //	ComPtr<ID3D11RenderTargetView> renderTargetView;
-	ComPtr<ID3D11DepthStencilView> depthStencilView;
+//	ComPtr<ID3D11DepthStencilView> depthStencilView;
 public:
 	~AFRenderTarget() { Destroy(); }
 	void InitForDefaultRenderTarget();

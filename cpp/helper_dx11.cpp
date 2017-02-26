@@ -44,9 +44,9 @@ void DeviceMan11::Create(HWND hWnd)
 
 	pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&renderTarget);
 
-	ComPtr<ID3D11Texture2D> pDepthStencil;
-	pDevice->CreateTexture2D(&CD3D11_TEXTURE2D_DESC(DXGI_FORMAT_D24_UNORM_S8_UINT, sd.BufferDesc.Width, sd.BufferDesc.Height, 1, 0, D3D11_BIND_DEPTH_STENCIL), nullptr, &pDepthStencil);
-	pDevice->CreateDepthStencilView(pDepthStencil.Get(), &CD3D11_DEPTH_STENCIL_VIEW_DESC(D3D11_DSV_DIMENSION_TEXTURE2D, DXGI_FORMAT_D24_UNORM_S8_UINT), &pDepthStencilView);
+//	ComPtr<ID3D11Texture2D> pDepthStencil;
+	pDevice->CreateTexture2D(&CD3D11_TEXTURE2D_DESC(DXGI_FORMAT_D24_UNORM_S8_UINT, sd.BufferDesc.Width, sd.BufferDesc.Height, 1, 0, D3D11_BIND_DEPTH_STENCIL), nullptr, &depthStencil);
+//	pDevice->CreateDepthStencilView(pDepthStencil.Get(), &CD3D11_DEPTH_STENCIL_VIEW_DESC(D3D11_DSV_DIMENSION_TEXTURE2D, DXGI_FORMAT_D24_UNORM_S8_UINT), &pDepthStencilView);
 //	ID3D11RenderTargetView* renderTargetViews[] = { renderTarget.Get() };
 //	pImmediateContext->OMSetRenderTargets(arrayparam(renderTargetViews), pDepthStencilView.Get());
 }
@@ -64,7 +64,7 @@ void DeviceMan11::Destroy()
 	}
 	pImmediateContext.Reset();
 	renderTarget.Reset();
-	pDepthStencilView.Reset();
+	depthStencil.Reset();
 	pSwapChain.Reset();
 
 	if (pDevice)
@@ -338,7 +338,7 @@ void AFRenderTarget::InitForDefaultRenderTarget()
 {
 	Destroy();
 	renderTarget = deviceMan11.GetDefaultRenderTarget();
-	depthStencilView = deviceMan11.GetDefaultDepthStencil();
+	depthStencil = deviceMan11.GetDefaultDepthStencil();
 	texSize = afGetTextureSize(renderTarget);
 }
 
@@ -354,7 +354,7 @@ void AFRenderTarget::Init(IVec2 size, DXGI_FORMAT colorFormat, DXGI_FORMAT depth
 	switch (depthStencilFormat)
 	{
 	case DXGI_FORMAT_D24_UNORM_S8_UINT:
-		depthStencilView = deviceMan11.GetDefaultDepthStencil();
+		depthStencil = deviceMan11.GetDefaultDepthStencil();
 		return;
 	case DXGI_FORMAT_UNKNOWN:
 		return;
@@ -365,9 +365,10 @@ void AFRenderTarget::Init(IVec2 size, DXGI_FORMAT colorFormat, DXGI_FORMAT depth
 void AFRenderTarget::Destroy()
 {
 	renderTarget.Reset();
+	depthStencil.Reset();
 //	renderTargetView.Reset();
 //	shaderResourceView.Reset();
-	depthStencilView.Reset();
+//	depthStencilView.Reset();
 }
 
 void AFRenderTarget::BeginRenderToThis()
@@ -378,13 +379,19 @@ void AFRenderTarget::BeginRenderToThis()
 	ComPtr<ID3D11RenderTargetView> rtv;
 	afHandleDXError(deviceMan11.GetDevice()->CreateRenderTargetView(renderTarget.Get(), &CD3D11_RENDER_TARGET_VIEW_DESC(D3D11_RTV_DIMENSION_TEXTURE2D, desc.Format), &rtv));
 
+	ComPtr<ID3D11DepthStencilView> dsv;
+	if (depthStencil)
+	{
+		afHandleDXError(deviceMan11.GetDevice()->CreateDepthStencilView(depthStencil.Get(), &CD3D11_DEPTH_STENCIL_VIEW_DESC(D3D11_DSV_DIMENSION_TEXTURE2D, DXGI_FORMAT_D24_UNORM_S8_UINT), &dsv));
+	}
+
 	ID3D11DeviceContext* context = deviceMan11.GetContext();
-	context->OMSetRenderTargets(1, rtv.GetAddressOf(), depthStencilView.Get());
+	context->OMSetRenderTargets(1, rtv.GetAddressOf(), dsv.Get());
 	float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 	context->ClearRenderTargetView(rtv.Get(), clearColor);
-	if (depthStencilView)
+	if (dsv)
 	{
-		context->ClearDepthStencilView(depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+		context->ClearDepthStencilView(dsv.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	}
 
 	D3D11_VIEWPORT vp = { 0, 0, (float)texSize.x, (float)texSize.y, 0.0f, 1.0f };
