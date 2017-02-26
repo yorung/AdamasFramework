@@ -1,4 +1,5 @@
-class App {
+class App
+{
 	MeshMan::MMID meshId;
 public:
 	App();

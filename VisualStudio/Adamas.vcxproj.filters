@@ -252,6 +252,7 @@
     <ClInclude Include="..\cpp\AFDynamicQuadListVertexBuffer.inl">
       <Filter>PlatformIndipendent</Filter>
     </ClInclude>
+    <ClInclude Include="..\cpp\AF.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Windows">

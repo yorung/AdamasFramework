@@ -180,6 +180,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\cpp\AF.h" />
     <ClInclude Include="..\cpp\af_lua_helpers.h" />
     <ClInclude Include="..\cpp\af_math.h" />
     <ClInclude Include="..\cpp\app.h" />
