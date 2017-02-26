@@ -62,6 +62,10 @@ VBOID afCreateVertexBuffer(int size, const void* buf);
 VBOID afCreateDynamicVertexBuffer(int size);
 UBOID afCreateUBO(int size, const void* buf = nullptr);
 
+SRVID afCreateSRVFromTexture(AFTexRef tex);
+ComPtr<ID3D11DepthStencilView> afCreateDSVFromTexture(AFTexRef tex);
+ComPtr<ID3D11RenderTargetView> afCreateRTVFromTexture(AFTexRef tex);
+
 void afBindBuffer(UBOID ubo, UINT slot);
 void afBindBuffer(int size, const void* buf, UINT slot);
 void afBindTexture(SRVID srv, uint32_t slot);
