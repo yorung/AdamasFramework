@@ -78,6 +78,7 @@ AFTexRef afCreateDynamicTexture(AFFormat format, const IVec2& size);
 IVec2 afGetTextureSize(ComPtr<ID3D11View> view);
 IVec2 afGetTextureSize(ComPtr<ID3D11Texture2D> tex);
 void afSetTextureName(AFTexRef tex, const char* name);
+void afSetRenderTarget(ComPtr<ID3D11Resource> color, ComPtr<ID3D11Resource> depthStencil);
 
 class AFRenderTarget
 {
