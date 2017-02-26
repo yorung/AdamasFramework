@@ -131,12 +131,12 @@ inline Vec2 frac(const Vec2& v)
 
 inline Vec2 floor(const Vec2& v)
 {
-	return Vec2(floor(v.x), floor(v.y));
+	return Vec2(std::floor(v.x), std::floor(v.y));
 }
 
 inline Vec2 ceil(const Vec2& v)
 {
-	return Vec2(ceil(v.x), ceil(v.y));
+	return Vec2(std::ceil(v.x), std::ceil(v.y));
 }
 
 inline Vec2 max(const Vec2& a, const Vec2& b) {
