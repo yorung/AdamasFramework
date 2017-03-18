@@ -294,7 +294,7 @@ void DeviceManDX12::Create(HWND hWnd)
 	}
 
 	IVec2 size = { (int)sd.BufferDesc.Width, (int)sd.BufferDesc.Height };
-	depthStencil = afCreateDynamicTexture(AFF_DEPTH_STENCIL, size, nullptr, true);
+	depthStencil = afCreateDynamicTexture(AFF_DEPTH_STENCIL, size, AFTF_DSV);
 
 	const D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = { D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1 };
 	device->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&dsvHeap));

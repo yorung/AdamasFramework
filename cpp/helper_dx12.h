@@ -46,7 +46,7 @@ struct AFTexSubresourceData
 	uint32_t pitchSlice;
 };
 
-SRVID afCreateDynamicTexture(AFFormat format, const IVec2& size, void *image = nullptr, bool isRenderTargetOrDepthStencil = false);
+ComPtr<ID3D12Resource> afCreateDynamicTexture(AFFormat format, const IVec2& size, uint32_t flags = AFTF_CPU_WRITE | AFTF_SRV);
 SRVID afCreateTexture2D(AFFormat format, const struct TexDesc& desc, int mipCount, const AFTexSubresourceData datas[]);
 void afSetTextureName(SRVID tex, const char* name);
 

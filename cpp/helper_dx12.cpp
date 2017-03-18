@@ -178,9 +178,8 @@ void afSetTextureName(SRVID tex, const char* name)
 	}
 }
 
-SRVID afCreateDynamicTexture(AFFormat format, const IVec2& size, void *image, bool isRenderTargetOrDepthStencil)
+ComPtr<ID3D12Resource> afCreateDynamicTexture(AFFormat format, const IVec2& size, uint32_t flags)
 {
-	bool isDepthStencil = format == AFF_DEPTH || format == AFF_DEPTH_STENCIL;
 	D3D12_RESOURCE_DESC textureDesc = {};
 	textureDesc.MipLevels = 1;
 	textureDesc.Format = format;
@@ -191,35 +190,29 @@ SRVID afCreateDynamicTexture(AFFormat format, const IVec2& size, void *image, bo
 	textureDesc.SampleDesc.Quality = 0;
 	textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
 
-	SRVID id;
+	bool useClearValue = !!(flags & (AFTF_DSV | AFTF_RTV));
 	D3D12_CLEAR_VALUE clearValue = { format };
-	D3D12_RESOURCE_STATES resourceState = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
-
-	if (isRenderTargetOrDepthStencil)
+	D3D12_RESOURCE_STATES resourceState = D3D12_RESOURCE_STATE_COMMON;
+	if (flags & AFTF_SRV)
 	{
-		textureDesc.Flags = isDepthStencil ? D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL : D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
-		if (isDepthStencil)
-		{
-			textureDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
-			clearValue.DepthStencil.Depth = 1.0f;
-			resourceState = D3D12_RESOURCE_STATE_DEPTH_WRITE;
-		}
-		else
-		{
-			textureDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
-			std::copy_n(clearColor, 4, clearValue.Color);
-			resourceState = D3D12_RESOURCE_STATE_RENDER_TARGET;
-		}
+		resourceState = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+	}
+	if (flags & AFTF_DSV)
+	{
+		textureDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
+		clearValue.DepthStencil.Depth = 1.0f;
+		resourceState = D3D12_RESOURCE_STATE_DEPTH_WRITE;
+	}
+	if (flags & AFTF_RTV)
+	{
+		textureDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+		std::copy_n(clearColor, 4, clearValue.Color);
+		resourceState = D3D12_RESOURCE_STATE_RENDER_TARGET;	// not |=
 	}
 
-	afHandleDXError(deviceMan.GetDevice()->CreateCommittedResource(&defaultHeapProperties, D3D12_HEAP_FLAG_NONE, &textureDesc, resourceState, isRenderTargetOrDepthStencil ? &clearValue : nullptr, IID_PPV_ARGS(&id)));
-	TexDesc texDesc;
-	texDesc.size = size;
-	if (image)
-	{
-		afWriteTexture(id, texDesc, image);
-	}
-	return id;
+	ComPtr<ID3D12Resource> res;
+	afHandleDXError(deviceMan.GetDevice()->CreateCommittedResource(&defaultHeapProperties, D3D12_HEAP_FLAG_NONE, &textureDesc, resourceState, useClearValue ? &clearValue : nullptr, IID_PPV_ARGS(&res)));
+	return res;
 }
 
 SRVID afCreateTexture2D(AFFormat format, const struct TexDesc& desc, int mipCount, const AFTexSubresourceData datas[])
@@ -362,7 +355,7 @@ void AFRenderTarget::Init(IVec2 size, AFFormat colorFormat, AFFormat depthStenci
 {
 	(void)depthStencilFormat;
 	texSize = size;
-	renderTarget = afCreateDynamicTexture(colorFormat, size, nullptr, true);
+	renderTarget = afCreateDynamicTexture(colorFormat, size, AFTF_RTV | AFTF_SRV);
 	currentState = D3D12_RESOURCE_STATE_RENDER_TARGET;
 	deviceMan.AddIntermediateCommandlistDependentResource(renderTarget);
 	afSetTextureName(renderTarget, __FUNCTION__);
