@@ -323,19 +323,34 @@ HRESULT _afHandleDXError(const char* file, const char* func, int line, const cha
 
 #include <D3Dcompiler.h>
 #pragma comment(lib, "d3dcompiler.lib")
+
+class HLSLIncluder : public ID3DInclude
+{
+public:
+	STDMETHOD(Open)(D3D_INCLUDE_TYPE, LPCSTR fileName, LPCVOID, LPCVOID *data, UINT *size) override
+	{
+		*data = LoadFile(SPrintf("hlsl\\%s", fileName), reinterpret_cast<int*>(size));
+		return S_OK;
+	}
+	STDMETHOD(Close)(LPCVOID ptr) override
+	{
+		free(const_cast<void*>(ptr));
+		return S_OK;
+	};
+};
+
 ComPtr<ID3DBlob> afCompileHLSL(const char* name, const char* entryPoint, const char* target)
 {
-	char path[MAX_PATH];
-	sprintf_s(path, sizeof(path), "hlsl/%s.hlsl", name);
+	char inc[64];
+	sprintf_s(inc, sizeof(inc), "#include \"%s.hlsl\"", name);
 #ifdef _DEBUG
 	UINT flags = D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
 #else
 	UINT flags = D3DCOMPILE_ENABLE_STRICTNESS;
 #endif
 	ComPtr<ID3DBlob> blob, err;
-	WCHAR wname[MAX_PATH];
-	MultiByteToWideChar(CP_ACP, 0, path, -1, wname, dimof(wname));
-	HRESULT hr = D3DCompileFromFile(wname, nullptr, nullptr, entryPoint, target, flags, 0, &blob, &err);
+	static HLSLIncluder includer;
+	HRESULT hr = D3DCompile(inc, strlen(inc), name, nullptr, &includer, entryPoint, target, flags, 0, &blob, &err);
 	if (err)
 	{
 		MessageBoxA(nullptr, (const char*)err->GetBufferPointer(), name, MB_OK | MB_ICONERROR);
