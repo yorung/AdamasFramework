@@ -63,8 +63,8 @@ VBOID afCreateDynamicVertexBuffer(int size);
 UBOID afCreateUBO(int size, const void* buf = nullptr);
 
 SRVID afCreateSRVFromTexture(AFTexRef tex);
-ComPtr<ID3D11DepthStencilView> afCreateDSVFromTexture(AFTexRef tex);
-ComPtr<ID3D11RenderTargetView> afCreateRTVFromTexture(AFTexRef tex);
+ComPtr<ID3D11DepthStencilView> afCreateDSVFromTexture(ComPtr<ID3D11Resource> tex);
+ComPtr<ID3D11RenderTargetView> afCreateRTVFromTexture(AFTexRef tex, AFFormat formatAs = AFF_INVALID);
 
 void afBindBuffer(UBOID ubo, UINT slot);
 void afBindBuffer(int size, const void* buf, UINT slot);
@@ -77,12 +77,14 @@ void afDraw(int numVertices, int start = 0, int instanceCount = 1);
 
 typedef D3D11_SUBRESOURCE_DATA AFTexSubresourceData;
 
-AFTexRef afCreateTexture2D(AFFormat format, const struct TexDesc& desc, int mipCount, const AFTexSubresourceData datas[]);
-AFTexRef afCreateDynamicTexture(AFFormat format, const IVec2& size);
+ComPtr<ID3D11Texture2D> afCreateTexture2D(AFFormat format, const struct TexDesc& desc, int mipCount, const AFTexSubresourceData datas[]);
+ComPtr<ID3D11Texture2D> afCreateDynamicTexture(AFFormat format, const IVec2& size, uint32_t flags = AFTF_CPU_WRITE | AFTF_SRV);
 IVec2 afGetTextureSize(ComPtr<ID3D11View> view);
 IVec2 afGetTextureSize(ComPtr<ID3D11Texture2D> tex);
 void afSetTextureName(AFTexRef tex, const char* name);
 void afSetRenderTarget(ComPtr<ID3D11Resource> color, ComPtr<ID3D11Resource> depthStencil);
+void afClearRenderTarget(ComPtr<ID3D11Resource> color);
+void afClearDepthStencil(ComPtr<ID3D11Resource> depthStencil);
 
 class AFRenderTarget
 {

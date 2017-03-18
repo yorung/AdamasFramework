@@ -22,6 +22,14 @@ enum RenderStateFlags : uint32_t
 	AFRS_OFFSCREEN_RENDER_TARGET_R16G16B16A16_FLOAT = 0x100,
 };
 
+enum TextureFlags : uint32_t
+{
+	AFTF_CPU_WRITE = 0x01,
+	AFTF_SRV = 0x02,
+	AFTF_DSV = 0x04,
+	AFTF_RTV = 0x08,
+};
+
 enum SamplerType
 {
 	AFST_POINT_WRAP,
