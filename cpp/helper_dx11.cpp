@@ -189,21 +189,48 @@ SAMPLERID afCreateSampler(SamplerType type)
 	return sampler;
 }
 
-void afBindBuffer(UBOID ubo, UINT slot)
+void afBindBuffer(UBOID ubo, UINT slot, uint8_t bindFlags)
 {
-	deviceMan11.GetContext()->VSSetConstantBuffers(slot, 1, ubo.GetAddressOf());
-	deviceMan11.GetContext()->PSSetConstantBuffers(slot, 1, ubo.GetAddressOf());
+	void (STDMETHODCALLTYPE ID3D11DeviceContext::*binders[])(UINT, UINT, ID3D11Buffer*const*) =
+	{
+		&ID3D11DeviceContext::VSSetConstantBuffers,
+		&ID3D11DeviceContext::PSSetConstantBuffers,
+		&ID3D11DeviceContext::GSSetConstantBuffers,
+		&ID3D11DeviceContext::DSSetConstantBuffers,
+	};
+	ID3D11DeviceContext* context = deviceMan11.GetContext();
+	for (int i = 0; i < dimof(binders); i++)
+	{
+		if (bindFlags & (1 << i))
+		{
+			(context->*binders[i])(slot, 1, ubo.GetAddressOf());
+		}
+	}
 }
 
-void afBindBuffer(int size, const void* buf, UINT slot)
+void afBindBuffer(int size, const void* buf, UINT slot, uint8_t bindFlags)
 {
 	UBOID id = afCreateUBO(size, buf);
-	afBindBuffer(id, slot);
+	afBindBuffer(id, slot, bindFlags);
 }
 
-void afBindTexture(SRVID srv, uint32_t slot)
+void afBindTexture(SRVID srv, uint32_t slot, uint8_t bindFlags)
 {
-	deviceMan11.GetContext()->PSSetShaderResources(slot, 1, srv.GetAddressOf());
+	void (STDMETHODCALLTYPE ID3D11DeviceContext::*binders[])(UINT, UINT, ID3D11ShaderResourceView*const*) =
+	{
+		&ID3D11DeviceContext::VSSetShaderResources,
+		&ID3D11DeviceContext::PSSetShaderResources,
+		&ID3D11DeviceContext::GSSetShaderResources,
+		&ID3D11DeviceContext::DSSetShaderResources,
+	};
+	ID3D11DeviceContext* context = deviceMan11.GetContext();
+	for (int i = 0; i < dimof(binders); i++)
+	{
+		if (bindFlags & (1 << i))
+		{
+			(context->*binders[i])(slot, 1, srv.GetAddressOf());
+		}
+	}
 }
 
 static D3D11_TEXTURE2D_DESC afGetTexture2DDesc(AFTexRef tex)
@@ -264,9 +291,9 @@ ComPtr<ID3D11RenderTargetView> afCreateRTVFromTexture(AFTexRef tex, AFFormat for
 	return rtv;
 }
 
-void afBindTexture(ComPtr<ID3D11Resource> tex, uint32_t slot)
+void afBindTexture(ComPtr<ID3D11Resource> tex, uint32_t slot, uint8_t bindFlags)
 {
-	afBindTexture(afCreateSRVFromTexture(tex), slot);
+	afBindTexture(afCreateSRVFromTexture(tex), slot, bindFlags);
 }
 
 void afBindSamplerToBindingPoint(SAMPLERID sampler, UINT slot)
@@ -468,18 +495,42 @@ void AFRenderTarget::BeginRenderToThis()
 	afSetRenderTarget(renderTarget, depthStencil);
 }
 
+#include <D3Dcompiler.h>
+
+void AFRenderStates::MakeBindFlags(ComPtr<ID3DBlob> shader, uint8_t shaderStageFlag)
+{
+	ComPtr<ID3D11ShaderReflection> ref;
+	afHandleDXError(D3DReflect(shader->GetBufferPointer(), shader->GetBufferSize(), IID_PPV_ARGS(&ref)));
+	D3D11_SHADER_DESC desc;
+	afHandleDXError(ref->GetDesc(&desc));
+	for (UINT i = 0; i < desc.BoundResources; i++)
+	{
+		D3D11_SHADER_INPUT_BIND_DESC res;
+		afHandleDXError(ref->GetResourceBindingDesc(i, &res));
+		bindFlags[res.Type][res.BindPoint] |= shaderStageFlag;
+	}
+}
+
+uint8_t AFRenderStates::GetBindFlags(D3D_SHADER_INPUT_TYPE type, UINT shaderRegister) const
+{
+	return bindFlags[type][shaderRegister];
+}
+
 void AFRenderStates::Create(const char* shaderName, int numInputElements, const InputElement* inputElements, uint32_t flags_, int numSamplerTypes_, const SamplerType samplerTypes_[])
 {
+	memset(bindFlags, 0, sizeof(bindFlags));
 	ComPtr<ID3DBlob> vs = afCompileHLSL(shaderName, "VSMain", "vs_5_0");
 	ComPtr<ID3DBlob> ps = afCompileHLSL(shaderName, "PSMain", "ps_5_0");
 	HRESULT hr = S_OK;
 	if (ps)
 	{
+		MakeBindFlags(ps, 0x02);
 		hr = deviceMan11.GetDevice()->CreatePixelShader(ps->GetBufferPointer(), ps->GetBufferSize(), nullptr, &pixelShader);
 		assert(!hr);
 	}
 	if (vs)
 	{
+		MakeBindFlags(vs, 0x01);
 		hr = deviceMan11.GetDevice()->CreateVertexShader(vs->GetBufferPointer(), vs->GetBufferSize(), nullptr, &vertexShader);
 		assert(!hr);
 		if (inputElements && numInputElements > 0)

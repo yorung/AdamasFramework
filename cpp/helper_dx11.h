@@ -66,10 +66,10 @@ SRVID afCreateSRVFromTexture(AFTexRef tex);
 ComPtr<ID3D11DepthStencilView> afCreateDSVFromTexture(ComPtr<ID3D11Resource> tex);
 ComPtr<ID3D11RenderTargetView> afCreateRTVFromTexture(AFTexRef tex, AFFormat formatAs = AFF_INVALID);
 
-void afBindBuffer(UBOID ubo, UINT slot);
-void afBindBuffer(int size, const void* buf, UINT slot);
-void afBindTexture(SRVID srv, uint32_t slot);
-void afBindTexture(ComPtr<ID3D11Resource> tex, uint32_t slot);
+void afBindBuffer(UBOID ubo, UINT slot, uint8_t bindFlags = 0x03);
+void afBindBuffer(int size, const void* buf, UINT slot, uint8_t bindFlags = 0x03);
+void afBindTexture(SRVID srv, uint32_t slot, uint8_t bindFlags = 0x02);
+void afBindTexture(ComPtr<ID3D11Resource> tex, uint32_t slot, uint8_t bindFlags = 0x02);
 void afBindSamplerToBindingPoint(SAMPLERID sampler, UINT slot);
 
 void afDrawIndexed(int numIndices, int start = 0, int instanceCount = 1);
@@ -107,14 +107,18 @@ void afDepthStencilMode(uint32_t flags);
 SAMPLERID afCreateSampler(SamplerType type);
 void afSetSampler(SamplerType type, int slot);
 
-class AFRenderStates {
+class AFRenderStates
+{
+	uint8_t bindFlags[D3D_SIT_UAV_RWSTRUCTURED_WITH_COUNTER + 1][128];
 	uint32_t flags = AFRS_NONE;
 	int numSamplerTypes = 0;
 	const SamplerType* samplerTypes = nullptr;
 	ComPtr<ID3D11InputLayout> inputLayout;
 	ComPtr<ID3D11VertexShader> vertexShader;
 	ComPtr<ID3D11PixelShader> pixelShader;
+	void MakeBindFlags(ComPtr<ID3DBlob> shader, uint8_t shaderStageFlag);
 public:
+	uint8_t GetBindFlags(D3D_SHADER_INPUT_TYPE type, UINT shaderRegister) const;
 	bool IsReady() { return !!pixelShader; }
 	void Create(const char* shaderName, int numInputElements = 0, const InputElement* inputElements = nullptr, uint32_t flags = AFRS_NONE, int numSamplerTypes_ = 0, const SamplerType samplerTypes_[] = nullptr);
 	void Apply() const;
@@ -123,26 +127,28 @@ public:
 
 class AFCommandList
 {
+	AFRenderStates* currentRS = nullptr;
 public:
 	void SetRenderStates(AFRenderStates& rs)
 	{
 		rs.Apply();
+		currentRS = &rs;
 	}
 	void SetTexture(SRVID texId, uint32_t slot)
 	{
-		afBindTexture(texId, slot);
+		afBindTexture(texId, slot, currentRS->GetBindFlags(D3D_SIT_TEXTURE, slot));
 	}
 	void SetTexture(AFTexRef tex, uint32_t slot)
 	{
-		afBindTexture(tex, slot);
+		afBindTexture(tex, slot, currentRS->GetBindFlags(D3D_SIT_TEXTURE, slot));
 	}
-	void SetBuffer(int size, const void* buf, int descritorSetIndex)
+	void SetBuffer(int size, const void* buf, int descriptorSetIndex)
 	{
-		afBindBuffer(size, buf, descritorSetIndex);
+		afBindBuffer(size, buf, descriptorSetIndex, currentRS->GetBindFlags(D3D_SIT_CBUFFER, descriptorSetIndex));
 	}
 	void SetBuffer(UBOID uniformBuffer, int descriptorSetIndex)
 	{
-		afBindBuffer(uniformBuffer, descriptorSetIndex);
+		afBindBuffer(uniformBuffer, descriptorSetIndex, currentRS->GetBindFlags(D3D_SIT_CBUFFER, descriptorSetIndex));
 	}
 	void SetVertexBuffer(int size, const void* buf, int stride)
 	{
