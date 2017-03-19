@@ -97,7 +97,7 @@ struct TextureContext
 typedef TextureContext SRVID;
 typedef SRVID AFTexRef;
 
-SRVID afCreateDynamicTexture(VkFormat format, const IVec2& size, void *image = nullptr);
+SRVID afCreateDynamicTexture(VkFormat format, const IVec2& size, uint32_t flags = AFTF_CPU_WRITE | AFTF_SRV);
 SRVID afCreateTexture2D(AFFormat format, const struct TexDesc& desc, int mipCount, const AFTexSubresourceData datas[]);
 void afWriteTexture(TextureContext& textureContext, const TexDesc& texDesc, void *image);
 void afSafeDeleteTexture(TextureContext& textureContext);

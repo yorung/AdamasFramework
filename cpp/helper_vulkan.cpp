@@ -176,7 +176,7 @@ static VkImageAspectFlags FormatToAspectFlags(VkFormat format)
 	return VK_IMAGE_ASPECT_COLOR_BIT;
 }
 
-TextureContext afCreateDynamicTexture(VkFormat format, const IVec2& size, void *image)
+TextureContext afCreateDynamicTexture(VkFormat format, const IVec2& size, uint32_t flags)
 {
 	VkFormatProperties formatProperties;
 	vkGetPhysicalDeviceFormatProperties(deviceMan.physicalDevice, format, &formatProperties);
@@ -188,66 +188,40 @@ TextureContext afCreateDynamicTexture(VkFormat format, const IVec2& size, void *
 	textureContext.device = device;
 	textureContext.format = format;
 	textureContext.texDesc.size = size;
-	const VkImageCreateInfo dynamicTextureCreateInfo = { VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO, nullptr, 0, VK_IMAGE_TYPE_2D, format,{ (uint32_t)size.x, (uint32_t)size.y, 1 }, 1, 1, VK_SAMPLE_COUNT_1_BIT, VK_IMAGE_TILING_LINEAR, VK_IMAGE_USAGE_SAMPLED_BIT, VK_SHARING_MODE_EXCLUSIVE, 0, nullptr, VK_IMAGE_LAYOUT_PREINITIALIZED };
-	afHandleVKError(vkCreateImage(device, &dynamicTextureCreateInfo, nullptr, &textureContext.image));
 
-	VkMemoryRequirements req = {};
-	vkGetImageMemoryRequirements(device, textureContext.image, &req);
-	const VkMemoryAllocateInfo memoryAllocateInfo = { VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO, nullptr, req.size, GetCompatibleMemoryTypeIndex(deviceMan.physicalDeviceMemoryProperties, req.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT) };
-	afHandleVKError(vkAllocateMemory(device, &memoryAllocateInfo, nullptr, &textureContext.memory));
-
-	afHandleVKError(vkBindImageMemory(device, textureContext.image, textureContext.memory, 0));
-
-	VkImageViewCreateInfo imageViewCreateInfo = { VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, nullptr, 0, textureContext.image, VK_IMAGE_VIEW_TYPE_2D, format, colorComponentMapping, { FormatToAspectFlags(format), 0, 1, 0, 1 } };
-	afHandleVKError(vkCreateImageView(device, &imageViewCreateInfo, nullptr, &textureContext.view));
-
-	CreateTextureDescriptorSet(textureContext);
-
-	TexDesc texDesc;
-	texDesc.size = size;
-	if (image)
+	VkImageCreateInfo TextureCreateInfo = { VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO, nullptr, 0, VK_IMAGE_TYPE_2D, format,{ (uint32_t)size.x, (uint32_t)size.y, 1 }, 1, 1, VK_SAMPLE_COUNT_1_BIT, VK_IMAGE_TILING_OPTIMAL, 0, VK_SHARING_MODE_EXCLUSIVE, 0, nullptr, VK_IMAGE_LAYOUT_PREINITIALIZED };
+	if (flags & AFTF_CPU_WRITE)
 	{
-		afWriteTexture(textureContext, texDesc, image);
+		TextureCreateInfo.tiling = VK_IMAGE_TILING_LINEAR;
 	}
-	return textureContext;
-}
-
-TextureContext afCreateRenderTarget(VkFormat format, const IVec2& size)
-{
-	VkFormatProperties formatProperties;
-	vkGetPhysicalDeviceFormatProperties(deviceMan.physicalDevice, format, &formatProperties);
-	assert(formatProperties.linearTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT);
-
-	VkDevice device = deviceMan.GetDevice();
-	const bool isDepth = format == VK_FORMAT_D24_UNORM_S8_UINT;
-
-	TextureContext textureContext;
-	textureContext.device = device;
-	textureContext.format = format;
-	textureContext.texDesc.size = size;
-	const VkImageCreateInfo renderTargetCreateInfo = { VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO, nullptr, 0, VK_IMAGE_TYPE_2D, format,{ (uint32_t)size.x, (uint32_t)size.y, 1 }, 1, 1, VK_SAMPLE_COUNT_1_BIT, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT, VK_SHARING_MODE_EXCLUSIVE, 0, nullptr, VK_IMAGE_LAYOUT_UNDEFINED };
-	const VkImageCreateInfo depthStencilCreateInfo = { VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO, nullptr, 0, VK_IMAGE_TYPE_2D, format,{ (uint32_t)size.x, (uint32_t)size.y, 1 }, 1, 1, VK_SAMPLE_COUNT_1_BIT, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_SHARING_MODE_EXCLUSIVE, 0, nullptr, VK_IMAGE_LAYOUT_UNDEFINED };
-	afHandleVKError(vkCreateImage(device, isDepth ? &depthStencilCreateInfo : &renderTargetCreateInfo, nullptr, &textureContext.image));
+	if (flags & AFTF_SRV)
+	{
+		TextureCreateInfo.usage |= VK_IMAGE_USAGE_SAMPLED_BIT;
+	}
+	if (flags & AFTF_RTV)
+	{
+		TextureCreateInfo.usage |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+	}
+	if (flags & AFTF_DSV)
+	{
+		TextureCreateInfo.usage |= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+	}
+	afHandleVKError(vkCreateImage(device, &TextureCreateInfo, nullptr, &textureContext.image));
 
 	VkMemoryRequirements req = {};
 	vkGetImageMemoryRequirements(device, textureContext.image, &req);
-	const VkMemoryAllocateInfo memoryAllocateInfo = { VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO, nullptr, req.size, GetCompatibleMemoryTypeIndex(deviceMan.physicalDeviceMemoryProperties, req.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT) };
+	const VkMemoryAllocateInfo memoryAllocateInfo = { VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO, nullptr, req.size, GetCompatibleMemoryTypeIndex(deviceMan.physicalDeviceMemoryProperties, req.memoryTypeBits, (flags & AFTF_CPU_WRITE) ? VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT : VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT) };
 	afHandleVKError(vkAllocateMemory(device, &memoryAllocateInfo, nullptr, &textureContext.memory));
 
 	afHandleVKError(vkBindImageMemory(device, textureContext.image, textureContext.memory, 0));
 
-	VkImageViewCreateInfo imageViewCreateInfo = { VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, nullptr, 0, textureContext.image, VK_IMAGE_VIEW_TYPE_2D, format, isDepth ? depthComponentMapping : colorComponentMapping,{ FormatToAspectFlags(format), 0, 1, 0, 1 } };
+	VkImageViewCreateInfo imageViewCreateInfo = { VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, nullptr, 0, textureContext.image, VK_IMAGE_VIEW_TYPE_2D, format, (flags & AFTF_DSV) ? depthComponentMapping : colorComponentMapping,{ FormatToAspectFlags(format), 0, 1, 0, 1 } };
 	afHandleVKError(vkCreateImageView(device, &imageViewCreateInfo, nullptr, &textureContext.view));
 
-	if (!isDepth)
+	if (flags & AFTF_SRV)
 	{
 		CreateTextureDescriptorSet(textureContext);
-
-		//VkCommandBuffer cmd = deviceMan.commandBuffer;
-		//const VkImageMemoryBarrier undefToAttachment = { VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER, nullptr, 0, VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, textureContext.image,{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 } };
-		//vkCmdPipelineBarrier(cmd, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0, 0, nullptr, 0, nullptr, 1, &undefToAttachment);
 	}
-
 	return textureContext;
 }
 
@@ -558,7 +532,7 @@ void DeviceManVK::Create(HWND hWnd)
 	afHandleVKError(vkGetSwapchainImagesKHR(device, swapchain, &swapChainCount, swapChainImages));
 
 	// depth stencil
-	depthStencil = afCreateRenderTarget(VK_FORMAT_D24_UNORM_S8_UINT, IVec2(rc.right, rc.bottom));
+	depthStencil = afCreateDynamicTexture(VK_FORMAT_D24_UNORM_S8_UINT, IVec2(rc.right, rc.bottom), AFTF_DSV);
 
 	// render pass
 	primaryRenderPass = CreateRenderPass(swapchainInfo.imageFormat, VK_FORMAT_D24_UNORM_S8_UINT, true);
@@ -799,7 +773,7 @@ void AFRenderTarget::Init(IVec2 size, AFFormat colorFormat, AFFormat /*depthSten
 {
 	texSize = size;
 	VkDevice device = deviceMan.GetDevice();
-	renderTarget = afCreateRenderTarget(colorFormat, size);
+	renderTarget = afCreateDynamicTexture(colorFormat, size, AFTF_RTV | AFTF_SRV);
 	const VkImageView frameBufferAttachmentImageView[] = { renderTarget.view, deviceMan.GetDepthStencil().view };
 	const VkFramebufferCreateInfo framebufferInfo = { VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO, nullptr, 0, VkFormatToRenderPassForOffScreenRenderTarget(colorFormat), arrayparam(frameBufferAttachmentImageView), (uint32_t)size.x, (uint32_t)size.y, 1 };
 	afHandleVKError(vkCreateFramebuffer(device, &framebufferInfo, nullptr, &framebuffer));
