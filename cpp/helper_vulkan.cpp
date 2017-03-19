@@ -200,7 +200,7 @@ TextureContext afCreateDynamicTexture(VkFormat format, const IVec2& size, uint32
 	}
 	if (flags & AFTF_RTV)
 	{
-		TextureCreateInfo.usage |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+		TextureCreateInfo.usage |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 	}
 	if (flags & AFTF_DSV)
 	{
