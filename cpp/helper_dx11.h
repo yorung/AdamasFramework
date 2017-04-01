@@ -79,6 +79,7 @@ typedef D3D11_SUBRESOURCE_DATA AFTexSubresourceData;
 
 ComPtr<ID3D11Texture2D> afCreateTexture2D(AFFormat format, const struct TexDesc& desc, int mipCount, const AFTexSubresourceData datas[]);
 ComPtr<ID3D11Texture2D> afCreateDynamicTexture(AFFormat format, const IVec2& size, uint32_t flags = AFTF_CPU_WRITE | AFTF_SRV);
+ComPtr<ID3D11Texture2D> afGetTexture2DFromView(ComPtr<ID3D11View> view);
 IVec2 afGetTextureSize(ComPtr<ID3D11View> view);
 IVec2 afGetTextureSize(ComPtr<ID3D11Texture2D> tex);
 void afSetTextureName(AFTexRef tex, const char* name);

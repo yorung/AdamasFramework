@@ -398,6 +398,17 @@ void afDepthStencilMode(uint32_t flags)
 	deviceMan11.GetContext()->OMSetDepthStencilState(ds.Get(), 1);
 }
 
+ComPtr<ID3D11Texture2D> afGetTexture2DFromView(ComPtr<ID3D11View> view)
+{
+	ComPtr<ID3D11Resource> res;
+	view->GetResource(&res);
+	assert(res);
+	ComPtr<ID3D11Texture2D> tex;
+	res.As(&tex);
+	assert(tex);
+	return tex;
+}
+
 IVec2 afGetTextureSize(ComPtr<ID3D11Texture2D> tex)
 {
 	D3D11_TEXTURE2D_DESC desc;
@@ -407,13 +418,7 @@ IVec2 afGetTextureSize(ComPtr<ID3D11Texture2D> tex)
 
 IVec2 afGetTextureSize(ComPtr<ID3D11View> view)
 {
-	ComPtr<ID3D11Resource> res;
-	view->GetResource(&res);
-	assert(res);
-	ComPtr<ID3D11Texture2D> tex;
-	res.As(&tex);
-	assert(tex);
-	return afGetTextureSize(tex);
+	return afGetTextureSize(afGetTexture2DFromView(view));
 }
 
 void afSetTextureName(AFTexRef tex, const char* name)
