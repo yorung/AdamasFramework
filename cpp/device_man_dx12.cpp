@@ -34,12 +34,14 @@ void DeviceManDX12::Destroy()
 	commandList.Reset();
 	commandQueue.Reset();
 	swapChain.Reset();
-	for (FrameResources& res : frameResources) {
+	for (FrameResources& res : frameResources)
+	{
 		res.renderTarget.Reset();
 		res.commandAllocator.Reset();
 		res.srvHeap.Reset();
 		res.mappedConstantBuffer = nullptr;
-		if (res.constantBuffer) {
+		if (res.constantBuffer)
+		{
 			res.constantBuffer->Unmap(0, nullptr);
 		}
 		res.constantBuffer.Reset();
@@ -52,7 +54,8 @@ void DeviceManDX12::Destroy()
 	fenceValue = 1;
 	frameIndex = 0;
 	int cnt = device.Reset();
-	if (cnt) {
+	if (cnt)
+	{
 		MessageBoxA(GetActiveWindow(), SPrintf("%d leaks detected.", cnt), "DX12 leaks", MB_OK);
 	}
 }
@@ -61,11 +64,8 @@ void DeviceManDX12::SetRenderTarget()
 {
 	DXGI_SWAP_CHAIN_DESC desc;
 	swapChain->GetDesc(&desc);
-
-	D3D12_VIEWPORT vp = { 0.f, 0.f, (float)desc.BufferDesc.Width, (float)desc.BufferDesc.Height, 0.f, 1.f };
-	D3D12_RECT rc = { 0, 0, (LONG)desc.BufferDesc.Width, (LONG)desc.BufferDesc.Height };
-	commandList->RSSetViewports(1, &vp);
-	commandList->RSSetScissorRects(1, &rc);
+	commandList->RSSetViewports(1, ToPtr<D3D12_VIEWPORT>({ 0.f, 0.f, (float)desc.BufferDesc.Width, (float)desc.BufferDesc.Height, 0.f, 1.f }));
+	commandList->RSSetScissorRects(1, ToPtr<D3D12_RECT>({ 0, 0, (LONG)desc.BufferDesc.Width, (LONG)desc.BufferDesc.Height }));
 
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = dsvHeap->GetCPUDescriptorHandleForHeapStart();
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = rtvHeap->GetCPUDescriptorHandleForHeapStart();
@@ -90,16 +90,13 @@ void DeviceManDX12::BeginScene()
 	res.intermediateCommandlistDependentResources.clear();
 	res.commandAllocator->Reset();
 	ResetCommandListAndSetDescriptorHeap();
-
-	D3D12_RESOURCE_BARRIER barrier = { D3D12_RESOURCE_BARRIER_TYPE_TRANSITION, D3D12_RESOURCE_BARRIER_FLAG_NONE,{ res.renderTarget.Get(), 0, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET } };
-	commandList->ResourceBarrier(1, &barrier);
+	commandList->ResourceBarrier(1, ToPtr<D3D12_RESOURCE_BARRIER>({ D3D12_RESOURCE_BARRIER_TYPE_TRANSITION, D3D12_RESOURCE_BARRIER_FLAG_NONE,{ res.renderTarget.Get(), 0, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET } }));
 }
 
 void DeviceManDX12::EndScene()
 {
 	FrameResources& res = frameResources[frameIndex];
-	D3D12_RESOURCE_BARRIER barrier = { D3D12_RESOURCE_BARRIER_TYPE_TRANSITION, D3D12_RESOURCE_BARRIER_FLAG_NONE,{ res.renderTarget.Get(), 0, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT } };
-	commandList->ResourceBarrier(1, &barrier);
+	commandList->ResourceBarrier(1, ToPtr<D3D12_RESOURCE_BARRIER>({ D3D12_RESOURCE_BARRIER_TYPE_TRANSITION, D3D12_RESOURCE_BARRIER_FLAG_NONE,{ res.renderTarget.Get(), 0, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT } }));
 
 	commandList->Close();
 	ID3D12CommandList* lists[] = { commandList.Get() };
@@ -110,7 +107,8 @@ void DeviceManDX12::EndScene()
 
 void DeviceManDX12::Flush()
 {
-	if (!commandList) {
+	if (!commandList)
+	{
 		return;
 	}
 	commandList->Close();
@@ -137,7 +135,8 @@ void DeviceManDX12::ResetCommandListAndSetDescriptorHeap()
 
 int DeviceManDX12::AssignDescriptorHeap(int numRequired)
 {
-	if (numAssignedSrvs + numRequired > maxSrvs) {
+	if (numAssignedSrvs + numRequired > maxSrvs)
+	{
 		assert(0);
 		return -1;
 	}
@@ -153,7 +152,8 @@ void DeviceManDX12::AssignSRV(int descriptorHeapIndex, ComPtr<ID3D12Resource> re
 	D3D12_CPU_DESCRIPTOR_HANDLE ptr = res.srvHeap->GetCPUDescriptorHandleForHeapStart();
 	ptr.ptr += device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV) * descriptorHeapIndex;
 	D3D12_RESOURCE_DESC resDesc = resToSrv->GetDesc();
-	if (resDesc.DepthOrArraySize == 6) {
+	if (resDesc.DepthOrArraySize == 6)
+	{
 		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 		srvDesc.Format = resDesc.Format;
 		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURECUBE;
@@ -162,7 +162,9 @@ void DeviceManDX12::AssignSRV(int descriptorHeapIndex, ComPtr<ID3D12Resource> re
 		srvDesc.TextureCube.MostDetailedMip = 0;
 		srvDesc.TextureCube.ResourceMinLODClamp = 0;
 		device->CreateShaderResourceView(resToSrv.Get(), &srvDesc, ptr);
-	} else {
+	}
+	else
+	{
 		device->CreateShaderResourceView(resToSrv.Get(), nullptr, ptr);
 	}
 }
@@ -172,7 +174,8 @@ int DeviceManDX12::AssignConstantBuffer(const void* buf, int size)
 	int sizeAligned = (size + 0xff) & ~0xff;
 	int numRequired = sizeAligned / 0x100;
 
-	if (numAssignedConstantBufferBlocks + numRequired > maxConstantBufferBlocks) {
+	if (numAssignedConstantBufferBlocks + numRequired > maxConstantBufferBlocks)
+	{
 		assert(0);
 		return -1;
 	}
@@ -206,7 +209,8 @@ void DeviceManDX12::AddIntermediateCommandlistDependentResource(ComPtr<ID3D12Res
 
 void DeviceManDX12::Present()
 {
-	if (!swapChain) {
+	if (!swapChain)
+	{
 		return;
 	}
 	EndScene();
@@ -225,27 +229,27 @@ void DeviceManDX12::Create(HWND hWnd)
 	}
 #endif
 	ComPtr<IDXGIFactory4> factory;
-	if (S_OK != CreateDXGIFactory1(IID_PPV_ARGS(&factory))) {
+	if (S_OK != CreateDXGIFactory1(IID_PPV_ARGS(&factory)))
+	{
 		Destroy();
 		return;
 	}
 	ComPtr<IDXGIAdapter1> adapter;
-	for (int i = 0; DXGI_ERROR_NOT_FOUND != factory->EnumAdapters1(i, &adapter); i++) {
-		if (S_OK == D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&device))) {
+	for (int i = 0; DXGI_ERROR_NOT_FOUND != factory->EnumAdapters1(i, &adapter); i++)
+	{
+		if (S_OK == D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&device)))
+		{
 			break;
 		}
 	}
-	if (!device) {
+	if (!device)
+	{
 		Destroy();
 		return;
 	}
 
-	D3D12_COMMAND_QUEUE_DESC queueDesc;
-	queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
-	queueDesc.Priority = 0;
-	queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
-	queueDesc.NodeMask = 0;
-	if (S_OK != device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&commandQueue))) {
+	if (S_OK != device->CreateCommandQueue(ToPtr<D3D12_COMMAND_QUEUE_DESC>({}), IID_PPV_ARGS(&commandQueue)))
+	{
 		Destroy();
 		return;
 	}
@@ -265,39 +269,35 @@ void DeviceManDX12::Create(HWND hWnd)
 	sd.Windowed = TRUE;
 
 	ComPtr<IDXGISwapChain> sc;
-	if (S_OK != factory->CreateSwapChain(commandQueue.Get(), &sd, &sc)) {
+	if (S_OK != factory->CreateSwapChain(commandQueue.Get(), &sd, &sc))
+	{
 		Destroy();
 		return;
 	}
-	if (S_OK != sc.As(&swapChain)) {
+	if (S_OK != sc.As(&swapChain))
+	{
 		Destroy();
 		return;
 	}
 
-	const D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = { D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 1 };
-	device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&rtvHeap));
-	for (int i = 0; i < numFrameBuffers; i++) {
+	device->CreateDescriptorHeap(ToPtr<D3D12_DESCRIPTOR_HEAP_DESC>({ D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 1 }), IID_PPV_ARGS(&rtvHeap));
+	for (int i = 0; i < numFrameBuffers; i++)
+	{
 		FrameResources& res = frameResources[i];
-		if (S_OK != swapChain->GetBuffer(i, IID_PPV_ARGS(&res.renderTarget))) {
+		if (S_OK != swapChain->GetBuffer(i, IID_PPV_ARGS(&res.renderTarget)))
+		{
 			Destroy();
 			return;
 		}
 		device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&res.commandAllocator));
-
-		const D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = { D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, maxSrvs, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE };
-		device->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&res.srvHeap));
-
+		device->CreateDescriptorHeap(ToPtr<D3D12_DESCRIPTOR_HEAP_DESC>({ D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, maxSrvs, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE }), IID_PPV_ARGS(&res.srvHeap));
 		res.constantBuffer = afCreateUBO(maxConstantBufferBlocks * 0x100);
-		D3D12_RANGE readRange = {};
-		afHandleDXError(res.constantBuffer->Map(0, &readRange, (void**)&res.mappedConstantBuffer));
+		afHandleDXError(res.constantBuffer->Map(0, ToPtr<D3D12_RANGE>({}), (void**)&res.mappedConstantBuffer));
 		afVerify(res.mappedConstantBuffer);
 	}
 
-	IVec2 size = { (int)sd.BufferDesc.Width, (int)sd.BufferDesc.Height };
-	depthStencil = afCreateDynamicTexture(AFF_DEPTH_STENCIL, size, AFTF_DSV);
-
-	const D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = { D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1 };
-	device->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&dsvHeap));
+	depthStencil = afCreateDynamicTexture(AFF_DEPTH_STENCIL, IVec2((int)sd.BufferDesc.Width, (int)sd.BufferDesc.Height), AFTF_DSV);
+	device->CreateDescriptorHeap(ToPtr<D3D12_DESCRIPTOR_HEAP_DESC>({ D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1 }), IID_PPV_ARGS(&dsvHeap));
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = dsvHeap->GetCPUDescriptorHandleForHeapStart();
 	device->CreateDepthStencilView(depthStencil.Get(), nullptr, dsvHandle);
 
@@ -305,7 +305,8 @@ void DeviceManDX12::Create(HWND hWnd)
 	device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, frameResources[0].commandAllocator.Get(), nullptr, IID_PPV_ARGS(&commandList));
 	commandList->Close();
 
-	if (S_OK != device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence))) {
+	if (S_OK != device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence)))
+	{
 		Destroy();
 		return;
 	}

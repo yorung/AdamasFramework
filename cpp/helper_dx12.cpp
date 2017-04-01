@@ -92,8 +92,7 @@ static ComPtr<ID3D12Resource> afCreateBufferAs(int size, const void* buf, D3D12_
 		ComPtr<ID3D12Resource> intermediateBuffer = afCreateUploadHeap(size, buf);
 		ID3D12GraphicsCommandList* list = deviceMan.GetCommandList();
 		list->CopyBufferRegion(o.Get(), 0, intermediateBuffer.Get(), 0, size);
-		D3D12_RESOURCE_BARRIER transition = { D3D12_RESOURCE_BARRIER_TYPE_TRANSITION, D3D12_RESOURCE_BARRIER_FLAG_NONE,{ o.Get(), 0, D3D12_RESOURCE_STATE_COPY_DEST, as } };
-		list->ResourceBarrier(1, &transition);
+		list->ResourceBarrier(1, ToPtr<D3D12_RESOURCE_BARRIER>({ D3D12_RESOURCE_BARRIER_TYPE_TRANSITION, D3D12_RESOURCE_BARRIER_FLAG_NONE,{ o.Get(), 0, D3D12_RESOURCE_STATE_COPY_DEST, as } }));
 		deviceMan.AddIntermediateCommandlistDependentResource(intermediateBuffer);
 		deviceMan.AddIntermediateCommandlistDependentResource(o);
 	}
@@ -302,17 +301,6 @@ ComPtr<ID3D12PipelineState> afCreatePSO(const char *shaderName, const InputEleme
 	return pso;
 }
 
-class CDescriptorCBV : public D3D12_DESCRIPTOR_RANGE {
-public:
-	CDescriptorCBV(int shaderRegister) {
-		RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
-		NumDescriptors = 1;
-		BaseShaderRegister = shaderRegister;
-		RegisterSpace = 0;
-		OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
-	}
-};
-
 void afWaitFenceValue(ComPtr<ID3D12Fence> fence, UINT64 value)
 {
 	if (fence->GetCompletedValue() >= value) {
@@ -377,8 +365,7 @@ void AFRenderTarget::BeginRenderToThis()
 	ID3D12GraphicsCommandList* commandList = deviceMan.GetCommandList();
 	if (currentState != D3D12_RESOURCE_STATE_RENDER_TARGET)
 	{
-		D3D12_RESOURCE_BARRIER transition = { D3D12_RESOURCE_BARRIER_TYPE_TRANSITION, D3D12_RESOURCE_BARRIER_FLAG_NONE,{ renderTarget.Get(), 0, currentState, D3D12_RESOURCE_STATE_RENDER_TARGET } };
-		commandList->ResourceBarrier(1, &transition);
+		commandList->ResourceBarrier(1, ToPtr<D3D12_RESOURCE_BARRIER>({ D3D12_RESOURCE_BARRIER_TYPE_TRANSITION, D3D12_RESOURCE_BARRIER_FLAG_NONE,{ renderTarget.Get(), 0, currentState, D3D12_RESOURCE_STATE_RENDER_TARGET }}));
 		currentState = D3D12_RESOURCE_STATE_RENDER_TARGET;
 	}
 
@@ -401,9 +388,8 @@ ComPtr<ID3D12Resource> AFRenderTarget::GetTexture()
 {
 	if (currentState != D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE)
 	{
-		D3D12_RESOURCE_BARRIER transition = { D3D12_RESOURCE_BARRIER_TYPE_TRANSITION, D3D12_RESOURCE_BARRIER_FLAG_NONE,{ renderTarget.Get(), 0, currentState, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE } };
 		ID3D12GraphicsCommandList* commandList = deviceMan.GetCommandList();
-		commandList->ResourceBarrier(1, &transition);
+		commandList->ResourceBarrier(1, ToPtr<D3D12_RESOURCE_BARRIER>({ D3D12_RESOURCE_BARRIER_TYPE_TRANSITION, D3D12_RESOURCE_BARRIER_FLAG_NONE,{ renderTarget.Get(), 0, currentState, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE }}));
 		currentState = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 	}
 
