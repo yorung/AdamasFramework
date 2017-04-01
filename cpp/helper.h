@@ -19,6 +19,19 @@ template <class T> inline void afSafeDelete(T& p)
 	p = nullptr;
 }
 
+template <class T> class TToPtr
+{
+	T Ref;
+public:
+	TToPtr(T InRef) : Ref(InRef) {}
+	operator T*() { return &Ref; }
+};
+
+template <class T> TToPtr<T> ToPtr(T InRef)
+{
+	return TToPtr<T>(InRef);
+}
+
 struct CharSignature
 {
 	wchar_t code;

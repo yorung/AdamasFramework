@@ -5,7 +5,6 @@
 #include <D3DCommon.h>
 #pragma comment(lib, "dxguid.lib")
 #pragma comment(lib, "d3d11.lib")
-#pragma warning(disable:4238) // nonstandard extension used : class rvalue used as lvalue
 
 DeviceMan11 deviceMan11;
 
@@ -102,38 +101,36 @@ void afSetIndexBuffer(IBOID indexBuffer)
 IBOID afCreateIndexBuffer(int numIndi, const AFIndex* indi)
 {
 	IBOID indexBuffer;
-	D3D11_SUBRESOURCE_DATA subresData = { indi, 0, 0 };
-	deviceMan11.GetDevice()->CreateBuffer(&CD3D11_BUFFER_DESC(numIndi * sizeof(AFIndex), D3D11_BIND_INDEX_BUFFER), &subresData, &indexBuffer);
+	deviceMan11.GetDevice()->CreateBuffer(ToPtr<D3D11_BUFFER_DESC>({numIndi * sizeof(AFIndex), D3D11_USAGE_DEFAULT, D3D11_BIND_INDEX_BUFFER}), ToPtr<D3D11_SUBRESOURCE_DATA>({indi}), &indexBuffer);
 	return indexBuffer;
 }
 
 VBOID afCreateVertexBuffer(int size, const void* data)
 {
 	VBOID vbo;
-	D3D11_SUBRESOURCE_DATA subresData = { data, 0, 0 };
-	deviceMan11.GetDevice()->CreateBuffer(&CD3D11_BUFFER_DESC(size, D3D11_BIND_VERTEX_BUFFER), &subresData, &vbo);
+	deviceMan11.GetDevice()->CreateBuffer(ToPtr<D3D11_BUFFER_DESC>({(UINT)size, D3D11_USAGE_DEFAULT, D3D11_BIND_VERTEX_BUFFER}), ToPtr<D3D11_SUBRESOURCE_DATA>({data}), &vbo);
 	return vbo;
 }
 
 VBOID afCreateDynamicVertexBuffer(int size)
 {
 	VBOID vbo;
-	deviceMan11.GetDevice()->CreateBuffer(&CD3D11_BUFFER_DESC(size, D3D11_BIND_VERTEX_BUFFER, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE), nullptr, &vbo);
+	deviceMan11.GetDevice()->CreateBuffer(ToPtr<D3D11_BUFFER_DESC>({(UINT)size, D3D11_USAGE_DYNAMIC, D3D11_BIND_VERTEX_BUFFER, D3D11_CPU_ACCESS_WRITE}), nullptr, &vbo);
 	return vbo;
 }
 
 UBOID afCreateUBO(int size, const void* buf)
 {
 	UBOID ubo;
-	D3D11_SUBRESOURCE_DATA subresData = { buf, 0, 0 };
-	deviceMan11.GetDevice()->CreateBuffer(&CD3D11_BUFFER_DESC(size, D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE), buf ? &subresData : nullptr, &ubo);
+	D3D11_SUBRESOURCE_DATA subresData = { buf };
+	deviceMan11.GetDevice()->CreateBuffer(ToPtr<D3D11_BUFFER_DESC>({(UINT)size, D3D11_USAGE_DYNAMIC, D3D11_BIND_CONSTANT_BUFFER, D3D11_CPU_ACCESS_WRITE}), buf ? &subresData : nullptr, &ubo);
 	return ubo;
 }
 
 ComPtr<ID3D11Texture2D> afCreateTexture2D(AFFormat format, const TexDesc& afDesc, int mipCount, const AFTexSubresourceData datas[])
 {
 	ComPtr<ID3D11Texture2D> tex;
-	afHandleDXError(deviceMan11.GetDevice()->CreateTexture2D(&CD3D11_TEXTURE2D_DESC(format, afDesc.size.x, afDesc.size.y, afDesc.arraySize, mipCount, D3D11_BIND_SHADER_RESOURCE, D3D11_USAGE_DEFAULT, 0, 1, 0, afDesc.isCubeMap ? D3D11_RESOURCE_MISC_TEXTURECUBE : 0), datas, &tex));
+	afHandleDXError(deviceMan11.GetDevice()->CreateTexture2D(ToPtr<D3D11_TEXTURE2D_DESC>({(UINT)afDesc.size.x, (UINT)afDesc.size.y, (UINT)mipCount, (UINT)afDesc.arraySize, format, {1, 0}, D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, afDesc.isCubeMap ? D3D11_RESOURCE_MISC_TEXTURECUBE : 0u}), datas, &tex));
 	return tex;
 }
 
@@ -262,7 +259,7 @@ SRVID afCreateSRVFromTexture(AFTexRef tex)
 {
 	D3D11_TEXTURE2D_DESC desc = afGetTexture2DDesc(tex);
 	ComPtr<ID3D11ShaderResourceView> srv;
-	afHandleDXError(deviceMan11.GetDevice()->CreateShaderResourceView(tex.Get(), &CD3D11_SHADER_RESOURCE_VIEW_DESC(desc.ArraySize == 6 ? D3D11_SRV_DIMENSION_TEXTURECUBE : D3D11_SRV_DIMENSION_TEXTURE2D, TypelessToSRVFormat(desc.Format), 0, desc.MipLevels), &srv));
+	afHandleDXError(deviceMan11.GetDevice()->CreateShaderResourceView(tex.Get(), ToPtr(CD3D11_SHADER_RESOURCE_VIEW_DESC(desc.ArraySize == 6 ? D3D11_SRV_DIMENSION_TEXTURECUBE : D3D11_SRV_DIMENSION_TEXTURE2D, TypelessToSRVFormat(desc.Format), 0, desc.MipLevels)), &srv));
 	return srv;
 }
 
@@ -279,7 +276,7 @@ inline DXGI_FORMAT TypelessToDSVFormat(DXGI_FORMAT format)
 ComPtr<ID3D11DepthStencilView> afCreateDSVFromTexture(ComPtr<ID3D11Resource> tex)
 {
 	ComPtr<ID3D11DepthStencilView> dsv;
-	afHandleDXError(deviceMan11.GetDevice()->CreateDepthStencilView(tex.Get(), &CD3D11_DEPTH_STENCIL_VIEW_DESC(D3D11_DSV_DIMENSION_TEXTURE2D, TypelessToDSVFormat(afGetTexture2DDesc(tex).Format)), &dsv));
+	afHandleDXError(deviceMan11.GetDevice()->CreateDepthStencilView(tex.Get(), ToPtr(CD3D11_DEPTH_STENCIL_VIEW_DESC(D3D11_DSV_DIMENSION_TEXTURE2D, TypelessToDSVFormat(afGetTexture2DDesc(tex).Format))), &dsv));
 	return dsv;
 }
 
@@ -287,7 +284,7 @@ ComPtr<ID3D11RenderTargetView> afCreateRTVFromTexture(AFTexRef tex, AFFormat for
 {
 	formatAs = (formatAs != AFF_INVALID) ? formatAs : afGetTexture2DDesc(tex).Format;
 	ComPtr<ID3D11RenderTargetView> rtv;
-	afHandleDXError(deviceMan11.GetDevice()->CreateRenderTargetView(tex.Get(), &CD3D11_RENDER_TARGET_VIEW_DESC(D3D11_RTV_DIMENSION_TEXTURE2D, formatAs), &rtv));
+	afHandleDXError(deviceMan11.GetDevice()->CreateRenderTargetView(tex.Get(), ToPtr(CD3D11_RENDER_TARGET_VIEW_DESC(D3D11_RTV_DIMENSION_TEXTURE2D, formatAs)), &rtv));
 	return rtv;
 }
 
@@ -442,10 +439,8 @@ void afSetRenderTarget(ComPtr<ID3D11Resource> color, ComPtr<ID3D11Resource> dept
 	ComPtr<ID3D11DepthStencilView> dsv = depthStencil ? afCreateDSVFromTexture(depthStencil) : nullptr;
 	ID3D11DeviceContext* context = deviceMan11.GetContext();
 	context->OMSetRenderTargets(1, rtv.GetAddressOf(), dsv.Get());
-	D3D11_VIEWPORT vp = { 0, 0, (float)desc.Width, (float)desc.Height, 0.0f, 1.0f };
-	context->RSSetViewports(1, &vp);
-	D3D11_RECT rc = { 0, 0, (LONG)desc.Width, (LONG)desc.Height };
-	context->RSSetScissorRects(1, &rc);
+	context->RSSetViewports(1, ToPtr<D3D11_VIEWPORT>({ 0, 0, (float)desc.Width, (float)desc.Height, 0.0f, 1.0f }));
+	context->RSSetScissorRects(1, ToPtr<D3D11_RECT>({ 0, 0, (LONG)desc.Width, (LONG)desc.Height }));
 }
 
 void AFRenderTarget::InitForDefaultRenderTarget()
