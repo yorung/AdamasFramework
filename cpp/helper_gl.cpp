@@ -714,6 +714,9 @@ void AFRenderStates::Apply() const
 	afBlendMode(flags);
 	afDepthStencilMode(flags);
 	afCullMode(flags);
+#ifdef _MSC_VER
+	glPolygonMode(GL_FRONT_AND_BACK, (flags & AFRS_WIREFRAME) ? GL_LINE : GL_FILL);
+#endif
 #ifdef AF_GLES31
 	for (int i = 0; i < numSamplerTypes; i++)
 	{
