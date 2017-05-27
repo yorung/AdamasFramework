@@ -137,7 +137,6 @@ public:
 class AFRenderTarget
 {
 	VkFramebuffer framebuffer = 0;
-	IVec2 texSize;
 	TextureContext renderTarget;
 	bool asDefault = false;
 public:

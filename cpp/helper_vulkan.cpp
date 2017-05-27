@@ -772,7 +772,6 @@ void AFRenderTarget::InitForDefaultRenderTarget()
 
 void AFRenderTarget::Init(IVec2 size, AFFormat colorFormat, AFFormat /*depthStencilFormat*/)
 {
-	texSize = size;
 	VkDevice device = deviceMan.GetDevice();
 	renderTarget = afCreateDynamicTexture(colorFormat, size, AFTF_RTV | AFTF_SRV);
 	const VkImageView frameBufferAttachmentImageView[] = { renderTarget.view, deviceMan.GetDepthStencil().view };
@@ -794,7 +793,7 @@ void AFRenderTarget::BeginRenderToThis()
 		deviceMan.BeginSceneToCurrentBackBuffer();
 		return;
 	}
-	deviceMan.BeginScene(VkFormatToRenderPassForOffScreenRenderTarget(renderTarget.format), framebuffer, texSize);
+	deviceMan.BeginScene(VkFormatToRenderPassForOffScreenRenderTarget(renderTarget.format), framebuffer, renderTarget.texDesc.size);
 }
 
 #endif
