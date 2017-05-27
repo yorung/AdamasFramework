@@ -282,7 +282,7 @@ ComPtr<ID3D12PipelineState> afCreatePSO(const char *shaderName, const InputEleme
 	psoDesc.pRootSignature = rootSignature.Get();
 	psoDesc.VS = { reinterpret_cast<UINT8*>(vertexShader->GetBufferPointer()), vertexShader->GetBufferSize() };
 	psoDesc.PS = { reinterpret_cast<UINT8*>(pixelShader->GetBufferPointer()), pixelShader->GetBufferSize() };
-	psoDesc.RasterizerState = { D3D12_FILL_MODE_SOLID, (flags & AFRS_CULL_CCW) ? D3D12_CULL_MODE_FRONT : (flags & AFRS_CULL_CW) ? D3D12_CULL_MODE_BACK : D3D12_CULL_MODE_NONE };
+	psoDesc.RasterizerState = { (flags & AFRS_WIREFRAME) ? D3D12_FILL_MODE_WIREFRAME : D3D12_FILL_MODE_SOLID, (flags & AFRS_CULL_CCW) ? D3D12_CULL_MODE_FRONT : (flags & AFRS_CULL_CW) ? D3D12_CULL_MODE_BACK : D3D12_CULL_MODE_NONE };
 	psoDesc.DepthStencilState = { !!(flags & (AFRS_DEPTH_ENABLE | AFRS_DEPTH_CLOSEREQUAL_READONLY)), D3D12_DEPTH_WRITE_MASK_ALL, (flags & AFRS_DEPTH_CLOSEREQUAL_READONLY) ? D3D12_COMPARISON_FUNC_LESS_EQUAL : D3D12_COMPARISON_FUNC_LESS };
 	psoDesc.SampleMask = UINT_MAX;
 	psoDesc.PrimitiveTopologyType = ToD3D12PrimitiveTopologyType(RenderFlagsToPrimitiveTopology(flags));
