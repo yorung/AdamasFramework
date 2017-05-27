@@ -161,6 +161,14 @@ ComPtr<ID3D11Texture2D> afCreateDynamicTexture(AFFormat format, const IVec2& siz
 
 SAMPLERID afCreateSampler(SamplerType type)
 {
+	if (type == AFST_DEPTH_ANISOTROPIC)
+	{
+		static D3D11_SAMPLER_DESC depthDesc = { D3D11_FILTER_COMPARISON_ANISOTROPIC, D3D11_TEXTURE_ADDRESS_BORDER, D3D11_TEXTURE_ADDRESS_BORDER, D3D11_TEXTURE_ADDRESS_CLAMP, 0.f, 16, D3D11_COMPARISON_LESS, { 1.f, 1.f, 1.f, 1.f }, 1, D3D11_FLOAT32_MAX };
+		ComPtr<ID3D11SamplerState> sampler;
+		deviceMan11.GetDevice()->CreateSamplerState(&depthDesc, &sampler);
+		return sampler;
+	}
+
 	D3D11_TEXTURE_ADDRESS_MODE wrap = (type & 0x01) ? D3D11_TEXTURE_ADDRESS_CLAMP : D3D11_TEXTURE_ADDRESS_WRAP;
 	int filter = type >> 1;
 	D3D11_SAMPLER_DESC desc = {};
@@ -170,7 +178,11 @@ SAMPLERID afCreateSampler(SamplerType type)
 	desc.MaxAnisotropy = 1;
 	desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 	desc.MaxLOD = D3D11_FLOAT32_MAX;
-	switch (filter) {
+	switch (filter)
+	{
+	case 3:	// anisotropic
+		desc.Filter = D3D11_FILTER_ANISOTROPIC;
+		break;
 	case 2:	// mipmap
 		desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 		break;
