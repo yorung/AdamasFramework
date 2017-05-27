@@ -49,7 +49,7 @@ public:
 
 Picking::Picking()
 {
-	polygonRenderStates.Create("solid", arrayparam(elements), AFRS_DEPTH_ENABLE);
+	polygonRenderStates.Create("solid", arrayparam(elements), AFRS_DEPTH_ENABLE | AFRS_WIREFRAME);
 	lineRenderStates.Create("solid", arrayparam(elements), AFRS_DEPTH_ENABLE | AFRS_PRIMITIVE_LINELIST);
 }
 

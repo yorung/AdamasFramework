@@ -309,7 +309,7 @@ void afDraw(int numVertices, int start, int instanceCount)
 	deviceMan11.GetContext()->DrawInstanced(numVertices, instanceCount, start, 0);
 }
 
-void afCullMode(uint32_t flags)
+void afRasterizerState(uint32_t flags)
 {
 	CD3D11_RASTERIZER_DESC rasterDesc(D3D11_DEFAULT);
 	if (flags & AFRS_CULL_CCW)
@@ -326,6 +326,11 @@ void afCullMode(uint32_t flags)
 	{
 		rasterDesc.CullMode = D3D11_CULL_NONE;
 	}
+	if (flags & AFRS_WIREFRAME)
+	{
+		rasterDesc.FillMode = D3D11_FILL_WIREFRAME;
+	}
+
 	ComPtr<ID3D11RasterizerState> rs;
 	deviceMan11.GetDevice()->CreateRasterizerState(&rasterDesc, &rs);
 	deviceMan11.GetContext()->RSSetState(rs.Get());
@@ -505,7 +510,7 @@ void AFRenderStates::Apply() const
 	deviceMan11.GetContext()->IASetPrimitiveTopology(RenderFlagsToPrimitiveTopology(flags));
 	afBlendMode(flags);
 	afDepthStencilMode(flags);
-	afCullMode(flags);
+	afRasterizerState(flags);
 	for (int i = 0; i < numSamplerTypes; i++)
 	{
 		afSetSampler(samplerTypes[i], i);

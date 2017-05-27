@@ -102,7 +102,7 @@ public:
 	AFTexRef GetTexture() { return renderTarget; }
 };
 
-void afCullMode(uint32_t flags);
+void afRasterizerState(uint32_t flags);
 void afBlendMode(uint32_t flags);
 void afDepthStencilMode(uint32_t flags);
 SAMPLERID afCreateSampler(SamplerType type);
