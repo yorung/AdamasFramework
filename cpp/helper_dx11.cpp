@@ -497,6 +497,11 @@ void AFRenderTarget::BeginRenderToThis()
 	afSetRenderTarget(renderTarget, depthStencil);
 }
 
+void AFRenderTarget::EndRenderToThis()
+{
+	afSetRenderTarget(nullptr, nullptr);
+}
+
 void AFRenderStates::Create(const char* shaderName, int numInputElements, const InputElement* inputElements, uint32_t flags_, int numSamplerTypes_, const SamplerType samplerTypes_[])
 {
 	ComPtr<ID3DBlob> vs = afCompileHLSL(shaderName, "VSMain", "vs_5_0");
