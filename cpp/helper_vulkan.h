@@ -139,13 +139,15 @@ class AFRenderTarget
 	VkFramebuffer framebuffer = 0;
 	TextureContext renderTarget;
 	bool asDefault = false;
+	bool currentStateIsRtv = false;
 public:
 	~AFRenderTarget() { Destroy(); }
 	void InitForDefaultRenderTarget();
 	void Init(IVec2 size, AFFormat colorFormat, AFFormat depthStencilFormat = AFF_INVALID);
 	void Destroy();
 	void BeginRenderToThis();
-	TextureContext& GetTexture() { return renderTarget; }
+	void EndRenderToThis();
+	TextureContext& GetTexture();
 };
 
 class AFBufferStackAllocator
@@ -195,8 +197,9 @@ public:
 	void Create(HWND hWnd);
 	void Present();
 	void Destroy();
-	void BeginScene(VkRenderPass nextRenderPass, VkFramebuffer nextFramebuffer, IVec2 size);
-	void BeginSceneToCurrentBackBuffer();
+	void BeginRenderPass(VkRenderPass nextRenderPass, VkFramebuffer nextFramebuffer, IVec2 size);
+	void BeginRenderPassToCurrentBackBuffer();
+	void EndRenderPass();
 	void Flush();
 };
 extern DeviceManVK deviceMan;

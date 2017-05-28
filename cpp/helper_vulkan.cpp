@@ -158,7 +158,7 @@ static void CreateTextureDescriptorSet(TextureContext& textureContext)
 	VkDevice device = deviceMan.GetDevice();
 	const VkDescriptorSetAllocateInfo descriptorSetAllocateInfo = { VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO, nullptr, deviceMan.descriptorPool, 1, &deviceMan.commonTextureDescriptorSetLayout };
 	afHandleVKError(vkAllocateDescriptorSets(device, &descriptorSetAllocateInfo, &textureContext.descriptorSet));
-	const VkDescriptorImageInfo descriptorImageInfo = { deviceMan.sampler, textureContext.view, VK_IMAGE_LAYOUT_GENERAL };
+	const VkDescriptorImageInfo descriptorImageInfo = { deviceMan.sampler, textureContext.view, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL };
 	const VkWriteDescriptorSet writeDescriptorSets[] =
 	{
 		{ VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, textureContext.descriptorSet, 0, 0, 1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, &descriptorImageInfo },
@@ -189,7 +189,7 @@ TextureContext afCreateDynamicTexture(VkFormat format, const IVec2& size, uint32
 	textureContext.format = format;
 	textureContext.texDesc.size = size;
 
-	VkImageCreateInfo TextureCreateInfo = { VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO, nullptr, 0, VK_IMAGE_TYPE_2D, format,{ (uint32_t)size.x, (uint32_t)size.y, 1 }, 1, 1, VK_SAMPLE_COUNT_1_BIT, VK_IMAGE_TILING_OPTIMAL, 0, VK_SHARING_MODE_EXCLUSIVE, 0, nullptr, VK_IMAGE_LAYOUT_PREINITIALIZED };
+	VkImageCreateInfo TextureCreateInfo = { VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO, nullptr, 0, VK_IMAGE_TYPE_2D, format,{ (uint32_t)size.x, (uint32_t)size.y, 1 }, 1, 1, VK_SAMPLE_COUNT_1_BIT, VK_IMAGE_TILING_OPTIMAL, 0, VK_SHARING_MODE_EXCLUSIVE, 0, nullptr, VK_IMAGE_LAYOUT_UNDEFINED };
 	if (flags & AFTF_CPU_WRITE)
 	{
 		TextureCreateInfo.tiling = VK_IMAGE_TILING_LINEAR;
@@ -552,12 +552,21 @@ void DeviceManVK::Create(HWND hWnd)
 	inRenderPass = false;
 }
 
-void DeviceManVK::BeginSceneToCurrentBackBuffer()
+void DeviceManVK::BeginRenderPassToCurrentBackBuffer()
 {
-	BeginScene(primaryRenderPass, framebuffers[frameIndex], { (int)rc.right, (int)rc.bottom });
+	BeginRenderPass(primaryRenderPass, framebuffers[frameIndex], { (int)rc.right, (int)rc.bottom });
 }
 
-void DeviceManVK::BeginScene(VkRenderPass nextRenderPass, VkFramebuffer nextFramebuffer, IVec2 size)
+void DeviceManVK::EndRenderPass()
+{
+	if (inRenderPass)
+	{
+		vkCmdEndRenderPass(commandBuffer);
+		inRenderPass = false;
+	}
+}
+
+void DeviceManVK::BeginRenderPass(VkRenderPass nextRenderPass, VkFramebuffer nextFramebuffer, IVec2 size)
 {
 	if (inRenderPass)
 	{
@@ -788,12 +797,43 @@ void AFRenderTarget::Destroy()
 
 void AFRenderTarget::BeginRenderToThis()
 {
+	deviceMan.EndRenderPass();
+
 	if (asDefault)
 	{
-		deviceMan.BeginSceneToCurrentBackBuffer();
+		deviceMan.BeginRenderPassToCurrentBackBuffer();
 		return;
 	}
-	deviceMan.BeginScene(VkFormatToRenderPassForOffScreenRenderTarget(renderTarget.format), framebuffer, renderTarget.texDesc.size);
+
+	if (!currentStateIsRtv)
+	{
+		currentStateIsRtv = true;
+		VkCommandBuffer commandBuffer = deviceMan.commandBuffer;
+		const VkImageMemoryBarrier srvToRtv = { VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER, nullptr, VK_ACCESS_SHADER_READ_BIT, VK_ACCESS_COLOR_ATTACHMENT_READ_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, renderTarget.image,{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1u } };
+		vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0, 0, nullptr, 0, nullptr, 1, &srvToRtv);
+	}
+	deviceMan.BeginRenderPass(VkFormatToRenderPassForOffScreenRenderTarget(renderTarget.format), framebuffer, renderTarget.texDesc.size);
+}
+
+void AFRenderTarget::EndRenderToThis()
+{
+	if (asDefault)
+	{
+		return;
+	}
+	deviceMan.EndRenderPass();
+	if (currentStateIsRtv)
+	{
+		currentStateIsRtv = false;
+		VkCommandBuffer commandBuffer = deviceMan.commandBuffer;
+		const VkImageMemoryBarrier srvToRtv = { VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER, nullptr, VK_ACCESS_COLOR_ATTACHMENT_READ_BIT, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, renderTarget.image,{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1u } };
+		vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0, 0, nullptr, 0, nullptr, 1, &srvToRtv);
+	}
+}
+
+TextureContext& AFRenderTarget::GetTexture()
+{
+	return renderTarget;
 }
 
 #endif

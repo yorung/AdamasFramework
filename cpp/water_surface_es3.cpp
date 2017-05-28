@@ -201,12 +201,14 @@ void WaterSurfaceES3::UpdateHeightMap(AFCommandList& cmd, const UniformBuffer& h
 	auto& heightR = heightMap[heightCurrentWriteTarget];
 	heightCurrentWriteTarget ^= 1;
 	auto& heightW = heightMap[heightCurrentWriteTarget];
-	heightW.BeginRenderToThis();
 
 	cmd.SetTexture(heightR.GetTexture(), 0);
 	cmd.SetBuffer(sizeof(hmub), &hmub, 1);
 	stockObjects.ApplyFullScreenVertexBuffer(cmd);
+
+	heightW.BeginRenderToThis();
 	cmd.Draw(4);
+	heightW.EndRenderToThis();
 
 #ifdef AF_DX11
 	cmd.SetTexture(SRVID(), 0);
@@ -220,11 +222,13 @@ void WaterSurfaceES3::UpdateNormalMap(AFCommandList& cmd)
 	cmd.SetRenderStates(renderStateNormalMap);
 	auto& heightR = heightMap[heightCurrentWriteTarget];
 	cmd.SetTexture(heightR.GetTexture(), 1);
-	normalMap.BeginRenderToThis();
 	Vec4 heightMapSize((float)HEIGHT_MAP_W, (float)HEIGHT_MAP_H, 0, 0);
 	cmd.SetBuffer(sizeof(heightMapSize), &heightMapSize, 0);
 	stockObjects.ApplyFullScreenVertexBuffer(cmd);
+
+	normalMap.BeginRenderToThis();
 	cmd.Draw(4);
+	normalMap.EndRenderToThis();
 #ifdef AF_DX11
 	cmd.SetTexture(SRVID(), 0);
 #endif
@@ -240,10 +244,12 @@ void WaterSurfaceES3::RenderWater(AFCommandList& cmd, const UniformBuffer& hmub)
 	}
 
 	cmd.SetBuffer(sizeof(hmub), &hmub, 7);
-	renderTarget[0].BeginRenderToThis();
 	stockObjects.ApplyFullScreenVertexBuffer(cmd);
 	cmd.SetTexture(normalMap.GetTexture(), 6);
+
+	renderTarget[0].BeginRenderToThis();
 	cmd.Draw(4);
+	renderTarget[0].EndRenderToThis();
 #ifdef AF_DX11
 	cmd.SetTexture(SRVID(), 6);
 	cmd.SetTexture(SRVID(), 7);
@@ -284,9 +290,6 @@ void WaterSurfaceES3::Draw()
 	RenderWater(cmd, hmub);
 	glow.MakeGlow(renderTarget[1], renderTarget[0].GetTexture());
 
-	AFRenderTarget rt;
-	rt.InitForDefaultRenderTarget();
-
 	static int num = 8;
 	if (inputMan.GetInputCount('\t') == 1) {
 		num = (num + 1) % 9;
@@ -326,5 +329,7 @@ void WaterSurfaceES3::Draw()
 		break;
 	}
 
+	AFRenderTarget rt;
+	rt.InitForDefaultRenderTarget();
 	letterBox.Draw(cmd, rt, srcTex);
 }

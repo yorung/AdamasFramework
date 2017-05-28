@@ -288,8 +288,6 @@ void WaterSurfaceES2::Draw()
 
 	AFCommandList& cmd = afGetCommandList();
 
-	rtWater.BeginRenderToThis();
-
 	cmd.SetRenderStates(renderStatesWater);
 	for (int i = 0; i < (int)dimof(texFiles); i++)
 	{
@@ -299,7 +297,10 @@ void WaterSurfaceES2::Draw()
 	cmd.SetBuffer(sizeof(uboBuf), &uboBuf, 6);
 	cmd.SetVertexBuffer(vbo, sizeof(WaterVert));
 	cmd.SetIndexBuffer(ibo);
+
+	rtWater.BeginRenderToThis();
 	cmd.DrawIndexed(nIndi);
+	rtWater.EndRenderToThis();
 
 	AFRenderTarget rtDefault;
 	rtDefault.InitForDefaultRenderTarget();

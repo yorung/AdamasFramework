@@ -20,11 +20,13 @@ void LetterBox::Draw(AFCommandList& cmd, AFRenderTarget& target, AFTexRef srcTex
 {
 	LazyInit();
 
-	target.BeginRenderToThis();
 	cmd.SetTexture(srcTex, 0);
 	renderStates.Apply();
 	stockObjects.ApplyFullScreenVertexBuffer(cmd);
+
+	target.BeginRenderToThis();
 	cmd.Draw(4);
+	target.EndRenderToThis();
 }
 
 void LetterBox::Destroy()

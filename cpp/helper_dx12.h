@@ -97,6 +97,7 @@ public:
 	void Init(IVec2 size, AFFormat colorFormat, AFFormat depthStencilFormat = AFF_INVALID);
 	void Destroy();
 	void BeginRenderToThis();
+	void EndRenderToThis() {}
 	ComPtr<ID3D12Resource> GetTexture();
 };
 
