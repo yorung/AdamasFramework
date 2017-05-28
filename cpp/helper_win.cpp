@@ -353,7 +353,7 @@ ComPtr<ID3DBlob> afCompileHLSL(const char* name, const char* entryPoint, const c
 	HRESULT hr = D3DCompile(inc, strlen(inc), name, nullptr, &includer, entryPoint, target, flags, 0, &blob, &err);
 	if (err)
 	{
-		MessageBoxA(nullptr, (const char*)err->GetBufferPointer(), name, MB_OK | MB_ICONERROR);
+		MessageBoxA(nullptr, (const char*)err->GetBufferPointer(), SPrintf("%s: %s", name, entryPoint), MB_OK | MB_ICONERROR);
 	}
 	else if (hr != S_OK)
 	{

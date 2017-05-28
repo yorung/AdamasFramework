@@ -202,6 +202,8 @@ void afBindBuffer(UBOID ubo, UINT slot)
 {
 	deviceMan11.GetContext()->VSSetConstantBuffers(slot, 1, ubo.GetAddressOf());
 	deviceMan11.GetContext()->PSSetConstantBuffers(slot, 1, ubo.GetAddressOf());
+	deviceMan11.GetContext()->HSSetConstantBuffers(slot, 1, ubo.GetAddressOf());
+	deviceMan11.GetContext()->DSSetConstantBuffers(slot, 1, ubo.GetAddressOf());
 }
 
 void afBindBuffer(int size, const void* buf, UINT slot)
@@ -212,7 +214,10 @@ void afBindBuffer(int size, const void* buf, UINT slot)
 
 void afBindTexture(SRVID srv, uint32_t slot)
 {
+	deviceMan11.GetContext()->VSSetShaderResources(slot, 1, srv.GetAddressOf());
 	deviceMan11.GetContext()->PSSetShaderResources(slot, 1, srv.GetAddressOf());
+	deviceMan11.GetContext()->HSSetShaderResources(slot, 1, srv.GetAddressOf());
+	deviceMan11.GetContext()->DSSetShaderResources(slot, 1, srv.GetAddressOf());
 }
 
 static D3D11_TEXTURE2D_DESC afGetTexture2DDesc(AFTexRef tex)
@@ -284,7 +289,10 @@ void afBindTexture(ComPtr<ID3D11Resource> tex, uint32_t slot)
 
 void afBindSamplerToBindingPoint(SAMPLERID sampler, UINT slot)
 {
+	deviceMan11.GetContext()->VSSetSamplers(slot, 1, sampler.GetAddressOf());
 	deviceMan11.GetContext()->PSSetSamplers(slot, 1, sampler.GetAddressOf());
+	deviceMan11.GetContext()->DSSetSamplers(slot, 1, sampler.GetAddressOf());
+	deviceMan11.GetContext()->HSSetSamplers(slot, 1, sampler.GetAddressOf());
 }
 
 void afWriteBuffer(const IBOID p, int size, const void* buf)
@@ -509,6 +517,19 @@ void AFRenderStates::Create(const char* shaderName, int numInputElements, const 
 			assert(!hr);
 		}
 	}
+	if (flags_ & AFRS_PRIMITIVE_PATCHLIST)
+	{
+		ComPtr<ID3DBlob> hs = afCompileHLSL(shaderName, "HSMain", "hs_5_0");
+		ComPtr<ID3DBlob> ds = afCompileHLSL(shaderName, "DSMain", "ds_5_0");
+		if (hs)
+		{
+			afHandleDXError(deviceMan11.GetDevice()->CreateHullShader(hs->GetBufferPointer(), hs->GetBufferSize(), nullptr, &hullShader));
+		}
+		if (ds)
+		{
+			afHandleDXError(deviceMan11.GetDevice()->CreateDomainShader(ds->GetBufferPointer(), ds->GetBufferSize(), nullptr, &domainShader));
+		}
+	}
 	numSamplerTypes = numSamplerTypes_;
 	samplerTypes = samplerTypes_;
 	flags = flags_;
@@ -519,6 +540,8 @@ void AFRenderStates::Apply() const
 	deviceMan11.GetContext()->IASetInputLayout(inputLayout.Get());
 	deviceMan11.GetContext()->VSSetShader(vertexShader.Get(), nullptr, 0);
 	deviceMan11.GetContext()->PSSetShader(pixelShader.Get(), nullptr, 0);
+	deviceMan11.GetContext()->HSSetShader(hullShader.Get(), nullptr, 0);
+	deviceMan11.GetContext()->DSSetShader(domainShader.Get(), nullptr, 0);
 	deviceMan11.GetContext()->IASetPrimitiveTopology(RenderFlagsToPrimitiveTopology(flags));
 	afBlendMode(flags);
 	afDepthStencilMode(flags);
@@ -534,6 +557,8 @@ void AFRenderStates::Destroy()
 	inputLayout.Reset();
 	vertexShader.Reset();
 	pixelShader.Reset();
+	hullShader.Reset();
+	domainShader.Reset();
 }
 
 void afSetSampler(SamplerType type, int slot)

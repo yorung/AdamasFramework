@@ -58,10 +58,11 @@ IVec2 afGetTextureSize(SRVID tex);
 
 void afSetVertexBufferFromSystemMemory(const void* buf, int size, int stride);
 
-class AFRenderStates {
+class AFRenderStates
+{
 	ComPtr<ID3D12RootSignature> rootSignature;
 	ComPtr<ID3D12PipelineState> pipelineState;
-	PrimitiveTopology primitiveTopology = PT_TRIANGLESTRIP;
+	D3D_PRIMITIVE_TOPOLOGY primitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
 public:
 	bool IsReady() { return !!pipelineState; }
 	void Create(const char* shaderName, int numInputElements, const InputElement* inputElements, uint32_t flags, int numSamplerTypes_ = 0, const SamplerType samplerTypes_[] = nullptr)

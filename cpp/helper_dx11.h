@@ -116,6 +116,8 @@ class AFRenderStates {
 	ComPtr<ID3D11InputLayout> inputLayout;
 	ComPtr<ID3D11VertexShader> vertexShader;
 	ComPtr<ID3D11PixelShader> pixelShader;
+	ComPtr<ID3D11HullShader> hullShader;
+	ComPtr<ID3D11DomainShader> domainShader;
 public:
 	bool IsReady() { return !!pixelShader; }
 	void Create(const char* shaderName, int numInputElements = 0, const InputElement* inputElements = nullptr, uint32_t flags = AFRS_NONE, int numSamplerTypes_ = 0, const SamplerType samplerTypes_[] = nullptr);

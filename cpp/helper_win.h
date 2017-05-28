@@ -6,22 +6,21 @@ ComPtr<ID3DBlob> afCompileHLSL(const char* name, const char* entryPoint, const c
 typedef unsigned short AFIndex;
 #define AFIndexTypeToDevice DXGI_FORMAT_R16_UINT
 
-#define PrimitiveTopology D3D_PRIMITIVE_TOPOLOGY
-#define PT_TRIANGLESTRIP D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP
-#define PT_TRIANGLELIST D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST
-#define PT_LINELIST D3D_PRIMITIVE_TOPOLOGY_LINELIST
-
-inline PrimitiveTopology RenderFlagsToPrimitiveTopology(uint32_t flags)
+inline D3D_PRIMITIVE_TOPOLOGY RenderFlagsToPrimitiveTopology(uint32_t flags)
 {
 	if (flags & AFRS_PRIMITIVE_TRIANGLELIST)
 	{
-		return PT_TRIANGLELIST;
+		return D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 	}
 	else if (flags & AFRS_PRIMITIVE_LINELIST)
 	{
-		return PT_LINELIST;
+		return D3D_PRIMITIVE_TOPOLOGY_LINELIST;
 	}
-	return PT_TRIANGLESTRIP;
+	else if (flags & AFRS_PRIMITIVE_PATCHLIST)
+	{
+		return D3D11_PRIMITIVE_TOPOLOGY_1_CONTROL_POINT_PATCHLIST;
+	}
+	return D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
 }
 
 typedef DXGI_FORMAT AFFormat;
