@@ -455,14 +455,6 @@ void DeviceManVK::Create(HWND hWnd)
 	physicalDevice = devices[0];
 	afVerify(physicalDevice);
 
-	float priorities[] = { 0 };
-	const VkDeviceQueueCreateInfo devQueueInfos[] = { { VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO, nullptr, 0, 0, 1, priorities } };
-	const char* deviceExtensions[] = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
-	VkPhysicalDeviceFeatures features = {};
-	features.fillModeNonSolid = VK_TRUE;
-	const VkDeviceCreateInfo devInfo = { VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO, nullptr, 0, 1, devQueueInfos, 0, nullptr, arrayparam(deviceExtensions), &features };
-	afHandleVKError(vkCreateDevice(physicalDevice, &devInfo, nullptr, &device));
-
 	// query properties
 	uint32_t numQueueFamilyProperties = 0;
 	vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &numQueueFamilyProperties, nullptr);
@@ -475,6 +467,14 @@ void DeviceManVK::Create(HWND hWnd)
 	VkPhysicalDeviceProperties physicalDeviceProperties;
 	vkGetPhysicalDeviceProperties(physicalDevice, &physicalDeviceProperties);
 	vkGetPhysicalDeviceMemoryProperties(physicalDevice, &physicalDeviceMemoryProperties);
+
+	float priorities[] = { 0 };
+	const VkDeviceQueueCreateInfo devQueueInfos[] = { { VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO, nullptr, 0, 0, 1, priorities } };
+	const char* deviceExtensions[] = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
+	VkPhysicalDeviceFeatures features = {};
+	features.fillModeNonSolid = VK_TRUE;
+	const VkDeviceCreateInfo devInfo = { VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO, nullptr, 0, 1, devQueueInfos, 0, nullptr, arrayparam(deviceExtensions), &features };
+	afHandleVKError(vkCreateDevice(physicalDevice, &devInfo, nullptr, &device));
 
 	// preallocated resources and descriptors
 	uboAllocator.Create(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, 0x20000);
