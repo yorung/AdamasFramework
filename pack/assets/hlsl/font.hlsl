@@ -30,5 +30,5 @@ Texture2D gTexture : register(t0);
 [RootSignature(RSDEF)]
 float4 PSMain(VsToPs psIn) : SV_TARGET
 {
-	return gTexture.Sample(gSampler, psIn.coord) * psIn.color;
+	return float4(psIn.color.rgb, psIn.color.a * gTexture.Sample(gSampler, psIn.coord).a);
 }
