@@ -1,5 +1,6 @@
 //#define USE_DXMATH
 //#define USE_SIMPLE_MATH
+//#define USE_D3DX
 
 typedef float affloat;
 
@@ -35,6 +36,10 @@ struct Vec3
 #ifdef USE_SIMPLE_MATH
 	Vec3(const Vector3& v) : Vec3(v.x, v.y, v.z) {}
 	operator Vector3() const { return Vector3(x, y, z); }
+#endif
+#ifdef USE_D3DX
+	Vec3(const D3DXVECTOR3& v) : Vec3(v.x, v.y, v.z) {}
+	operator D3DXVECTOR3() const { return D3DXVECTOR3(x, y, z); }
 #endif
 	Vec3 operator+(const Vec3& r) const { return Vec3(x + r.x, y + r.y, z + r.z); }
 	Vec3 operator-(const Vec3& r) const { return Vec3(x - r.x, y - r.y, z - r.z); }
@@ -181,7 +186,7 @@ struct Quat
 	affloat w;
 	Quat() { *this = Quat(1, Vec3()); }
 	Quat(affloat W, const Vec3& V) : v(V), w(W) {}
-	Quat(const Vec3& axis, affloat angle) { w = std::cos(angle / 2); v = normalize(axis) * std::sin(angle / 2); }
+	Quat(const Vec3& axis, affloat angle) { w = std::cos(angle / 2.f); v = normalize(axis) * std::sin(angle / 2.f); }
 #ifdef USE_SIMPLE_MATH
 	Quat(const Quaternion& q) : Quat(q.w, Vec3(q.x, q.y, q.z)) {}
 	operator Quaternion() const { return Quaternion(v.x, v.y, v.z, w); }
@@ -264,6 +269,10 @@ struct Mat
 
 	Mat(const XMMATRIX& mtx) : Mat(Matrix(mtx)) {}
 	operator XMMATRIX() const { return Matrix(*this); }
+#endif
+#ifdef USE_D3DX
+	Mat(const D3DXMATRIX& mtx) { assert(sizeof(float) == sizeof(affloat)); memcpy(m, mtx.m, sizeof(m)); }
+	operator D3DXMATRIX() const { return D3DXMATRIX(_11, _12, _13, _14, _21, _22, _23, _24, _31, _32, _33, _34, _41, _42, _43, _44); }
 #endif
 	Vec3 GetRow(int i) const { return Vec3(m[i][0], m[i][1], m[i][2]); }
 	void SetRow(int i, const Vec3& v) { m[i][0] = v.x; m[i][1] = v.y; m[i][2] = v.z; }
@@ -393,23 +402,23 @@ inline Quat m2q(const Mat& m_)
 	return Quaternion::CreateFromRotationMatrix(m);
 #else
 
-	affloat x, y, z, w = std::sqrt(m._11 + m._22 + m._33 + 1) / 2;
+	affloat x, y, z, w = std::sqrt(m._11 + m._22 + m._33 + 1.f) / 2.f;
 	if (w > 0.5f) {							 // w is the largest
 		z = (m._12 - m._21) / (w * 4);
 		y = (m._31 - m._13) / (w * 4);
 		x = (m._23 - m._32) / (w * 4);
 	} else if (m._11 > m._22 && m._11 > m._33) { // x is the largest
-		x = std::sqrt((-m._11 + m._22 + m._33 - 1) / -4);
+		x = std::sqrt((-m._11 + m._22 + m._33 - 1.f) / -4.f);
 		y = (m._12 + m._21) / (x * 4);
 		z = (m._31 + m._13) / (x * 4);
 		w = (m._23 - m._32) / (x * 4);
 	} else if (m._22 > m._33) {					// y is the largest
-		y = std::sqrt((m._11 - m._22 + m._33 - 1) / -4);
+		y = std::sqrt((m._11 - m._22 + m._33 - 1.f) / -4.f);
 		x = (m._12 + m._21) / (y * 4);
 		w = (m._31 - m._13) / (y * 4);
 		z = (m._23 + m._32) / (y * 4);
 	} else {									// z is the largest
-		z = std::sqrt((m._11 + m._22 - m._33 - 1) / -4);
+		z = std::sqrt((m._11 + m._22 - m._33 - 1.f) / -4.f);
 		w = (m._12 - m._21) / (z * 4);
 		x = (m._31 + m._13) / (z * 4);
 		y = (m._23 + m._32) / (z * 4);
