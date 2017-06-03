@@ -53,7 +53,7 @@ void App::Draw()
 	meshRenderer.Flush();
 	skyMan.Draw(cmd);
 	luaMan.Draw2D(cmd);
-	fontMan.Draw(cmd);
+	fontMan.Draw(cmd, systemMisc.GetScreenSize());
 }
 
 void App::Create()
@@ -111,6 +111,6 @@ void App::Update()
 	matrixMan.Set(MatrixMan::VIEW, devCamera.CalcViewMatrix());
 	luaMan.Update();
 	fps.Update();
-	fontMan.DrawString(Vec2(20, 40), 20, SPrintf("FPS: %f", fps.Get()));
+	fontMan.DrawString(Vec2(20, 40), 20, SPrintf("FPS: %f", fps.Get()), 0xffffffff);
 	Draw();
 }

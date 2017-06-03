@@ -283,7 +283,7 @@ void WaterSurfaceES3::Draw()
 	AFCommandList& cmd = afGetCommandList();
 	double dummy;
 	hmub.wrappedTime = (float)std::modf(elapsedTime * (1.0f / loopTime), &dummy) * loopTime;
-	fontMan.DrawString(Vec2(300, 20), 10, SPrintf("%f, %f", hmub.mousePos.x, hmub.mousePos.y));
+	fontMan.DrawString(Vec2(300, 20), 10, SPrintf("%f, %f", hmub.mousePos.x, hmub.mousePos.y), 0xffffffff);
 
 	UpdateHeightMap(cmd, hmub);
 	UpdateNormalMap(cmd);

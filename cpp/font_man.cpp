@@ -5,9 +5,11 @@
 
 FontMan fontMan;
 
-struct FontVertex {
+struct FontVertex
+{
 	Vec2 pos;
 	Vec2 coord;
+	uint32_t color;
 };
 
 static Vec2 fontVertAlign[] =
@@ -38,9 +40,11 @@ static InputElement elements[] =
 {
 	AF_INPUT_ELEMENT(0, "POSITION", AFF_R32G32_FLOAT, 0),
 	AF_INPUT_ELEMENT(1, "TEXCOORD", AFF_R32G32_FLOAT, 8),
+	AF_INPUT_ELEMENT(2, "COLOR", AFF_R8G8B8A8_UNORM, 16),
 };
 
-const static SamplerType samplers[] = {
+const static SamplerType samplers[] =
+{
 	AFST_POINT_CLAMP,
 };
 
@@ -124,29 +128,34 @@ void FontMan::FlushToTexture()
 	afWriteTexture(texture, desc, texSrc.ReferPixels());
 }
 
-void FontMan::Draw(AFCommandList& cmd)
+void FontMan::Draw(AFCommandList& cmd, const IVec2& screenSize)
 {
-	if (!numSprites) {
+	if (!numSprites)
+	{
 		return;
 	}
-	for (int i = 0; i < numSprites; i++) {
+	for (int i = 0; i < numSprites; i++)
+	{
 		Cache(charSprites[i].signature);
 	}
 	FlushToTexture();
-
-	Vec2 scrSize = systemMisc.GetScreenSize();
 	static FontVertex verts[4 * SPRITE_MAX];
-	for (int i = 0; i < numSprites; i++) {
+	for (int i = 0; i < numSprites; i++)
+	{
 		CharSprite& cs = charSprites[i];
 		Caches::iterator it = caches.find(cs.signature);
-		if (it == caches.end()) {
+		if (it == caches.end())
+		{
 			aflog("something wrong");
 			continue;
 		}
 		const CharCache& cc = it->second;
-		for (int j = 0; j < (int)dimof(fontVertAlign); j++) {
-			verts[i * 4 + j].pos = (((cs.pos + cc.desc.distDelta + fontVertAlign[j] * cc.desc.srcWidth)) * 2) / scrSize + Vec2(-1, -1);
-			verts[i * 4 + j].coord = (cc.srcPos + fontVertAlign[j] * cc.desc.srcWidth) / Vec2(TEX_W, TEX_H);
+		for (int j = 0; j < (int)dimof(fontVertAlign); j++)
+		{
+			FontVertex& v = verts[i * 4 + j];
+			v.pos = (((cs.pos + cc.desc.distDelta + fontVertAlign[j] * cc.desc.srcWidth)) * 2) / Vec2(screenSize) + Vec2(-1, -1);
+			v.coord = (cc.srcPos + fontVertAlign[j] * cc.desc.srcWidth) / Vec2(TEX_W, TEX_H);
+			v.color = cs.color;
 		}
 	}
 	cmd.SetRenderStates(renderStates);
@@ -156,25 +165,30 @@ void FontMan::Draw(AFCommandList& cmd)
 	numSprites = 0;
 }
 
-void FontMan::DrawChar(Vec2& pos, const CharSignature& sig)
+void FontMan::DrawChar(Vec2& pos, const CharSignature& sig, uint32_t color)
 {
-	if (!texture) {
+	if (!texture)
+	{
 		return;
 	}
 
-	if (numSprites >= SPRITE_MAX) {
+	if (numSprites >= SPRITE_MAX)
+	{
 		return;
 	}
 	Cache(sig);
 
-	if (sig.code != 32) {	// whitespace
+	if (sig.code != 32)	// whitespace
+	{
 		CharSprite& cs = charSprites[numSprites++];
 		cs.signature = sig;
 		cs.pos = pos;
+		cs.color = color;
 	}
 
 	Caches::iterator it = caches.find(sig);
-	if (it != caches.end()) {
+	if (it != caches.end())
+	{
 		pos.x += it->second.desc.step;
 	}
 }
@@ -200,7 +214,7 @@ Vec2 FontMan::MeasureString(int fontSize, const char *text)
 	return size;
 }
 
-void FontMan::DrawString(Vec2 pos, int fontSize, const wchar_t *text)
+void FontMan::DrawString(Vec2 pos, int fontSize, const wchar_t *text, uint32_t color)
 {
 	int len = (int)wcslen(text);
 	for (int i = 0; i < len; i++)
@@ -208,11 +222,11 @@ void FontMan::DrawString(Vec2 pos, int fontSize, const wchar_t *text)
 		CharSignature sig;
 		sig.code = text[i];
 		sig.fontSize = fontSize;
-		DrawChar(pos, sig);
+		DrawChar(pos, sig, color);
 	}
 }
 
-void FontMan::DrawString(Vec2 pos, int fontSize, const char *text)
+void FontMan::DrawString(Vec2 pos, int fontSize, const char *text, uint32_t color)
 {
 	int len = (int)strlen(text);
 	for (int i = 0; i < len; i++)
@@ -220,6 +234,6 @@ void FontMan::DrawString(Vec2 pos, int fontSize, const char *text)
 		CharSignature sig;
 		sig.code = text[i];
 		sig.fontSize = fontSize;
-		DrawChar(pos, sig);
+		DrawChar(pos, sig, color);
 	}
 }

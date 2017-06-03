@@ -9,6 +9,7 @@ class FontMan
 	{
 		Vec2 pos;
 		CharSignature signature;
+		uint32_t color;
 	};
 	typedef std::map<CharSignature, CharCache> Caches;
 	Caches caches;
@@ -25,7 +26,7 @@ class FontMan
 	bool dirty = false;
 	bool Build(const CharSignature& signature);
 	bool Cache(const CharSignature& code);
-	void DrawChar(Vec2& pos, const CharSignature& sig);
+	void DrawChar(Vec2& pos, const CharSignature& sig, uint32_t color);
 	void ClearCache();
 public:
 	FontMan();
@@ -33,9 +34,9 @@ public:
 	void Create();
 	void Destroy();
 	void FlushToTexture();
-	void DrawString(Vec2 pos, int fontSize, const wchar_t *text);
-	void DrawString(Vec2 pos, int fontSize, const char *text);
-	void Draw(AFCommandList& cmd);
+	void DrawString(Vec2 pos, int fontSize, const wchar_t *text, uint32_t color);
+	void DrawString(Vec2 pos, int fontSize, const char *text, uint32_t color);
+	void Draw(AFCommandList& cmd, const IVec2& screenSize);
 	Vec2 MeasureString(int fontSize, const char *text);
 };
 
