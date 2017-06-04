@@ -152,8 +152,8 @@ void MeshRenderer::Flush()
 		return;
 	}
 
-	matrixMan.Get(MatrixMan::VIEW, perDrawCallUBO.matV);
-	matrixMan.Get(MatrixMan::PROJ, perDrawCallUBO.matP);
+	perDrawCallUBO.matV = matrixMan.Get(MatrixMan::VIEW);
+	perDrawCallUBO.matP = matrixMan.Get(MatrixMan::PROJ);
 
 	AFCommandList& cmd = afGetCommandList();
 	cmd.SetRenderStates(renderStates);

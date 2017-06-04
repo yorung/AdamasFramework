@@ -2,9 +2,9 @@
 
 MatrixMan matrixMan;
 
-void MatrixMan::Get(Type type, Mat& m)
+const Mat& MatrixMan::Get(Type type) const
 {
-	m = matrices[type];
+	return matrices[type];
 }
 
 void MatrixMan::Set(Type type, const Mat& m)

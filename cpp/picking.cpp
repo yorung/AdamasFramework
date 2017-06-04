@@ -55,9 +55,8 @@ Picking::Picking()
 
 void ScreenPosToRay(const Vec2& scrPos, Vec3& nearPos, Vec3& farPos)
 {
-	Mat v, p;
-	matrixMan.Get(MatrixMan::VIEW, v);
-	matrixMan.Get(MatrixMan::PROJ, p);
+	Mat v = matrixMan.Get(MatrixMan::VIEW);
+	Mat p = matrixMan.Get(MatrixMan::PROJ);
 	Mat vp = makeViewportMatrix(systemMisc.GetScreenSize());
 	Mat mInv = inv(v * p * vp);
 	Vec4 nearPos4 = transform(Vec4(scrPos.x, scrPos.y, NDC_SPACE_NEAR, 1), mInv);
@@ -167,9 +166,8 @@ void Picking::Draw3D()
 {
 	Vertex poly[3], lines[6];
 	Update3D(poly, lines);
-	Mat mView, mProj;
-	matrixMan.Get(MatrixMan::VIEW, mView);
-	matrixMan.Get(MatrixMan::PROJ, mProj);
+	Mat mView = matrixMan.Get(MatrixMan::VIEW);
+	Mat mProj = matrixMan.Get(MatrixMan::PROJ);
 	Mat mVP = mView * mProj;
 
 	AFCommandList& cmd = afGetCommandList();

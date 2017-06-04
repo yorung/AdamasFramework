@@ -26,9 +26,8 @@ void SkyMan::Draw(AFCommandList& cmd)
 	}
 	cmd.SetRenderStates(renderStates);
 
-	Mat matV, matP;
-	matrixMan.Get(MatrixMan::VIEW, matV);
-	matrixMan.Get(MatrixMan::PROJ, matP);
+	Mat matV = matrixMan.Get(MatrixMan::VIEW);
+	Mat matP = matrixMan.Get(MatrixMan::PROJ);
 	matV._41 = matV._42 = matV._43 = 0;
 	Mat invVP = inv(matV * matP);
 	cmd.SetBuffer(sizeof(invVP), &invVP, 1);

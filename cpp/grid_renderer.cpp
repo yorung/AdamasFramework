@@ -99,9 +99,8 @@ void GridRenderer::Draw()
 {
 	AFCommandList& cmd = afGetCommandList();
 	cmd.SetRenderStates(renderStates);
-	Mat matView, matProj;
-	matrixMan.Get(MatrixMan::VIEW, matView);
-	matrixMan.Get(MatrixMan::PROJ, matProj);
+	Mat matView = matrixMan.Get(MatrixMan::VIEW);
+	Mat matProj = matrixMan.Get(MatrixMan::PROJ);
 	Mat matVP = matView * matProj;
 	cmd.SetBuffer(sizeof(Mat), &matVP, 0);
 	cmd.SetVertexBuffer(vbo, sizeof(GridVert));

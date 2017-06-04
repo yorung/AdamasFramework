@@ -10,7 +10,7 @@ public:
 	};
 	Mat matrices[MAX];
 public:
-	void Get(Type type, Mat& m);
+	const Mat& Get(Type type) const;
 	void Set(Type type, const Mat& m);
 };
 

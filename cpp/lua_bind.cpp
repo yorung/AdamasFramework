@@ -31,10 +31,9 @@ static int LLookAt(lua_State* L)
 
 static IVec2 GetScreenPos(const MatrixStack* ms)
 {
-	Mat mW, mV, mP;
-	mW = ms ? ms->Get() : Mat();
-	matrixMan.Get(MatrixMan::VIEW, mV);
-	matrixMan.Get(MatrixMan::PROJ, mP);
+	Mat mV = matrixMan.Get(MatrixMan::VIEW);
+	Mat mP = matrixMan.Get(MatrixMan::PROJ);
+	Mat mW = ms ? ms->Get() : Mat();
 	Mat mViewport = makeViewportMatrix(systemMisc.GetScreenSize());
 	Mat m = mW * mV * mP * mViewport;
 	return IVec2((int)(m._41 / m._44), (int)(m._42 / m._44));
