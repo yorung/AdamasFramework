@@ -122,6 +122,7 @@
     <ClCompile Include="..\cpp\mesh_man.cpp" />
     <ClCompile Include="..\cpp\mesh_renderer.cpp" />
     <ClCompile Include="..\cpp\mesh_x.cpp" />
+    <ClCompile Include="..\cpp\ModuleManager.cpp" />
     <ClCompile Include="..\cpp\picking.cpp" />
     <ClCompile Include="..\cpp\puzzle.cpp" />
     <ClCompile Include="..\cpp\sky_man.cpp" />
@@ -181,6 +182,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\cpp\AF.h" />
+    <ClInclude Include="..\cpp\ModuleManager.h" />
     <ClInclude Include="..\cpp\af_lua_helpers.h" />
     <ClInclude Include="..\cpp\af_math.h" />
     <ClInclude Include="..\cpp\app.h" />

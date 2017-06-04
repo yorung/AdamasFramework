@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-class WaterSurfaceES3
+class WaterSurfaceES3 : AFModule
 {
 	struct UniformBuffer {
 		Vec2 mousePos;
@@ -33,8 +33,8 @@ class WaterSurfaceES3
 public:
 	WaterSurfaceES3();
 	~WaterSurfaceES3();
-	void Update();
-	void Draw();
+	void Update() override;
+	void Draw2D(AFCommandList& cmd) override;
 };
 
 
@@ -45,14 +45,14 @@ static const char* waterSurfaceClassName = "WaterSurfaceES3";
 		return 0;	\
 	} \
 
-class WaterSurfaceBinder {
+class WaterSurfaceBinder
+{
 public:
-	WaterSurfaceBinder() {
+	WaterSurfaceBinder()
+	{
 		GetLuaBindFuncContainer().push_back([](lua_State* L) {
 			static luaL_Reg methods[] = {
 				{ "__gc", [](lua_State* L) { GET_WS p->~WaterSurfaceES3(); return 0; } },
-				{ "Update", [](lua_State* L) { GET_WS p->Update(); return 0; } },
-				{ "Draw", [](lua_State* L) { GET_WS p->Draw(); return 0; } },
 				{ nullptr, nullptr },
 			};
 			aflBindClass(L, waterSurfaceClassName, methods, [](lua_State* L) { void* u = lua_newuserdata(L, sizeof(WaterSurfaceES3)); new (u) WaterSurfaceES3(); return 1; });
@@ -256,7 +256,7 @@ void WaterSurfaceES3::RenderWater(AFCommandList& cmd, const UniformBuffer& hmub)
 #endif
 }
 
-void WaterSurfaceES3::Draw()
+void WaterSurfaceES3::Draw2D(AFCommandList& cmd)
 {
 	UpdateTime();
 
@@ -280,7 +280,6 @@ void WaterSurfaceES3::Draw()
 		lastMousePos = mousePos;
 	}
 
-	AFCommandList& cmd = afGetCommandList();
 	double dummy;
 	hmub.wrappedTime = (float)std::modf(elapsedTime * (1.0f / loopTime), &dummy) * loopTime;
 	fontMan.DrawString(Vec2(300, 20), 10, SPrintf("%f, %f", hmub.mousePos.x, hmub.mousePos.y), 0xffffffff);

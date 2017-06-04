@@ -136,6 +136,9 @@
     <ClCompile Include="..\cpp\helper_vulkan.cpp">
       <Filter>Vulkan</Filter>
     </ClCompile>
+    <ClCompile Include="..\cpp\ModuleManager.cpp">
+      <Filter>PlatformIndipendent</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resource.h">
@@ -253,6 +256,9 @@
       <Filter>PlatformIndipendent</Filter>
     </ClInclude>
     <ClInclude Include="..\cpp\AF.h" />
+    <ClInclude Include="..\cpp\ModuleManager.h">
+      <Filter>PlatformIndipendent</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Windows">

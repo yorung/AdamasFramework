@@ -22,7 +22,7 @@ struct WaterSurfaceClassicUBO {
 	float padding[3];
 };
 
-class WaterSurfaceES2
+class WaterSurfaceES2 : public AFModule
 {
 	AFRenderTarget rtWater;
 	WaterSurfaceClassicUBO uboBuf;
@@ -30,6 +30,7 @@ class WaterSurfaceES2
 	AFRenderStates renderStatesPostProcess;
 	void UpdateVert(std::vector<WaterVert>& vert);
 	void UpdateRipple();
+	void CreateRipple(Vec2 pos);
 	WaterRipple ripples[2];
 	int ripplesNext;
 	double elapsedTime = 0;
@@ -44,9 +45,8 @@ public:
 	~WaterSurfaceES2();
 	void Destroy();
 	void Init();
-	void Update();
-	void Draw();
-	void CreateRipple(Vec2 pos);
+	void Update() override;
+	void Draw2D(AFCommandList& cmd) override;
 };
 
 static const char* waterSurfaceClassName = "WaterSurfaceES2";
@@ -56,14 +56,15 @@ static const char* waterSurfaceClassName = "WaterSurfaceES2";
 		return 0;	\
 	}
 
-class WaterSurfaceClassicBinder {
+class WaterSurfaceClassicBinder
+{
 public:
-	WaterSurfaceClassicBinder() {
-		GetLuaBindFuncContainer().push_back([](lua_State* L) {
+	WaterSurfaceClassicBinder()
+	{
+		GetLuaBindFuncContainer().push_back([](lua_State* L)
+		{
 			static luaL_Reg methods[] = {
 				{ "__gc", [](lua_State* L) { GET_WSC p->~WaterSurfaceES2(); return 0; } },
-				{ "Update", [](lua_State* L) { GET_WSC p->Update(); return 0; } },
-				{ "Draw", [](lua_State* L) { GET_WSC p->Draw(); return 0; }},
 				{ nullptr, nullptr },
 			};
 			aflBindClass(L, waterSurfaceClassName, methods, [](lua_State* L) { void* u = lua_newuserdata(L, sizeof(WaterSurfaceES2)); new (u) WaterSurfaceES2(); return 1; });
@@ -282,11 +283,9 @@ void WaterSurfaceES2::Update()
 	uboBuf.time = (float)modf(elapsedTime * (1.0f / loopTime), &dummy) * loopTime;
 }
 
-void WaterSurfaceES2::Draw()
+void WaterSurfaceES2::Draw2D(AFCommandList& cmd)
 {
 	UpdateRipple();
-
-	AFCommandList& cmd = afGetCommandList();
 
 	cmd.SetRenderStates(renderStatesWater);
 	for (int i = 0; i < (int)dimof(texFiles); i++)

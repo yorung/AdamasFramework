@@ -60,10 +60,12 @@ static void ProcessLuaCommandTbl(int cmd)
 		return;
 	}
 	lua_State *L = luaMan.GetState();
-	if (!L) {
+	if (!L)
+	{
 		return;
 	}
-	if (luaL_dostring(L, it->second.c_str())) {
+	if (luaL_dostring(L, it->second.c_str()))
+	{
 		const char *p = lua_tostring(L, -1);
 		MessageBoxA(GetActiveWindow(), p, "luaL_dostring error", MB_OK);
 	}

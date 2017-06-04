@@ -101,4 +101,4 @@ static const int BONE_MAX = 50;
 #include "letterbox.h"
 #include "input_man.h"
 #include "voice.h"
-
+#include "ModuleManager.h"

@@ -49,10 +49,12 @@ void App::Draw()
 	}
 	*/
 	AFCommandList& cmd = afGetCommandList();
+	moduleManager.Draw3DAll(cmd);
 	luaMan.Draw3D();
 	meshRenderer.Flush();
 	skyMan.Draw(cmd);
 	luaMan.Draw2D(cmd);
+	moduleManager.Draw2DAll(cmd);
 	fontMan.Draw(cmd, systemMisc.GetScreenSize());
 }
 
@@ -109,6 +111,7 @@ void App::Update()
 	systemMisc.lastUpdateTime = GetTime();
 	inputMan.Update();
 	matrixMan.Set(MatrixMan::VIEW, devCamera.CalcViewMatrix());
+	moduleManager.UpdateAll();
 	luaMan.Update();
 	fps.Update();
 	fontMan.DrawString(Vec2(20, 40), 20, SPrintf("FPS: %f", fps.Get()), 0xffffffff);

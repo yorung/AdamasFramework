@@ -7,14 +7,23 @@ end
 function Draw3D()
 end
 
-AddMenu("Picking", "dofile('lua/picking.lua')")
-AddMenu("Hasami Shogi", "dofile('lua/hasami_shogi/main.lua')")
-AddMenu("Puzzle", "dofile('lua/puzzle.lua')")
-AddMenu("Water(ES2)", "dofile('lua/water_surface_es2.lua')")
-AddMenu("Water(ES3)", "dofile('lua/water_surface_es3.lua')")
+function Destroy()
+end
+
+function RunModule(moduleFileName)
+	Destroy()
+	collectgarbage("collect")
+	dofile(moduleFileName)
+end
+
+AddMenu("Picking", "RunModule('lua/picking.lua')")
+AddMenu("Hasami Shogi", "RunModule('lua/hasami_shogi/main.lua')")
+AddMenu("Puzzle", "RunModule('lua/puzzle.lua')")
+AddMenu("Water(ES2)", "RunModule('lua/water_surface_es2.lua')")
+AddMenu("Water(ES3)", "RunModule('lua/water_surface_es3.lua')")
 AddMenu("Msg", "MessageBox('message', 'ok')")
-AddMenu("Jiji", "dofile('lua/jiji.lua')")
-AddMenu("Instancing", "dofile('lua/instancing.lua')")
+AddMenu("Jiji", "RunModule('lua/jiji.lua')")
+AddMenu("Instancing", "RunModule('lua/instancing.lua')")
 AddMenu("LittlePlanet", "LoadSkyBox('hakodate.jpg', 'projection_equirectangular_to_stereographic')")
 
 LoadSkyBox("hakodate.jpg", "sky_photosphere")
