@@ -419,6 +419,33 @@ void AFRenderTarget::Destroy()
 	renderTarget.Reset();
 }
 
+void afSetRenderTarget(ComPtr<ID3D12Resource> color, ComPtr<ID3D12Resource> depthStencil, uint32_t flags)
+{
+	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = deviceMan.GetDepthStencilView();
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = deviceMan.GetRenderTargetView();
+	ID3D12GraphicsCommandList* commandList = deviceMan.GetCommandList();
+	if (color)
+	{
+		deviceMan.GetDevice()->CreateRenderTargetView(color.Get(), nullptr, rtvHandle);
+		if (flags & AFSRTF_CLEAR_COLOR)
+		{
+			commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
+		}
+	}
+//	if (depthStencil)
+	{
+	//	deviceMan.GetDevice()->CreateDepthStencilView(depthStencil.Get(), nullptr, dsvHandle);
+		if (flags & AFSRTF_CLEAR_DEPTH_STENCIL)
+		{
+			commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+		}
+	}
+	IVec2 size = afGetTextureSize(color ? color : depthStencil);
+	commandList->OMSetRenderTargets(1, color ? &rtvHandle : nullptr, FALSE, /*depthStencil*/true ? &dsvHandle : nullptr);
+	commandList->RSSetViewports(1, ToPtr<D3D12_VIEWPORT>({ 0.f, 0.f, (float)size.x, (float)size.y, 0.f, 1.f }));
+	commandList->RSSetScissorRects(1, ToPtr<D3D12_RECT>({ 0, 0, (LONG)size.x, (LONG)size.y }));
+}
+
 void AFRenderTarget::BeginRenderToThis()
 {
 	if (asDefault)
@@ -434,19 +461,7 @@ void AFRenderTarget::BeginRenderToThis()
 		currentState = D3D12_RESOURCE_STATE_RENDER_TARGET;
 	}
 
-	D3D12_VIEWPORT vp = { 0.f, 0.f, (float)texSize.x, (float)texSize.y, 0.f, 1.f };
-	D3D12_RECT rc = { 0, 0, (LONG)texSize.x, (LONG)texSize.y };
-	commandList->RSSetViewports(1, &vp);
-	commandList->RSSetScissorRects(1, &rc);
-
-	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = deviceMan.GetDepthStencilView();
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = deviceMan.GetRenderTargetView();
-
-	deviceMan.GetDevice()->CreateRenderTargetView(renderTarget.Get(), nullptr, rtvHandle);
-
-	commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, &dsvHandle);
-	commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
-	commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+	afSetRenderTarget(renderTarget, nullptr/*depthStencil*/, AFSRTF_CLEAR_ALL);
 }
 
 ComPtr<ID3D12Resource> AFRenderTarget::GetTexture()

@@ -55,8 +55,8 @@ void afWriteTexture(SRVID id, const TexDesc& desc, int mipCount, const AFTexSubr
 
 void afWaitFenceValue(ComPtr<ID3D12Fence> fence, UINT64 value);
 IVec2 afGetTextureSize(SRVID tex);
-
 void afSetVertexBufferFromSystemMemory(const void* buf, int size, int stride);
+void afSetRenderTarget(ComPtr<ID3D12Resource> color, ComPtr<ID3D12Resource> depthStencil, uint32_t flags = 0);
 
 class AFHeapStackAllocator
 {

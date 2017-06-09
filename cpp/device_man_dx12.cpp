@@ -61,21 +61,8 @@ void DeviceManDX12::Destroy()
 
 void DeviceManDX12::SetRenderTarget()
 {
-	DXGI_SWAP_CHAIN_DESC desc;
-	swapChain->GetDesc(&desc);
-	commandList->RSSetViewports(1, ToPtr<D3D12_VIEWPORT>({ 0.f, 0.f, (float)desc.BufferDesc.Width, (float)desc.BufferDesc.Height, 0.f, 1.f }));
-	commandList->RSSetScissorRects(1, ToPtr<D3D12_RECT>({ 0, 0, (LONG)desc.BufferDesc.Width, (LONG)desc.BufferDesc.Height }));
-
-	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = dsvHeap->GetCPUDescriptorHandleForHeapStart();
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = rtvHeap->GetCPUDescriptorHandleForHeapStart();
-
 	FrameResources& res = frameResources[frameIndex];
-	device->CreateRenderTargetView(res.renderTarget.Get(), nullptr, rtvHandle);
-
-	commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, &dsvHandle);
-	const float clearColor[] = { 0.0f, 0.2f, 0.3f, 1.0f };
-	commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
-	commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+	afSetRenderTarget(res.renderTarget.Get(), nullptr, AFSRTF_CLEAR_ALL);
 }
 
 void DeviceManDX12::BeginScene()
