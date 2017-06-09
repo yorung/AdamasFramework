@@ -428,22 +428,20 @@ void afSetTextureName(AFTexRef tex, const char* name)
 	tex->SetPrivateData(WKPDID_D3DDebugObjectName, strlen(name), name);
 }
 
-void afClearRenderTarget(ComPtr<ID3D11Resource> color)
-{
-	float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-	deviceMan11.GetContext()->ClearRenderTargetView(afCreateRTVFromTexture(color).Get(), clearColor);
-}
-
-void afClearDepthStencil(ComPtr<ID3D11Resource> depthStencil)
-{
-	deviceMan11.GetContext()->ClearDepthStencilView(afCreateDSVFromTexture(depthStencil).Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-}
-
-void afSetRenderTarget(ComPtr<ID3D11Resource> color, ComPtr<ID3D11Resource> depthStencil)
+void afSetRenderTarget(ComPtr<ID3D11Resource> color, ComPtr<ID3D11Resource> depthStencil, uint32_t flags)
 {
 	D3D11_TEXTURE2D_DESC desc = afGetTexture2DDesc(color ? color : depthStencil);
 	ComPtr<ID3D11RenderTargetView> rtv = color ? afCreateRTVFromTexture(color) : nullptr;
 	ComPtr<ID3D11DepthStencilView> dsv = depthStencil ? afCreateDSVFromTexture(depthStencil) : nullptr;
+	if ((flags & AFSRTF_CLEAR_COLOR) && rtv)
+	{
+		float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+		deviceMan11.GetContext()->ClearRenderTargetView(rtv.Get(), clearColor);
+	}
+	if ((flags & AFSRTF_CLEAR_DEPTH_STENCIL) && dsv)
+	{
+		deviceMan11.GetContext()->ClearDepthStencilView(dsv.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	}
 	ID3D11DeviceContext* context = deviceMan11.GetContext();
 	context->OMSetRenderTargets(1, rtv.GetAddressOf(), dsv.Get());
 	context->RSSetViewports(1, ToPtr<D3D11_VIEWPORT>({ 0, 0, (float)desc.Width, (float)desc.Height, 0.0f, 1.0f }));
@@ -489,12 +487,7 @@ void AFRenderTarget::Destroy()
 
 void AFRenderTarget::BeginRenderToThis()
 {
-	afClearRenderTarget(renderTarget);
-	if (depthStencil)
-	{
-		afClearDepthStencil(depthStencil);
-	}
-	afSetRenderTarget(renderTarget, depthStencil);
+	afSetRenderTarget(renderTarget, depthStencil, AFSRTF_CLEAR_COLOR | AFSRTF_CLEAR_DEPTH_STENCIL);
 }
 
 void AFRenderTarget::EndRenderToThis()

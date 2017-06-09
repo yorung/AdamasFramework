@@ -83,9 +83,7 @@ ComPtr<ID3D11Texture2D> afGetTexture2DFromView(ComPtr<ID3D11View> view);
 IVec2 afGetTextureSize(ComPtr<ID3D11View> view);
 IVec2 afGetTextureSize(ComPtr<ID3D11Texture2D> tex);
 void afSetTextureName(AFTexRef tex, const char* name);
-void afSetRenderTarget(ComPtr<ID3D11Resource> color, ComPtr<ID3D11Resource> depthStencil);
-void afClearRenderTarget(ComPtr<ID3D11Resource> color);
-void afClearDepthStencil(ComPtr<ID3D11Resource> depthStencil);
+void afSetRenderTarget(ComPtr<ID3D11Resource> color, ComPtr<ID3D11Resource> depthStencil, uint32_t flags = 0);
 
 class AFRenderTarget
 {
