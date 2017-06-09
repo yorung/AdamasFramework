@@ -37,11 +37,9 @@ public:
 	void SetRenderTarget();
 	D3D12_CPU_DESCRIPTOR_HANDLE GetDepthStencilView() { return dsvHeap->GetCPUDescriptorHandleForHeapStart(); }
 	D3D12_CPU_DESCRIPTOR_HANDLE GetRenderTargetView() { return rtvHeap->GetCPUDescriptorHandleForHeapStart(); }
-	int AssignDescriptorHeap(int numRequired);
-	void AssignSRV(int descriptorHeapIndex, ComPtr<ID3D12Resource> res);
+	AFHeapStackAllocator& GetFrameSRVHeap();
 	int AssignConstantBuffer(const void* buf, int size);
 	D3D12_GPU_VIRTUAL_ADDRESS GetConstantBufferGPUAddress(int constantBufferTop);
-	void SetAssignedDescriptorHeap(int index, int rootParameterIndex);
 	ComPtr<ID3D12Device> GetDevice() { return device; }
 	ID3D12GraphicsCommandList* GetCommandList() { return commandList.Get(); }
 	void AddIntermediateCommandlistDependentResource(ComPtr<ID3D12Resource> intermediateResource);

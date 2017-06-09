@@ -131,35 +131,6 @@ void DeviceManDX12::ResetCommandListAndSetDescriptorHeap()
 	commandList->SetDescriptorHeaps(1, ToPtr<ID3D12DescriptorHeap*>(res.srvHeap.GetHeap().Get()));
 }
 
-int DeviceManDX12::AssignDescriptorHeap(int numRequired)
-{
-	FrameResources& res = frameResources[frameIndex];
-	return res.srvHeap.AssignDescriptorHeap(numRequired);
-}
-
-void DeviceManDX12::AssignSRV(int descriptorHeapIndex, ComPtr<ID3D12Resource> resToSrv)
-{
-	assert(resToSrv);
-	FrameResources& res = frameResources[frameIndex];
-	D3D12_CPU_DESCRIPTOR_HANDLE ptr = res.srvHeap.GetCPUAddress(descriptorHeapIndex);
-	D3D12_RESOURCE_DESC resDesc = resToSrv->GetDesc();
-	if (resDesc.DepthOrArraySize == 6)
-	{
-		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-		srvDesc.Format = resDesc.Format;
-		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURECUBE;
-		srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-		srvDesc.TextureCube.MipLevels = resDesc.MipLevels;
-		srvDesc.TextureCube.MostDetailedMip = 0;
-		srvDesc.TextureCube.ResourceMinLODClamp = 0;
-		device->CreateShaderResourceView(resToSrv.Get(), &srvDesc, ptr);
-	}
-	else
-	{
-		device->CreateShaderResourceView(resToSrv.Get(), nullptr, ptr);
-	}
-}
-
 int DeviceManDX12::AssignConstantBuffer(const void* buf, int size)
 {
 	int sizeAligned = (size + 0xff) & ~0xff;
@@ -182,11 +153,6 @@ D3D12_GPU_VIRTUAL_ADDRESS DeviceManDX12::GetConstantBufferGPUAddress(int constan
 {
 	FrameResources& res = frameResources[frameIndex];
 	return res.constantBuffer->GetGPUVirtualAddress() + constantBufferTop * 0x100;
-}
-
-void DeviceManDX12::SetAssignedDescriptorHeap(int descriptorHeapIndex, int rootParameterIndex)
-{
-	commandList->SetGraphicsRootDescriptorTable(rootParameterIndex, frameResources[frameIndex].srvHeap.GetGPUAddress(descriptorHeapIndex));
 }
 
 void DeviceManDX12::AddIntermediateCommandlistDependentResource(ComPtr<ID3D12Resource> intermediateResource)
@@ -299,6 +265,12 @@ void DeviceManDX12::Create(HWND hWnd)
 		return;
 	}
 	BeginScene();
+}
+
+AFHeapStackAllocator& DeviceManDX12::GetFrameSRVHeap()
+{
+	FrameResources& res = frameResources[frameIndex];
+	return res.srvHeap;
 }
 
 #endif
