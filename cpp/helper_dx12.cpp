@@ -334,6 +334,49 @@ void afSetVertexBufferFromSystemMemory(const void* buf, int size, int stride)
 	deviceMan.AddIntermediateCommandlistDependentResource(vbo);
 }
 
+AFHeapStackAllocator::~AFHeapStackAllocator()
+{
+	assert(!heap);
+}
+
+void AFHeapStackAllocator::Create(D3D12_DESCRIPTOR_HEAP_TYPE inHeapType, int inMaxDescriptors)
+{
+	heapType = inHeapType;
+	maxDescriptors = inMaxDescriptors;
+	deviceMan.GetDevice()->CreateDescriptorHeap(ToPtr<D3D12_DESCRIPTOR_HEAP_DESC>({ heapType, (UINT)maxDescriptors, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE }), IID_PPV_ARGS(&heap));
+}
+
+void AFHeapStackAllocator::Destroy()
+{
+	heap.Reset();
+}
+
+int AFHeapStackAllocator::AssignDescriptorHeap(int numRequired)
+{
+	if (numAssigned + numRequired > maxDescriptors)
+	{
+		assert(0);
+		return -1;
+	}
+	int head = numAssigned;
+	numAssigned += numRequired;
+	return head;
+}
+
+D3D12_GPU_DESCRIPTOR_HANDLE AFHeapStackAllocator::GetGPUAddress(int topIndex)
+{
+	D3D12_GPU_DESCRIPTOR_HANDLE addr = heap->GetGPUDescriptorHandleForHeapStart();
+	addr.ptr += topIndex * deviceMan.GetDevice()->GetDescriptorHandleIncrementSize(heapType);
+	return addr;
+}
+
+D3D12_CPU_DESCRIPTOR_HANDLE AFHeapStackAllocator::GetCPUAddress(int topIndex)
+{
+	D3D12_CPU_DESCRIPTOR_HANDLE addr = heap->GetCPUDescriptorHandleForHeapStart();
+	addr.ptr += topIndex * deviceMan.GetDevice()->GetDescriptorHandleIncrementSize(heapType);
+	return addr;
+}
+
 void AFRenderTarget::InitForDefaultRenderTarget()
 {
 	asDefault = true;
@@ -408,3 +451,11 @@ void afBindBuffer(UBOID ubo, int rootParameterIndex)
 }
 
 #endif
+
+void AFRenderStates::Apply() const
+{
+	ID3D12GraphicsCommandList* list = deviceMan.GetCommandList();
+	list->SetPipelineState(pipelineState.Get());
+	list->SetGraphicsRootSignature(rootSignature.Get());
+	list->IASetPrimitiveTopology(primitiveTopology);
+}

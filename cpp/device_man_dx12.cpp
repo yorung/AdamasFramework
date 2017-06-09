@@ -12,7 +12,6 @@ DeviceManDX12::FrameResources::~FrameResources()
 	assert(!renderTarget);
 	assert(!commandAllocator);
 	assert(!constantBuffer);
-	assert(!srvHeap);
 	assert(!mappedConstantBuffer);
 }
 
@@ -38,7 +37,7 @@ void DeviceManDX12::Destroy()
 	{
 		res.renderTarget.Reset();
 		res.commandAllocator.Reset();
-		res.srvHeap.Reset();
+		res.srvHeap.Destroy();
 		res.mappedConstantBuffer = nullptr;
 		if (res.constantBuffer)
 		{
@@ -81,10 +80,10 @@ void DeviceManDX12::SetRenderTarget()
 
 void DeviceManDX12::BeginScene()
 {
-	numAssignedSrvs = 0;
 	numAssignedConstantBufferBlocks = 0;
 	frameIndex = swapChain->GetCurrentBackBufferIndex();
 	FrameResources& res = frameResources[frameIndex];
+	res.srvHeap.ResetAllocation();
 	afWaitFenceValue(fence, res.fenceValueToGuard);
 
 	res.intermediateCommandlistDependentResources.clear();
@@ -129,28 +128,20 @@ void DeviceManDX12::ResetCommandListAndSetDescriptorHeap()
 {
 	FrameResources& res = frameResources[frameIndex];
 	commandList->Reset(res.commandAllocator.Get(), nullptr);
-	ID3D12DescriptorHeap* ppHeaps[] = { res.srvHeap.Get() };
-	commandList->SetDescriptorHeaps(arrayparam(ppHeaps));
+	commandList->SetDescriptorHeaps(1, ToPtr<ID3D12DescriptorHeap*>(res.srvHeap.GetHeap().Get()));
 }
 
 int DeviceManDX12::AssignDescriptorHeap(int numRequired)
 {
-	if (numAssignedSrvs + numRequired > maxSrvs)
-	{
-		assert(0);
-		return -1;
-	}
-	int head = numAssignedSrvs;
-	numAssignedSrvs = numAssignedSrvs + numRequired;
-	return head;
+	FrameResources& res = frameResources[frameIndex];
+	return res.srvHeap.AssignDescriptorHeap(numRequired);
 }
 
 void DeviceManDX12::AssignSRV(int descriptorHeapIndex, ComPtr<ID3D12Resource> resToSrv)
 {
 	assert(resToSrv);
 	FrameResources& res = frameResources[frameIndex];
-	D3D12_CPU_DESCRIPTOR_HANDLE ptr = res.srvHeap->GetCPUDescriptorHandleForHeapStart();
-	ptr.ptr += device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV) * descriptorHeapIndex;
+	D3D12_CPU_DESCRIPTOR_HANDLE ptr = res.srvHeap.GetCPUAddress(descriptorHeapIndex);
 	D3D12_RESOURCE_DESC resDesc = resToSrv->GetDesc();
 	if (resDesc.DepthOrArraySize == 6)
 	{
@@ -195,10 +186,7 @@ D3D12_GPU_VIRTUAL_ADDRESS DeviceManDX12::GetConstantBufferGPUAddress(int constan
 
 void DeviceManDX12::SetAssignedDescriptorHeap(int descriptorHeapIndex, int rootParameterIndex)
 {
-	FrameResources& res = frameResources[frameIndex];
-	D3D12_GPU_DESCRIPTOR_HANDLE addr = res.srvHeap->GetGPUDescriptorHandleForHeapStart();
-	addr.ptr += descriptorHeapIndex * device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	commandList->SetGraphicsRootDescriptorTable(rootParameterIndex, addr);
+	commandList->SetGraphicsRootDescriptorTable(rootParameterIndex, frameResources[frameIndex].srvHeap.GetGPUAddress(descriptorHeapIndex));
 }
 
 void DeviceManDX12::AddIntermediateCommandlistDependentResource(ComPtr<ID3D12Resource> intermediateResource)
@@ -290,7 +278,7 @@ void DeviceManDX12::Create(HWND hWnd)
 			return;
 		}
 		device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&res.commandAllocator));
-		device->CreateDescriptorHeap(ToPtr<D3D12_DESCRIPTOR_HEAP_DESC>({ D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, maxSrvs, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE }), IID_PPV_ARGS(&res.srvHeap));
+		res.srvHeap.Create(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, maxSrvs);
 		res.constantBuffer = afCreateUBO(maxConstantBufferBlocks * 0x100);
 		afHandleDXError(res.constantBuffer->Map(0, ToPtr<D3D12_RANGE>({}), (void**)&res.mappedConstantBuffer));
 		afVerify(res.mappedConstantBuffer);

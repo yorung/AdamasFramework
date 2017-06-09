@@ -73,8 +73,8 @@ using Microsoft::WRL::ComPtr;
 #endif
 
 #ifdef AF_DX12
-#include "device_man_dx12.h"
 #include "helper_dx12.h"
+#include "device_man_dx12.h"
 #endif
 
 #include "AFGraphicsCompatibilityLayer.inl"

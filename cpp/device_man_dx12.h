@@ -3,16 +3,16 @@ class DeviceManDX12
 	static const UINT numFrameBuffers = 2;
 	static const UINT maxSrvs = 1024;
 	static const UINT maxConstantBufferBlocks = 1000;
-	int numAssignedSrvs = 0;
 	int numAssignedConstantBufferBlocks = 0;
-	class FrameResources {
+	class FrameResources
+	{
 	public:
 		~FrameResources();
 		std::vector<ComPtr<ID3D12Resource>> intermediateCommandlistDependentResources;
 		ComPtr<ID3D12Resource> renderTarget;
 		ComPtr<ID3D12CommandAllocator> commandAllocator;
 		ComPtr<ID3D12Resource> constantBuffer;
-		ComPtr<ID3D12DescriptorHeap> srvHeap;
+		AFHeapStackAllocator srvHeap;
 		struct { char buf[256]; } *mappedConstantBuffer = nullptr;
 		UINT64 fenceValueToGuard = 0;
 	} frameResources[numFrameBuffers];
