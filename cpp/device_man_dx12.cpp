@@ -62,7 +62,7 @@ void DeviceManDX12::Destroy()
 void DeviceManDX12::SetRenderTarget()
 {
 	FrameResources& res = frameResources[frameIndex];
-	afSetRenderTarget(res.renderTarget.Get(), nullptr, AFSRTF_CLEAR_ALL);
+	afSetRenderTarget(res.renderTarget.Get(), depthStencil, AFSRTF_CLEAR_ALL);
 }
 
 void DeviceManDX12::BeginScene()

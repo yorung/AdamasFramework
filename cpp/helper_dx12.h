@@ -100,7 +100,7 @@ public:
 class AFRenderTarget
 {
 	IVec2 texSize;
-	ComPtr<ID3D12Resource> renderTarget;
+	ComPtr<ID3D12Resource> renderTarget, depthStencil;
 	bool asDefault = false;
 	D3D12_RESOURCE_STATES currentState;
 public:

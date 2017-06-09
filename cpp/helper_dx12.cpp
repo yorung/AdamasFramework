@@ -406,10 +406,13 @@ void AFRenderTarget::InitForDefaultRenderTarget()
 
 void AFRenderTarget::Init(IVec2 size, AFFormat colorFormat, AFFormat depthStencilFormat)
 {
-	(void)depthStencilFormat;
 	texSize = size;
 	renderTarget = afCreateDynamicTexture(colorFormat, size, AFTF_RTV | AFTF_SRV);
 	currentState = D3D12_RESOURCE_STATE_RENDER_TARGET;
+	if (depthStencilFormat != AFF_INVALID)
+	{
+		depthStencil = afCreateDynamicTexture(depthStencilFormat, size, AFTF_DSV);
+	}
 	deviceMan.AddIntermediateCommandlistDependentResource(renderTarget);
 	afSetTextureName(renderTarget, __FUNCTION__);
 }
@@ -432,16 +435,16 @@ void afSetRenderTarget(ComPtr<ID3D12Resource> color, ComPtr<ID3D12Resource> dept
 			commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
 		}
 	}
-//	if (depthStencil)
+	if (depthStencil)
 	{
-	//	deviceMan.GetDevice()->CreateDepthStencilView(depthStencil.Get(), nullptr, dsvHandle);
+		deviceMan.GetDevice()->CreateDepthStencilView(depthStencil.Get(), nullptr, dsvHandle);
 		if (flags & AFSRTF_CLEAR_DEPTH_STENCIL)
 		{
 			commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 		}
 	}
 	IVec2 size = afGetTextureSize(color ? color : depthStencil);
-	commandList->OMSetRenderTargets(1, color ? &rtvHandle : nullptr, FALSE, /*depthStencil*/true ? &dsvHandle : nullptr);
+	commandList->OMSetRenderTargets(1, color ? &rtvHandle : nullptr, FALSE, depthStencil ? &dsvHandle : nullptr);
 	commandList->RSSetViewports(1, ToPtr<D3D12_VIEWPORT>({ 0.f, 0.f, (float)size.x, (float)size.y, 0.f, 1.f }));
 	commandList->RSSetScissorRects(1, ToPtr<D3D12_RECT>({ 0, 0, (LONG)size.x, (LONG)size.y }));
 }
