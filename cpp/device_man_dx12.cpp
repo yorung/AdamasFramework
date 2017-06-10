@@ -59,10 +59,14 @@ void DeviceManDX12::Destroy()
 	}
 }
 
-void DeviceManDX12::SetRenderTarget()
+ComPtr<ID3D12Resource> DeviceManDX12::GetDefaultRenderTarget()
 {
-	FrameResources& res = frameResources[frameIndex];
-	afSetRenderTarget(res.renderTarget.Get(), depthStencil, AFSRTF_CLEAR_ALL);
+	return frameResources[frameIndex].renderTarget;
+}
+
+ComPtr<ID3D12Resource> DeviceManDX12::GetDefaultDepthStencil()
+{
+	return depthStencil;
 }
 
 void DeviceManDX12::BeginScene()

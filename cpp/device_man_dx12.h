@@ -34,7 +34,8 @@ public:
 	void Destroy();
 	void Present();
 	void Flush();
-	void SetRenderTarget();
+	ComPtr<ID3D12Resource> GetDefaultRenderTarget();
+	ComPtr<ID3D12Resource> GetDefaultDepthStencil();
 	D3D12_CPU_DESCRIPTOR_HANDLE GetDepthStencilView() { return dsvHeap->GetCPUDescriptorHandleForHeapStart(); }
 	D3D12_CPU_DESCRIPTOR_HANDLE GetRenderTargetView() { return rtvHeap->GetCPUDescriptorHandleForHeapStart(); }
 	AFHeapStackAllocator& GetFrameSRVHeap();

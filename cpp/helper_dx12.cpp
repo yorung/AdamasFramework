@@ -446,7 +446,8 @@ void AFRenderTarget::BeginRenderToThis()
 {
 	if (asDefault)
 	{
-		deviceMan.SetRenderTarget();
+		ComPtr<ID3D12Resource> rt = deviceMan.GetDefaultRenderTarget();
+		afSetRenderTarget(renderTarget, depthStencil, AFSRTF_CLEAR_ALL);
 		return;
 	}
 
@@ -457,7 +458,7 @@ void AFRenderTarget::BeginRenderToThis()
 		currentState = D3D12_RESOURCE_STATE_RENDER_TARGET;
 	}
 
-	afSetRenderTarget(renderTarget, nullptr/*depthStencil*/, AFSRTF_CLEAR_ALL);
+	afSetRenderTarget(renderTarget, depthStencil, AFSRTF_CLEAR_ALL);
 }
 
 ComPtr<ID3D12Resource> AFRenderTarget::GetTexture()
