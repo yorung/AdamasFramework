@@ -23,7 +23,6 @@ typedef SRVID AFTexRef;
 inline void afSafeDeleteBuffer(ComPtr<ID3D12Resource>& p) { p.Reset(); }
 inline void afSafeDeleteTexture(SRVID& p) { p.Reset(); }
 
-void afSetDescriptorHeap(ComPtr<ID3D12DescriptorHeap> heap);
 void afSetVertexBuffer(VBOID id, int stride);
 void afSetVertexBuffer(int size, const void* buf, int stride);
 void afSetVertexBuffers(int numIds, VBOID ids[], int strides[]);

@@ -6,13 +6,6 @@ static const D3D12_HEAP_PROPERTIES defaultHeapProperties = { D3D12_HEAP_TYPE_DEF
 static const D3D12_HEAP_PROPERTIES uploadHeapProperties = { D3D12_HEAP_TYPE_UPLOAD, D3D12_CPU_PAGE_PROPERTY_UNKNOWN, D3D12_MEMORY_POOL_UNKNOWN, 1, 1 };
 static const float clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 
-void afSetDescriptorHeap(ComPtr<ID3D12DescriptorHeap> heap)
-{
-	ID3D12DescriptorHeap* ppHeaps[] = { heap.Get() };
-	deviceMan.GetCommandList()->SetDescriptorHeaps(arrayparam(ppHeaps));
-	deviceMan.GetCommandList()->SetGraphicsRootDescriptorTable(0, heap->GetGPUDescriptorHandleForHeapStart());
-}
-
 void afSetVertexBuffer(VBOID id, int stride)
 {
 	ID3D12GraphicsCommandList* list = deviceMan.GetCommandList();
