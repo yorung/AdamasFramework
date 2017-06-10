@@ -14,7 +14,7 @@ cbuffer matUbo : register(b1) {
 	matrix matProj;
 };
 
-#define RSDEF "RootFlags(ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT), DescriptorTable(SRV(t0)), CBV(b1), StaticSampler(s0)"
+#define RSDEF "RootFlags(ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT), DescriptorTable(SRV(t0), visibility=SHADER_VISIBILITY_PIXEL), CBV(b1), StaticSampler(s0)"
 
 [RootSignature(RSDEF)]
 VsToPs VSMain(VertIn _In)
