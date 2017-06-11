@@ -80,13 +80,13 @@ void DeviceManDX12::BeginScene()
 	res.intermediateCommandlistDependentResources.clear();
 	res.commandAllocator->Reset();
 	ResetCommandListAndSetDescriptorHeap();
-	commandList->ResourceBarrier(1, ToPtr<D3D12_RESOURCE_BARRIER>({ D3D12_RESOURCE_BARRIER_TYPE_TRANSITION, D3D12_RESOURCE_BARRIER_FLAG_NONE,{ res.renderTarget.Get(), 0, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET } }));
+	afTransition(commandList.Get(), res.renderTarget, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
 }
 
 void DeviceManDX12::EndScene()
 {
 	FrameResources& res = frameResources[frameIndex];
-	commandList->ResourceBarrier(1, ToPtr<D3D12_RESOURCE_BARRIER>({ D3D12_RESOURCE_BARRIER_TYPE_TRANSITION, D3D12_RESOURCE_BARRIER_FLAG_NONE,{ res.renderTarget.Get(), 0, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT } }));
+	afTransition(commandList.Get(), res.renderTarget, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 
 	commandList->Close();
 	ID3D12CommandList* lists[] = { commandList.Get() };

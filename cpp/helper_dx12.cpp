@@ -6,6 +6,11 @@ static const D3D12_HEAP_PROPERTIES defaultHeapProperties = { D3D12_HEAP_TYPE_DEF
 static const D3D12_HEAP_PROPERTIES uploadHeapProperties = { D3D12_HEAP_TYPE_UPLOAD, D3D12_CPU_PAGE_PROPERTY_UNKNOWN, D3D12_MEMORY_POOL_UNKNOWN, 1, 1 };
 static const float clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 
+void afTransition(ID3D12GraphicsCommandList* cmd, ComPtr<ID3D12Resource> res, D3D12_RESOURCE_STATES from, D3D12_RESOURCE_STATES to)
+{
+	cmd->ResourceBarrier(1, ToPtr<D3D12_RESOURCE_BARRIER>({ D3D12_RESOURCE_BARRIER_TYPE_TRANSITION, D3D12_RESOURCE_BARRIER_FLAG_NONE,{ res.Get(), 0, from, to } }));
+}
+
 void afSetVertexBuffer(VBOID id, int stride)
 {
 	ID3D12GraphicsCommandList* list = deviceMan.GetCommandList();
@@ -81,11 +86,12 @@ static ComPtr<ID3D12Resource> afCreateBufferAs(int size, const void* buf, D3D12_
 	D3D12_RESOURCE_DESC desc = { D3D12_RESOURCE_DIMENSION_BUFFER, 0, (UINT64)size, 1, 1, 1, DXGI_FORMAT_UNKNOWN,{ 1, 0 }, D3D12_TEXTURE_LAYOUT_ROW_MAJOR, D3D12_RESOURCE_FLAG_NONE };
 	VBOID o;
 	deviceMan.GetDevice()->CreateCommittedResource(&defaultHeapProperties, D3D12_HEAP_FLAG_NONE, &desc, D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(&o));
-	if (o) {
+	if (o)
+	{
 		ComPtr<ID3D12Resource> intermediateBuffer = afCreateUploadHeap(size, buf);
 		ID3D12GraphicsCommandList* list = deviceMan.GetCommandList();
 		list->CopyBufferRegion(o.Get(), 0, intermediateBuffer.Get(), 0, size);
-		list->ResourceBarrier(1, ToPtr<D3D12_RESOURCE_BARRIER>({ D3D12_RESOURCE_BARRIER_TYPE_TRANSITION, D3D12_RESOURCE_BARRIER_FLAG_NONE,{ o.Get(), 0, D3D12_RESOURCE_STATE_COPY_DEST, as } }));
+		afTransition(list, o, D3D12_RESOURCE_STATE_COPY_DEST, as);
 		deviceMan.AddIntermediateCommandlistDependentResource(intermediateBuffer);
 		deviceMan.AddIntermediateCommandlistDependentResource(o);
 	}
@@ -468,7 +474,7 @@ void AFRenderTarget::BeginRenderToThis()
 	ID3D12GraphicsCommandList* commandList = deviceMan.GetCommandList();
 	if (currentState != D3D12_RESOURCE_STATE_RENDER_TARGET)
 	{
-		commandList->ResourceBarrier(1, ToPtr<D3D12_RESOURCE_BARRIER>({ D3D12_RESOURCE_BARRIER_TYPE_TRANSITION, D3D12_RESOURCE_BARRIER_FLAG_NONE,{ renderTarget.Get(), 0, currentState, D3D12_RESOURCE_STATE_RENDER_TARGET }}));
+		afTransition(commandList, renderTarget, currentState, D3D12_RESOURCE_STATE_RENDER_TARGET);
 		currentState = D3D12_RESOURCE_STATE_RENDER_TARGET;
 	}
 
@@ -480,7 +486,7 @@ ComPtr<ID3D12Resource> AFRenderTarget::GetTexture()
 	if (currentState != D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE)
 	{
 		ID3D12GraphicsCommandList* commandList = deviceMan.GetCommandList();
-		commandList->ResourceBarrier(1, ToPtr<D3D12_RESOURCE_BARRIER>({ D3D12_RESOURCE_BARRIER_TYPE_TRANSITION, D3D12_RESOURCE_BARRIER_FLAG_NONE,{ renderTarget.Get(), 0, currentState, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE }}));
+		afTransition(commandList, renderTarget, currentState, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 		currentState = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 	}
 
