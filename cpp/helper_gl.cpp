@@ -246,10 +246,10 @@ static void CreateTextureInternal(AFFormat format, const IVec2& size, void* img)
 		break;
 
 #ifdef AF_GLES31
-	case AFF_DEPTH:
-		gen(GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT);
+	case AFF_D32_FLOAT:
+		gen(GL_DEPTH_COMPONENT32, GL_DEPTH_COMPONENT, GL_FLOAT);
 		break;
-	case AFF_DEPTH_STENCIL:
+	case AFF_D24_UNORM_S8_UINT:
 		gen(GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8);
 		break;
 #endif

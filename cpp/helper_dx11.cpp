@@ -243,14 +243,14 @@ SRVID afCreateSRVFromTexture(AFTexRef tex)
 	}
 	D3D11_TEXTURE2D_DESC desc = afGetTexture2DDesc(tex);
 	ComPtr<ID3D11ShaderResourceView> srv;
-	afHandleDXError(deviceMan11.GetDevice()->CreateShaderResourceView(tex.Get(), ToPtr(CD3D11_SHADER_RESOURCE_VIEW_DESC(desc.ArraySize == 6 ? D3D11_SRV_DIMENSION_TEXTURECUBE : D3D11_SRV_DIMENSION_TEXTURE2D, TypelessToSRVFormat(desc.Format), 0, desc.MipLevels)), &srv));
+	afHandleDXError(deviceMan11.GetDevice()->CreateShaderResourceView(tex.Get(), ToPtr(CD3D11_SHADER_RESOURCE_VIEW_DESC(desc.ArraySize == 6 ? D3D11_SRV_DIMENSION_TEXTURECUBE : D3D11_SRV_DIMENSION_TEXTURE2D, afTypelessToSRVFormat(desc.Format), 0, desc.MipLevels)), &srv));
 	return srv;
 }
 
 ComPtr<ID3D11DepthStencilView> afCreateDSVFromTexture(ComPtr<ID3D11Resource> tex)
 {
 	ComPtr<ID3D11DepthStencilView> dsv;
-	afHandleDXError(deviceMan11.GetDevice()->CreateDepthStencilView(tex.Get(), ToPtr(CD3D11_DEPTH_STENCIL_VIEW_DESC(D3D11_DSV_DIMENSION_TEXTURE2D, TypelessToDSVFormat(afGetTexture2DDesc(tex).Format))), &dsv));
+	afHandleDXError(deviceMan11.GetDevice()->CreateDepthStencilView(tex.Get(), ToPtr(CD3D11_DEPTH_STENCIL_VIEW_DESC(D3D11_DSV_DIMENSION_TEXTURE2D, afTypelessToDSVFormat(afGetTexture2DDesc(tex).Format))), &dsv));
 	return dsv;
 }
 

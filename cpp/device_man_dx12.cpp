@@ -241,7 +241,7 @@ void DeviceManDX12::Create(HWND hWnd)
 		afVerify(res.mappedConstantBuffer);
 	}
 
-	depthStencil = afCreateDynamicTexture(AFF_DEPTH_STENCIL, IVec2((int)sd.BufferDesc.Width, (int)sd.BufferDesc.Height), AFTF_DSV);
+	depthStencil = afCreateDynamicTexture(AFF_D24_UNORM_S8_UINT, IVec2((int)sd.BufferDesc.Width, (int)sd.BufferDesc.Height), AFTF_DSV);
 	device->CreateDescriptorHeap(ToPtr<D3D12_DESCRIPTOR_HEAP_DESC>({ D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1 }), IID_PPV_ARGS(&dsvHeap));
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = dsvHeap->GetCPUDescriptorHandleForHeapStart();
 	device->CreateDepthStencilView(depthStencil.Get(), nullptr, dsvHandle);

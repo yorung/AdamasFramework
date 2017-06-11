@@ -344,7 +344,10 @@ static void AssignSRV(D3D12_CPU_DESCRIPTOR_HANDLE ptr , ComPtr<ID3D12Resource> r
 
 void afBindTexture(SRVID srv, int rootParameterIndex)
 {
-	assert(srv);
+	if (!srv)
+	{
+		return;
+	}
 	AFHeapStackAllocator& heap = deviceMan.GetFrameSRVHeap();
 	int descriptorHeapIndex = heap.AssignDescriptorHeap(1);
 	AssignSRV(heap.GetCPUAddress(descriptorHeapIndex), srv);
