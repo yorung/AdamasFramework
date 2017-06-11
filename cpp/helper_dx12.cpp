@@ -247,10 +247,16 @@ static D3D12_PRIMITIVE_TOPOLOGY_TYPE ToD3D12PrimitiveTopologyType(D3D_PRIMITIVE_
 #include <D3Dcompiler.h>
 ComPtr<ID3D12PipelineState> afCreatePSO(const char *shaderName, const InputElement elements[], int numElements, uint32_t flags, ComPtr<ID3D12RootSignature>& rootSignature)
 {
-	ComPtr<ID3DBlob> vertexShader = afCompileHLSL(shaderName, "VSMain", "vs_5_0");
-	ComPtr<ID3DBlob> pixelShader = afCompileHLSL(shaderName, "PSMain", "ps_5_0");
+	ComPtr<ID3DBlob> vs, ps, hs, ds;
+	vs = afCompileHLSL(shaderName, "VSMain", "vs_5_0");
+	ps = afCompileHLSL(shaderName, "PSMain", "ps_5_0");
+	if (flags & AFRS_PRIMITIVE_PATCHLIST)
+	{
+		hs = afCompileHLSL(shaderName, "HSMain", "hs_5_0");
+		ds = afCompileHLSL(shaderName, "DSMain", "ds_5_0");
+	}
 	ComPtr<ID3DBlob> rootSignatureBlob;
-	if (S_OK == D3DGetBlobPart(vertexShader->GetBufferPointer(), vertexShader->GetBufferSize(), D3D_BLOB_ROOT_SIGNATURE, 0, &rootSignatureBlob))
+	if (S_OK == D3DGetBlobPart(vs->GetBufferPointer(), vs->GetBufferSize(), D3D_BLOB_ROOT_SIGNATURE, 0, &rootSignatureBlob))
 	{
 		if (rootSignatureBlob)
 		{
@@ -275,8 +281,10 @@ ComPtr<ID3D12PipelineState> afCreatePSO(const char *shaderName, const InputEleme
 	psoDesc.BlendState.RenderTarget[0] = (flags & AFRS_ALPHA_BLEND) ? alphaBlend : solid;
 	psoDesc.InputLayout = { elements, (UINT)numElements };
 	psoDesc.pRootSignature = rootSignature.Get();
-	psoDesc.VS = { reinterpret_cast<UINT8*>(vertexShader->GetBufferPointer()), vertexShader->GetBufferSize() };
-	psoDesc.PS = { reinterpret_cast<UINT8*>(pixelShader->GetBufferPointer()), pixelShader->GetBufferSize() };
+	psoDesc.VS = { reinterpret_cast<UINT8*>(vs->GetBufferPointer()), vs->GetBufferSize() };
+	psoDesc.PS = { reinterpret_cast<UINT8*>(ps->GetBufferPointer()), ps->GetBufferSize() };
+	psoDesc.HS = hs ? D3D12_SHADER_BYTECODE({ reinterpret_cast<UINT8*>(hs->GetBufferPointer()), hs->GetBufferSize() }) : D3D12_SHADER_BYTECODE({});
+	psoDesc.DS = ds ? D3D12_SHADER_BYTECODE({ reinterpret_cast<UINT8*>(ds->GetBufferPointer()), ds->GetBufferSize() }) : D3D12_SHADER_BYTECODE({});
 	psoDesc.RasterizerState = { (flags & AFRS_WIREFRAME) ? D3D12_FILL_MODE_WIREFRAME : D3D12_FILL_MODE_SOLID, (flags & AFRS_CULL_CCW) ? D3D12_CULL_MODE_FRONT : (flags & AFRS_CULL_CW) ? D3D12_CULL_MODE_BACK : D3D12_CULL_MODE_NONE };
 	psoDesc.DepthStencilState = { !!(flags & (AFRS_DEPTH_ENABLE | AFRS_DEPTH_CLOSEREQUAL_READONLY)), D3D12_DEPTH_WRITE_MASK_ALL, (flags & AFRS_DEPTH_CLOSEREQUAL_READONLY) ? D3D12_COMPARISON_FUNC_LESS_EQUAL : D3D12_COMPARISON_FUNC_LESS };
 	psoDesc.SampleMask = UINT_MAX;
