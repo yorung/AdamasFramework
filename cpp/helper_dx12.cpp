@@ -183,7 +183,7 @@ ComPtr<ID3D12Resource> afCreateDynamicTexture(AFFormat format, const IVec2& size
 	textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
 
 	bool useClearValue = !!(flags & (AFTF_DSV | AFTF_RTV));
-	D3D12_CLEAR_VALUE clearValue = { format };
+	D3D12_CLEAR_VALUE clearValue = { afTypelessToDSVFormat(format) };
 	D3D12_RESOURCE_STATES resourceState = D3D12_RESOURCE_STATE_COMMON;
 	if (flags & AFTF_SRV)
 	{
@@ -432,7 +432,9 @@ void afSetRenderTarget(ComPtr<ID3D12Resource> color, ComPtr<ID3D12Resource> dept
 	}
 	if (depthStencil)
 	{
-		deviceMan.GetDevice()->CreateDepthStencilView(depthStencil.Get(), nullptr, dsvHandle);
+		const D3D12_RESOURCE_DESC resDesc = depthStencil->GetDesc();
+		const D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = { afTypelessToDSVFormat(resDesc.Format), D3D12_DSV_DIMENSION_TEXTURE2D };
+		deviceMan.GetDevice()->CreateDepthStencilView(depthStencil.Get(), &dsvDesc, dsvHandle);
 		if (flags & AFSRTF_CLEAR_DEPTH_STENCIL)
 		{
 			commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);

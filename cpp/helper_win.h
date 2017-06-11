@@ -23,6 +23,27 @@ inline D3D_PRIMITIVE_TOPOLOGY RenderFlagsToPrimitiveTopology(uint32_t flags)
 	return D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
 }
 
+
+inline DXGI_FORMAT afTypelessToDSVFormat(DXGI_FORMAT format)
+{
+	switch (format)
+	{
+	case DXGI_FORMAT_R32_TYPELESS:
+		return DXGI_FORMAT_D32_FLOAT;
+	}
+	return format;
+}
+
+inline DXGI_FORMAT afTypelessToSRVFormat(DXGI_FORMAT format)
+{
+	switch (format)
+	{
+	case DXGI_FORMAT_R32_TYPELESS:
+		return DXGI_FORMAT_R32_FLOAT;
+	}
+	return format;
+}
+
 typedef DXGI_FORMAT AFFormat;
 #define AFF_INVALID DXGI_FORMAT_UNKNOWN
 #define AFF_R8G8B8A8_UNORM DXGI_FORMAT_R8G8B8A8_UNORM

@@ -235,16 +235,6 @@ static D3D11_TEXTURE2D_DESC afGetTexture2DDesc(AFTexRef tex)
 	return desc;
 }
 
-inline DXGI_FORMAT TypelessToSRVFormat(DXGI_FORMAT format)
-{
-	switch (format)
-	{
-	case DXGI_FORMAT_R32_TYPELESS:
-		return DXGI_FORMAT_R32_FLOAT;
-	}
-	return format;
-}
-
 SRVID afCreateSRVFromTexture(AFTexRef tex)
 {
 	if (!tex)
@@ -255,16 +245,6 @@ SRVID afCreateSRVFromTexture(AFTexRef tex)
 	ComPtr<ID3D11ShaderResourceView> srv;
 	afHandleDXError(deviceMan11.GetDevice()->CreateShaderResourceView(tex.Get(), ToPtr(CD3D11_SHADER_RESOURCE_VIEW_DESC(desc.ArraySize == 6 ? D3D11_SRV_DIMENSION_TEXTURECUBE : D3D11_SRV_DIMENSION_TEXTURE2D, TypelessToSRVFormat(desc.Format), 0, desc.MipLevels)), &srv));
 	return srv;
-}
-
-inline DXGI_FORMAT TypelessToDSVFormat(DXGI_FORMAT format)
-{
-	switch(format)
-	{
-	case DXGI_FORMAT_R32_TYPELESS:
-		return DXGI_FORMAT_D32_FLOAT;
-	}
-	return format;
 }
 
 ComPtr<ID3D11DepthStencilView> afCreateDSVFromTexture(ComPtr<ID3D11Resource> tex)
