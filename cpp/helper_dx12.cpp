@@ -458,8 +458,7 @@ void AFRenderTarget::BeginRenderToThis()
 {
 	if (asDefault)
 	{
-		ComPtr<ID3D12Resource> rt = deviceMan.GetDefaultRenderTarget();
-		afSetRenderTarget(renderTarget, depthStencil, AFSRTF_CLEAR_ALL);
+		afSetRenderTarget(deviceMan.GetDefaultRenderTarget(), deviceMan.GetDefaultDepthStencil(), AFSRTF_CLEAR_ALL);
 		return;
 	}
 
