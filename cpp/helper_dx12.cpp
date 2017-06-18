@@ -5,6 +5,7 @@
 static const D3D12_HEAP_PROPERTIES defaultHeapProperties = { D3D12_HEAP_TYPE_DEFAULT, D3D12_CPU_PAGE_PROPERTY_UNKNOWN, D3D12_MEMORY_POOL_UNKNOWN, 1, 1 };
 static const D3D12_HEAP_PROPERTIES uploadHeapProperties = { D3D12_HEAP_TYPE_UPLOAD, D3D12_CPU_PAGE_PROPERTY_UNKNOWN, D3D12_MEMORY_POOL_UNKNOWN, 1, 1 };
 static const float clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+static const D3D12_RESOURCE_STATES TEXTURE_STATE = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE | D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE;
 
 void afTransition(ID3D12GraphicsCommandList* cmd, ComPtr<ID3D12Resource> res, D3D12_RESOURCE_STATES from, D3D12_RESOURCE_STATES to)
 {
@@ -135,8 +136,8 @@ void afWriteTexture(SRVID tex, const TexDesc& desc, int mipCount, const AFTexSub
 	assert(ptr);
 	for (UINT i = 0; i < subResources; i++)
 	{
-		transitions1[i] = { D3D12_RESOURCE_BARRIER_TYPE_TRANSITION, D3D12_RESOURCE_BARRIER_FLAG_NONE,{ tex.Get(), i, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_COPY_DEST } };
-		transitions2[i] = { D3D12_RESOURCE_BARRIER_TYPE_TRANSITION, D3D12_RESOURCE_BARRIER_FLAG_NONE,{ tex.Get(), i, D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE } };
+		transitions1[i] = { D3D12_RESOURCE_BARRIER_TYPE_TRANSITION, D3D12_RESOURCE_BARRIER_FLAG_NONE,{ tex.Get(), i, TEXTURE_STATE, D3D12_RESOURCE_STATE_COPY_DEST } };
+		transitions2[i] = { D3D12_RESOURCE_BARRIER_TYPE_TRANSITION, D3D12_RESOURCE_BARRIER_FLAG_NONE,{ tex.Get(), i, D3D12_RESOURCE_STATE_COPY_DEST, TEXTURE_STATE } };
 	}
 	ID3D12GraphicsCommandList* list = deviceMan.GetCommandList();
 	list->ResourceBarrier(subResources, transitions1);
@@ -193,7 +194,7 @@ ComPtr<ID3D12Resource> afCreateDynamicTexture(AFFormat format, const IVec2& size
 	D3D12_RESOURCE_STATES resourceState = D3D12_RESOURCE_STATE_COMMON;
 	if (flags & AFTF_SRV)
 	{
-		resourceState = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+		resourceState = TEXTURE_STATE;
 	}
 	if (flags & AFTF_DSV)
 	{
@@ -217,7 +218,7 @@ SRVID afCreateTexture2D(AFFormat format, const struct TexDesc& desc, int mipCoun
 {
 	D3D12_RESOURCE_DESC resourceDesc = { D3D12_RESOURCE_DIMENSION_TEXTURE2D, 0, (UINT64)desc.size.x, (UINT)desc.size.y, (UINT16)desc.arraySize, (UINT16)mipCount, format, {1, 0} };
 	SRVID tex;
-	afHandleDXError(deviceMan.GetDevice()->CreateCommittedResource(&defaultHeapProperties, D3D12_HEAP_FLAG_NONE, &resourceDesc, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, nullptr, IID_PPV_ARGS(&tex)));
+	afHandleDXError(deviceMan.GetDevice()->CreateCommittedResource(&defaultHeapProperties, D3D12_HEAP_FLAG_NONE, &resourceDesc, TEXTURE_STATE, nullptr, IID_PPV_ARGS(&tex)));
 	afWriteTexture(tex, desc, mipCount, datas);
 	return tex;
 }
@@ -483,11 +484,11 @@ void AFRenderTarget::BeginRenderToThis()
 
 ComPtr<ID3D12Resource> AFRenderTarget::GetTexture()
 {
-	if (currentState != D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE)
+	if (currentState != TEXTURE_STATE)
 	{
 		ID3D12GraphicsCommandList* commandList = deviceMan.GetCommandList();
-		afTransition(commandList, renderTarget, currentState, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-		currentState = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+		afTransition(commandList, renderTarget, currentState, TEXTURE_STATE);
+		currentState = TEXTURE_STATE;
 	}
 
 	return renderTarget;
