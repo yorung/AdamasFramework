@@ -242,6 +242,7 @@ void DeviceManDX12::Create(HWND hWnd)
 	}
 
 	depthStencil = afCreateDynamicTexture(AFF_D24_UNORM_S8_UINT, IVec2((int)sd.BufferDesc.Width, (int)sd.BufferDesc.Height), AFTF_DSV);
+	afSetTextureName(depthStencil, "default depth stencil");
 	device->CreateDescriptorHeap(ToPtr<D3D12_DESCRIPTOR_HEAP_DESC>({ D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1 }), IID_PPV_ARGS(&dsvHeap));
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = dsvHeap->GetCPUDescriptorHandleForHeapStart();
 	device->CreateDepthStencilView(depthStencil.Get(), nullptr, dsvHandle);
