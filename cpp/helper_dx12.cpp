@@ -296,8 +296,8 @@ ComPtr<ID3D12PipelineState> afCreatePSO(const char *shaderName, const InputEleme
 	psoDesc.SampleMask = UINT_MAX;
 	psoDesc.PrimitiveTopologyType = ToD3D12PrimitiveTopologyType(RenderFlagsToPrimitiveTopology(flags));
 	psoDesc.NumRenderTargets = 1;
-	psoDesc.RTVFormats[0] = (flags & AFRS_OFFSCREEN_RENDER_TARGET_R16G16B16A16_FLOAT) ? DXGI_FORMAT_R16G16B16A16_FLOAT : DXGI_FORMAT_R8G8B8A8_UNORM;
-	psoDesc.DSVFormat = (flags & AFRS_DEPTH_STENCIL_D32_FLOAT) ? DXGI_FORMAT_D32_FLOAT : DXGI_FORMAT_D24_UNORM_S8_UINT;
+	psoDesc.RTVFormats[0] = afRenderFlagsToRTVFormat(flags);
+	psoDesc.DSVFormat = afRenderFlagsToDSVFormat(flags);
 	psoDesc.SampleDesc.Count = 1;
 	ComPtr<ID3D12PipelineState> pso;
 	assert(psoDesc.pRootSignature);

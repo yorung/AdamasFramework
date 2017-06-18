@@ -23,6 +23,27 @@ inline D3D_PRIMITIVE_TOPOLOGY RenderFlagsToPrimitiveTopology(uint32_t flags)
 	return D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
 }
 
+inline DXGI_FORMAT afRenderFlagsToRTVFormat(uint32_t flags)
+{
+	if (flags & AFRS_OFFSCREEN_RENDER_TARGET_R16G16B16A16_FLOAT)
+	{
+		return DXGI_FORMAT_R16G16B16A16_FLOAT;
+	}
+	else if (flags & AFRS_OFFSCREEN_RENDER_TARGET_R32_FLOAT)
+	{
+		return DXGI_FORMAT_R32_FLOAT;
+	}
+	return DXGI_FORMAT_R8G8B8A8_UNORM;
+}
+
+inline DXGI_FORMAT afRenderFlagsToDSVFormat(uint32_t flags)
+{
+	if (flags & AFRS_DEPTH_STENCIL_D32_FLOAT)
+	{
+		return DXGI_FORMAT_D32_FLOAT;
+	}
+	return DXGI_FORMAT_D24_UNORM_S8_UINT;
+}
 
 inline DXGI_FORMAT afTypelessToDSVFormat(DXGI_FORMAT format)
 {
