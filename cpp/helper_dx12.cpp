@@ -459,7 +459,7 @@ void afSetRenderTarget(ComPtr<ID3D12Resource> color, ComPtr<ID3D12Resource> dept
 		}
 	}
 	IVec2 size = afGetTextureSize(color ? color : depthStencil);
-	commandList->OMSetRenderTargets(1, color ? &rtvHandle : nullptr, FALSE, depthStencil ? &dsvHandle : nullptr);
+	commandList->OMSetRenderTargets(color ? 1 : 0, &rtvHandle, FALSE, depthStencil ? &dsvHandle : nullptr);
 	commandList->RSSetViewports(1, ToPtr<D3D12_VIEWPORT>({ 0.f, 0.f, (float)size.x, (float)size.y, 0.f, 1.f }));
 	commandList->RSSetScissorRects(1, ToPtr<D3D12_RECT>({ 0, 0, (LONG)size.x, (LONG)size.y }));
 }
