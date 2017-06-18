@@ -349,15 +349,14 @@ static void AssignSRV(D3D12_CPU_DESCRIPTOR_HANDLE ptr , ComPtr<ID3D12Resource> r
 	deviceMan.GetDevice()->CreateShaderResourceView(res.Get(), &srvDesc, ptr);
 }
 
-void afBindTexture(SRVID srv, int rootParameterIndex)
+void afBindTextures(int numResources, ComPtr<ID3D12Resource> resources[], int rootParameterIndex)
 {
-	if (!srv)
-	{
-		return;
-	}
 	AFHeapStackAllocator& heap = deviceMan.GetFrameSRVHeap();
-	int descriptorHeapIndex = heap.AssignDescriptorHeap(1);
-	AssignSRV(heap.GetCPUAddress(descriptorHeapIndex), srv);
+	int descriptorHeapIndex = heap.AssignDescriptorHeap(numResources);
+	for (int i = 0; i < numResources; i++)
+	{
+		AssignSRV(heap.GetCPUAddress(descriptorHeapIndex + i), resources[i]);
+	}
 	ID3D12GraphicsCommandList* commandList = deviceMan.GetCommandList();
 	commandList->SetGraphicsRootDescriptorTable(rootParameterIndex, heap.GetGPUAddress(descriptorHeapIndex));
 }

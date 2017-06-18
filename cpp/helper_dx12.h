@@ -115,7 +115,7 @@ public:
 
 void afBindBuffer(int size, const void* buf, int rootParameterIndex);
 void afBindBuffer(UBOID ubo, int rootParameterIndex);
-void afBindTexture(SRVID srv, int rootParameterIndex);
+void afBindTextures(int numResources, ComPtr<ID3D12Resource> resources[], int rootParameterIndex);
 
 class AFCommandList
 {
@@ -124,9 +124,14 @@ public:
 	{
 		rs.Apply();
 	}
-	void SetTexture(SRVID texId, int descritorSetIndex)
+	void SetTexture(ComPtr<ID3D12Resource> texture, int descritorSetIndex)
 	{
-		afBindTexture(texId, descritorSetIndex);
+		if (!texture)
+		{
+			return;
+		}
+		ComPtr<ID3D12Resource> asArray[] = {texture};
+		afBindTextures(1, asArray, descritorSetIndex);
 	}
 	void SetBuffer(int size, const void* buf, int descritorSetIndex)
 	{
