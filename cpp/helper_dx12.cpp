@@ -433,6 +433,7 @@ void AFRenderTarget::Init(IVec2 size, AFFormat colorFormat, AFFormat depthStenci
 void AFRenderTarget::Destroy()
 {
 	renderTarget.Reset();
+	depthStencil.Reset();
 }
 
 void afSetRenderTarget(ComPtr<ID3D12Resource> color, ComPtr<ID3D12Resource> depthStencil, uint32_t flags)
