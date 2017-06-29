@@ -20,8 +20,8 @@ typedef ComPtr<ID3D12Resource> VBOID;
 typedef ComPtr<ID3D12Resource> UBOID;
 typedef ComPtr<ID3D12Resource> SRVID;
 typedef SRVID AFTexRef;
-inline void afSafeDeleteBuffer(ComPtr<ID3D12Resource>& p) { p.Reset(); }
-inline void afSafeDeleteTexture(SRVID& p) { p.Reset(); }
+void afSafeDeleteBuffer(ComPtr<ID3D12Resource>& p);
+void afSafeDeleteTexture(SRVID& p);
 
 void afTransition(ID3D12GraphicsCommandList* cmd, ComPtr<ID3D12Resource> res, D3D12_RESOURCE_STATES from, D3D12_RESOURCE_STATES to);
 void afSetVertexBuffer(VBOID id, int stride);
@@ -90,11 +90,7 @@ public:
 		pipelineState = afCreatePSO(shaderName, inputElements, numInputElements, flags, rootSignature);
 	}
 	void Apply() const;
-	void Destroy()
-	{
-		pipelineState.Reset();
-		rootSignature.Reset();
-	}
+	void Destroy();
 };
 
 class AFRenderTarget
