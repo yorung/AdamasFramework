@@ -1,5 +1,7 @@
 class App
 {
+	AFRenderTarget appRenderTarget;
+	AFRenderStates copyPSO;
 	MeshMan::MMID meshId;
 public:
 	App();

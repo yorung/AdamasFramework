@@ -26,10 +26,6 @@ void App::Draw()
 	afDepthStencilMode(AFRS_DEPTH_ENABLE);	// This needed to clear depth stencil buffer
 #endif
 
-	AFRenderTarget rtDefault;
-	rtDefault.InitForDefaultRenderTarget();
-	rtDefault.BeginRenderToThis();
-
 	IVec2 scrSize = systemMisc.GetScreenSize();
 	float f = 1000;
 	float n = 1;
@@ -49,19 +45,31 @@ void App::Draw()
 	}
 	*/
 	AFCommandList& cmd = afGetCommandList();
-	moduleManager.Draw3DAll(cmd);
+
+	appRenderTarget.BeginRenderToThis();
+	moduleManager.Draw3DAll(cmd, appRenderTarget);
 	luaMan.Draw3D();
 	meshRenderer.Flush();
 	skyMan.Draw(cmd);
+	moduleManager.Draw2DAll(cmd, appRenderTarget);
+	appRenderTarget.EndRenderToThis();
+
+	AFRenderTarget rtDefault;
+	rtDefault.InitForDefaultRenderTarget();
+	rtDefault.BeginRenderToThis();
+	copyPSO.Apply();
+	cmd.SetTexture(appRenderTarget.GetTexture(), 0);
+	cmd.Draw(4);
 	luaMan.Draw2D(cmd);
-	moduleManager.Draw2DAll(cmd);
 	fontMan.Draw(cmd, systemMisc.GetScreenSize());
+	rtDefault.EndRenderToThis();
 }
 
 void App::Create()
 {
 #ifdef _MSC_VER
 	GoMyDir();
+//	SetCurrentDirectoryA("D:\\bitbucket\\Janken\\Program\\pack\\assets");
 #endif
 #ifdef GL_TRUE
 	glClearColor(0.0f, 0.0f, 0.5f, 1.0f);
@@ -71,8 +79,9 @@ void App::Create()
 	fontMan.Create();
 	spriteRenderer.Create();
 	stockObjects.Create();
-
 	luaMan.Create();
+	appRenderTarget.Init(systemMisc.GetScreenSize(), AFF_R8G8B8A8_UNORM, AFF_D24_UNORM_S8_UINT);
+	copyPSO.Create("copy_rgba", 0, nullptr, 0, 0, nullptr);
 }
 
 void App::LoadMesh(const char* fileName)
@@ -102,6 +111,8 @@ void App::Destroy()
 	skyMan.Destroy();
 	glow.Destroy();
 	letterBox.Destroy();
+	appRenderTarget.Destroy();
+	copyPSO.Destroy();
 	ClearMenu();
 	meshId = MeshMan::INVALID_MMID;
 }

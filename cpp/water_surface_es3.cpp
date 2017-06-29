@@ -34,7 +34,7 @@ public:
 	WaterSurfaceES3();
 	~WaterSurfaceES3();
 	void Update() override;
-	void Draw2D(AFCommandList& cmd) override;
+	void Draw2D(AFCommandList& cmd, AFRenderTarget& rt) override;
 };
 
 
@@ -256,7 +256,7 @@ void WaterSurfaceES3::RenderWater(AFCommandList& cmd, const UniformBuffer& hmub)
 #endif
 }
 
-void WaterSurfaceES3::Draw2D(AFCommandList& cmd)
+void WaterSurfaceES3::Draw2D(AFCommandList& cmd, AFRenderTarget& rt)
 {
 	UpdateTime();
 
@@ -328,7 +328,5 @@ void WaterSurfaceES3::Draw2D(AFCommandList& cmd)
 		break;
 	}
 
-	AFRenderTarget rt;
-	rt.InitForDefaultRenderTarget();
 	letterBox.Draw(cmd, rt, srcTex);
 }

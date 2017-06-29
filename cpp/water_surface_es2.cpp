@@ -46,7 +46,7 @@ public:
 	void Destroy();
 	void Init();
 	void Update() override;
-	void Draw2D(AFCommandList& cmd) override;
+	void Draw2D(AFCommandList& cmd, AFRenderTarget& rt) override;
 };
 
 static const char* waterSurfaceClassName = "WaterSurfaceES2";
@@ -283,7 +283,7 @@ void WaterSurfaceES2::Update()
 	uboBuf.time = (float)modf(elapsedTime * (1.0f / loopTime), &dummy) * loopTime;
 }
 
-void WaterSurfaceES2::Draw2D(AFCommandList& cmd)
+void WaterSurfaceES2::Draw2D(AFCommandList& cmd, AFRenderTarget& rt)
 {
 	UpdateRipple();
 
@@ -301,9 +301,7 @@ void WaterSurfaceES2::Draw2D(AFCommandList& cmd)
 	cmd.DrawIndexed(nIndi);
 	rtWater.EndRenderToThis();
 
-	AFRenderTarget rtDefault;
-	rtDefault.InitForDefaultRenderTarget();
-	rtDefault.BeginRenderToThis();
+	rt.BeginRenderToThis();
 
 	cmd.SetRenderStates(renderStatesPostProcess);
 	cmd.SetTexture(rtWater.GetTexture(), 0);
