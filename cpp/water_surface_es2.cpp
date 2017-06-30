@@ -301,7 +301,11 @@ void WaterSurfaceES2::Draw2D(AFCommandList& cmd, AFRenderTarget& rt)
 	cmd.DrawIndexed(nIndi);
 	rtWater.EndRenderToThis();
 
+#ifdef AF_VULKAN
+	rt.BeginRenderToThis(true);
+#else
 	rt.BeginRenderToThis();
+#endif
 
 	cmd.SetRenderStates(renderStatesPostProcess);
 	cmd.SetTexture(rtWater.GetTexture(), 0);
