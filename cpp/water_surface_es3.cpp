@@ -115,6 +115,10 @@ void WaterSurfaceES3::Destroy()
 		it.Destroy();
 	}
 	normalMap.Destroy();
+
+	renderStateHeightMap.Destroy();
+	renderStateNormalMap.Destroy();
+	renderStateWaterLastPass.Destroy();
 }
 
 void WaterSurfaceES3::Init()

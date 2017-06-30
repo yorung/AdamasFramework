@@ -81,6 +81,7 @@ class AFRenderStates
 	ComPtr<ID3D12PipelineState> pipelineState;
 	D3D_PRIMITIVE_TOPOLOGY primitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
 public:
+	~AFRenderStates() { Destroy(); }
 	bool IsReady() { return !!pipelineState; }
 	void Create(const char* shaderName, int numInputElements, const InputElement* inputElements, uint32_t flags, int numSamplerTypes_ = 0, const SamplerType samplerTypes_[] = nullptr)
 	{
