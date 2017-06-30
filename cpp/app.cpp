@@ -52,6 +52,7 @@ void App::Draw()
 	meshRenderer.Flush();
 	skyMan.Draw(cmd);
 	moduleManager.Draw2DAll(cmd, appRenderTarget);
+	luaMan.Draw2D(cmd);
 	appRenderTarget.EndRenderToThis();
 
 	AFRenderTarget rtDefault;
@@ -60,7 +61,6 @@ void App::Draw()
 	copyPSO.Apply();
 	cmd.SetTexture(appRenderTarget.GetTexture(), 0);
 	cmd.Draw(4);
-	luaMan.Draw2D(cmd);
 	fontMan.Draw(cmd, systemMisc.GetScreenSize());
 	rtDefault.EndRenderToThis();
 }
@@ -81,7 +81,11 @@ void App::Create()
 	stockObjects.Create();
 	luaMan.Create();
 	appRenderTarget.Init(systemMisc.GetScreenSize(), AFF_R8G8B8A8_UNORM, AFF_D24_UNORM_S8_UINT);
+#if defined(AF_GLES) || defined(AF_VULKAN)
+	copyPSO.Create("glow_copy", 0, nullptr, 0, 0, nullptr);
+#else
 	copyPSO.Create("copy_rgba", 0, nullptr, 0, 0, nullptr);
+#endif
 }
 
 void App::LoadMesh(const char* fileName)

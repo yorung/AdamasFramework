@@ -16,7 +16,7 @@ void SkyMan::Create(const char *texFileName, const char* shader)
 	texRef = afLoadTexture(texFileName, texDesc);
 	int numElements = 0;
 	const InputElement* elements = stockObjects.GetFullScreenInputElements(numElements);
-	renderStates.Create(shader, numElements, elements, AFRS_DEPTH_CLOSEREQUAL_READONLY, arrayparam(samplers));
+	renderStates.Create(shader, numElements, elements, AFRS_DEPTH_CLOSEREQUAL_READONLY | AFRS_OFFSCREEN_RENDER_TARGET_B8G8R8A8_UNORM, arrayparam(samplers));
 }
 
 void SkyMan::Draw(AFCommandList& cmd)

@@ -49,8 +49,8 @@ public:
 
 Picking::Picking()
 {
-	polygonRenderStates.Create("solid", arrayparam(elements), AFRS_DEPTH_ENABLE | AFRS_WIREFRAME);
-	lineRenderStates.Create("solid", arrayparam(elements), AFRS_DEPTH_ENABLE | AFRS_PRIMITIVE_LINELIST);
+	polygonRenderStates.Create("solid", arrayparam(elements), AFRS_DEPTH_ENABLE | AFRS_WIREFRAME | AFRS_OFFSCREEN_RENDER_TARGET_B8G8R8A8_UNORM);
+	lineRenderStates.Create("solid", arrayparam(elements), AFRS_DEPTH_ENABLE | AFRS_PRIMITIVE_LINELIST | AFRS_OFFSCREEN_RENDER_TARGET_B8G8R8A8_UNORM);
 }
 
 void ScreenPosToRay(const Vec2& scrPos, Vec3& nearPos, Vec3& farPos)

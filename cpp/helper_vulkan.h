@@ -19,6 +19,7 @@ typedef VkFormat AFFormat;
 #define AFF_R32_FLOAT VK_FORMAT_R32_SFLOAT
 #define AFF_R32_UINT VK_FORMAT_R32_UINT
 #define AFF_R32_TYPELESS VK_FORMAT_R32_SFLOAT
+#define AFF_D24_UNORM_S8_UINT VK_FORMAT_D24_UNORM_S8_UINT
 
 typedef VkVertexInputAttributeDescription InputElement;
 class CInputElement : public InputElement
