@@ -6,7 +6,6 @@ class DeviceMan11
 	ComPtr<IDXGISwapChain> pSwapChain;
 	ComPtr<ID3D11DeviceContext> pImmediateContext;
 	ComPtr<ID3D11Texture2D> renderTarget;
-	ComPtr<ID3D11Texture2D> depthStencil;
 public:
 	~DeviceMan11();
 
@@ -18,7 +17,6 @@ public:
 	ID3D11Device* GetDevice() { return pDevice; }
 	ID3D11DeviceContext* GetContext() { return pImmediateContext.Get(); }
 	ComPtr<ID3D11Texture2D>	GetDefaultRenderTarget() { return renderTarget.Get(); }
-	ComPtr<ID3D11Texture2D> GetDefaultDepthStencil() { return depthStencil.Get(); }
 };
 
 extern DeviceMan11 deviceMan11;

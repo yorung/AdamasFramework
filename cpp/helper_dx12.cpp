@@ -484,7 +484,7 @@ void AFRenderTarget::BeginRenderToThis()
 {
 	if (asDefault)
 	{
-		afSetRenderTarget(deviceMan.GetDefaultRenderTarget(), deviceMan.GetDefaultDepthStencil(), AFSRTF_CLEAR_ALL);
+		afSetRenderTarget(deviceMan.GetDefaultRenderTarget(), nullptr, AFSRTF_CLEAR_ALL);
 		return;
 	}
 
