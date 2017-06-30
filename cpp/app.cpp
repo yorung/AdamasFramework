@@ -58,7 +58,7 @@ void App::Draw()
 	AFRenderTarget rtDefault;
 	rtDefault.InitForDefaultRenderTarget();
 	rtDefault.BeginRenderToThis();
-	copyPSO.Apply();
+	cmd.SetRenderStates(copyPSO);
 	cmd.SetTexture(appRenderTarget.GetTexture(), 0);
 	cmd.Draw(4);
 	fontMan.Draw(cmd, systemMisc.GetScreenSize());
