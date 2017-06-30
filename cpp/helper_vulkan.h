@@ -141,7 +141,7 @@ public:
 
 class AFRenderTarget
 {
-	VkFramebuffer framebuffer = 0;
+	VkFramebuffer framebuffer = 0, framebufferNoDepth = 0;
 	TextureContext renderTarget;
 	TextureContext depthStencil;
 	bool asDefault = false;

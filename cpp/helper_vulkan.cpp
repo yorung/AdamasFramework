@@ -807,20 +807,22 @@ void AFRenderTarget::Init(IVec2 size, AFFormat colorFormat, AFFormat depthStenci
 	}
 	case AFF_INVALID:
 	{
-		const VkImageView frameBufferAttachmentImageView[] = { renderTarget.view };
-		const VkFramebufferCreateInfo framebufferInfo = { VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO, nullptr, 0, VkFormatToRenderPassForOffScreenRenderTarget(colorFormat, depthStencilFormat), arrayparam(frameBufferAttachmentImageView), (uint32_t)size.x, (uint32_t)size.y, 1 };
-		afHandleVKError(vkCreateFramebuffer(device, &framebufferInfo, nullptr, &framebuffer));
 		break;
 	}
 	default:
 		assert(0);
 	}
+	const VkImageView frameBufferAttachmentImageView1[] = { renderTarget.view };
+	const VkFramebufferCreateInfo framebufferInfo1 = { VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO, nullptr, 0, VkFormatToRenderPassForOffScreenRenderTarget(colorFormat, VK_FORMAT_UNDEFINED), arrayparam(frameBufferAttachmentImageView1), (uint32_t)size.x, (uint32_t)size.y, 1 };
+	afHandleVKError(vkCreateFramebuffer(device, &framebufferInfo1, nullptr, &framebufferNoDepth));
+
 }
 
 void AFRenderTarget::Destroy()
 {
 	VkDevice device = deviceMan.GetDevice();
 	afSafeDeleteVk(vkDestroyFramebuffer, device, framebuffer);
+	afSafeDeleteVk(vkDestroyFramebuffer, device, framebufferNoDepth);
 	afSafeDeleteTexture(renderTarget);
 	afSafeDeleteTexture(depthStencil);
 }
@@ -842,7 +844,14 @@ void AFRenderTarget::BeginRenderToThis(bool dontUseDepth)
 		const VkImageMemoryBarrier srvToRtv = { VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER, nullptr, VK_ACCESS_SHADER_READ_BIT, VK_ACCESS_COLOR_ATTACHMENT_READ_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, renderTarget.image,{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1u } };
 		vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0, 0, nullptr, 0, nullptr, 1, &srvToRtv);
 	}
-	deviceMan.BeginRenderPass(VkFormatToRenderPassForOffScreenRenderTarget(renderTarget.format, dontUseDepth ? VK_FORMAT_UNDEFINED : depthStencil.format), framebuffer, renderTarget.texDesc.size, depthStencil.format != VK_FORMAT_UNDEFINED);
+	if (dontUseDepth || VK_FORMAT_UNDEFINED == depthStencil.format)
+	{
+		deviceMan.BeginRenderPass(VkFormatToRenderPassForOffScreenRenderTarget(renderTarget.format, VK_FORMAT_UNDEFINED), framebufferNoDepth, renderTarget.texDesc.size, false);
+	}
+	else
+	{
+		deviceMan.BeginRenderPass(VkFormatToRenderPassForOffScreenRenderTarget(renderTarget.format, depthStencil.format), framebuffer, renderTarget.texDesc.size, true);
+	}
 }
 
 void AFRenderTarget::EndRenderToThis()
