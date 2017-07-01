@@ -59,6 +59,7 @@ void App::Draw()
 	rtDefault.InitForDefaultRenderTarget();
 	rtDefault.BeginRenderToThis();
 	cmd.SetRenderStates(copyPSO);
+	stockObjects.ApplyFullScreenVertexBuffer(cmd);
 	cmd.SetTexture(appRenderTarget.GetTexture(), 0);
 	cmd.Draw(4);
 	fontMan.Draw(cmd, systemMisc.GetScreenSize());
@@ -82,7 +83,9 @@ void App::Create()
 	luaMan.Create();
 	appRenderTarget.Init(systemMisc.GetScreenSize(), AFF_R8G8B8A8_UNORM, AFF_D24_UNORM_S8_UINT);
 #if defined(AF_GLES) || defined(AF_VULKAN)
-	copyPSO.Create("glow_copy", 0, nullptr, 0, 0, nullptr);
+	int numElements = 0;
+	const InputElement* elements = stockObjects.GetFullScreenInputElements(numElements);
+	copyPSO.Create("glow_copy", numElements, elements, 0, 0, nullptr);
 #else
 	copyPSO.Create("copy_rgba", 0, nullptr, 0, 0, nullptr);
 #endif
