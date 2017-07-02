@@ -32,7 +32,7 @@ void SpriteRenderer::Create()
 		AF_INPUT_ELEMENT(2, "TEXCOORD", AFF_R32G32_FLOAT, 16),
 	};
 	const static SamplerType samplers[] = { AFST_LINEAR_CLAMP };
-	renderStates.Create("sprite", arrayparam(layout), AFRS_ALPHA_BLEND | AFRS_PRIMITIVE_TRIANGLELIST | AFRS_OFFSCREEN_RENDER_TARGET_R8G8B8A8_UNORM, arrayparam(samplers));
+	renderStates.Create("sprite", arrayparam(layout), AFRS_ALPHA_BLEND | AFRS_PRIMITIVE_TRIANGLELIST | AFRS_OFFSCREEN_RENDER_TARGET_R8G8B8A8_UNORM | AFRS_DEPTH_STENCIL_D24_UNORM_S8_UINT, arrayparam(samplers));
 	quadListVertexBuffer.Create(sizeof(SpriteVertex), MAX_SPRITES_IN_ONE_DRAW_CALL);
 }
 

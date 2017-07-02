@@ -361,7 +361,15 @@ static VkPrimitiveTopology RenderFlagsToPrimitiveTopology(uint32_t flags)
 
 static AFFormat RenderFlagsToDSFormat(uint32_t flags)
 {
-	return (flags & (AFRS_DEPTH_CLOSEREQUAL_READONLY | AFRS_DEPTH_ENABLE)) ? AFF_D24_UNORM_S8_UINT : AFF_INVALID;
+	if (flags & AFRS_DEPTH_STENCIL_D24_UNORM_S8_UINT)
+	{
+		return AFF_D24_UNORM_S8_UINT;
+	}
+	if (flags & AFRS_DEPTH_STENCIL_D32_FLOAT)
+	{
+		return AFF_D32_FLOAT;
+	}
+	return AFF_INVALID;
 }
 
 static AFFormat RenderFlagsToRTFormat(uint32_t flags)
