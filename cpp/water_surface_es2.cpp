@@ -46,7 +46,7 @@ public:
 	void Destroy();
 	void Init();
 	void Update() override;
-	void Draw2D(AFCommandList& cmd) override;
+	void Draw2D(AFCommandList& cmd, AFRenderTarget& rt) override;
 };
 
 static const char* waterSurfaceClassName = "WaterSurfaceES2";
@@ -219,16 +219,16 @@ void WaterSurfaceES2::Init()
 
 	vbo = afCreateDynamicVertexBuffer(vert.size() * sizeof(WaterVert));
 	ibo = afCreateTiledPlaneIBO(tileMax, &nIndi);
-	renderStatesWater.Create("water_es2", arrayparam(elements), AFRS_OFFSCREEN_RENDER_TARGET_B8G8R8A8_UNORM, arrayparam(samplers));
+	renderStatesWater.Create("water_es2", arrayparam(elements), AFRS_OFFSCREEN_RENDER_TARGET_R8G8B8A8_UNORM, arrayparam(samplers));
 
 //	const char* shaderName = "vivid";
 	const char* shaderName = "letterbox";
 #ifdef AF_DX12
-	renderStatesPostProcess.Create(shaderName, 0, nullptr, AFRS_NONE, arrayparam(samplers));
+	renderStatesPostProcess.Create(shaderName, 0, nullptr, AFRS_NONE | AFRS_OFFSCREEN_RENDER_TARGET_R8G8B8A8_UNORM | AFRS_DEPTH_STENCIL_D24_UNORM_S8_UINT, arrayparam(samplers));
 #else
 	int numElements = 0;
 	const InputElement* fullScreenElements = stockObjects.GetFullScreenInputElements(numElements);
-	renderStatesPostProcess.Create(shaderName, numElements, fullScreenElements, AFRS_NONE, arrayparam(samplers));
+	renderStatesPostProcess.Create(shaderName, numElements, fullScreenElements, AFRS_NONE | AFRS_OFFSCREEN_RENDER_TARGET_R8G8B8A8_UNORM | AFRS_DEPTH_STENCIL_D24_UNORM_S8_UINT, arrayparam(samplers));
 #endif
 
 	texIds.resize(dimof(texFiles));
@@ -283,7 +283,7 @@ void WaterSurfaceES2::Update()
 	uboBuf.time = (float)modf(elapsedTime * (1.0f / loopTime), &dummy) * loopTime;
 }
 
-void WaterSurfaceES2::Draw2D(AFCommandList& cmd)
+void WaterSurfaceES2::Draw2D(AFCommandList& cmd, AFRenderTarget& rt)
 {
 	UpdateRipple();
 
@@ -301,10 +301,7 @@ void WaterSurfaceES2::Draw2D(AFCommandList& cmd)
 	cmd.DrawIndexed(nIndi);
 	rtWater.EndRenderToThis();
 
-	AFRenderTarget rtDefault;
-	rtDefault.InitForDefaultRenderTarget();
-	rtDefault.BeginRenderToThis();
-
+	rt.BeginRenderToThis();
 	cmd.SetRenderStates(renderStatesPostProcess);
 	cmd.SetTexture(rtWater.GetTexture(), 0);
 #ifdef AF_GLES

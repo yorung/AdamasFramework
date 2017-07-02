@@ -19,6 +19,7 @@ typedef VkFormat AFFormat;
 #define AFF_R32_FLOAT VK_FORMAT_R32_SFLOAT
 #define AFF_R32_UINT VK_FORMAT_R32_UINT
 #define AFF_R32_TYPELESS VK_FORMAT_R32_SFLOAT
+#define AFF_D24_UNORM_S8_UINT VK_FORMAT_D24_UNORM_S8_UINT
 
 typedef VkVertexInputAttributeDescription InputElement;
 class CInputElement : public InputElement
@@ -142,6 +143,7 @@ class AFRenderTarget
 {
 	VkFramebuffer framebuffer = 0;
 	TextureContext renderTarget;
+	TextureContext depthStencil;
 	bool asDefault = false;
 	bool currentStateIsRtv = false;
 public:
@@ -176,7 +178,6 @@ class DeviceManVK
 	VkImage swapChainImages[8] = {};
 	VkImageView imageViews[8] = {};
 	VkFramebuffer framebuffers[8] = {};
-	TextureContext depthStencil;
 	VkSemaphore semaphore = 0;
 	VkCommandPool commandPool = 0;
 	VkPipelineCache pipelineCache = 0;
@@ -184,7 +185,7 @@ class DeviceManVK
 	RECT rc = {};
 	bool inRenderPass = false;
 public:
-	VkRenderPass primaryRenderPass = 0, offscreen32BPPRenderPass = 0, offscreenHalfFloatRenderPass = 0;
+	VkRenderPass primaryRenderPass = 0, offscreenR8G8B8A8D24S8RenderPass = 0, offscreenR16G16B16A16D24S8RenderPass = 0, offscreenR8G8B8A8RenderPass = 0, offscreenR16G16B16A16RenderPass = 0;
 	VkPhysicalDeviceMemoryProperties physicalDeviceMemoryProperties;
 	VkPhysicalDevice physicalDevice = nullptr;
 	VkDevice GetDevice() { return device; }
@@ -197,11 +198,10 @@ public:
 	VkDescriptorSetLayout commonTextureDescriptorSetLayout = 0;
 	VkDescriptorSet commonUboDescriptorSet = 0;
 	VkSampler sampler = 0;
-	TextureContext& GetDepthStencil() { return depthStencil; }
 	void Create(HWND hWnd);
 	void Present();
 	void Destroy();
-	void BeginRenderPass(VkRenderPass nextRenderPass, VkFramebuffer nextFramebuffer, IVec2 size);
+	void BeginRenderPass(VkRenderPass nextRenderPass, VkFramebuffer nextFramebuffer, IVec2 size, bool needDepth);
 	void BeginRenderPassToCurrentBackBuffer();
 	void EndRenderPass();
 	void Flush();

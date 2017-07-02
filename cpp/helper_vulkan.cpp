@@ -7,7 +7,7 @@ static const uint32_t descriptorPoolSize = 64;
 
 static const VkComponentMapping colorComponentMapping = { VK_COMPONENT_SWIZZLE_R, VK_COMPONENT_SWIZZLE_G, VK_COMPONENT_SWIZZLE_B, VK_COMPONENT_SWIZZLE_A };
 static const VkComponentMapping depthComponentMapping = {};
-static const VkClearValue clearValues[2] = { { 0.2f, 0.5f, 0.5f },{ 1.0f, 0u } };
+static const VkClearValue clearValues[2] = { { 0.0f, 0.0f, 0.0f },{ 1.0f, 0u } };
 
 DeviceManVK deviceMan;
 
@@ -324,9 +324,9 @@ static VkRenderPass CreateRenderPass(VkFormat colorBufferFormat, VkFormat depthS
 {
 	const VkAttachmentReference colorAttachmentReference = { 0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL };
 	const VkAttachmentReference depthStencilAttachmentReference = { 1, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL };
-	const VkSubpassDescription subpassDescriptions[] = { { 0, VK_PIPELINE_BIND_POINT_GRAPHICS, 0, nullptr, 1, &colorAttachmentReference, nullptr, &depthStencilAttachmentReference } };
+	const VkSubpassDescription subpassDescriptions[] = { { 0, VK_PIPELINE_BIND_POINT_GRAPHICS, 0, nullptr, 1, &colorAttachmentReference, nullptr, depthStencilFormat == AFF_INVALID ? nullptr : &depthStencilAttachmentReference } };
 	const VkAttachmentDescription attachments[2] = { { 0, colorBufferFormat, VK_SAMPLE_COUNT_1_BIT, VK_ATTACHMENT_LOAD_OP_CLEAR, VK_ATTACHMENT_STORE_OP_STORE, VK_ATTACHMENT_LOAD_OP_DONT_CARE, VK_ATTACHMENT_STORE_OP_DONT_CARE, VK_IMAGE_LAYOUT_UNDEFINED, presentSrc ? VK_IMAGE_LAYOUT_PRESENT_SRC_KHR : VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL },{ 0, depthStencilFormat, VK_SAMPLE_COUNT_1_BIT, VK_ATTACHMENT_LOAD_OP_CLEAR, VK_ATTACHMENT_STORE_OP_STORE, VK_ATTACHMENT_LOAD_OP_CLEAR, VK_ATTACHMENT_STORE_OP_STORE, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL } };
-	const VkRenderPassCreateInfo renderPassInfo = { VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO, nullptr, 0, arrayparam(attachments), arrayparam(subpassDescriptions) };
+	const VkRenderPassCreateInfo renderPassInfo = { VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO, nullptr, 0, depthStencilFormat == AFF_INVALID ? 1u : 2u, attachments, arrayparam(subpassDescriptions) };
 	VkRenderPass renderPass = 0;
 	afHandleVKError(vkCreateRenderPass(deviceMan.GetDevice(), &renderPassInfo, nullptr, &renderPass));
 	return renderPass;
@@ -359,30 +359,67 @@ static VkPrimitiveTopology RenderFlagsToPrimitiveTopology(uint32_t flags)
 	return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
 }
 
-static VkRenderPass RenderFlagsToRenderPass(uint32_t flags)
+static AFFormat RenderFlagsToDSFormat(uint32_t flags)
 {
-	if (flags & AFRS_OFFSCREEN_RENDER_TARGET_B8G8R8A8_UNORM)
+	if (flags & AFRS_DEPTH_STENCIL_D24_UNORM_S8_UINT)
 	{
-		return deviceMan.offscreen32BPPRenderPass;
+		return AFF_D24_UNORM_S8_UINT;
+	}
+	if (flags & AFRS_DEPTH_STENCIL_D32_FLOAT)
+	{
+		return AFF_D32_FLOAT;
+	}
+	return AFF_INVALID;
+}
+
+static AFFormat RenderFlagsToRTFormat(uint32_t flags)
+{
+	if (flags & AFRS_OFFSCREEN_RENDER_TARGET_R8G8B8A8_UNORM)
+	{
+		return AFF_R8G8B8A8_UNORM;
 	}
 	if (flags & AFRS_OFFSCREEN_RENDER_TARGET_R16G16B16A16_FLOAT)
 	{
-		return deviceMan.offscreenHalfFloatRenderPass;
+		return AFF_R16G16B16A16_FLOAT;
 	}
-	return deviceMan.primaryRenderPass;
+	assert(0);
+	return AFF_INVALID;
 }
 
-static VkRenderPass VkFormatToRenderPassForOffScreenRenderTarget(VkFormat format)
+static VkRenderPass VkFormatToRenderPassForOffScreenRenderTarget(VkFormat renderTargetFormat, VkFormat depthStencilFormat)
 {
-	switch (format)
+	if (renderTargetFormat == VK_FORMAT_R8G8B8A8_UNORM && depthStencilFormat == VK_FORMAT_D24_UNORM_S8_UINT)
 	{
-	case VK_FORMAT_R8G8B8A8_UNORM:
-		return deviceMan.offscreen32BPPRenderPass;
-	case VK_FORMAT_R16G16B16A16_SFLOAT:
-		return deviceMan.offscreenHalfFloatRenderPass;
+		return deviceMan.offscreenR8G8B8A8D24S8RenderPass;
+	}
+	if (renderTargetFormat == VK_FORMAT_R16G16B16A16_SFLOAT && depthStencilFormat == VK_FORMAT_D24_UNORM_S8_UINT)
+	{
+		return deviceMan.offscreenR16G16B16A16D24S8RenderPass;
+	}
+	if (renderTargetFormat == VK_FORMAT_R8G8B8A8_UNORM && depthStencilFormat == VK_FORMAT_UNDEFINED)
+	{
+		return deviceMan.offscreenR8G8B8A8RenderPass;
+	}
+	if (renderTargetFormat == VK_FORMAT_R16G16B16A16_SFLOAT && depthStencilFormat == VK_FORMAT_UNDEFINED)
+	{
+		return deviceMan.offscreenR16G16B16A16RenderPass;
 	}
 	assert(0);
 	return 0;
+}
+
+static bool IsRenderFlagsPrimarySurface(uint32_t flags)
+{
+	return !(flags & (AFRS_OFFSCREEN_RENDER_TARGET_R8G8B8A8_UNORM | AFRS_OFFSCREEN_RENDER_TARGET_R16G16B16A16_FLOAT));
+}
+
+static VkRenderPass RenderFlagsToRenderPass(uint32_t flags)
+{
+	if (IsRenderFlagsPrimarySurface(flags))
+	{
+		return deviceMan.primaryRenderPass;
+	}
+	return VkFormatToRenderPassForOffScreenRenderTarget(RenderFlagsToRTFormat(flags), RenderFlagsToDSFormat(flags));
 }
 
 static bool IsPresentModeSupported(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, VkPresentModeKHR presentMode)
@@ -532,18 +569,17 @@ void DeviceManVK::Create(HWND hWnd)
 	assert(swapChainCount <= _countof(framebuffers));
 	afHandleVKError(vkGetSwapchainImagesKHR(device, swapchain, &swapChainCount, swapChainImages));
 
-	// depth stencil
-	depthStencil = afCreateDynamicTexture(VK_FORMAT_D24_UNORM_S8_UINT, IVec2(rc.right, rc.bottom), AFTF_DSV);
-
 	// render pass
-	primaryRenderPass = CreateRenderPass(swapchainInfo.imageFormat, VK_FORMAT_D24_UNORM_S8_UINT, true);
-	offscreen32BPPRenderPass = CreateRenderPass(AFF_R8G8B8A8_UNORM, VK_FORMAT_D24_UNORM_S8_UINT, false);
-	offscreenHalfFloatRenderPass = CreateRenderPass(AFF_R16G16B16A16_FLOAT, VK_FORMAT_D24_UNORM_S8_UINT, false);
+	primaryRenderPass = CreateRenderPass(swapchainInfo.imageFormat, VK_FORMAT_UNDEFINED, true);
+	offscreenR8G8B8A8D24S8RenderPass = CreateRenderPass(AFF_R8G8B8A8_UNORM, VK_FORMAT_D24_UNORM_S8_UINT, false);
+	offscreenR16G16B16A16D24S8RenderPass = CreateRenderPass(AFF_R16G16B16A16_FLOAT, VK_FORMAT_D24_UNORM_S8_UINT, false);
+	offscreenR8G8B8A8RenderPass = CreateRenderPass(AFF_R8G8B8A8_UNORM, VK_FORMAT_UNDEFINED, false);
+	offscreenR16G16B16A16RenderPass = CreateRenderPass(AFF_R16G16B16A16_FLOAT, VK_FORMAT_UNDEFINED, false);
 	for (int i = 0; i < (int)swapChainCount; i++)
 	{
 		const VkImageViewCreateInfo imageViewCreateInfo = { VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, nullptr, 0, swapChainImages[i], VK_IMAGE_VIEW_TYPE_2D, surfaceFormats[0].format, colorComponentMapping, { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 } };
 		afHandleVKError(vkCreateImageView(device, &imageViewCreateInfo, nullptr, &imageViews[i]));
-		const VkImageView frameBufferAttachmentImageView[] = { imageViews[i], depthStencil.view };
+		const VkImageView frameBufferAttachmentImageView[] = { imageViews[i] };
 		const VkFramebufferCreateInfo framebufferInfo = { VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO, nullptr, 0, primaryRenderPass, arrayparam(frameBufferAttachmentImageView), (uint32_t)rc.right, (uint32_t)rc.bottom, 1 };
 		afHandleVKError(vkCreateFramebuffer(device, &framebufferInfo, nullptr, &framebuffers[i]));
 	}
@@ -554,7 +590,7 @@ void DeviceManVK::Create(HWND hWnd)
 
 void DeviceManVK::BeginRenderPassToCurrentBackBuffer()
 {
-	BeginRenderPass(primaryRenderPass, framebuffers[frameIndex], { (int)rc.right, (int)rc.bottom });
+	BeginRenderPass(primaryRenderPass, framebuffers[frameIndex], { (int)rc.right, (int)rc.bottom }, false);
 }
 
 void DeviceManVK::EndRenderPass()
@@ -566,7 +602,7 @@ void DeviceManVK::EndRenderPass()
 	}
 }
 
-void DeviceManVK::BeginRenderPass(VkRenderPass nextRenderPass, VkFramebuffer nextFramebuffer, IVec2 size)
+void DeviceManVK::BeginRenderPass(VkRenderPass nextRenderPass, VkFramebuffer nextFramebuffer, IVec2 size, bool needDepth)
 {
 	if (inRenderPass)
 	{
@@ -577,7 +613,7 @@ void DeviceManVK::BeginRenderPass(VkRenderPass nextRenderPass, VkFramebuffer nex
 		inRenderPass = true;
 	}
 
-	const VkRenderPassBeginInfo renderPassBeginInfo = { VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO, nullptr, nextRenderPass, nextFramebuffer,{ {},{ (uint32_t)size.x, (uint32_t)size.y } }, arrayparam(clearValues) };
+	const VkRenderPassBeginInfo renderPassBeginInfo = { VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO, nullptr, nextRenderPass, nextFramebuffer,{ {},{ (uint32_t)size.x, (uint32_t)size.y } }, needDepth ? 2u : 1u, clearValues };
 	vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 	VkViewport v = { 0, 0, (float)size.x, (float)size.y, 0, 1 };
 	VkRect2D s = { 0, 0, (uint32_t)size.x, (uint32_t)size.y };
@@ -634,7 +670,6 @@ void DeviceManVK::Destroy()
 		commandBuffer = 0;
 	}
 	afSafeDeleteVk(vkDestroySemaphore, device, semaphore);
-	afSafeDeleteTexture(depthStencil);
 	for (auto& it : imageViews)
 	{
 		afSafeDeleteVk(vkDestroyImageView, device, it);
@@ -642,8 +677,10 @@ void DeviceManVK::Destroy()
 	afSafeDeleteVk(vkDestroyCommandPool, device, commandPool);
 	std::for_each(framebuffers, framebuffers + _countof(framebuffers), [&](VkFramebuffer& framebuffer) { afSafeDeleteVk(vkDestroyFramebuffer, device, framebuffer);	});
 	afSafeDeleteVk(vkDestroyRenderPass, device, primaryRenderPass);
-	afSafeDeleteVk(vkDestroyRenderPass, device, offscreen32BPPRenderPass);
-	afSafeDeleteVk(vkDestroyRenderPass, device, offscreenHalfFloatRenderPass);
+	afSafeDeleteVk(vkDestroyRenderPass, device, offscreenR8G8B8A8D24S8RenderPass);
+	afSafeDeleteVk(vkDestroyRenderPass, device, offscreenR16G16B16A16D24S8RenderPass);
+	afSafeDeleteVk(vkDestroyRenderPass, device, offscreenR8G8B8A8RenderPass);
+	afSafeDeleteVk(vkDestroyRenderPass, device, offscreenR16G16B16A16RenderPass);
 	afSafeDeleteVk(vkDestroySwapchainKHR, device, swapchain);
 	if (surface)
 	{
@@ -779,13 +816,30 @@ void AFRenderTarget::InitForDefaultRenderTarget()
 	asDefault = true;
 }
 
-void AFRenderTarget::Init(IVec2 size, AFFormat colorFormat, AFFormat /*depthStencilFormat*/)
+void AFRenderTarget::Init(IVec2 size, AFFormat colorFormat, AFFormat depthStencilFormat)
 {
 	VkDevice device = deviceMan.GetDevice();
 	renderTarget = afCreateDynamicTexture(colorFormat, size, AFTF_RTV | AFTF_SRV);
-	const VkImageView frameBufferAttachmentImageView[] = { renderTarget.view, deviceMan.GetDepthStencil().view };
-	const VkFramebufferCreateInfo framebufferInfo = { VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO, nullptr, 0, VkFormatToRenderPassForOffScreenRenderTarget(colorFormat), arrayparam(frameBufferAttachmentImageView), (uint32_t)size.x, (uint32_t)size.y, 1 };
-	afHandleVKError(vkCreateFramebuffer(device, &framebufferInfo, nullptr, &framebuffer));
+	switch (depthStencilFormat)
+	{
+	case AFF_D24_UNORM_S8_UINT:
+	{
+		depthStencil = afCreateDynamicTexture(VK_FORMAT_D24_UNORM_S8_UINT, size, AFTF_DSV);
+		const VkImageView frameBufferAttachmentImageView[] = { renderTarget.view, depthStencil.view };
+		const VkFramebufferCreateInfo framebufferInfo = { VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO, nullptr, 0, VkFormatToRenderPassForOffScreenRenderTarget(colorFormat, depthStencilFormat), arrayparam(frameBufferAttachmentImageView), (uint32_t)size.x, (uint32_t)size.y, 1 };
+		afHandleVKError(vkCreateFramebuffer(device, &framebufferInfo, nullptr, &framebuffer));
+		break;
+	}
+	case AFF_INVALID:
+	{
+		const VkImageView frameBufferAttachmentImageView1[] = { renderTarget.view };
+		const VkFramebufferCreateInfo framebufferInfo1 = { VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO, nullptr, 0, VkFormatToRenderPassForOffScreenRenderTarget(colorFormat, VK_FORMAT_UNDEFINED), arrayparam(frameBufferAttachmentImageView1), (uint32_t)size.x, (uint32_t)size.y, 1 };
+		afHandleVKError(vkCreateFramebuffer(device, &framebufferInfo1, nullptr, &framebuffer));
+		break;
+	}
+	default:
+		assert(0);
+	}
 }
 
 void AFRenderTarget::Destroy()
@@ -793,6 +847,7 @@ void AFRenderTarget::Destroy()
 	VkDevice device = deviceMan.GetDevice();
 	afSafeDeleteVk(vkDestroyFramebuffer, device, framebuffer);
 	afSafeDeleteTexture(renderTarget);
+	afSafeDeleteTexture(depthStencil);
 }
 
 void AFRenderTarget::BeginRenderToThis()
@@ -812,7 +867,7 @@ void AFRenderTarget::BeginRenderToThis()
 		const VkImageMemoryBarrier srvToRtv = { VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER, nullptr, VK_ACCESS_SHADER_READ_BIT, VK_ACCESS_COLOR_ATTACHMENT_READ_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, renderTarget.image,{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1u } };
 		vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0, 0, nullptr, 0, nullptr, 1, &srvToRtv);
 	}
-	deviceMan.BeginRenderPass(VkFormatToRenderPassForOffScreenRenderTarget(renderTarget.format), framebuffer, renderTarget.texDesc.size);
+	deviceMan.BeginRenderPass(VkFormatToRenderPassForOffScreenRenderTarget(renderTarget.format, depthStencil.format), framebuffer, renderTarget.texDesc.size, depthStencil.format != AFF_INVALID);
 }
 
 void AFRenderTarget::EndRenderToThis()

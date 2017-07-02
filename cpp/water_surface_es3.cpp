@@ -34,7 +34,7 @@ public:
 	WaterSurfaceES3();
 	~WaterSurfaceES3();
 	void Update() override;
-	void Draw2D(AFCommandList& cmd) override;
+	void Draw2D(AFCommandList& cmd, AFRenderTarget& rt) override;
 };
 
 
@@ -115,6 +115,10 @@ void WaterSurfaceES3::Destroy()
 		it.Destroy();
 	}
 	normalMap.Destroy();
+
+	renderStateHeightMap.Destroy();
+	renderStateNormalMap.Destroy();
+	renderStateWaterLastPass.Destroy();
 }
 
 void WaterSurfaceES3::Init()
@@ -123,34 +127,23 @@ void WaterSurfaceES3::Init()
 	for (auto& it : renderTarget)
 	{
 		it.Init(min(IVec2(1024, 1024), systemMisc.GetScreenSize()), AFF_R8G8B8A8_UNORM, AFF_INVALID);
-#ifndef AF_VULKAN
-		it.BeginRenderToThis();	// clear textures
-#endif
 	}
 	for (auto& it : heightMap)
 	{
 		it.Init(IVec2(HEIGHT_MAP_W, HEIGHT_MAP_H), AFF_R16G16B16A16_FLOAT, AFF_INVALID);
-#ifndef AF_VULKAN
 		it.BeginRenderToThis();	// clear textures
-#endif
+		it.EndRenderToThis();
 	}
 	normalMap.Init(IVec2(HEIGHT_MAP_W, HEIGHT_MAP_H), AFF_R8G8B8A8_UNORM, AFF_INVALID);
-#ifndef AF_VULKAN
-	normalMap.BeginRenderToThis();	// clear textures
-
-	AFRenderTarget rt;
-	rt.InitForDefaultRenderTarget();
-	rt.BeginRenderToThis();
-#endif
 
 	lastTime = GetTime();
-	renderStateWaterLastPass.Create("water_es3_lastpass", 0, nullptr, AFRS_OFFSCREEN_RENDER_TARGET_B8G8R8A8_UNORM, arrayparam(samplersLastPass));
+	renderStateWaterLastPass.Create("water_es3_lastpass", 0, nullptr, AFRS_OFFSCREEN_RENDER_TARGET_R8G8B8A8_UNORM, arrayparam(samplersLastPass));
 	renderStateHeightMap.Create("water_es3_heightmap", 0, nullptr, AFRS_OFFSCREEN_RENDER_TARGET_R16G16B16A16_FLOAT, arrayparam(samplersHeightMap));
 
 	{
 		int numElements = 0;
 		const InputElement* elements = stockObjects.GetFullScreenInputElements(numElements);
-		renderStateNormalMap.Create("water_es3_normal", numElements, elements, AFRS_OFFSCREEN_RENDER_TARGET_B8G8R8A8_UNORM, arrayparam(samplerNormalMap));
+		renderStateNormalMap.Create("water_es3_normal", numElements, elements, AFRS_OFFSCREEN_RENDER_TARGET_R8G8B8A8_UNORM, arrayparam(samplerNormalMap));
 	}
 
 	aflog("WaterSurface::Init shaders are ready!\n");
@@ -256,7 +249,7 @@ void WaterSurfaceES3::RenderWater(AFCommandList& cmd, const UniformBuffer& hmub)
 #endif
 }
 
-void WaterSurfaceES3::Draw2D(AFCommandList& cmd)
+void WaterSurfaceES3::Draw2D(AFCommandList& cmd, AFRenderTarget& rt)
 {
 	UpdateTime();
 
@@ -328,7 +321,5 @@ void WaterSurfaceES3::Draw2D(AFCommandList& cmd)
 		break;
 	}
 
-	AFRenderTarget rt;
-	rt.InitForDefaultRenderTarget();
 	letterBox.Draw(cmd, rt, srcTex);
 }

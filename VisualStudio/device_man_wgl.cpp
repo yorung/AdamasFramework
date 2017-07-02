@@ -31,15 +31,11 @@ static void APIENTRY debugMessageHandler(GLenum source, GLenum type, GLuint id, 
 
 void DeviceManWgl::CreateWGLInternal(HDC hdc)
 {
-	PIXELFORMATDESCRIPTOR pfd;
-	memset(&pfd, 0, sizeof(pfd));
+	PIXELFORMATDESCRIPTOR pfd = {};
 	pfd.nSize = sizeof(pfd);
 	pfd.nVersion = 1;
 	pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
-	pfd.iPixelType = PFD_TYPE_RGBA;
-	pfd.cColorBits = 24;
-	pfd.cDepthBits = 32;
-	pfd.iLayerType = PFD_MAIN_PLANE;
+	pfd.cColorBits = 32;
 	int pixelFormat = ChoosePixelFormat(hdc, &pfd);
 	if (!pixelFormat)
 	{

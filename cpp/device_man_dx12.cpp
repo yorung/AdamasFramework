@@ -23,7 +23,6 @@ DeviceManDX12::~DeviceManDX12()
 	assert(!fence);
 	assert(!swapChain);
 	assert(!rtvHeap);
-	assert(!depthStencil);
 	assert(!dsvHeap);
 }
 
@@ -47,7 +46,6 @@ void DeviceManDX12::Destroy()
 		res.fenceValueToGuard = 0;
 	}
 	rtvHeap.Reset();
-	depthStencil.Reset();
 	dsvHeap.Reset();
 	fence.Reset();
 	fenceValue = 1;
@@ -62,11 +60,6 @@ void DeviceManDX12::Destroy()
 ComPtr<ID3D12Resource> DeviceManDX12::GetDefaultRenderTarget()
 {
 	return frameResources[frameIndex].renderTarget;
-}
-
-ComPtr<ID3D12Resource> DeviceManDX12::GetDefaultDepthStencil()
-{
-	return depthStencil;
 }
 
 void DeviceManDX12::BeginScene()
@@ -241,12 +234,7 @@ void DeviceManDX12::Create(HWND hWnd)
 		afVerify(res.mappedConstantBuffer);
 	}
 
-	depthStencil = afCreateDynamicTexture(AFF_D24_UNORM_S8_UINT, IVec2((int)sd.BufferDesc.Width, (int)sd.BufferDesc.Height), AFTF_DSV);
-	afSetTextureName(depthStencil, "default depth stencil");
 	device->CreateDescriptorHeap(ToPtr<D3D12_DESCRIPTOR_HEAP_DESC>({ D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1 }), IID_PPV_ARGS(&dsvHeap));
-	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = dsvHeap->GetCPUDescriptorHandleForHeapStart();
-	device->CreateDepthStencilView(depthStencil.Get(), nullptr, dsvHandle);
-
 	factory->MakeWindowAssociation(hWnd, DXGI_MWA_NO_ALT_ENTER);
 	device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, frameResources[0].commandAllocator.Get(), nullptr, IID_PPV_ARGS(&commandList));
 	commandList->Close();

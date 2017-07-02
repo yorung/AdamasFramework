@@ -7,6 +7,18 @@ static const D3D12_HEAP_PROPERTIES uploadHeapProperties = { D3D12_HEAP_TYPE_UPLO
 static const float clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 static const D3D12_RESOURCE_STATES TEXTURE_STATE = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE | D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE;
 
+void afSafeDeleteTexture(SRVID& p)
+{
+	deviceMan.AddIntermediateCommandlistDependentResource(p);	// prevent 'still in use on GPU' error
+	p.Reset();
+}
+
+void afSafeDeleteBuffer(ComPtr<ID3D12Resource>& p)
+{
+	deviceMan.AddIntermediateCommandlistDependentResource(p);	// prevent 'still in use on GPU' error
+	p.Reset();
+}
+
 void afTransition(ID3D12GraphicsCommandList* cmd, ComPtr<ID3D12Resource> res, D3D12_RESOURCE_STATES from, D3D12_RESOURCE_STATES to)
 {
 	cmd->ResourceBarrier(1, ToPtr<D3D12_RESOURCE_BARRIER>({ D3D12_RESOURCE_BARRIER_TYPE_TRANSITION, D3D12_RESOURCE_BARRIER_FLAG_NONE,{ res.Get(), 0, from, to } }));
@@ -308,6 +320,7 @@ ComPtr<ID3D12PipelineState> afCreatePSO(const char *shaderName, const InputEleme
 		aflog("Failed to create PSO with %s", shaderName);
 	}
 	assert(hr == S_OK);
+	pso->SetName(SWPrintf(L"%S", shaderName));
 	return pso;
 }
 
@@ -432,8 +445,8 @@ void AFRenderTarget::Init(IVec2 size, AFFormat colorFormat, AFFormat depthStenci
 
 void AFRenderTarget::Destroy()
 {
-	renderTarget.Reset();
-	depthStencil.Reset();
+	afSafeDeleteTexture(renderTarget);
+	afSafeDeleteTexture(depthStencil);
 }
 
 void afSetRenderTarget(ComPtr<ID3D12Resource> color, ComPtr<ID3D12Resource> depthStencil, uint32_t flags)
@@ -469,7 +482,7 @@ void AFRenderTarget::BeginRenderToThis()
 {
 	if (asDefault)
 	{
-		afSetRenderTarget(deviceMan.GetDefaultRenderTarget(), deviceMan.GetDefaultDepthStencil(), AFSRTF_CLEAR_ALL);
+		afSetRenderTarget(deviceMan.GetDefaultRenderTarget(), nullptr, AFSRTF_CLEAR_ALL);
 		return;
 	}
 
@@ -514,4 +527,11 @@ void AFRenderStates::Apply() const
 	list->SetPipelineState(pipelineState.Get());
 	list->SetGraphicsRootSignature(rootSignature.Get());
 	list->IASetPrimitiveTopology(primitiveTopology);
+}
+
+void AFRenderStates::Destroy()
+{
+	deviceMan.Flush();		// prevent OBJECT_DELETED_WHILE_STILL_IN_USE
+	pipelineState.Reset();
+	rootSignature.Reset();
 }

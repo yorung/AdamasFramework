@@ -20,8 +20,8 @@ typedef ComPtr<ID3D12Resource> VBOID;
 typedef ComPtr<ID3D12Resource> UBOID;
 typedef ComPtr<ID3D12Resource> SRVID;
 typedef SRVID AFTexRef;
-inline void afSafeDeleteBuffer(ComPtr<ID3D12Resource>& p) { p.Reset(); }
-inline void afSafeDeleteTexture(SRVID& p) { p.Reset(); }
+void afSafeDeleteBuffer(ComPtr<ID3D12Resource>& p);
+void afSafeDeleteTexture(SRVID& p);
 
 void afTransition(ID3D12GraphicsCommandList* cmd, ComPtr<ID3D12Resource> res, D3D12_RESOURCE_STATES from, D3D12_RESOURCE_STATES to);
 void afSetVertexBuffer(VBOID id, int stride);
@@ -81,6 +81,7 @@ class AFRenderStates
 	ComPtr<ID3D12PipelineState> pipelineState;
 	D3D_PRIMITIVE_TOPOLOGY primitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
 public:
+	~AFRenderStates() { Destroy(); }
 	bool IsReady() { return !!pipelineState; }
 	void Create(const char* shaderName, int numInputElements, const InputElement* inputElements, uint32_t flags, int numSamplerTypes_ = 0, const SamplerType samplerTypes_[] = nullptr)
 	{
@@ -90,11 +91,7 @@ public:
 		pipelineState = afCreatePSO(shaderName, inputElements, numInputElements, flags, rootSignature);
 	}
 	void Apply() const;
-	void Destroy()
-	{
-		pipelineState.Reset();
-		rootSignature.Reset();
-	}
+	void Destroy();
 };
 
 class AFRenderTarget
