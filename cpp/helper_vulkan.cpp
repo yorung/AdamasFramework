@@ -7,7 +7,7 @@ static const uint32_t descriptorPoolSize = 64;
 
 static const VkComponentMapping colorComponentMapping = { VK_COMPONENT_SWIZZLE_R, VK_COMPONENT_SWIZZLE_G, VK_COMPONENT_SWIZZLE_B, VK_COMPONENT_SWIZZLE_A };
 static const VkComponentMapping depthComponentMapping = {};
-static const VkClearValue clearValues[2] = { { 0.2f, 0.5f, 0.5f },{ 1.0f, 0u } };
+static const VkClearValue clearValues[2] = { { 0.0f, 0.0f, 0.0f },{ 1.0f, 0u } };
 
 DeviceManVK deviceMan;
 

@@ -127,25 +127,14 @@ void WaterSurfaceES3::Init()
 	for (auto& it : renderTarget)
 	{
 		it.Init(min(IVec2(1024, 1024), systemMisc.GetScreenSize()), AFF_R8G8B8A8_UNORM, AFF_INVALID);
-#ifndef AF_VULKAN
-		it.BeginRenderToThis();	// clear textures
-#endif
 	}
 	for (auto& it : heightMap)
 	{
 		it.Init(IVec2(HEIGHT_MAP_W, HEIGHT_MAP_H), AFF_R16G16B16A16_FLOAT, AFF_INVALID);
-#ifndef AF_VULKAN
 		it.BeginRenderToThis();	// clear textures
-#endif
+		it.EndRenderToThis();
 	}
 	normalMap.Init(IVec2(HEIGHT_MAP_W, HEIGHT_MAP_H), AFF_R8G8B8A8_UNORM, AFF_INVALID);
-#ifndef AF_VULKAN
-	normalMap.BeginRenderToThis();	// clear textures
-
-	AFRenderTarget rt;
-	rt.InitForDefaultRenderTarget();
-	rt.BeginRenderToThis();
-#endif
 
 	lastTime = GetTime();
 	renderStateWaterLastPass.Create("water_es3_lastpass", 0, nullptr, AFRS_OFFSCREEN_RENDER_TARGET_R8G8B8A8_UNORM, arrayparam(samplersLastPass));
