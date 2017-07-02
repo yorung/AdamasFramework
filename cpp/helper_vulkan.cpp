@@ -111,17 +111,17 @@ BufferContext CreateBuffer(VkDevice device, VkBufferUsageFlags usage, const VkPh
 	return buffer;
 }
 
-void afWriteTexture(TextureContext& textureContext, const TexDesc& texDesc, void *image)
+void afWriteTexture(AFTexRef textureContext, const TexDesc& texDesc, void *image)
 {
 	void* mappedMemory = nullptr;
 	int size = texDesc.size.x * texDesc.size.y * 4;
-	afHandleVKError(vkMapMemory(textureContext.device, textureContext.memory, 0, size, 0, &mappedMemory));
+	afHandleVKError(vkMapMemory(textureContext->device, textureContext->memory, 0, size, 0, &mappedMemory));
 	assert(mappedMemory);
 	memcpy(mappedMemory, image, size);
-	vkUnmapMemory(textureContext.device, textureContext.memory);
+	vkUnmapMemory(textureContext->device, textureContext->memory);
 }
 
-void afWriteTexture(TextureContext& textureContext, const TexDesc& texDesc, int mipCount, const AFTexSubresourceData datas[])
+void afWriteTexture(AFTexRef textureContext, const TexDesc& texDesc, int mipCount, const AFTexSubresourceData datas[])
 {
 	const uint32_t maxSubresources = 100;
 	const uint32_t subResources = mipCount * texDesc.arraySize;
@@ -144,10 +144,10 @@ void afWriteTexture(TextureContext& textureContext, const TexDesc& texDesc, int 
 	}
 
 	VkCommandBuffer cmd = deviceMan.commandBuffer;
-	const VkImageMemoryBarrier undefToDest = { VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER, nullptr, 0, VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, textureContext.image, { VK_IMAGE_ASPECT_COLOR_BIT, 0, (uint32_t)mipCount, 0, (texDesc.isCubeMap ? 6u : 1u) } };
+	const VkImageMemoryBarrier undefToDest = { VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER, nullptr, 0, VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, textureContext->image, { VK_IMAGE_ASPECT_COLOR_BIT, 0, (uint32_t)mipCount, 0, (texDesc.isCubeMap ? 6u : 1u) } };
 	vkCmdPipelineBarrier(cmd, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0, 0, nullptr, 0, nullptr, 1, &undefToDest);
-	vkCmdCopyBufferToImage(cmd, staging.buffer, textureContext.image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, subResources, copyInfo);
-	const VkImageMemoryBarrier destToRead = { VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER, nullptr, undefToDest.dstAccessMask, VK_ACCESS_SHADER_READ_BIT, undefToDest.newLayout, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, textureContext.image,{ VK_IMAGE_ASPECT_COLOR_BIT, 0, (uint32_t)mipCount, 0, (texDesc.isCubeMap ? 6u : 1u) } };
+	vkCmdCopyBufferToImage(cmd, staging.buffer, textureContext->image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, subResources, copyInfo);
+	const VkImageMemoryBarrier destToRead = { VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER, nullptr, undefToDest.dstAccessMask, VK_ACCESS_SHADER_READ_BIT, undefToDest.newLayout, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, textureContext->image,{ VK_IMAGE_ASPECT_COLOR_BIT, 0, (uint32_t)mipCount, 0, (texDesc.isCubeMap ? 6u : 1u) } };
 	vkCmdPipelineBarrier(cmd, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0, 0, nullptr, 0, nullptr, 1, &destToRead);
 	deviceMan.Flush();
 	afSafeDeleteBuffer(staging);
@@ -176,7 +176,7 @@ static VkImageAspectFlags FormatToAspectFlags(VkFormat format)
 	return VK_IMAGE_ASPECT_COLOR_BIT;
 }
 
-TextureContext afCreateDynamicTexture(VkFormat format, const IVec2& size, uint32_t flags)
+AFTexRef afCreateDynamicTexture(VkFormat format, const IVec2& size, uint32_t flags)
 {
 	VkFormatProperties formatProperties;
 	vkGetPhysicalDeviceFormatProperties(deviceMan.physicalDevice, format, &formatProperties);
@@ -184,10 +184,10 @@ TextureContext afCreateDynamicTexture(VkFormat format, const IVec2& size, uint32
 
 	VkDevice device = deviceMan.GetDevice();
 
-	TextureContext textureContext;
-	textureContext.device = device;
-	textureContext.format = format;
-	textureContext.texDesc.size = size;
+	AFTexRef textureContext(new TextureContext);
+	textureContext->device = device;
+	textureContext->format = format;
+	textureContext->texDesc.size = size;
 
 	VkImageCreateInfo TextureCreateInfo = { VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO, nullptr, 0, VK_IMAGE_TYPE_2D, format,{ (uint32_t)size.x, (uint32_t)size.y, 1 }, 1, 1, VK_SAMPLE_COUNT_1_BIT, VK_IMAGE_TILING_OPTIMAL, 0, VK_SHARING_MODE_EXCLUSIVE, 0, nullptr, VK_IMAGE_LAYOUT_UNDEFINED };
 	if (flags & AFTF_CPU_WRITE)
@@ -206,50 +206,50 @@ TextureContext afCreateDynamicTexture(VkFormat format, const IVec2& size, uint32
 	{
 		TextureCreateInfo.usage |= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 	}
-	afHandleVKError(vkCreateImage(device, &TextureCreateInfo, nullptr, &textureContext.image));
+	afHandleVKError(vkCreateImage(device, &TextureCreateInfo, nullptr, &textureContext->image));
 
 	VkMemoryRequirements req = {};
-	vkGetImageMemoryRequirements(device, textureContext.image, &req);
+	vkGetImageMemoryRequirements(device, textureContext->image, &req);
 	const VkMemoryAllocateInfo memoryAllocateInfo = { VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO, nullptr, req.size, GetCompatibleMemoryTypeIndex(deviceMan.physicalDeviceMemoryProperties, req.memoryTypeBits, (flags & AFTF_CPU_WRITE) ? VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT : VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT) };
-	afHandleVKError(vkAllocateMemory(device, &memoryAllocateInfo, nullptr, &textureContext.memory));
+	afHandleVKError(vkAllocateMemory(device, &memoryAllocateInfo, nullptr, &textureContext->memory));
 
-	afHandleVKError(vkBindImageMemory(device, textureContext.image, textureContext.memory, 0));
+	afHandleVKError(vkBindImageMemory(device, textureContext->image, textureContext->memory, 0));
 
-	VkImageViewCreateInfo imageViewCreateInfo = { VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, nullptr, 0, textureContext.image, VK_IMAGE_VIEW_TYPE_2D, format, (flags & AFTF_DSV) ? depthComponentMapping : colorComponentMapping,{ FormatToAspectFlags(format), 0, 1, 0, 1 } };
-	afHandleVKError(vkCreateImageView(device, &imageViewCreateInfo, nullptr, &textureContext.view));
+	VkImageViewCreateInfo imageViewCreateInfo = { VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, nullptr, 0, textureContext->image, VK_IMAGE_VIEW_TYPE_2D, format, (flags & AFTF_DSV) ? depthComponentMapping : colorComponentMapping,{ FormatToAspectFlags(format), 0, 1, 0, 1 } };
+	afHandleVKError(vkCreateImageView(device, &imageViewCreateInfo, nullptr, &textureContext->view));
 
 	if (flags & AFTF_SRV)
 	{
-		CreateTextureDescriptorSet(textureContext);
+		CreateTextureDescriptorSet(*textureContext);
 	}
 	return textureContext;
 }
 
-SRVID afCreateTexture2D(AFFormat format, const struct TexDesc& desc, int mipCount, const AFTexSubresourceData datas[])
+AFTexRef afCreateTexture2D(AFFormat format, const struct TexDesc& desc, int mipCount, const AFTexSubresourceData datas[])
 {
 	VkFormatProperties formatProperties;
 	vkGetPhysicalDeviceFormatProperties(deviceMan.physicalDevice, format, &formatProperties);
 	assert(formatProperties.linearTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT);
 
-	TextureContext textureContext;
+	AFTexRef textureContext(new TextureContext);
 	VkDevice device = deviceMan.GetDevice();
-	textureContext.device = device;
-	textureContext.format = format;
-	textureContext.texDesc = desc;
+	textureContext->device = device;
+	textureContext->format = format;
+	textureContext->texDesc = desc;
 	const VkImageCreateInfo imageCreateInfo = { VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO, nullptr, (desc.isCubeMap ? VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT : 0u), VK_IMAGE_TYPE_2D, format,{ (uint32_t)desc.size.x, (uint32_t)desc.size.y, 1 }, (uint32_t)mipCount, desc.isCubeMap ? 6u : 1u, VK_SAMPLE_COUNT_1_BIT, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT, VK_SHARING_MODE_EXCLUSIVE, 0, nullptr, VK_IMAGE_LAYOUT_UNDEFINED };
-	afHandleVKError(vkCreateImage(device, &imageCreateInfo, nullptr, &textureContext.image));
+	afHandleVKError(vkCreateImage(device, &imageCreateInfo, nullptr, &textureContext->image));
 
 	VkMemoryRequirements req = {};
-	vkGetImageMemoryRequirements(device, textureContext.image, &req);
+	vkGetImageMemoryRequirements(device, textureContext->image, &req);
 	const VkMemoryAllocateInfo memoryAllocateInfo = { VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO, nullptr, req.size, GetCompatibleMemoryTypeIndex(deviceMan.physicalDeviceMemoryProperties, req.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT) };
-	afHandleVKError(vkAllocateMemory(device, &memoryAllocateInfo, nullptr, &textureContext.memory));
+	afHandleVKError(vkAllocateMemory(device, &memoryAllocateInfo, nullptr, &textureContext->memory));
 
-	afHandleVKError(vkBindImageMemory(device, textureContext.image, textureContext.memory, 0));
+	afHandleVKError(vkBindImageMemory(device, textureContext->image, textureContext->memory, 0));
 
-	VkImageViewCreateInfo imageViewCreateInfo = { VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, nullptr, 0, textureContext.image,  (desc.isCubeMap ? VK_IMAGE_VIEW_TYPE_CUBE : VK_IMAGE_VIEW_TYPE_2D), format, colorComponentMapping,{ VK_IMAGE_ASPECT_COLOR_BIT, 0, (uint32_t)mipCount, 0, desc.isCubeMap ? 6u : 1u } };
-	afHandleVKError(vkCreateImageView(device, &imageViewCreateInfo, nullptr, &textureContext.view));
+	VkImageViewCreateInfo imageViewCreateInfo = { VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, nullptr, 0, textureContext->image,  (desc.isCubeMap ? VK_IMAGE_VIEW_TYPE_CUBE : VK_IMAGE_VIEW_TYPE_2D), format, colorComponentMapping,{ VK_IMAGE_ASPECT_COLOR_BIT, 0, (uint32_t)mipCount, 0, desc.isCubeMap ? 6u : 1u } };
+	afHandleVKError(vkCreateImageView(device, &imageViewCreateInfo, nullptr, &textureContext->view));
 
-	CreateTextureDescriptorSet(textureContext);
+	CreateTextureDescriptorSet(*textureContext);
 	if (datas)
 	{
 		afWriteTexture(textureContext, desc, mipCount, datas);
@@ -257,16 +257,16 @@ SRVID afCreateTexture2D(AFFormat format, const struct TexDesc& desc, int mipCoun
 	return textureContext;
 }
 
-void afSafeDeleteTexture(TextureContext& textureContext)
+TextureContext::~TextureContext()
 {
-	if (textureContext.descriptorSet)
+	if (descriptorSet)
 	{
-		afHandleVKError(vkFreeDescriptorSets(textureContext.device, deviceMan.descriptorPool, 1, &textureContext.descriptorSet));
-		textureContext.descriptorSet = 0;
+		afHandleVKError(vkFreeDescriptorSets(device, deviceMan.descriptorPool, 1, &descriptorSet));
+		descriptorSet = 0;
 	}
-	afSafeDeleteVk(vkDestroyImageView, textureContext.device, textureContext.view);
-	afSafeDeleteVk(vkDestroyImage, textureContext.device, textureContext.image);
-	afSafeDeleteVk(vkFreeMemory, textureContext.device, textureContext.memory);
+	afSafeDeleteVk(vkDestroyImageView, device, view);
+	afSafeDeleteVk(vkDestroyImage, device, image);
+	afSafeDeleteVk(vkFreeMemory, device, memory);
 }
 
 void afBindBuffer(VkPipelineLayout pipelineLayout, int size, const void* buf, int descritorSetIndex)
@@ -277,10 +277,10 @@ void afBindBuffer(VkPipelineLayout pipelineLayout, int size, const void* buf, in
 	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, descritorSetIndex, 1, &deviceMan.commonUboDescriptorSet, 1, &dynamicOffset);
 }
 
-void afBindTexture(VkPipelineLayout pipelineLayout, const TextureContext& textureContext, int descritorSetIndex)
+void afBindTexture(VkPipelineLayout pipelineLayout, AFTexRef textureContext, int descritorSetIndex)
 {
 	VkCommandBuffer commandBuffer = deviceMan.commandBuffer;
-	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, descritorSetIndex, 1, &textureContext.descriptorSet, 0, nullptr);
+	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, descritorSetIndex, 1, &textureContext->descriptorSet, 0, nullptr);
 }
 
 void afSetVertexBuffer(int size, const void* buffer, int stride)
@@ -825,14 +825,14 @@ void AFRenderTarget::Init(IVec2 size, AFFormat colorFormat, AFFormat depthStenci
 	case AFF_D24_UNORM_S8_UINT:
 	{
 		depthStencil = afCreateDynamicTexture(VK_FORMAT_D24_UNORM_S8_UINT, size, AFTF_DSV);
-		const VkImageView frameBufferAttachmentImageView[] = { renderTarget.view, depthStencil.view };
+		const VkImageView frameBufferAttachmentImageView[] = { renderTarget->view, depthStencil->view };
 		const VkFramebufferCreateInfo framebufferInfo = { VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO, nullptr, 0, VkFormatToRenderPassForOffScreenRenderTarget(colorFormat, depthStencilFormat), arrayparam(frameBufferAttachmentImageView), (uint32_t)size.x, (uint32_t)size.y, 1 };
 		afHandleVKError(vkCreateFramebuffer(device, &framebufferInfo, nullptr, &framebuffer));
 		break;
 	}
 	case AFF_INVALID:
 	{
-		const VkImageView frameBufferAttachmentImageView1[] = { renderTarget.view };
+		const VkImageView frameBufferAttachmentImageView1[] = { renderTarget->view };
 		const VkFramebufferCreateInfo framebufferInfo1 = { VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO, nullptr, 0, VkFormatToRenderPassForOffScreenRenderTarget(colorFormat, VK_FORMAT_UNDEFINED), arrayparam(frameBufferAttachmentImageView1), (uint32_t)size.x, (uint32_t)size.y, 1 };
 		afHandleVKError(vkCreateFramebuffer(device, &framebufferInfo1, nullptr, &framebuffer));
 		break;
@@ -864,10 +864,11 @@ void AFRenderTarget::BeginRenderToThis()
 	{
 		currentStateIsRtv = true;
 		VkCommandBuffer commandBuffer = deviceMan.commandBuffer;
-		const VkImageMemoryBarrier srvToRtv = { VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER, nullptr, VK_ACCESS_SHADER_READ_BIT, VK_ACCESS_COLOR_ATTACHMENT_READ_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, renderTarget.image,{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1u } };
+		const VkImageMemoryBarrier srvToRtv = { VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER, nullptr, VK_ACCESS_SHADER_READ_BIT, VK_ACCESS_COLOR_ATTACHMENT_READ_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, renderTarget->image,{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1u } };
 		vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0, 0, nullptr, 0, nullptr, 1, &srvToRtv);
 	}
-	deviceMan.BeginRenderPass(VkFormatToRenderPassForOffScreenRenderTarget(renderTarget.format, depthStencil.format), framebuffer, renderTarget.texDesc.size, depthStencil.format != AFF_INVALID);
+	AFFormat dsFormat = depthStencil ? depthStencil->format : AFF_INVALID;
+	deviceMan.BeginRenderPass(VkFormatToRenderPassForOffScreenRenderTarget(renderTarget->format, dsFormat), framebuffer, renderTarget->texDesc.size, dsFormat != AFF_INVALID);
 }
 
 void AFRenderTarget::EndRenderToThis()
@@ -881,12 +882,12 @@ void AFRenderTarget::EndRenderToThis()
 	{
 		currentStateIsRtv = false;
 		VkCommandBuffer commandBuffer = deviceMan.commandBuffer;
-		const VkImageMemoryBarrier srvToRtv = { VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER, nullptr, VK_ACCESS_COLOR_ATTACHMENT_READ_BIT, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, renderTarget.image,{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1u } };
+		const VkImageMemoryBarrier srvToRtv = { VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER, nullptr, VK_ACCESS_COLOR_ATTACHMENT_READ_BIT, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, renderTarget->image,{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1u } };
 		vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0, 0, nullptr, 0, nullptr, 1, &srvToRtv);
 	}
 }
 
-TextureContext& AFRenderTarget::GetTexture()
+AFTexRef AFRenderTarget::GetTexture()
 {
 	return renderTarget;
 }

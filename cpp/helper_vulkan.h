@@ -86,8 +86,9 @@ struct AFTexSubresourceData
 	uint32_t pitchSlice;
 };
 
-struct TextureContext
+class TextureContext
 {
+public:
 	VkDevice device = 0;
 	VkFormat format = VK_FORMAT_UNDEFINED;
 	VkImage image = 0;
@@ -95,24 +96,22 @@ struct TextureContext
 	VkImageView view = 0;
 	VkDescriptorSet descriptorSet = 0;
 	TexDesc texDesc;
-	bool operator !() const { return !image; }
-	bool operator !=(const TextureContext& r) const { return image != r.image; }
-	bool operator ==(const TextureContext& r) const { return image == r.image; }
+	~TextureContext();
 };
-typedef TextureContext SRVID;
+typedef std::shared_ptr<TextureContext> SRVID;
 typedef SRVID AFTexRef;
 
-SRVID afCreateDynamicTexture(VkFormat format, const IVec2& size, uint32_t flags = AFTF_CPU_WRITE | AFTF_SRV);
-SRVID afCreateTexture2D(AFFormat format, const struct TexDesc& desc, int mipCount, const AFTexSubresourceData datas[]);
-void afWriteTexture(TextureContext& textureContext, const TexDesc& texDesc, void *image);
-void afSafeDeleteTexture(TextureContext& textureContext);
+AFTexRef afCreateDynamicTexture(VkFormat format, const IVec2& size, uint32_t flags = AFTF_CPU_WRITE | AFTF_SRV);
+AFTexRef afCreateTexture2D(AFFormat format, const struct TexDesc& desc, int mipCount, const AFTexSubresourceData datas[]);
+void afWriteTexture(AFTexRef textureContext, const TexDesc& texDesc, void *image);
+inline void afSafeDeleteTexture(AFTexRef& ref) { ref.reset(); }
 
 void afBindBuffer(VkPipelineLayout pipelineLayout, int size, const void* buf, int descritorSetIndex);
-void afBindTexture(VkPipelineLayout pipelineLayout, const TextureContext& textureContext, int descritorSetIndex);
+void afBindTexture(VkPipelineLayout pipelineLayout, AFTexRef textureContext, int descritorSetIndex);
 
-inline IVec2 afGetTextureSize(SRVID tex)
+inline IVec2 afGetTextureSize(AFTexRef tex)
 {
-	return tex.texDesc.size;
+	return tex->texDesc.size;
 }
 
 void afSetVertexBuffer(VBOID id, int stride);
@@ -122,7 +121,7 @@ void afSetVertexBuffer(int size, const void* buffer, int stride);
 void afDrawIndexed(int numIndices, int start = 0, int instanceCount = 1);
 void afDraw(int numVertices, int start = 0, int instanceCount = 1);
 
-inline void afSetTextureName(const TextureContext&, const char* /*name*/)
+inline void afSetTextureName(AFTexRef, const char* /*name*/)
 {
 }
 
@@ -142,8 +141,8 @@ public:
 class AFRenderTarget
 {
 	VkFramebuffer framebuffer = 0;
-	TextureContext renderTarget;
-	TextureContext depthStencil;
+	AFTexRef renderTarget;
+	AFTexRef depthStencil;
 	bool asDefault = false;
 	bool currentStateIsRtv = false;
 public:
@@ -153,7 +152,7 @@ public:
 	void Destroy();
 	void BeginRenderToThis();
 	void EndRenderToThis();
-	TextureContext& GetTexture();
+	AFTexRef GetTexture();
 };
 
 class AFBufferStackAllocator
@@ -217,7 +216,7 @@ public:
 		rs.Apply();
 		currentRS = &rs;
 	}
-	void SetTexture(SRVID texId, int descritorSetIndex)
+	void SetTexture(AFTexRef texId, int descritorSetIndex)
 	{
 		afBindTexture(currentRS->GetPipelineLayout(), texId, descritorSetIndex);
 	}
