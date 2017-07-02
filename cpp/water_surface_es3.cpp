@@ -148,13 +148,13 @@ void WaterSurfaceES3::Init()
 #endif
 
 	lastTime = GetTime();
-	renderStateWaterLastPass.Create("water_es3_lastpass", 0, nullptr, AFRS_OFFSCREEN_RENDER_TARGET_B8G8R8A8_UNORM, arrayparam(samplersLastPass));
+	renderStateWaterLastPass.Create("water_es3_lastpass", 0, nullptr, AFRS_OFFSCREEN_RENDER_TARGET_R8G8B8A8_UNORM, arrayparam(samplersLastPass));
 	renderStateHeightMap.Create("water_es3_heightmap", 0, nullptr, AFRS_OFFSCREEN_RENDER_TARGET_R16G16B16A16_FLOAT, arrayparam(samplersHeightMap));
 
 	{
 		int numElements = 0;
 		const InputElement* elements = stockObjects.GetFullScreenInputElements(numElements);
-		renderStateNormalMap.Create("water_es3_normal", numElements, elements, AFRS_OFFSCREEN_RENDER_TARGET_B8G8R8A8_UNORM, arrayparam(samplerNormalMap));
+		renderStateNormalMap.Create("water_es3_normal", numElements, elements, AFRS_OFFSCREEN_RENDER_TARGET_R8G8B8A8_UNORM, arrayparam(samplerNormalMap));
 	}
 
 	aflog("WaterSurface::Init shaders are ready!\n");
@@ -210,7 +210,7 @@ void WaterSurfaceES3::UpdateHeightMap(AFCommandList& cmd, const UniformBuffer& h
 	cmd.SetBuffer(sizeof(hmub), &hmub, 1);
 	stockObjects.ApplyFullScreenVertexBuffer(cmd);
 
-	heightW.BeginRenderToThis();
+	heightW.BeginRenderToThis(true);
 	cmd.Draw(4);
 	heightW.EndRenderToThis();
 
@@ -230,7 +230,7 @@ void WaterSurfaceES3::UpdateNormalMap(AFCommandList& cmd)
 	cmd.SetBuffer(sizeof(heightMapSize), &heightMapSize, 0);
 	stockObjects.ApplyFullScreenVertexBuffer(cmd);
 
-	normalMap.BeginRenderToThis();
+	normalMap.BeginRenderToThis(true);
 	cmd.Draw(4);
 	normalMap.EndRenderToThis();
 #ifdef AF_DX11

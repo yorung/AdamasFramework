@@ -185,7 +185,7 @@ class DeviceManVK
 	RECT rc = {};
 	bool inRenderPass = false;
 public:
-	VkRenderPass primaryRenderPass = 0, offscreenR8G8B8A8D24S8RenderPass = 0, offscreenR16G16B16A16D24S8RenderPass = 0, offscreenR8G8B8A8RenderPass = 0;
+	VkRenderPass primaryRenderPass = 0, offscreenR8G8B8A8D24S8RenderPass = 0, offscreenR16G16B16A16D24S8RenderPass = 0, offscreenR8G8B8A8RenderPass = 0, offscreenR16G16B16A16RenderPass = 0;
 	VkPhysicalDeviceMemoryProperties physicalDeviceMemoryProperties;
 	VkPhysicalDevice physicalDevice = nullptr;
 	VkDevice GetDevice() { return device; }

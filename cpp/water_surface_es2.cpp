@@ -219,16 +219,16 @@ void WaterSurfaceES2::Init()
 
 	vbo = afCreateDynamicVertexBuffer(vert.size() * sizeof(WaterVert));
 	ibo = afCreateTiledPlaneIBO(tileMax, &nIndi);
-	renderStatesWater.Create("water_es2", arrayparam(elements), AFRS_OFFSCREEN_RENDER_TARGET_B8G8R8A8_UNORM, arrayparam(samplers));
+	renderStatesWater.Create("water_es2", arrayparam(elements), AFRS_OFFSCREEN_RENDER_TARGET_R8G8B8A8_UNORM, arrayparam(samplers));
 
 //	const char* shaderName = "vivid";
 	const char* shaderName = "letterbox";
 #ifdef AF_DX12
-	renderStatesPostProcess.Create(shaderName, 0, nullptr, AFRS_NONE | AFRS_OFFSCREEN_RENDER_TARGET_B8G8R8A8_UNORM, arrayparam(samplers));
+	renderStatesPostProcess.Create(shaderName, 0, nullptr, AFRS_NONE | AFRS_OFFSCREEN_RENDER_TARGET_R8G8B8A8_UNORM, arrayparam(samplers));
 #else
 	int numElements = 0;
 	const InputElement* fullScreenElements = stockObjects.GetFullScreenInputElements(numElements);
-	renderStatesPostProcess.Create(shaderName, numElements, fullScreenElements, AFRS_NONE | AFRS_OFFSCREEN_RENDER_TARGET_B8G8R8A8_UNORM, arrayparam(samplers));
+	renderStatesPostProcess.Create(shaderName, numElements, fullScreenElements, AFRS_NONE | AFRS_OFFSCREEN_RENDER_TARGET_R8G8B8A8_UNORM, arrayparam(samplers));
 #endif
 
 	texIds.resize(dimof(texFiles));

@@ -13,7 +13,7 @@ void LetterBox::LazyInit()
 	};
 	int numElements = 0;
 	const InputElement* elements = stockObjects.GetFullScreenInputElements(numElements);
-	renderStates.Create("letterbox", numElements, elements, AFRS_OFFSCREEN_RENDER_TARGET_B8G8R8A8_UNORM, arrayparam(samplers));
+	renderStates.Create("letterbox", numElements, elements, AFRS_OFFSCREEN_RENDER_TARGET_R8G8B8A8_UNORM, arrayparam(samplers));
 }
 
 void LetterBox::Draw(AFCommandList& cmd, AFRenderTarget& target, AFTexRef srcTex)
@@ -24,7 +24,7 @@ void LetterBox::Draw(AFCommandList& cmd, AFRenderTarget& target, AFTexRef srcTex
 	renderStates.Apply();
 	stockObjects.ApplyFullScreenVertexBuffer(cmd);
 
-	target.BeginRenderToThis();
+	target.BeginRenderToThis(true);
 	cmd.Draw(4);
 	target.EndRenderToThis();
 }

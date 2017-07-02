@@ -359,26 +359,23 @@ static VkPrimitiveTopology RenderFlagsToPrimitiveTopology(uint32_t flags)
 	return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
 }
 
-inline bool afIsRenderFlagsNeedsDepth(uint32_t flags)
+static AFFormat RenderFlagsToDSFormat(uint32_t flags)
 {
-	return !!(flags & (AFRS_DEPTH_CLOSEREQUAL_READONLY | AFRS_DEPTH_ENABLE));
+	return (flags & (AFRS_DEPTH_CLOSEREQUAL_READONLY | AFRS_DEPTH_ENABLE)) ? AFF_D24_UNORM_S8_UINT : AFF_INVALID;
 }
 
-static VkRenderPass RenderFlagsToRenderPass(uint32_t flags)
+static AFFormat RenderFlagsToRTFormat(uint32_t flags)
 {
-	if (!!(flags & AFRS_OFFSCREEN_RENDER_TARGET_B8G8R8A8_UNORM) && afIsRenderFlagsNeedsDepth(flags))
+	if (flags & AFRS_OFFSCREEN_RENDER_TARGET_R8G8B8A8_UNORM)
 	{
-		return deviceMan.offscreenR8G8B8A8D24S8RenderPass;
+		return AFF_R8G8B8A8_UNORM;
 	}
-	if (!!(flags & AFRS_OFFSCREEN_RENDER_TARGET_R16G16B16A16_FLOAT) && afIsRenderFlagsNeedsDepth(flags))
+	if (flags & AFRS_OFFSCREEN_RENDER_TARGET_R16G16B16A16_FLOAT)
 	{
-		return deviceMan.offscreenR16G16B16A16D24S8RenderPass;
+		return AFF_R16G16B16A16_FLOAT;
 	}
-	if (!!(flags & AFRS_OFFSCREEN_RENDER_TARGET_B8G8R8A8_UNORM) && !afIsRenderFlagsNeedsDepth(flags))
-	{
-		return deviceMan.offscreenR8G8B8A8RenderPass;
-	}
-	return deviceMan.primaryRenderPass;
+	assert(0);
+	return AFF_INVALID;
 }
 
 static VkRenderPass VkFormatToRenderPassForOffScreenRenderTarget(VkFormat renderTargetFormat, VkFormat depthStencilFormat)
@@ -395,8 +392,26 @@ static VkRenderPass VkFormatToRenderPassForOffScreenRenderTarget(VkFormat render
 	{
 		return deviceMan.offscreenR8G8B8A8RenderPass;
 	}
+	if (renderTargetFormat == VK_FORMAT_R16G16B16A16_SFLOAT && depthStencilFormat == VK_FORMAT_UNDEFINED)
+	{
+		return deviceMan.offscreenR16G16B16A16RenderPass;
+	}
 	assert(0);
 	return 0;
+}
+
+static bool IsRenderFlagsPrimarySurface(uint32_t flags)
+{
+	return !(flags & (AFRS_OFFSCREEN_RENDER_TARGET_R8G8B8A8_UNORM | AFRS_OFFSCREEN_RENDER_TARGET_R16G16B16A16_FLOAT));
+}
+
+static VkRenderPass RenderFlagsToRenderPass(uint32_t flags)
+{
+	if (IsRenderFlagsPrimarySurface(flags))
+	{
+		return deviceMan.primaryRenderPass;
+	}
+	return VkFormatToRenderPassForOffScreenRenderTarget(RenderFlagsToRTFormat(flags), RenderFlagsToDSFormat(flags));
 }
 
 static bool IsPresentModeSupported(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, VkPresentModeKHR presentMode)
@@ -551,6 +566,7 @@ void DeviceManVK::Create(HWND hWnd)
 	offscreenR8G8B8A8D24S8RenderPass = CreateRenderPass(AFF_R8G8B8A8_UNORM, VK_FORMAT_D24_UNORM_S8_UINT, false);
 	offscreenR16G16B16A16D24S8RenderPass = CreateRenderPass(AFF_R16G16B16A16_FLOAT, VK_FORMAT_D24_UNORM_S8_UINT, false);
 	offscreenR8G8B8A8RenderPass = CreateRenderPass(AFF_R8G8B8A8_UNORM, VK_FORMAT_UNDEFINED, false);
+	offscreenR16G16B16A16RenderPass = CreateRenderPass(AFF_R16G16B16A16_FLOAT, VK_FORMAT_UNDEFINED, false);
 	for (int i = 0; i < (int)swapChainCount; i++)
 	{
 		const VkImageViewCreateInfo imageViewCreateInfo = { VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, nullptr, 0, swapChainImages[i], VK_IMAGE_VIEW_TYPE_2D, surfaceFormats[0].format, colorComponentMapping, { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 } };
@@ -656,6 +672,7 @@ void DeviceManVK::Destroy()
 	afSafeDeleteVk(vkDestroyRenderPass, device, offscreenR8G8B8A8D24S8RenderPass);
 	afSafeDeleteVk(vkDestroyRenderPass, device, offscreenR16G16B16A16D24S8RenderPass);
 	afSafeDeleteVk(vkDestroyRenderPass, device, offscreenR8G8B8A8RenderPass);
+	afSafeDeleteVk(vkDestroyRenderPass, device, offscreenR16G16B16A16RenderPass);
 	afSafeDeleteVk(vkDestroySwapchainKHR, device, swapchain);
 	if (surface)
 	{
