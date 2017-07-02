@@ -141,7 +141,7 @@ public:
 
 class AFRenderTarget
 {
-	VkFramebuffer framebuffer = 0, framebufferNoDepth = 0;
+	VkFramebuffer framebuffer = 0;
 	TextureContext renderTarget;
 	TextureContext depthStencil;
 	bool asDefault = false;
@@ -151,7 +151,7 @@ public:
 	void InitForDefaultRenderTarget();
 	void Init(IVec2 size, AFFormat colorFormat, AFFormat depthStencilFormat = AFF_INVALID);
 	void Destroy();
-	void BeginRenderToThis(bool dontUseDepth = false);
+	void BeginRenderToThis();
 	void EndRenderToThis();
 	TextureContext& GetTexture();
 };

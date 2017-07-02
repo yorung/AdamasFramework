@@ -199,7 +199,7 @@ void WaterSurfaceES3::UpdateHeightMap(AFCommandList& cmd, const UniformBuffer& h
 	cmd.SetBuffer(sizeof(hmub), &hmub, 1);
 	stockObjects.ApplyFullScreenVertexBuffer(cmd);
 
-	heightW.BeginRenderToThis(true);
+	heightW.BeginRenderToThis();
 	cmd.Draw(4);
 	heightW.EndRenderToThis();
 
@@ -219,7 +219,7 @@ void WaterSurfaceES3::UpdateNormalMap(AFCommandList& cmd)
 	cmd.SetBuffer(sizeof(heightMapSize), &heightMapSize, 0);
 	stockObjects.ApplyFullScreenVertexBuffer(cmd);
 
-	normalMap.BeginRenderToThis(true);
+	normalMap.BeginRenderToThis();
 	cmd.Draw(4);
 	normalMap.EndRenderToThis();
 #ifdef AF_DX11
