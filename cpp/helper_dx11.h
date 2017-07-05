@@ -87,8 +87,6 @@ class AFRenderTarget
 {
 	IVec2 texSize;
 	ComPtr<ID3D11Texture2D> renderTarget, depthStencil;
-//	ComPtr<ID3D11RenderTargetView> renderTargetView;
-//	ComPtr<ID3D11DepthStencilView> depthStencilView;
 public:
 	~AFRenderTarget() { Destroy(); }
 	void InitForDefaultRenderTarget();

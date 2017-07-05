@@ -436,11 +436,7 @@ void AFRenderTarget::Init(IVec2 size, DXGI_FORMAT colorFormat, DXGI_FORMAT depth
 {
 	Destroy();
 	texSize = size;
-	CD3D11_TEXTURE2D_DESC tDesc(colorFormat, size.x, size.y, 1, 1, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE/* | D3D11_BIND_UNORDERED_ACCESS*/);
-	afHandleDXError(deviceMan11.GetDevice()->CreateTexture2D(&tDesc, NULL, &renderTarget));
-//	hr = deviceMan11.GetDevice()->CreateRenderTargetView(tex.Get(), &CD3D11_RENDER_TARGET_VIEW_DESC(D3D11_RTV_DIMENSION_TEXTURE2D, tDesc.Format), &renderTargetView);
-//	hr = deviceMan11.GetDevice()->CreateShaderResourceView(tex.Get(), &CD3D11_SHADER_RESOURCE_VIEW_DESC(D3D11_SRV_DIMENSION_TEXTURE2D, tDesc.Format), &shaderResourceView);
-//	hr = deviceMan11.GetDevice()->CreateUnorderedAccessView(tex.Get(), &CD3D11_UNORDERED_ACCESS_VIEW_DESC(D3D11_UAV_DIMENSION_TEXTURE2D, tDesc.Format), &unorderedAccessView);
+	renderTarget = afCreateDynamicTexture(colorFormat, size, AFTF_RTV | AFTF_SRV);
 	switch (depthStencilFormat)
 	{
 	case DXGI_FORMAT_D24_UNORM_S8_UINT:
@@ -456,9 +452,6 @@ void AFRenderTarget::Destroy()
 {
 	renderTarget.Reset();
 	depthStencil.Reset();
-//	renderTargetView.Reset();
-//	shaderResourceView.Reset();
-//	depthStencilView.Reset();
 }
 
 void AFRenderTarget::BeginRenderToThis()
