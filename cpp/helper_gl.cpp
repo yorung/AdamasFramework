@@ -195,13 +195,7 @@ void afUpdateUniformVariable(GLuint program, int size, const void* buffer, const
 void afBindTexture(AFTexRef tex, GLuint textureBindingPoint)
 {
 	afHandleGLError(glActiveTexture(GL_TEXTURE0 + textureBindingPoint));
-	afHandleGLError(glBindTexture(GL_TEXTURE_2D, tex->name));
-}
-
-void afBindCubeMap(AFTexRef tex, GLuint textureBindingPoint)
-{
-	afHandleGLError(glActiveTexture(GL_TEXTURE0 + textureBindingPoint));
-	afHandleGLError(glBindTexture(GL_TEXTURE_CUBE_MAP, tex->name));
+	afHandleGLError(glBindTexture(tex->isCubemap ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D, tex->name));
 }
 
 void afWriteTexture(AFTexRef tex, const TexDesc& desc, const void* buf)
@@ -279,6 +273,7 @@ AFTexRef afCreateTexture2D(AFFormat format, const TexDesc& desc, int mipCount, c
 	GLenum targetFace = desc.isCubeMap ? GL_TEXTURE_CUBE_MAP_POSITIVE_X : GL_TEXTURE_2D;
 
 	AFTexRef texture(new TextureContext);
+	texture->isCubemap = desc.isCubeMap;
 	glGenTextures(1, &texture->name);
 	glBindTexture(target, texture->name);
 	glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);

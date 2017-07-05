@@ -1,7 +1,6 @@
 class SkyMan
 {
 	AFTexRef texRef;
-	TexDesc texDesc;
 	AFRenderStates renderStates;
 public:
 	~SkyMan();

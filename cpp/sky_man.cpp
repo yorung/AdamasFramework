@@ -13,7 +13,7 @@ SkyMan::~SkyMan()
 void SkyMan::Create(const char *texFileName, const char* shader)
 {
 	Destroy();
-	texRef = afLoadTexture(texFileName, texDesc);
+	texRef = afLoadTexture(texFileName);
 	int numElements = 0;
 	const InputElement* elements = stockObjects.GetFullScreenInputElements(numElements);
 	renderStates.Create(shader, numElements, elements, AFRS_DEPTH_CLOSEREQUAL_READONLY | AFRS_OFFSCREEN_RENDER_TARGET_R8G8B8A8_UNORM | AFRS_DEPTH_STENCIL_D24_UNORM_S8_UINT, arrayparam(samplers));
@@ -32,14 +32,6 @@ void SkyMan::Draw(AFCommandList& cmd)
 	Mat invVP = inv(matV * matP);
 	cmd.SetBuffer(sizeof(invVP), &invVP, 1);
 	stockObjects.ApplyFullScreenVertexBuffer(cmd);
-#ifdef AF_GLES
-	if (texDesc.isCubeMap)
-	{
-		afBindCubeMap(texRef, 0);
-		cmd.Draw(4);
-		return;
-	}
-#endif
 	cmd.SetTexture(texRef, 0);
 	cmd.Draw(4);
 }

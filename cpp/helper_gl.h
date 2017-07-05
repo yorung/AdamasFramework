@@ -86,6 +86,7 @@ class TextureContext
 {
 public:
 	GLuint name = 0;
+	bool isCubemap = false;
 	~TextureContext()
 	{
 		if (name != 0)
@@ -162,7 +163,6 @@ void afLayoutSSBOBindingManually(GLuint program, const GLchar* name, GLuint stor
 void afLayoutUBOBindingManually(GLuint program, const GLchar* name, GLuint uniformBlockBinding);
 #endif
 void afBindTexture(AFTexRef tex, GLuint textureBindingPoint);
-void afBindCubeMap(AFTexRef tex, GLuint textureBindingPoint);
 
 enum PrimitiveTopology {
 	PT_TRIANGLESTRIP = GL_TRIANGLE_STRIP,
