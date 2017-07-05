@@ -81,7 +81,23 @@ struct AFGLName {
 typedef TBufName<GL_ELEMENT_ARRAY_BUFFER> IBOID;
 typedef TBufName<GL_ARRAY_BUFFER> VBOID;
 typedef AFGLName SAMPLERID;
-typedef AFGLName SRVID;
+
+class TextureContext
+{
+public:
+	GLuint name = 0;
+	~TextureContext()
+	{
+		if (name != 0)
+		{
+			glDeleteTextures(1, &name);
+			name = 0;
+		}
+	}
+	operator GLuint() const { return name; }
+};
+
+typedef std::shared_ptr<TextureContext> SRVID;
 typedef SRVID AFTexRef;
 
 void afSetVertexAttributes(const InputElement elements[], int numElements, int numBuffers, VBOID const vertexBufferIds[], const int strides[]);
@@ -104,13 +120,8 @@ inline void afSafeDeleteBuffer(BufName& b)
 		b.x = 0;
 	}
 }
-inline void afSafeDeleteTexture(SRVID& t)
-{
-	if (t != 0) {
-		glDeleteTextures(1, &t.x);
-		t.x = 0;
-	}
-}
+
+inline void afSafeDeleteTexture(AFTexRef& tex) { tex.reset(); }
 
 struct AFTexSubresourceData
 {
@@ -150,8 +161,8 @@ void afLayoutSamplerBindingManually(GLuint program, const GLchar* name, GLuint s
 void afLayoutSSBOBindingManually(GLuint program, const GLchar* name, GLuint storageBlockBinding);
 void afLayoutUBOBindingManually(GLuint program, const GLchar* name, GLuint uniformBlockBinding);
 #endif
-void afBindTexture(GLuint tex, GLuint textureBindingPoint);
-void afBindCubeMap(GLuint tex, GLuint textureBindingPoint);
+void afBindTexture(AFTexRef tex, GLuint textureBindingPoint);
+void afBindCubeMap(AFTexRef tex, GLuint textureBindingPoint);
 
 enum PrimitiveTopology {
 	PT_TRIANGLESTRIP = GL_TRIANGLE_STRIP,
@@ -243,7 +254,7 @@ public:
 		rs.Apply();
 		currentRS = &rs;
 	}
-	void SetTexture(SRVID texId, int descritorSetIndex)
+	void SetTexture(AFTexRef texId, int descritorSetIndex)
 	{
 		afBindTexture(texId, descritorSetIndex);
 	}

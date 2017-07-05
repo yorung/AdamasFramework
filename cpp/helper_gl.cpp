@@ -192,21 +192,21 @@ void afUpdateUniformVariable(GLuint program, int size, const void* buffer, const
 	}
 }
 
-void afBindTexture(GLuint tex, GLuint textureBindingPoint)
+void afBindTexture(AFTexRef tex, GLuint textureBindingPoint)
 {
 	afHandleGLError(glActiveTexture(GL_TEXTURE0 + textureBindingPoint));
-	afHandleGLError(glBindTexture(GL_TEXTURE_2D, tex));
+	afHandleGLError(glBindTexture(GL_TEXTURE_2D, tex->name));
 }
 
-void afBindCubeMap(GLuint tex, GLuint textureBindingPoint)
+void afBindCubeMap(AFTexRef tex, GLuint textureBindingPoint)
 {
 	afHandleGLError(glActiveTexture(GL_TEXTURE0 + textureBindingPoint));
-	afHandleGLError(glBindTexture(GL_TEXTURE_CUBE_MAP, tex));
+	afHandleGLError(glBindTexture(GL_TEXTURE_CUBE_MAP, tex->name));
 }
 
-void afWriteTexture(SRVID srv, const TexDesc& desc, const void* buf)
+void afWriteTexture(AFTexRef tex, const TexDesc& desc, const void* buf)
 {
-	glBindTexture(GL_TEXTURE_2D, srv);
+	glBindTexture(GL_TEXTURE_2D, tex->name);
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, desc.size.x, desc.size.y, GL_RGBA, GL_UNSIGNED_BYTE, buf);
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
@@ -259,11 +259,11 @@ static void CreateTextureInternal(AFFormat format, const IVec2& size, void* img)
 	}
 }
 
-SRVID afCreateDynamicTexture(AFFormat format, const IVec2& size)
+AFTexRef afCreateDynamicTexture(AFFormat format, const IVec2& size)
 {
-	SRVID texture;
-	glGenTextures(1, &texture.x);
-	glBindTexture(GL_TEXTURE_2D, texture);
+	AFTexRef texture(new TextureContext);
+	glGenTextures(1, &texture->name);
+	glBindTexture(GL_TEXTURE_2D, texture->name);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -273,14 +273,14 @@ SRVID afCreateDynamicTexture(AFFormat format, const IVec2& size)
 	return texture;
 }
 
-SRVID afCreateTexture2D(AFFormat format, const TexDesc& desc, int mipCount, const AFTexSubresourceData datas[])
+AFTexRef afCreateTexture2D(AFFormat format, const TexDesc& desc, int mipCount, const AFTexSubresourceData datas[])
 {
 	GLenum target = desc.isCubeMap ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D;
 	GLenum targetFace = desc.isCubeMap ? GL_TEXTURE_CUBE_MAP_POSITIVE_X : GL_TEXTURE_2D;
 
-	SRVID texture;
-	glGenTextures(1, &texture.x);
-	glBindTexture(target, texture);
+	AFTexRef texture(new TextureContext);
+	glGenTextures(1, &texture->name);
+	glBindTexture(target, texture->name);
 	glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(target, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -635,10 +635,11 @@ void AFRenderTarget::Init(IVec2 size, AFFormat colorFormat, AFFormat depthStenci
 
 	afHandleGLError(glGenFramebuffers(1, &framebufferObject));
 	afHandleGLError(glBindFramebuffer(GL_FRAMEBUFFER, framebufferObject));
-	afHandleGLError(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texColor, 0));
-	if (texDepth) {
+	afHandleGLError(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texColor->name, 0));
+	if (texDepth)
+	{
 #ifdef AF_GLES31
-		afHandleGLError(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, texDepth, 0));
+		afHandleGLError(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, texDepth->name, 0));
 #endif
 	}
 	afHandleGLError(glBindFramebuffer(GL_FRAMEBUFFER, 0));
@@ -657,7 +658,7 @@ void AFRenderTarget::BeginRenderToThis()
 IVec2 afGetTextureSize(SRVID tex)
 {
 	GLint w, h;
-	glBindTexture(GL_TEXTURE_2D, tex);
+	glBindTexture(GL_TEXTURE_2D, tex->name);
 	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &w);
 	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &h);
 	glBindTexture(GL_TEXTURE_2D, 0);
