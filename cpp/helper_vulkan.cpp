@@ -34,7 +34,7 @@ VkResult _afHandleVKError(const char* file, const char* func, int line, const ch
 
 void afTransition(VkCommandBuffer commandBuffer, AFTexRef res, VkImageLayout from, VkImageLayout to)
 {
-	vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0, 0, nullptr, 0, nullptr, 1, ToPtr<VkImageMemoryBarrier>({ VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER, nullptr, VK_ACCESS_SHADER_READ_BIT, VK_ACCESS_COLOR_ATTACHMENT_READ_BIT, from, to, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, res->image,{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1u } }));
+	vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0, 0, nullptr, 0, nullptr, 1, ToPtr<VkImageMemoryBarrier>({ VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER, nullptr, VK_ACCESS_SHADER_READ_BIT, VK_ACCESS_COLOR_ATTACHMENT_READ_BIT, from, to, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, res->image,{ VK_IMAGE_ASPECT_COLOR_BIT, 0, (uint32_t)res->mipCount, 0, (res->texDesc.isCubeMap ? 6u : 1u) } }));
 }
 
 static VkShaderModule CreateShaderModule(VkDevice device, const char* fileName)
@@ -193,6 +193,7 @@ AFTexRef afCreateDynamicTexture(VkFormat format, const IVec2& size, uint32_t fla
 	textureContext->device = device;
 	textureContext->format = format;
 	textureContext->texDesc.size = size;
+	textureContext->mipCount = 1;
 
 	VkImageCreateInfo TextureCreateInfo = { VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO, nullptr, 0, VK_IMAGE_TYPE_2D, format,{ (uint32_t)size.x, (uint32_t)size.y, 1 }, 1, 1, VK_SAMPLE_COUNT_1_BIT, VK_IMAGE_TILING_OPTIMAL, 0, VK_SHARING_MODE_EXCLUSIVE, 0, nullptr, VK_IMAGE_LAYOUT_UNDEFINED };
 	if (flags & AFTF_CPU_WRITE)
@@ -245,6 +246,7 @@ AFTexRef afCreateTexture2D(AFFormat format, const struct TexDesc& desc, int mipC
 	textureContext->device = device;
 	textureContext->format = format;
 	textureContext->texDesc = desc;
+	textureContext->mipCount = mipCount;
 	const VkImageCreateInfo imageCreateInfo = { VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO, nullptr, (desc.isCubeMap ? VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT : 0u), VK_IMAGE_TYPE_2D, format,{ (uint32_t)desc.size.x, (uint32_t)desc.size.y, 1 }, (uint32_t)mipCount, desc.isCubeMap ? 6u : 1u, VK_SAMPLE_COUNT_1_BIT, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT, VK_SHARING_MODE_EXCLUSIVE, 0, nullptr, VK_IMAGE_LAYOUT_UNDEFINED };
 	afHandleVKError(vkCreateImage(device, &imageCreateInfo, nullptr, &textureContext->image));
 

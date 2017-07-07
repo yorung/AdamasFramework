@@ -96,6 +96,7 @@ public:
 	VkImageView view = 0;
 	VkDescriptorSet descriptorSet = 0;
 	TexDesc texDesc;
+	int mipCount;
 	~TextureContext();
 };
 typedef std::shared_ptr<TextureContext> SRVID;
