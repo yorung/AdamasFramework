@@ -32,6 +32,11 @@ VkResult _afHandleVKError(const char* file, const char* func, int line, const ch
 	return result;
 }
 
+void afTransition(VkCommandBuffer commandBuffer, AFTexRef res, VkImageLayout from, VkImageLayout to)
+{
+	vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0, 0, nullptr, 0, nullptr, 1, ToPtr<VkImageMemoryBarrier>({ VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER, nullptr, VK_ACCESS_SHADER_READ_BIT, VK_ACCESS_COLOR_ATTACHMENT_READ_BIT, from, to, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, res->image,{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1u } }));
+}
+
 static VkShaderModule CreateShaderModule(VkDevice device, const char* fileName)
 {
 	int size;
@@ -221,6 +226,10 @@ AFTexRef afCreateDynamicTexture(VkFormat format, const IVec2& size, uint32_t fla
 	if (flags & AFTF_SRV)
 	{
 		CreateTextureDescriptorSet(*textureContext);
+	}
+	if (flags & AFTF_RTV)
+	{
+		afTransition(deviceMan.commandBuffer, textureContext, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 	}
 	return textureContext;
 }
@@ -864,8 +873,7 @@ void AFRenderTarget::BeginRenderToThis()
 	{
 		currentStateIsRtv = true;
 		VkCommandBuffer commandBuffer = deviceMan.commandBuffer;
-		const VkImageMemoryBarrier srvToRtv = { VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER, nullptr, VK_ACCESS_SHADER_READ_BIT, VK_ACCESS_COLOR_ATTACHMENT_READ_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, renderTarget->image,{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1u } };
-		vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0, 0, nullptr, 0, nullptr, 1, &srvToRtv);
+		afTransition(commandBuffer, renderTarget, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 	}
 	AFFormat dsFormat = depthStencil ? depthStencil->format : AFF_INVALID;
 	deviceMan.BeginRenderPass(VkFormatToRenderPassForOffScreenRenderTarget(renderTarget->format, dsFormat), framebuffer, renderTarget->texDesc.size, dsFormat != AFF_INVALID);
@@ -882,8 +890,7 @@ void AFRenderTarget::EndRenderToThis()
 	{
 		currentStateIsRtv = false;
 		VkCommandBuffer commandBuffer = deviceMan.commandBuffer;
-		const VkImageMemoryBarrier srvToRtv = { VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER, nullptr, VK_ACCESS_COLOR_ATTACHMENT_READ_BIT, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, renderTarget->image,{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1u } };
-		vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0, 0, nullptr, 0, nullptr, 1, &srvToRtv);
+		afTransition(commandBuffer, renderTarget, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 	}
 }
 
