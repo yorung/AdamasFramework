@@ -9,14 +9,17 @@ const int GLOW_WH = 128;
 void Glow::LazyInit()
 {
 	assert(dimof(glowMap) + 1 == dimof(samplerTypes));
-	if (renderStateGlowExtraction.IsReady()) {
+	if (renderStateGlowExtraction.IsReady())
+	{
 		return;
 	}
 
 	int texSize = GLOW_WH;
-	for (auto& it : glowMap) {
+	for (auto& it : glowMap)
+	{
 		it.Init(IVec2(texSize, texSize), AFF_R8G8B8A8_UNORM, AFF_INVALID);
 		it.BeginRenderToThis();	// clear textures
+		it.EndRenderToThis();
 		texSize /= 2;
 	}
 
