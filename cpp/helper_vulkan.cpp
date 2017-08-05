@@ -506,8 +506,8 @@ void DeviceManVK::Create(HWND hWnd)
 	// query properties
 	uint32_t numQueueFamilyProperties = 0;
 	vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &numQueueFamilyProperties, nullptr);
-	VkQueueFamilyProperties queueFamilyProperties[2];
-	assert(numQueueFamilyProperties == _countof(queueFamilyProperties));
+	VkQueueFamilyProperties queueFamilyProperties[3];
+	assert(numQueueFamilyProperties <= _countof(queueFamilyProperties));
 	vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &numQueueFamilyProperties, queueFamilyProperties);
 	assert(queueFamilyProperties[0].queueFlags & VK_QUEUE_GRAPHICS_BIT);
 	VkPhysicalDeviceFeatures physicalDeviceFeatures;
