@@ -440,7 +440,8 @@ void AFRenderTarget::Init(IVec2 size, DXGI_FORMAT colorFormat, DXGI_FORMAT depth
 	switch (depthStencilFormat)
 	{
 	case DXGI_FORMAT_D24_UNORM_S8_UINT:
-		depthStencil = afCreateDynamicTexture(DXGI_FORMAT_D24_UNORM_S8_UINT, size, AFTF_DSV);
+	case DXGI_FORMAT_D32_FLOAT_S8X24_UINT:
+		depthStencil = afCreateDynamicTexture(depthStencilFormat, size, AFTF_DSV);
 		return;
 	case DXGI_FORMAT_UNKNOWN:
 		return;

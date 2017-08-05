@@ -20,6 +20,7 @@ typedef VkFormat AFFormat;
 #define AFF_R32_UINT VK_FORMAT_R32_UINT
 #define AFF_R32_TYPELESS VK_FORMAT_R32_SFLOAT
 #define AFF_D24_UNORM_S8_UINT VK_FORMAT_D24_UNORM_S8_UINT
+#define AFF_D32_FLOAT_S8_UINT VK_FORMAT_D32_SFLOAT_S8_UINT
 
 typedef VkVertexInputAttributeDescription InputElement;
 class CInputElement : public InputElement
@@ -185,7 +186,7 @@ class DeviceManVK
 	RECT rc = {};
 	bool inRenderPass = false;
 public:
-	VkRenderPass primaryRenderPass = 0, offscreenR8G8B8A8D24S8RenderPass = 0, offscreenR16G16B16A16D24S8RenderPass = 0, offscreenR8G8B8A8RenderPass = 0, offscreenR16G16B16A16RenderPass = 0;
+	VkRenderPass primaryRenderPass = 0, offscreenR8G8B8A8D32S8RenderPass = 0, offscreenR16G16B16A16D32S8RenderPass = 0, offscreenR8G8B8A8RenderPass = 0, offscreenR16G16B16A16RenderPass = 0;
 	VkPhysicalDeviceMemoryProperties physicalDeviceMemoryProperties;
 	VkPhysicalDevice physicalDevice = nullptr;
 	VkDevice GetDevice() { return device; }

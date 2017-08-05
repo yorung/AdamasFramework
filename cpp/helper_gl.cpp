@@ -246,6 +246,9 @@ static void CreateTextureInternal(AFFormat format, const IVec2& size, void* img)
 	case AFF_D24_UNORM_S8_UINT:
 		gen(GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8);
 		break;
+	case AFF_D32_FLOAT_S8_UINT:
+		gen(GL_DEPTH32F_STENCIL8, GL_DEPTH_STENCIL, GL_FLOAT_32_UNSIGNED_INT_24_8_REV);
+		break;
 #endif
 	default:
 		assert(0);

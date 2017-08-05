@@ -81,7 +81,7 @@ void App::Create()
 	spriteRenderer.Create();
 	stockObjects.Create();
 	luaMan.Create();
-	appRenderTarget.Init(systemMisc.GetScreenSize(), AFF_R8G8B8A8_UNORM, AFF_D24_UNORM_S8_UINT);
+	appRenderTarget.Init(systemMisc.GetScreenSize(), AFF_R8G8B8A8_UNORM, AFF_D32_FLOAT_S8_UINT);
 #if defined(AF_GLES) || defined(AF_VULKAN)
 	int numElements = 0;
 	const InputElement* elements = stockObjects.GetFullScreenInputElements(numElements);

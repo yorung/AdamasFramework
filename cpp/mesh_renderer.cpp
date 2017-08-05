@@ -59,7 +59,7 @@ void MeshRenderer::Create()
 {
 	Destroy();
 
-	renderStates.Create("skin_instanced", arrayparam(elements), AFRS_DEPTH_ENABLE | AFRS_CULL_CW | AFRS_PRIMITIVE_TRIANGLELIST | AFRS_OFFSCREEN_RENDER_TARGET_R8G8B8A8_UNORM | AFRS_DEPTH_STENCIL_D24_UNORM_S8_UINT, arrayparam(samplers));
+	renderStates.Create("skin_instanced", arrayparam(elements), AFRS_DEPTH_ENABLE | AFRS_CULL_CW | AFRS_PRIMITIVE_TRIANGLELIST | AFRS_OFFSCREEN_RENDER_TARGET_R8G8B8A8_UNORM | AFRS_DEPTH_STENCIL_D32_FLOAT_S8_UINT, arrayparam(samplers));
 }
 
 void MeshRenderer::Destroy()

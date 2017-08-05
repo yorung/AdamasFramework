@@ -176,6 +176,7 @@ static VkImageAspectFlags FormatToAspectFlags(VkFormat format)
 	switch (format)
 	{
 	case VK_FORMAT_D24_UNORM_S8_UINT:
+	case VK_FORMAT_D32_SFLOAT_S8_UINT:
 		return VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT;
 	}
 	return VK_IMAGE_ASPECT_COLOR_BIT;
@@ -183,9 +184,9 @@ static VkImageAspectFlags FormatToAspectFlags(VkFormat format)
 
 AFTexRef afCreateDynamicTexture(VkFormat format, const IVec2& size, uint32_t flags)
 {
-	VkFormatProperties formatProperties;
-	vkGetPhysicalDeviceFormatProperties(deviceMan.physicalDevice, format, &formatProperties);
-	assert(formatProperties.linearTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT);
+//	VkFormatProperties formatProperties;
+//	vkGetPhysicalDeviceFormatProperties(deviceMan.physicalDevice, format, &formatProperties);
+//	assert(formatProperties.linearTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT);
 
 	VkDevice device = deviceMan.GetDevice();
 
@@ -372,9 +373,9 @@ static VkPrimitiveTopology RenderFlagsToPrimitiveTopology(uint32_t flags)
 
 static AFFormat RenderFlagsToDSFormat(uint32_t flags)
 {
-	if (flags & AFRS_DEPTH_STENCIL_D24_UNORM_S8_UINT)
+	if (flags & AFRS_DEPTH_STENCIL_D32_FLOAT_S8_UINT)
 	{
-		return AFF_D24_UNORM_S8_UINT;
+		return AFF_D32_FLOAT_S8_UINT;
 	}
 	if (flags & AFRS_DEPTH_STENCIL_D32_FLOAT)
 	{
@@ -399,13 +400,13 @@ static AFFormat RenderFlagsToRTFormat(uint32_t flags)
 
 static VkRenderPass VkFormatToRenderPassForOffScreenRenderTarget(VkFormat renderTargetFormat, VkFormat depthStencilFormat)
 {
-	if (renderTargetFormat == VK_FORMAT_R8G8B8A8_UNORM && depthStencilFormat == VK_FORMAT_D24_UNORM_S8_UINT)
+	if (renderTargetFormat == VK_FORMAT_R8G8B8A8_UNORM && depthStencilFormat == VK_FORMAT_D32_SFLOAT_S8_UINT)
 	{
-		return deviceMan.offscreenR8G8B8A8D24S8RenderPass;
+		return deviceMan.offscreenR8G8B8A8D32S8RenderPass;
 	}
-	if (renderTargetFormat == VK_FORMAT_R16G16B16A16_SFLOAT && depthStencilFormat == VK_FORMAT_D24_UNORM_S8_UINT)
+	if (renderTargetFormat == VK_FORMAT_R16G16B16A16_SFLOAT && depthStencilFormat == VK_FORMAT_D32_SFLOAT_S8_UINT)
 	{
-		return deviceMan.offscreenR16G16B16A16D24S8RenderPass;
+		return deviceMan.offscreenR16G16B16A16D32S8RenderPass;
 	}
 	if (renderTargetFormat == VK_FORMAT_R8G8B8A8_UNORM && depthStencilFormat == VK_FORMAT_UNDEFINED)
 	{
@@ -582,8 +583,8 @@ void DeviceManVK::Create(HWND hWnd)
 
 	// render pass
 	primaryRenderPass = CreateRenderPass(swapchainInfo.imageFormat, VK_FORMAT_UNDEFINED, true);
-	offscreenR8G8B8A8D24S8RenderPass = CreateRenderPass(AFF_R8G8B8A8_UNORM, VK_FORMAT_D24_UNORM_S8_UINT, false);
-	offscreenR16G16B16A16D24S8RenderPass = CreateRenderPass(AFF_R16G16B16A16_FLOAT, VK_FORMAT_D24_UNORM_S8_UINT, false);
+	offscreenR8G8B8A8D32S8RenderPass = CreateRenderPass(AFF_R8G8B8A8_UNORM, VK_FORMAT_D32_SFLOAT_S8_UINT, false);
+	offscreenR16G16B16A16D32S8RenderPass = CreateRenderPass(AFF_R16G16B16A16_FLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, false);
 	offscreenR8G8B8A8RenderPass = CreateRenderPass(AFF_R8G8B8A8_UNORM, VK_FORMAT_UNDEFINED, false);
 	offscreenR16G16B16A16RenderPass = CreateRenderPass(AFF_R16G16B16A16_FLOAT, VK_FORMAT_UNDEFINED, false);
 	for (int i = 0; i < (int)swapChainCount; i++)
@@ -688,8 +689,8 @@ void DeviceManVK::Destroy()
 	afSafeDeleteVk(vkDestroyCommandPool, device, commandPool);
 	std::for_each(framebuffers, framebuffers + _countof(framebuffers), [&](VkFramebuffer& framebuffer) { afSafeDeleteVk(vkDestroyFramebuffer, device, framebuffer);	});
 	afSafeDeleteVk(vkDestroyRenderPass, device, primaryRenderPass);
-	afSafeDeleteVk(vkDestroyRenderPass, device, offscreenR8G8B8A8D24S8RenderPass);
-	afSafeDeleteVk(vkDestroyRenderPass, device, offscreenR16G16B16A16D24S8RenderPass);
+	afSafeDeleteVk(vkDestroyRenderPass, device, offscreenR8G8B8A8D32S8RenderPass);
+	afSafeDeleteVk(vkDestroyRenderPass, device, offscreenR16G16B16A16D32S8RenderPass);
 	afSafeDeleteVk(vkDestroyRenderPass, device, offscreenR8G8B8A8RenderPass);
 	afSafeDeleteVk(vkDestroyRenderPass, device, offscreenR16G16B16A16RenderPass);
 	afSafeDeleteVk(vkDestroySwapchainKHR, device, swapchain);
@@ -834,8 +835,9 @@ void AFRenderTarget::Init(IVec2 size, AFFormat colorFormat, AFFormat depthStenci
 	switch (depthStencilFormat)
 	{
 	case AFF_D24_UNORM_S8_UINT:
+	case AFF_D32_FLOAT_S8_UINT:
 	{
-		depthStencil = afCreateDynamicTexture(VK_FORMAT_D24_UNORM_S8_UINT, size, AFTF_DSV);
+		depthStencil = afCreateDynamicTexture(depthStencilFormat, size, AFTF_DSV);
 		const VkImageView frameBufferAttachmentImageView[] = { renderTarget->view, depthStencil->view };
 		const VkFramebufferCreateInfo framebufferInfo = { VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO, nullptr, 0, VkFormatToRenderPassForOffScreenRenderTarget(colorFormat, depthStencilFormat), arrayparam(frameBufferAttachmentImageView), (uint32_t)size.x, (uint32_t)size.y, 1 };
 		afHandleVKError(vkCreateFramebuffer(device, &framebufferInfo, nullptr, &framebuffer));
