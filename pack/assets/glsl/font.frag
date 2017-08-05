@@ -1,4 +1,3 @@
-precision lowp float;
 varying vec2 texcoord;
 varying vec4 color;
 uniform sampler2D texture;

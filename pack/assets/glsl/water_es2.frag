@@ -1,4 +1,3 @@
-precision mediump float;
 varying vec2 position;
 varying vec3 normal;
 varying vec2 texcoord;

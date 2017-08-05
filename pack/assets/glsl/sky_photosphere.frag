@@ -1,4 +1,3 @@
-precision highp float;
 varying vec2 vfPosition;
 uniform vec4 b1[4];
 uniform sampler2D s0;

@@ -1,4 +1,3 @@
-precision highp float;
 attribute vec3 POSITION;
 attribute vec3 COLOR;
 varying vec3 color;

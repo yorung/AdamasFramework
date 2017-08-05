@@ -1,4 +1,3 @@
-attribute vec2 POSITION;
 varying vec2 texcoord;
 varying vec2 position;
 

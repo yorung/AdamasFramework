@@ -1,4 +1,3 @@
-precision highp float;
 attribute vec3 POSITION;
 attribute vec3 NORMAL;
 attribute vec2 vTexcoord;

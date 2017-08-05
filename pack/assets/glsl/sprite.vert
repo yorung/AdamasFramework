@@ -1,4 +1,3 @@
-precision highp float;
 attribute vec3 POSITION;
 attribute vec2 TEXCOORD;
 attribute vec4 COLOR;
