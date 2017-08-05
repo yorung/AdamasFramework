@@ -293,7 +293,15 @@ AFTexRef afCreateTexture2D(AFFormat format, const TexDesc& desc, int mipCount, c
 				afHandleGLError(glTexImage2D(targetFace + a, m, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, datas[idx].ptr));
 			} else if (format == AFF_B8G8R8A8_UNORM) {
 #ifdef _MSC_VER	// GL_EXT_texture_format_BGRA8888 is an extension for OpenGL ES, so should use this only on Windows.
-				afHandleGLError(glTexImage2D(targetFace + a, m, GL_BGRA_EXT, w, h, 0, GL_BGRA_EXT, GL_UNSIGNED_BYTE, datas[idx].ptr));
+				// afHandleGLError(glTexImage2D(targetFace + a, m, GL_BGRA_EXT, w, h, 0, GL_BGRA_EXT, GL_UNSIGNED_BYTE, datas[idx].ptr)); AMD driver doesn't accept both GL_BGRA_EXT and GL_BGRA
+				uint32_t* c = new uint32_t[w * h];
+				memcpy(c, datas[idx].ptr, w * h * 4);
+				for (int i = 0; i < w * h; i++)
+				{
+					c[i] = (c[i] & 0xff00ff00) | ((c[i] & 0xff0000) >> 16) | ((c[i] & 0x0000ff) << 16);
+				}
+				afHandleGLError(glTexImage2D(targetFace + a, m, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, c));
+				delete[] c;
 #else
 				// to warn this is wrong format, store BGRA format as "GL_RGBA"
 				aflog("AFF_B8G8R8A8_UNORM is not supported!");
