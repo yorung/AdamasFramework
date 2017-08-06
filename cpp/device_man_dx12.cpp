@@ -239,7 +239,10 @@ void DeviceManDX12::Create(HWND hWnd)
 
 	device->CreateDescriptorHeap(ToPtr<D3D12_DESCRIPTOR_HEAP_DESC>({ D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1 }), IID_PPV_ARGS(&dsvHeap));
 	factory->MakeWindowAssociation(hWnd, DXGI_MWA_NO_ALT_ENTER);
-	device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, frameResources[0].commandAllocator.Get(), nullptr, IID_PPV_ARGS(&commandList));
+
+	ComPtr<ID3D12CommandAllocator> dummy;
+	device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&dummy));
+	device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, dummy.Get(), nullptr, IID_PPV_ARGS(&commandList));
 	commandList->Close();
 
 	if (S_OK != device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence)))
