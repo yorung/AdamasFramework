@@ -119,7 +119,9 @@ void DeviceManDX12::ResetCommandListAndSetDescriptorHeap()
 	device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&allocator));
 	res.commandAllocators.push_back(allocator);
 
-	commandList->Reset(allocator.Get(), nullptr);
+	device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, allocator.Get(), nullptr, IID_PPV_ARGS(&commandList));
+
+//	commandList->Reset(allocator.Get(), nullptr);
 	commandList->SetDescriptorHeaps(1, ToPtr<ID3D12DescriptorHeap*>(res.srvHeap.GetHeap().Get()));
 }
 
