@@ -10,7 +10,6 @@ DeviceManDX12 deviceMan;
 DeviceManDX12::FrameResources::~FrameResources()
 {
 	assert(!renderTarget);
-	assert(!commandAllocator);
 	assert(!constantBuffer);
 	assert(!mappedConstantBuffer);
 }
@@ -35,7 +34,7 @@ void DeviceManDX12::Destroy()
 	for (FrameResources& res : frameResources)
 	{
 		res.renderTarget.Reset();
-		res.commandAllocator.Reset();
+		res.commandAllocators.clear();
 		res.srvHeap.Destroy();
 		res.mappedConstantBuffer = nullptr;
 		if (res.constantBuffer)
@@ -71,7 +70,8 @@ void DeviceManDX12::BeginScene()
 	afWaitFenceValue(fence, res.fenceValueToGuard);
 
 	res.intermediateCommandlistDependentResources.clear();
-	res.commandAllocator->Reset();
+	res.commandAllocators.clear();
+
 	ResetCommandListAndSetDescriptorHeap();
 	afTransition(commandList.Get(), res.renderTarget, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
 }
@@ -104,7 +104,7 @@ void DeviceManDX12::Flush(bool wait)
 
 		for (FrameResources& res : frameResources)
 		{
-			res.commandAllocator->Reset();
+			res.commandAllocators.clear();
 			res.intermediateCommandlistDependentResources.clear();
 		}
 	}
@@ -114,7 +114,12 @@ void DeviceManDX12::Flush(bool wait)
 void DeviceManDX12::ResetCommandListAndSetDescriptorHeap()
 {
 	FrameResources& res = frameResources[frameIndex];
-	commandList->Reset(res.commandAllocator.Get(), nullptr);
+
+	ComPtr<ID3D12CommandAllocator> allocator;
+	device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&allocator));
+	res.commandAllocators.push_back(allocator);
+
+	commandList->Reset(allocator.Get(), nullptr);
 	commandList->SetDescriptorHeaps(1, ToPtr<ID3D12DescriptorHeap*>(res.srvHeap.GetHeap().Get()));
 }
 
@@ -230,7 +235,6 @@ void DeviceManDX12::Create(HWND hWnd)
 			Destroy();
 			return;
 		}
-		device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&res.commandAllocator));
 		res.srvHeap.Create(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, maxSrvs);
 		res.constantBuffer = afCreateUBO(maxConstantBufferBlocks * 0x100);
 		afHandleDXError(res.constantBuffer->Map(0, ToPtr<D3D12_RANGE>({}), (void**)&res.mappedConstantBuffer));

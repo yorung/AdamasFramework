@@ -10,7 +10,7 @@ class DeviceManDX12
 		~FrameResources();
 		std::vector<ComPtr<ID3D12Resource>> intermediateCommandlistDependentResources;
 		ComPtr<ID3D12Resource> renderTarget;
-		ComPtr<ID3D12CommandAllocator> commandAllocator;
+		std::vector<ComPtr<ID3D12CommandAllocator>> commandAllocators;
 		ComPtr<ID3D12Resource> constantBuffer;
 		AFHeapStackAllocator srvHeap;
 		struct { char buf[256]; } *mappedConstantBuffer = nullptr;
