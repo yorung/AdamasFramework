@@ -88,7 +88,7 @@ void DeviceManDX12::EndScene()
 	commandQueue->Signal(fence.Get(), res.fenceValueToGuard = fenceValue++);
 }
 
-void DeviceManDX12::Flush()
+void DeviceManDX12::Flush(bool wait)
 {
 	if (!commandList)
 	{
@@ -97,13 +97,16 @@ void DeviceManDX12::Flush()
 	commandList->Close();
 	ID3D12CommandList* lists[] = { commandList.Get() };
 	commandQueue->ExecuteCommandLists(arrayparam(lists));
-	commandQueue->Signal(fence.Get(), fenceValue);
-	afWaitFenceValue(fence, fenceValue++);
-
-	for (FrameResources& res : frameResources)
+	if (wait)
 	{
-		res.commandAllocator->Reset();
-		res.intermediateCommandlistDependentResources.clear();
+		commandQueue->Signal(fence.Get(), fenceValue);
+		afWaitFenceValue(fence, fenceValue++);
+
+		for (FrameResources& res : frameResources)
+		{
+			res.commandAllocator->Reset();
+			res.intermediateCommandlistDependentResources.clear();
+		}
 	}
 	ResetCommandListAndSetDescriptorHeap();
 }

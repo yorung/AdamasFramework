@@ -1,6 +1,6 @@
 class DeviceManDX12
 {
-	static const UINT numFrameBuffers = 3;
+	static const UINT numFrameBuffers = 2;
 	static const UINT maxSrvs = 1024;
 	static const UINT maxConstantBufferBlocks = 1000;
 	int numAssignedConstantBufferBlocks = 0;
@@ -32,7 +32,7 @@ public:
 	void Create(HWND hWnd);
 	void Destroy();
 	void Present();
-	void Flush();
+	void Flush(bool wait = true);
 	ComPtr<ID3D12Resource> GetDefaultRenderTarget();
 	D3D12_CPU_DESCRIPTOR_HANDLE GetDepthStencilView() { return dsvHeap->GetCPUDescriptorHandleForHeapStart(); }
 	D3D12_CPU_DESCRIPTOR_HANDLE GetRenderTargetView() { return rtvHeap->GetCPUDescriptorHandleForHeapStart(); }
