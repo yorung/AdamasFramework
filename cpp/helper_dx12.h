@@ -32,7 +32,7 @@ void afWriteBuffer(const IBOID id, int size, const void* buf);
 VBOID afCreateVertexBuffer(int size, const void* buf = nullptr);
 IBOID afCreateIndexBuffer(int numIndi, const AFIndex* indi);
 ComPtr<ID3D12Resource> afCreateDynamicVertexBuffer(int size, const void* buf = nullptr);
-UBOID afCreateUBO(int size);
+UBOID afCreateUBO(int size, const void* buf = nullptr);
 
 ComPtr<ID3D12PipelineState> afCreatePSO(const char *shaderName, const InputElement elements[], int numElements, uint32_t flags, ComPtr<ID3D12RootSignature>& rootSignature);
 

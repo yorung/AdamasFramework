@@ -123,9 +123,14 @@ IBOID afCreateIndexBuffer(int numIndi, const AFIndex* indi)
 	return afCreateBufferAs(size, indi, D3D12_RESOURCE_STATE_INDEX_BUFFER);
 }
 
-UBOID afCreateUBO(int size)
+UBOID afCreateUBO(int size, const void* buf)
 {
-	return afCreateUploadHeap((size + 0xff) & ~0xff);
+	UBOID ubo = afCreateUploadHeap((size + 0xff) & ~0xff);
+	if (buf)
+	{
+		afWriteBuffer(ubo, size, buf);
+	}
+	return ubo;
 }
 
 void afWriteTexture(SRVID tex, const TexDesc& desc, int mipCount, const AFTexSubresourceData datas[])
