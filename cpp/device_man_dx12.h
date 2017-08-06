@@ -1,6 +1,6 @@
 class DeviceManDX12
 {
-	static const UINT numFrameBuffers = 2;
+	static const UINT numFrameBuffers = 3;
 	static const UINT maxSrvs = 1024;
 	static const UINT maxConstantBufferBlocks = 1000;
 	int numAssignedConstantBufferBlocks = 0;
