@@ -43,6 +43,7 @@ void DeviceManDX12::Destroy()
 		res.constantBuffer.Reset();
 		res.fenceValueToGuard = 0;
 	}
+	stackSrvHeap.Destroy();
 	ringSrvHeap.Destroy();
 	rtvHeap.Reset();
 	dsvHeap.Reset();
@@ -229,8 +230,9 @@ void DeviceManDX12::Create(HWND hWnd)
 	}
 
 	device->CreateDescriptorHeap(ToPtr<D3D12_DESCRIPTOR_HEAP_DESC>({ D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 1 }), IID_PPV_ARGS(&rtvHeap));
-	device->CreateDescriptorHeap(ToPtr<D3D12_DESCRIPTOR_HEAP_DESC>({ D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, maxRingSrvs, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE }), IID_PPV_ARGS(&srvHeap));
-	ringSrvHeap.Create(srvHeap, 0, maxRingSrvs);
+	device->CreateDescriptorHeap(ToPtr<D3D12_DESCRIPTOR_HEAP_DESC>({ D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, maxRingSrvs + maxStackSrvs, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE }), IID_PPV_ARGS(&srvHeap));
+	stackSrvHeap.Create(srvHeap, 0, maxRingSrvs);
+	ringSrvHeap.Create(srvHeap, maxRingSrvs, maxRingSrvs);
 
 	for (int i = 0; i < numFrameBuffers; i++)
 	{
@@ -259,11 +261,6 @@ void DeviceManDX12::Create(HWND hWnd)
 		return;
 	}
 	BeginScene();
-}
-
-AFHeapRingAllocator& DeviceManDX12::GetFrameSRVHeap()
-{
-	return ringSrvHeap;
 }
 
 #endif

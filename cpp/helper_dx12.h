@@ -58,21 +58,36 @@ IVec2 afGetTextureSize(SRVID tex);
 void afSetVertexBufferFromSystemMemory(const void* buf, int size, int stride);
 void afSetRenderTarget(ComPtr<ID3D12Resource> color, ComPtr<ID3D12Resource> depthStencil, uint32_t flags = 0);
 
-class AFHeapRingAllocator
+class AFHeapAllocator
 {
 	static const D3D12_DESCRIPTOR_HEAP_TYPE heapType = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-	std::vector<UINT64> fenceToGuard;
 	int topIndex = 0;
-	int curPos = 0;
-	int maxDescriptors = 0;
 	ComPtr<ID3D12DescriptorHeap> heap;
-public:
-	~AFHeapRingAllocator();
+protected:
+	int maxDescriptors = 0;
 	void Create(ComPtr<ID3D12DescriptorHeap> inHeap, int inTopIndex, int inMaxDescriptors);
+public:
+	~AFHeapAllocator();
 	void Destroy();
-	int AssignDescriptorHeap(int numRequired);
 	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUAddress(int index);
 	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUAddress(int index);
+};
+
+class AFHeapRingAllocator : public AFHeapAllocator
+{
+	std::vector<UINT64> fenceToGuard;
+	int curPos = 0;
+public:
+	void Create(ComPtr<ID3D12DescriptorHeap> inHeap, int inTopIndex, int inMaxDescriptors);
+	int AssignDescriptorHeap(int numRequired);
+};
+
+class AFHeapStackAllocator : public AFHeapAllocator
+{
+	int curPos = 0;
+public:
+	void Create(ComPtr<ID3D12DescriptorHeap> inHeap, int inTopIndex, int inMaxDescriptors);
+	int AssignDescriptorHeap(int numRequired);
 };
 
 class AFRenderStates
