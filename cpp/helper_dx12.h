@@ -58,18 +58,18 @@ IVec2 afGetTextureSize(SRVID tex);
 void afSetVertexBufferFromSystemMemory(const void* buf, int size, int stride);
 void afSetRenderTarget(ComPtr<ID3D12Resource> color, ComPtr<ID3D12Resource> depthStencil, uint32_t flags = 0);
 
-class AFHeapStackAllocator
+class AFHeapRingAllocator
 {
 	ComPtr<ID3D12DescriptorHeap> heap;
-	int maxDescriptors = 0;
-	int numAssigned = 0;
-	D3D12_DESCRIPTOR_HEAP_TYPE heapType = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+	static const UINT maxDescriptors = 1024;
+	static const D3D12_DESCRIPTOR_HEAP_TYPE heapType = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+	UINT64 fenceToGuard[maxDescriptors] = {};
+	int curPos = 0;
 public:
-	~AFHeapStackAllocator();
-	void Create(D3D12_DESCRIPTOR_HEAP_TYPE inHeapType, int inMaxDescriptors);
+	~AFHeapRingAllocator();
+	void Create();
 	void Destroy();
 	int AssignDescriptorHeap(int numRequired);
-	void ResetAllocation() { numAssigned = 0; }
 	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUAddress(int topIndex);
 	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUAddress(int topIndex);
 	ComPtr<ID3D12DescriptorHeap> GetHeap() { return heap; }

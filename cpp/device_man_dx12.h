@@ -1,7 +1,6 @@
 class DeviceManDX12
 {
 	static const UINT numFrameBuffers = 2;
-	static const UINT maxSrvs = 1024;
 	static const UINT maxConstantBufferBlocks = 1000;
 	int numAssignedConstantBufferBlocks = 0;
 	class FrameResources
@@ -12,7 +11,6 @@ class DeviceManDX12
 		ComPtr<ID3D12Resource> renderTarget;
 		std::vector<ComPtr<ID3D12CommandAllocator>> commandAllocators;
 		ComPtr<ID3D12Resource> constantBuffer;
-		AFHeapStackAllocator srvHeap;
 		struct { char buf[256]; } *mappedConstantBuffer = nullptr;
 		UINT64 fenceValueToGuard = 0;
 	} frameResources[numFrameBuffers];
@@ -24,11 +22,14 @@ class DeviceManDX12
 	ComPtr<ID3D12Fence> fence;
 	UINT64 fenceValue = 1;
 	UINT frameIndex = 0;
+	AFHeapRingAllocator srvHeap;
 	void BeginScene();
 	void EndScene();
 	void ResetCommandListAndSetDescriptorHeap();
 public:
 	~DeviceManDX12();
+	ComPtr<ID3D12Fence> GetFence() { return fence; }
+	UINT64 GetFenceValue() { return fenceValue; }
 	void Create(HWND hWnd);
 	void Destroy();
 	void Present();
@@ -36,7 +37,7 @@ public:
 	ComPtr<ID3D12Resource> GetDefaultRenderTarget();
 	D3D12_CPU_DESCRIPTOR_HANDLE GetDepthStencilView() { return dsvHeap->GetCPUDescriptorHandleForHeapStart(); }
 	D3D12_CPU_DESCRIPTOR_HANDLE GetRenderTargetView() { return rtvHeap->GetCPUDescriptorHandleForHeapStart(); }
-	AFHeapStackAllocator& GetFrameSRVHeap();
+	AFHeapRingAllocator& GetFrameSRVHeap();
 	int AssignConstantBuffer(const void* buf, int size);
 	D3D12_GPU_VIRTUAL_ADDRESS GetConstantBufferGPUAddress(int constantBufferTop);
 	ComPtr<ID3D12Device> GetDevice() { return device; }

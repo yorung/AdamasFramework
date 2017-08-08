@@ -370,7 +370,7 @@ static void AssignSRV(D3D12_CPU_DESCRIPTOR_HANDLE ptr , ComPtr<ID3D12Resource> r
 
 void afBindTextures(int numResources, ComPtr<ID3D12Resource> resources[], int rootParameterIndex)
 {
-	AFHeapStackAllocator& heap = deviceMan.GetFrameSRVHeap();
+	AFHeapRingAllocator& heap = deviceMan.GetFrameSRVHeap();
 	int descriptorHeapIndex = heap.AssignDescriptorHeap(numResources);
 	for (int i = 0; i < numResources; i++)
 	{
@@ -387,43 +387,50 @@ void afSetVertexBufferFromSystemMemory(const void* buf, int size, int stride)
 	deviceMan.AddIntermediateCommandlistDependentResource(vbo);
 }
 
-AFHeapStackAllocator::~AFHeapStackAllocator()
+AFHeapRingAllocator::~AFHeapRingAllocator()
 {
 	assert(!heap);
 }
 
-void AFHeapStackAllocator::Create(D3D12_DESCRIPTOR_HEAP_TYPE inHeapType, int inMaxDescriptors)
+void AFHeapRingAllocator::Create()
 {
-	heapType = inHeapType;
-	maxDescriptors = inMaxDescriptors;
-	deviceMan.GetDevice()->CreateDescriptorHeap(ToPtr<D3D12_DESCRIPTOR_HEAP_DESC>({ heapType, (UINT)maxDescriptors, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE }), IID_PPV_ARGS(&heap));
+	deviceMan.GetDevice()->CreateDescriptorHeap(ToPtr<D3D12_DESCRIPTOR_HEAP_DESC>({ heapType, maxDescriptors, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE }), IID_PPV_ARGS(&heap));
 }
 
-void AFHeapStackAllocator::Destroy()
+void AFHeapRingAllocator::Destroy()
 {
 	heap.Reset();
 }
 
-int AFHeapStackAllocator::AssignDescriptorHeap(int numRequired)
+int AFHeapRingAllocator::AssignDescriptorHeap(int numRequired)
 {
-	if (numAssigned + numRequired > maxDescriptors)
+	assert(numRequired > 0);
+	assert(numRequired <= maxDescriptors);
+	if (curPos + numRequired > maxDescriptors)	// loop
 	{
-		assert(0);
-		return -1;
+		curPos = 0;
 	}
-	int head = numAssigned;
-	numAssigned += numRequired;
+
+	ComPtr<ID3D12Fence> fence = deviceMan.GetFence();
+	const UINT64 fenceValueToSignal = deviceMan.GetFenceValue();
+	const UINT64 fenceValueToWait = fenceToGuard[curPos + numRequired - 1];
+	assert(fenceValueToWait < fenceValueToSignal);	// otherwise the fenceValueToWait never completed
+	afWaitFenceValue(fence, fenceValueToWait);
+	std::fill_n(&fenceToGuard[curPos], numRequired, fenceValueToSignal);
+
+	int head = curPos;
+	curPos += numRequired;
 	return head;
 }
 
-D3D12_GPU_DESCRIPTOR_HANDLE AFHeapStackAllocator::GetGPUAddress(int topIndex)
+D3D12_GPU_DESCRIPTOR_HANDLE AFHeapRingAllocator::GetGPUAddress(int topIndex)
 {
 	D3D12_GPU_DESCRIPTOR_HANDLE addr = heap->GetGPUDescriptorHandleForHeapStart();
 	addr.ptr += topIndex * deviceMan.GetDevice()->GetDescriptorHandleIncrementSize(heapType);
 	return addr;
 }
 
-D3D12_CPU_DESCRIPTOR_HANDLE AFHeapStackAllocator::GetCPUAddress(int topIndex)
+D3D12_CPU_DESCRIPTOR_HANDLE AFHeapRingAllocator::GetCPUAddress(int topIndex)
 {
 	D3D12_CPU_DESCRIPTOR_HANDLE addr = heap->GetCPUDescriptorHandleForHeapStart();
 	addr.ptr += topIndex * deviceMan.GetDevice()->GetDescriptorHandleIncrementSize(heapType);

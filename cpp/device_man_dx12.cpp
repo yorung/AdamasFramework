@@ -35,7 +35,6 @@ void DeviceManDX12::Destroy()
 	{
 		res.renderTarget.Reset();
 		res.commandAllocators.clear();
-		res.srvHeap.Destroy();
 		res.mappedConstantBuffer = nullptr;
 		if (res.constantBuffer)
 		{
@@ -44,6 +43,7 @@ void DeviceManDX12::Destroy()
 		res.constantBuffer.Reset();
 		res.fenceValueToGuard = 0;
 	}
+	srvHeap.Destroy();
 	rtvHeap.Reset();
 	dsvHeap.Reset();
 	fence.Reset();
@@ -66,7 +66,6 @@ void DeviceManDX12::BeginScene()
 	numAssignedConstantBufferBlocks = 0;
 	frameIndex = swapChain->GetCurrentBackBufferIndex();
 	FrameResources& res = frameResources[frameIndex];
-	res.srvHeap.ResetAllocation();
 	afWaitFenceValue(fence, res.fenceValueToGuard);
 
 	res.intermediateCommandlistDependentResources.clear();
@@ -122,7 +121,7 @@ void DeviceManDX12::ResetCommandListAndSetDescriptorHeap()
 	device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, allocator.Get(), nullptr, IID_PPV_ARGS(&commandList));
 
 //	commandList->Reset(allocator.Get(), nullptr);
-	commandList->SetDescriptorHeaps(1, ToPtr<ID3D12DescriptorHeap*>(res.srvHeap.GetHeap().Get()));
+	commandList->SetDescriptorHeaps(1, ToPtr<ID3D12DescriptorHeap*>(srvHeap.GetHeap().Get()));
 }
 
 int DeviceManDX12::AssignConstantBuffer(const void* buf, int size)
@@ -229,6 +228,7 @@ void DeviceManDX12::Create(HWND hWnd)
 	}
 
 	device->CreateDescriptorHeap(ToPtr<D3D12_DESCRIPTOR_HEAP_DESC>({ D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 1 }), IID_PPV_ARGS(&rtvHeap));
+	srvHeap.Create();
 	for (int i = 0; i < numFrameBuffers; i++)
 	{
 		FrameResources& res = frameResources[i];
@@ -237,7 +237,6 @@ void DeviceManDX12::Create(HWND hWnd)
 			Destroy();
 			return;
 		}
-		res.srvHeap.Create(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, maxSrvs);
 		res.constantBuffer = afCreateUBO(maxConstantBufferBlocks * 0x100);
 		afHandleDXError(res.constantBuffer->Map(0, ToPtr<D3D12_RANGE>({}), (void**)&res.mappedConstantBuffer));
 		afVerify(res.mappedConstantBuffer);
@@ -259,10 +258,9 @@ void DeviceManDX12::Create(HWND hWnd)
 	BeginScene();
 }
 
-AFHeapStackAllocator& DeviceManDX12::GetFrameSRVHeap()
+AFHeapRingAllocator& DeviceManDX12::GetFrameSRVHeap()
 {
-	FrameResources& res = frameResources[frameIndex];
-	return res.srvHeap;
+	return srvHeap;
 }
 
 #endif
