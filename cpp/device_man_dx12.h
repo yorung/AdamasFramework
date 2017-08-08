@@ -2,6 +2,7 @@ class DeviceManDX12
 {
 	static const UINT numFrameBuffers = 2;
 	static const UINT maxConstantBufferBlocks = 1000;
+	static const int maxRingSrvs = 1024;
 	int numAssignedConstantBufferBlocks = 0;
 	class FrameResources
 	{
@@ -16,13 +17,13 @@ class DeviceManDX12
 	} frameResources[numFrameBuffers];
 	ComPtr<ID3D12Device> device;
 	ComPtr<IDXGISwapChain3> swapChain;
-	ComPtr<ID3D12DescriptorHeap> rtvHeap, dsvHeap;
+	ComPtr<ID3D12DescriptorHeap> rtvHeap, dsvHeap, srvHeap;
 	ComPtr<ID3D12CommandQueue> commandQueue;
 	ComPtr<ID3D12GraphicsCommandList> commandList;
 	ComPtr<ID3D12Fence> fence;
 	UINT64 fenceValue = 1;
 	UINT frameIndex = 0;
-	AFHeapRingAllocator srvHeap;
+	AFHeapRingAllocator ringSrvHeap;
 	void BeginScene();
 	void EndScene();
 	void ResetCommandListAndSetDescriptorHeap();

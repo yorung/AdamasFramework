@@ -392,9 +392,14 @@ AFHeapRingAllocator::~AFHeapRingAllocator()
 	assert(!heap);
 }
 
-void AFHeapRingAllocator::Create()
+void AFHeapRingAllocator::Create(ComPtr<ID3D12DescriptorHeap> inHeap, int inTopIndex, int inMaxDescriptors)
 {
-	deviceMan.GetDevice()->CreateDescriptorHeap(ToPtr<D3D12_DESCRIPTOR_HEAP_DESC>({ heapType, maxDescriptors, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE }), IID_PPV_ARGS(&heap));
+	heap = inHeap;
+	topIndex = inTopIndex;
+	maxDescriptors = inMaxDescriptors;
+	curPos = 0;
+	fenceToGuard.resize(maxDescriptors);
+	std::fill_n(fenceToGuard.data(), maxDescriptors, 0);
 }
 
 void AFHeapRingAllocator::Destroy()
@@ -423,17 +428,17 @@ int AFHeapRingAllocator::AssignDescriptorHeap(int numRequired)
 	return head;
 }
 
-D3D12_GPU_DESCRIPTOR_HANDLE AFHeapRingAllocator::GetGPUAddress(int topIndex)
+D3D12_GPU_DESCRIPTOR_HANDLE AFHeapRingAllocator::GetGPUAddress(int index)
 {
 	D3D12_GPU_DESCRIPTOR_HANDLE addr = heap->GetGPUDescriptorHandleForHeapStart();
-	addr.ptr += topIndex * deviceMan.GetDevice()->GetDescriptorHandleIncrementSize(heapType);
+	addr.ptr += (topIndex + index) * deviceMan.GetDevice()->GetDescriptorHandleIncrementSize(heapType);
 	return addr;
 }
 
-D3D12_CPU_DESCRIPTOR_HANDLE AFHeapRingAllocator::GetCPUAddress(int topIndex)
+D3D12_CPU_DESCRIPTOR_HANDLE AFHeapRingAllocator::GetCPUAddress(int index)
 {
 	D3D12_CPU_DESCRIPTOR_HANDLE addr = heap->GetCPUDescriptorHandleForHeapStart();
-	addr.ptr += topIndex * deviceMan.GetDevice()->GetDescriptorHandleIncrementSize(heapType);
+	addr.ptr += (topIndex + index) * deviceMan.GetDevice()->GetDescriptorHandleIncrementSize(heapType);
 	return addr;
 }
 

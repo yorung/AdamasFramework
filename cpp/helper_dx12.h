@@ -60,19 +60,19 @@ void afSetRenderTarget(ComPtr<ID3D12Resource> color, ComPtr<ID3D12Resource> dept
 
 class AFHeapRingAllocator
 {
-	ComPtr<ID3D12DescriptorHeap> heap;
-	static const UINT maxDescriptors = 1024;
 	static const D3D12_DESCRIPTOR_HEAP_TYPE heapType = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-	UINT64 fenceToGuard[maxDescriptors] = {};
+	std::vector<UINT64> fenceToGuard;
+	int topIndex = 0;
 	int curPos = 0;
+	int maxDescriptors = 0;
+	ComPtr<ID3D12DescriptorHeap> heap;
 public:
 	~AFHeapRingAllocator();
-	void Create();
+	void Create(ComPtr<ID3D12DescriptorHeap> inHeap, int inTopIndex, int inMaxDescriptors);
 	void Destroy();
 	int AssignDescriptorHeap(int numRequired);
-	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUAddress(int topIndex);
-	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUAddress(int topIndex);
-	ComPtr<ID3D12DescriptorHeap> GetHeap() { return heap; }
+	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUAddress(int index);
+	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUAddress(int index);
 };
 
 class AFRenderStates

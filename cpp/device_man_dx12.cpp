@@ -43,9 +43,10 @@ void DeviceManDX12::Destroy()
 		res.constantBuffer.Reset();
 		res.fenceValueToGuard = 0;
 	}
-	srvHeap.Destroy();
+	ringSrvHeap.Destroy();
 	rtvHeap.Reset();
 	dsvHeap.Reset();
+	srvHeap.Reset();
 	fence.Reset();
 	fenceValue = 1;
 	frameIndex = 0;
@@ -121,7 +122,7 @@ void DeviceManDX12::ResetCommandListAndSetDescriptorHeap()
 	device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, allocator.Get(), nullptr, IID_PPV_ARGS(&commandList));
 
 //	commandList->Reset(allocator.Get(), nullptr);
-	commandList->SetDescriptorHeaps(1, ToPtr<ID3D12DescriptorHeap*>(srvHeap.GetHeap().Get()));
+	commandList->SetDescriptorHeaps(1, ToPtr<ID3D12DescriptorHeap*>(srvHeap.Get()));
 }
 
 int DeviceManDX12::AssignConstantBuffer(const void* buf, int size)
@@ -228,7 +229,9 @@ void DeviceManDX12::Create(HWND hWnd)
 	}
 
 	device->CreateDescriptorHeap(ToPtr<D3D12_DESCRIPTOR_HEAP_DESC>({ D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 1 }), IID_PPV_ARGS(&rtvHeap));
-	srvHeap.Create();
+	device->CreateDescriptorHeap(ToPtr<D3D12_DESCRIPTOR_HEAP_DESC>({ D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, maxRingSrvs, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE }), IID_PPV_ARGS(&srvHeap));
+	ringSrvHeap.Create(srvHeap, 0, maxRingSrvs);
+
 	for (int i = 0; i < numFrameBuffers; i++)
 	{
 		FrameResources& res = frameResources[i];
@@ -260,7 +263,7 @@ void DeviceManDX12::Create(HWND hWnd)
 
 AFHeapRingAllocator& DeviceManDX12::GetFrameSRVHeap()
 {
-	return srvHeap;
+	return ringSrvHeap;
 }
 
 #endif
