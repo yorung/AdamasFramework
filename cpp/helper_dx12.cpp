@@ -423,7 +423,7 @@ void AFHeapRingAllocator::Create(ComPtr<ID3D12DescriptorHeap> inHeap, int inTopI
 	AFHeapAllocator::Create(inHeap, inTopIndex, inMaxDescriptors);
 	curPos = 0;
 	fenceToGuard.resize(maxDescriptors);
-	std::fill_n(fenceToGuard.data(), maxDescriptors, 0);
+	std::fill(fenceToGuard.data(), fenceToGuard.data() + maxDescriptors, 0);
 }
 
 int AFHeapRingAllocator::AssignDescriptorHeap(int numRequired)
@@ -440,7 +440,7 @@ int AFHeapRingAllocator::AssignDescriptorHeap(int numRequired)
 	const UINT64 fenceValueToWait = fenceToGuard[curPos + numRequired - 1];
 	assert(fenceValueToWait < fenceValueToSignal);	// otherwise the fenceValueToWait never completed
 	afWaitFenceValue(fence, fenceValueToWait);
-	std::fill_n(&fenceToGuard[curPos], numRequired, fenceValueToSignal);
+	std::fill(&fenceToGuard[curPos], &fenceToGuard[curPos] + numRequired, fenceValueToSignal);
 
 	int head = curPos;
 	curPos += numRequired;
