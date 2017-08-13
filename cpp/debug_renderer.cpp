@@ -74,7 +74,7 @@ void DebugRenderer::CreatePivotMesh()
 	MaterialMap map;
 	map.materialId = meshRenderer.CreateMaterial(mat);
 	map.faceStartIndex = 0;
-	map.faces = pivots.indices.size() / 3;
+	map.faces = (int)pivots.indices.size() / 3;
 	pivots.materialMaps.push_back(map);
 }
 

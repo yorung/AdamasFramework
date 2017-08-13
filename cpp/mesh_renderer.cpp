@@ -37,8 +37,8 @@ void RenderMesh::Init(const Block& block)
 		return;
 	}
 
-	int numVertices = block.vertices.size();
-	int numIndices = block.indices.size();
+	int numVertices = (int)block.vertices.size();
+	int numIndices = (int)block.indices.size();
 	const AFIndex* indices = &block.indices[0];
 
 	Destroy();
@@ -82,7 +82,7 @@ MRID MeshRenderer::CreateRenderMesh(const Block& block)
 	RenderMesh* r = new RenderMesh;
 	r->Init(block);
 	renderMeshes.push_back(r);
-	return renderMeshes.size() - 1;
+	return (int)renderMeshes.size() - 1;
 }
 
 void MeshRenderer::SafeDestroyRenderMesh(MRID& id)
@@ -136,7 +136,7 @@ void MeshRenderer::DrawRenderMesh(MRID id, const Mat& worldMat, const Mat BoneMa
 	RenderCommand& c = perDrawCallUBO.commands[nStoredCommands++];
 	c.matWorld = worldMat;
 	c.meshId = id;
-	c.boneStartIndex = renderBoneMatrices.size();
+	c.boneStartIndex = (uint32_t)renderBoneMatrices.size();
 	c.nBones = nBones;
 
 	renderBoneMatrices.resize(c.boneStartIndex + nBones);
@@ -170,7 +170,7 @@ void MeshRenderer::Flush()
 #else
 	cmd.SetBuffer(sizeof(PerDrawCallUBO), &perDrawCallUBO, 0);
 #endif
-	cmd.SetBuffer(sizeof(Mat) * renderBoneMatrices.size(), &renderBoneMatrices[0], 2);
+	cmd.SetBuffer(sizeof(Mat) * (int)renderBoneMatrices.size(), &renderBoneMatrices[0], 2);
 
 	const RenderCommand& c = perDrawCallUBO.commands[0];
 	RenderMesh* r = GetMeshByMRID(c.meshId);
@@ -206,7 +206,7 @@ MMID MeshRenderer::CreateMaterial(const Material& mat)
 		return n;
 	}
 	materials.push_back(mat);
-	return materials.size() - 1;
+	return (int)materials.size() - 1;
 }
 
 

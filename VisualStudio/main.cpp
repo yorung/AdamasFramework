@@ -30,7 +30,7 @@ void AddMenu(const char *name, const char *cmd)
 	mii.hSubMenu = NULL;
 	mii.wID = g_itemId++;
 	mii.dwTypeData = (char*)name;
-	InsertMenuItemA(hMenu, g_menuTbl.size(), TRUE, &mii);
+	InsertMenuItemA(hMenu, (int)g_menuTbl.size(), TRUE, &mii);
 	g_menuTbl[mii.wID] = cmd;
 	SetMenu(s_hWnd, hMenu);
 	DrawMenuBar(s_hWnd);

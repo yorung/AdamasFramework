@@ -19,7 +19,7 @@ MeshMan::MMID MeshMan::Create(const char *name)
 
 	mesh = new MeshX(name);
 	m_meshes.push_back(mesh);
-	return m_nameToId[name] = m_meshes.size() - 1;
+	return m_nameToId[name] = (int)m_meshes.size() - 1;
 }
 
 void MeshMan::Destroy()

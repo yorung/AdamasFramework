@@ -20,7 +20,7 @@ int TexMan::Create(const char *name)
 		return it->second;
 	}
 	srvids.push_back(afLoadTexture(name));
-	return nameToIndex[name] = srvids.size() - 1;
+	return nameToIndex[name] = (int)srvids.size() - 1;
 }
 
 int TexMan::CreateWhiteTexture()
@@ -39,7 +39,7 @@ int TexMan::CreateWhiteTexture()
 	AFTexRef tex = afCreateTexture2D(AFF_R8G8B8A8_UNORM, desc, 1, &data);
 	afSetTextureName(tex, __FUNCTION__);
 	srvids.push_back(tex);
-	return nameToIndex[name] = srvids.size() - 1;
+	return nameToIndex[name] = (int)srvids.size() - 1;
 }
 
 AFTexRef TexMan::IndexToTexture(int index)

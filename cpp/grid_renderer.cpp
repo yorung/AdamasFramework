@@ -81,8 +81,8 @@ GridRenderer::GridRenderer(int numGrid_, float pitch_)
 		add(half, i * pitch - half);
 	}
 
-	int sizeVertices = vert.size() * sizeof(GridVert);
-	lines = indi.size() / 2;
+	int sizeVertices = (int)vert.size() * sizeof(GridVert);
+	lines = (int)indi.size() / 2;
 
 	const static InputElement layout[] =
 	{
@@ -92,7 +92,7 @@ GridRenderer::GridRenderer(int numGrid_, float pitch_)
 	renderStates.Create("solid", arrayparam(layout), AFRS_DEPTH_ENABLE | AFRS_PRIMITIVE_LINELIST | AFRS_OFFSCREEN_RENDER_TARGET_R8G8B8A8_UNORM | AFRS_DEPTH_STENCIL_D32_FLOAT_S8_UINT);
 
 	vbo = afCreateVertexBuffer(sizeVertices, &vert[0]);
-	ibo = afCreateIndexBuffer(indi.size(), &indi[0]);
+	ibo = afCreateIndexBuffer((int)indi.size(), &indi[0]);
 }
 
 void GridRenderer::Draw()

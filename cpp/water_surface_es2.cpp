@@ -217,7 +217,7 @@ void WaterSurfaceES2::Init()
 	std::vector<WaterVert> vert;
 	UpdateVert(vert);
 
-	vbo = afCreateDynamicVertexBuffer(vert.size() * sizeof(WaterVert));
+	vbo = afCreateDynamicVertexBuffer((int)vert.size() * sizeof(WaterVert));
 	ibo = afCreateTiledPlaneIBO(tileMax, &nIndi);
 	renderStatesWater.Create("water_es2", arrayparam(elements), AFRS_OFFSCREEN_RENDER_TARGET_R8G8B8A8_UNORM, arrayparam(samplers));
 
@@ -251,7 +251,7 @@ void WaterSurfaceES2::UpdateRipple()
 
 	std::vector<WaterVert> vert;
 	UpdateVert(vert);
-	afWriteBuffer(vbo, vert.size() * sizeof(WaterVert), &vert[0]);
+	afWriteBuffer(vbo, (int)vert.size() * sizeof(WaterVert), &vert[0]);
 }
 
 void WaterSurfaceES2::Update()

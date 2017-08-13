@@ -133,7 +133,7 @@ static int _getIndices(char*& p, std::vector<AFIndex>& indices, int nOrgFaces, s
 	{
 		int nVertices = _getI(p);
 		assert(nVertices == 3 || nVertices == 4);
-		int begin = indices.size();
+		int begin = (int)indices.size();
 		indices.push_back((AFIndex)_getI(p));
 		indices.push_back((AFIndex)_getI(p));
 		indices.push_back((AFIndex)_getI(p));
@@ -225,7 +225,7 @@ static char* _searchChildTag(char* from, const char *tag, std::string* name = nu
 	if (!p)
 		return nullptr;
 
-	int tagLen = strlen(tag);
+	size_t tagLen = strlen(tag);
 
 	int depth = 0;
 	while (p && *p) {
@@ -373,7 +373,7 @@ void MeshX::CreateBoneMesh()
 	MaterialMap map;
 	map.materialId = meshRenderer.CreateMaterial(mat);
 	map.faceStartIndex = 0;
-	map.faces = bones.indices.size() / 3;
+	map.faces = (int)bones.indices.size() / 3;
 	bones.materialMaps.push_back(map);
 
 	boneRenderMeshId = meshRenderer.CreateRenderMesh(bones);
@@ -435,7 +435,7 @@ BONE_ID MeshX::CreateFrameId(const char* name)
 	f.childId = -1;
 	f.siblingId = -1;
 	m_frames.push_back(f);
-	return m_frames.size() - 1;
+	return (int)m_frames.size() - 1;
 }
 
 struct SkinWeights
@@ -594,7 +594,7 @@ bool MeshX::ParseMesh(char* imgFrame, Block& block, BONE_ID frameId)
 		primitiveIdx += numPrimitives;
 	}
 	
-	int remainFaces = indices.size() / 3 - map.faceStartIndex;
+	int remainFaces = (int)indices.size() / 3 - map.faceStartIndex;
 	if (remainFaces != map.faces) {
 		map.faces = remainFaces;	// tiger.x!
 	}
@@ -626,7 +626,7 @@ bool MeshX::ParseMesh(char* imgFrame, Block& block, BONE_ID frameId)
 	for (auto it = skinWeights.begin(); it != skinWeights.end(); it++)
 	{
 		assert(it->vertexIndices.size() == it->vertexWeight.size());
-		int cnt = it->vertexIndices.size();
+		int cnt = (int)it->vertexIndices.size();
 		for (int i = 0; i < cnt; i++) {
 			int idx = it->vertexIndices[i];
 			float wgt = it->vertexWeight[i];
@@ -658,8 +658,8 @@ void MeshX::_mergeBlocks(Block& d, const Block& s)
 		return;
 	}
 
-	int verticeBase = d.vertices.size();
-	int indicesBase = d.indices.size();
+	int verticeBase = (int)d.vertices.size();
+	int indicesBase = (int)d.indices.size();
 	std::for_each(s.vertices.begin(), s.vertices.end(), [&](const MeshVertex& v) { d.vertices.push_back(v); });
 	std::for_each(s.indices.begin(), s.indices.end(), [&](unsigned i) { d.indices.push_back(AFIndex(i + verticeBase)); });
 	std::for_each(s.materialMaps.begin(), s.materialMaps.end(), [&](MaterialMap m) {
@@ -1033,7 +1033,7 @@ void MeshX::CalcAnimation(int animId, double time, MeshXAnimResult& animResult) 
 		CalcFrameMatrices(animResult, localMats);
 		return;
 	}
-	int revAnimId = m_animationSets.size() - animId - 1;
+	int revAnimId = (int)m_animationSets.size() - animId - 1;
 
 	for (auto itAnimation : m_animationSets[revAnimId].animations)
 	{
@@ -1090,7 +1090,7 @@ void MeshX::Draw(const MeshXAnimResult& animResult, const Mat& worldMat) const
 	assert(m_frames.size() <= dimof(animResult.boneMat));
 
 	if (g_type == "pivot") {
-		debugRenderer.DrawPivots(animResult.boneMat, m_frames.size());
+		debugRenderer.DrawPivots(animResult.boneMat, (int)m_frames.size());
 	} else {
 		Mat vertexTransformMat[BONE_MAX];
 		for (BONE_ID i = 0; (unsigned)i < m_frames.size(); i++)	{
@@ -1099,10 +1099,10 @@ void MeshX::Draw(const MeshXAnimResult& animResult, const Mat& worldMat) const
 		}
 
 		if (g_type == "mesh") {
-			meshRenderer.DrawRenderMesh(renderMeshId, worldMat, vertexTransformMat, m_frames.size());
+			meshRenderer.DrawRenderMesh(renderMeshId, worldMat, vertexTransformMat, (int)m_frames.size());
 		}
 		if (g_type == "bone") {
-			meshRenderer.DrawRenderMesh(boneRenderMeshId, worldMat, vertexTransformMat, m_frames.size());
+			meshRenderer.DrawRenderMesh(boneRenderMeshId, worldMat, vertexTransformMat, (int)m_frames.size());
 		}
 	}
 }

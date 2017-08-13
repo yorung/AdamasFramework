@@ -232,7 +232,7 @@ static char* _searchChildTag(char* from, const char *tag, std::string* name = nu
 	if (!p)
 		return nullptr;
 
-	int tagLen = strlen(tag);
+	size_t tagLen = strlen(tag);
 
 	int depth = 0;
 	while (p && *p) {
@@ -362,7 +362,7 @@ void Bvh::CreateBoneMesh()
 	MaterialMap map;
 	map.materialId = meshRenderer.CreateMaterial(mat);
 	map.faceStartIndex = 0;
-	map.faces = m_block.indices.size() / 3;
+	map.faces = (int)m_block.indices.size() / 3;
 	m_block.materialMaps.push_back(map);
 }
 
@@ -386,7 +386,7 @@ BONE_ID Bvh::_getFrameIdByName(const char* name)
 	f.posIndices.y = -1;
 	f.posIndices.z = -1;
 	m_frames.push_back(f);
-	return m_frames.size() - 1;
+	return (int)m_frames.size() - 1;
 }
 
 void Bvh::_linkFrame(BONE_ID parentFrameId, BONE_ID childFrameId)
@@ -612,13 +612,13 @@ void Bvh::Draw(int animId, double time)
 			BvhFrame& f = m_frames[i];
 			BoneMatrices[i] = f.result;
 		}
-		debugRenderer.DrawPivots(BoneMatrices, m_frames.size());
+		debugRenderer.DrawPivots(BoneMatrices, (int)m_frames.size());
 	} else {
 		for (BONE_ID i = 0; (unsigned)i < m_frames.size(); i++)	{
 			BvhFrame& f = m_frames[i];
 			BoneMatrices[i] = f.boneOffsetMatrix * f.result;
 		}
-		meshRenderer.DrawRenderMesh(renderMeshId, Mat(), BoneMatrices, m_frames.size());
+		meshRenderer.DrawRenderMesh(renderMeshId, Mat(), BoneMatrices, (int)m_frames.size());
 	}
 }
 
