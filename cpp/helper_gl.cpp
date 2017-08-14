@@ -399,7 +399,7 @@ void afSetVertexAttributes(const InputElement elements[], int numElements, int n
 			aflog("glBindBuffer error! i=%d inputSlot=%d vbo=%d\n", i, d.inputSlot, vertexBufferIds[d.inputSlot].x);
 		}
 		afHandleGLError(glEnableVertexAttribArray(i));
-		afVertexAttribPointer(i, d.format, strides[d.inputSlot], (void*)d.offset);
+		afVertexAttribPointer(i, d.format, strides[d.inputSlot], (void*)(uintptr_t)d.offset);
 #ifdef AF_GLES31
 		if (d.perInstance)
 		{

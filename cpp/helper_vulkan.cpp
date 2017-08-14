@@ -805,7 +805,7 @@ void AFRenderStates::Create(const char* shaderName, int numInputElements, const 
 		}
 	}
 
-	VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = { VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO, nullptr, 0, descriptorLayouts.size(), descriptorLayouts.data() };
+	VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = { VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO, nullptr, 0, (uint32_t)descriptorLayouts.size(), descriptorLayouts.data() };
 	afHandleVKError(vkCreatePipelineLayout(device, &pipelineLayoutCreateInfo, nullptr, &pipelineLayout));
 	pipeline = afCreatePipeline(device, deviceMan.GetPipelineCache(), shaderName, pipelineLayout, numInputElements, inputElements, flags);
 }
