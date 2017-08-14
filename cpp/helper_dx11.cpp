@@ -402,7 +402,7 @@ IVec2 afGetTextureSize(ComPtr<ID3D11View> view)
 
 void afSetTextureName(AFTexRef tex, const char* name)
 {
-	tex->SetPrivateData(WKPDID_D3DDebugObjectName, strlen(name), name);
+	tex->SetPrivateData(WKPDID_D3DDebugObjectName, (UINT)strlen(name), name);
 }
 
 void afSetRenderTarget(ComPtr<ID3D11Resource> color, ComPtr<ID3D11Resource> depthStencil, uint32_t flags)
