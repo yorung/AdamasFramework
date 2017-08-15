@@ -572,3 +572,13 @@ void AFRenderStates::Destroy()
 	pipelineState.Reset();
 	rootSignature.Reset();
 }
+
+void AFCommandQueue::Create()
+{
+	afHandleDXError(deviceMan.GetDevice()->CreateCommandQueue(ToPtr<D3D12_COMMAND_QUEUE_DESC>({}), IID_PPV_ARGS(&commandQueue)));
+}
+
+void AFCommandQueue::Destroy()
+{
+	commandQueue.Reset();
+}

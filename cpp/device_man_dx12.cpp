@@ -29,7 +29,7 @@ void DeviceManDX12::Destroy()
 {
 	Flush();
 	commandList.Reset();
-	commandQueue.Reset();
+	commandQueue.Destroy();
 	swapChain.Reset();
 	for (FrameResources& res : frameResources)
 	{
@@ -84,9 +84,9 @@ void DeviceManDX12::EndScene()
 
 	commandList->Close();
 	ID3D12CommandList* lists[] = { commandList.Get() };
-	commandQueue->ExecuteCommandLists(arrayparam(lists));
+	commandQueue.Get()->ExecuteCommandLists(arrayparam(lists));
 
-	commandQueue->Signal(fence.Get(), res.fenceValueToGuard = fenceValue++);
+	commandQueue.Get()->Signal(fence.Get(), res.fenceValueToGuard = fenceValue++);
 }
 
 void DeviceManDX12::Flush(bool wait)
@@ -97,10 +97,10 @@ void DeviceManDX12::Flush(bool wait)
 	}
 	commandList->Close();
 	ID3D12CommandList* lists[] = { commandList.Get() };
-	commandQueue->ExecuteCommandLists(arrayparam(lists));
+	commandQueue.Get()->ExecuteCommandLists(arrayparam(lists));
 	if (wait)
 	{
-		commandQueue->Signal(fence.Get(), fenceValue);
+		commandQueue.Get()->Signal(fence.Get(), fenceValue);
 		afWaitFenceValue(fence, fenceValue++);
 
 		for (FrameResources& res : frameResources)
@@ -197,11 +197,7 @@ void DeviceManDX12::Create(HWND hWnd)
 		return;
 	}
 
-	if (S_OK != device->CreateCommandQueue(ToPtr<D3D12_COMMAND_QUEUE_DESC>({}), IID_PPV_ARGS(&commandQueue)))
-	{
-		Destroy();
-		return;
-	}
+	commandQueue.Create();
 
 	RECT rc;
 	GetClientRect(hWnd, &rc);

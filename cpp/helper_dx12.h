@@ -109,6 +109,16 @@ public:
 	void Destroy();
 };
 
+class AFCommandQueue
+{
+	ComPtr<ID3D12CommandQueue> commandQueue;
+public:
+	~AFCommandQueue() { Destroy(); }
+	void Create();
+	void Destroy();
+	ID3D12CommandQueue* Get() { return commandQueue.Get(); }
+};
+
 class AFRenderTarget
 {
 	IVec2 texSize;
