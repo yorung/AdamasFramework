@@ -435,11 +435,11 @@ int AFHeapRingAllocator::AssignDescriptorHeap(int numRequired)
 		curPos = 0;
 	}
 
-	ComPtr<ID3D12Fence> fence = deviceMan.GetFence();
-	const UINT64 fenceValueToSignal = deviceMan.GetFenceValue();
+	AFCommandQueue& queue = deviceMan.GetCommandQueue();
+	const UINT64 fenceValueToSignal = queue.GetFenceValue();
 	const UINT64 fenceValueToWait = fenceToGuard[curPos + numRequired - 1];
 	assert(fenceValueToWait < fenceValueToSignal);	// otherwise the fenceValueToWait never completed
-	afWaitFenceValue(fence, fenceValueToWait);
+	queue.WaitFenceValue(fenceValueToWait);
 	std::fill(&fenceToGuard[curPos], &fenceToGuard[curPos] + numRequired, fenceValueToSignal);
 
 	int head = curPos;

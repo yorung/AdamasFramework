@@ -29,8 +29,6 @@ class DeviceManDX12
 	void ResetCommandListAndSetDescriptorHeap();
 public:
 	~DeviceManDX12();
-	ID3D12Fence* GetFence() { return commandQueue.GetFence(); }
-	UINT64 GetFenceValue() { return commandQueue.GetFenceValue(); }
 	void Create(HWND hWnd);
 	void Destroy();
 	void Present();
@@ -40,6 +38,7 @@ public:
 	D3D12_CPU_DESCRIPTOR_HANDLE GetRenderTargetView() { return rtvHeap->GetCPUDescriptorHandleForHeapStart(); }
 	AFHeapStackAllocator& GetStackSRVHeap() { return stackSrvHeap; }
 	AFHeapRingAllocator& GetRingSRVHeap() { return ringSrvHeap; }
+	AFCommandQueue& GetCommandQueue() { return commandQueue; }
 	int AssignConstantBuffer(const void* buf, int size);
 	D3D12_GPU_VIRTUAL_ADDRESS GetConstantBufferGPUAddress(int constantBufferTop);
 	ComPtr<ID3D12Device> GetDevice() { return device; }
