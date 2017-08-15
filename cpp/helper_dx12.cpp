@@ -329,18 +329,6 @@ ComPtr<ID3D12PipelineState> afCreatePSO(const char *shaderName, const InputEleme
 	return pso;
 }
 
-void afWaitFenceValue(ComPtr<ID3D12Fence> fence, UINT64 value)
-{
-	if (fence->GetCompletedValue() >= value) {
-		return;
-	}
-	HANDLE fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-	assert(fenceEvent);
-	fence->SetEventOnCompletion(value, fenceEvent);
-	WaitForSingleObject(fenceEvent, INFINITE);
-	CloseHandle(fenceEvent);
-}
-
 IVec2 afGetTextureSize(SRVID tex)
 {
 	D3D12_RESOURCE_DESC desc = tex->GetDesc();
@@ -585,6 +573,7 @@ void AFCommandQueue::Destroy()
 	commandQueue.Reset();
 	fence.Reset();
 	fenceValue = 1;
+	lastCompletedValue = 0;
 }
 
 UINT64 AFCommandQueue::InsertFence()
@@ -596,5 +585,18 @@ UINT64 AFCommandQueue::InsertFence()
 
 void AFCommandQueue::WaitFenceValue(UINT64 waitFor)
 {
-	afWaitFenceValue(fence, waitFor);
+	if (lastCompletedValue >= waitFor)
+	{
+		return;
+	}
+	lastCompletedValue = fence->GetCompletedValue();
+	if (lastCompletedValue >= waitFor)
+	{
+		return;
+	}
+	HANDLE fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+	assert(fenceEvent);
+	fence->SetEventOnCompletion(waitFor, fenceEvent);
+	WaitForSingleObject(fenceEvent, INFINITE);
+	CloseHandle(fenceEvent);
 }

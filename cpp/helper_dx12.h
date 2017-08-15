@@ -53,7 +53,6 @@ void afSetTextureName(SRVID tex, const char* name);
 void afWriteTexture(SRVID srv, const TexDesc& desc, const void* buf);
 void afWriteTexture(SRVID id, const TexDesc& desc, int mipCount, const AFTexSubresourceData datas[]);
 
-void afWaitFenceValue(ComPtr<ID3D12Fence> fence, UINT64 value);
 IVec2 afGetTextureSize(SRVID tex);
 void afSetVertexBufferFromSystemMemory(const void* buf, int size, int stride);
 void afSetRenderTarget(ComPtr<ID3D12Resource> color, ComPtr<ID3D12Resource> depthStencil, uint32_t flags = 0);
@@ -114,6 +113,7 @@ class AFCommandQueue
 	ComPtr<ID3D12CommandQueue> commandQueue;
 	ComPtr<ID3D12Fence> fence;
 	UINT64 fenceValue = 1;
+	UINT64 lastCompletedValue = 0;
 public:
 	~AFCommandQueue() { Destroy(); }
 	void Create();
