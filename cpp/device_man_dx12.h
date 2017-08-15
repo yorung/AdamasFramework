@@ -21,8 +21,6 @@ class DeviceManDX12
 	ComPtr<ID3D12DescriptorHeap> rtvHeap, dsvHeap, srvHeap;
 	AFCommandQueue commandQueue;
 	ComPtr<ID3D12GraphicsCommandList> commandList;
-	ComPtr<ID3D12Fence> fence;
-	UINT64 fenceValue = 1;
 	UINT frameIndex = 0;
 	AFHeapStackAllocator stackSrvHeap;
 	AFHeapRingAllocator ringSrvHeap;
@@ -31,8 +29,8 @@ class DeviceManDX12
 	void ResetCommandListAndSetDescriptorHeap();
 public:
 	~DeviceManDX12();
-	ComPtr<ID3D12Fence> GetFence() { return fence; }
-	UINT64 GetFenceValue() { return fenceValue; }
+	ID3D12Fence* GetFence() { return commandQueue.GetFence(); }
+	UINT64 GetFenceValue() { return commandQueue.GetFenceValue(); }
 	void Create(HWND hWnd);
 	void Destroy();
 	void Present();

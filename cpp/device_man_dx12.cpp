@@ -48,8 +48,6 @@ void DeviceManDX12::Destroy()
 	rtvHeap.Reset();
 	dsvHeap.Reset();
 	srvHeap.Reset();
-	fence.Reset();
-	fenceValue = 1;
 	frameIndex = 0;
 	int cnt = device.Reset();
 	if (cnt)
@@ -68,7 +66,7 @@ void DeviceManDX12::BeginScene()
 	numAssignedConstantBufferBlocks = 0;
 	frameIndex = swapChain->GetCurrentBackBufferIndex();
 	FrameResources& res = frameResources[frameIndex];
-	afWaitFenceValue(fence, res.fenceValueToGuard);
+	commandQueue.WaitFenceValue(res.fenceValueToGuard);
 
 	res.intermediateCommandlistDependentResources.clear();
 	res.commandAllocators.clear();
@@ -85,8 +83,7 @@ void DeviceManDX12::EndScene()
 	commandList->Close();
 	ID3D12CommandList* lists[] = { commandList.Get() };
 	commandQueue.Get()->ExecuteCommandLists(arrayparam(lists));
-
-	commandQueue.Get()->Signal(fence.Get(), res.fenceValueToGuard = fenceValue++);
+	res.fenceValueToGuard = commandQueue.InsertFence();
 }
 
 void DeviceManDX12::Flush(bool wait)
@@ -100,9 +97,7 @@ void DeviceManDX12::Flush(bool wait)
 	commandQueue.Get()->ExecuteCommandLists(arrayparam(lists));
 	if (wait)
 	{
-		commandQueue.Get()->Signal(fence.Get(), fenceValue);
-		afWaitFenceValue(fence, fenceValue++);
-
+		commandQueue.WaitFenceValue(commandQueue.InsertFence());
 		for (FrameResources& res : frameResources)
 		{
 			res.commandAllocators.clear();
@@ -251,11 +246,6 @@ void DeviceManDX12::Create(HWND hWnd)
 	device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, dummy.Get(), nullptr, IID_PPV_ARGS(&commandList));
 	commandList->Close();
 
-	if (S_OK != device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence)))
-	{
-		Destroy();
-		return;
-	}
 	BeginScene();
 }
 

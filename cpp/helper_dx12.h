@@ -112,11 +112,17 @@ public:
 class AFCommandQueue
 {
 	ComPtr<ID3D12CommandQueue> commandQueue;
+	ComPtr<ID3D12Fence> fence;
+	UINT64 fenceValue = 1;
 public:
 	~AFCommandQueue() { Destroy(); }
 	void Create();
 	void Destroy();
+	UINT64 InsertFence();
+	ID3D12Fence* GetFence() { return fence.Get(); }
+	UINT64 GetFenceValue() { return fenceValue; }
 	ID3D12CommandQueue* Get() { return commandQueue.Get(); }
+	void WaitFenceValue(UINT64 waitFor);
 };
 
 class AFRenderTarget
