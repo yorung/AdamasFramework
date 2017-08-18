@@ -17,9 +17,7 @@ DeviceManDX12::FrameResources::~FrameResources()
 DeviceManDX12::~DeviceManDX12()
 {
 	assert(!device);
-	assert(!commandQueue);
 	assert(!commandList);
-	assert(!fence);
 	assert(!swapChain);
 	assert(!rtvHeap);
 	assert(!dsvHeap);
