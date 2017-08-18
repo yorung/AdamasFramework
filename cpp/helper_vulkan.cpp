@@ -565,7 +565,7 @@ void DeviceManVK::Create(HWND hWnd)
 	afHandleVKError(vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &numSurfaceFormats, nullptr));
 	assert(numSurfaceFormats <= _countof(surfaceFormats));
 	afHandleVKError(vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &numSurfaceFormats, surfaceFormats));
-	VkPresentModeKHR presentMode = AF_WAIT_VBLANK ? VK_PRESENT_MODE_FIFO_KHR : VK_PRESENT_MODE_MAILBOX_KHR;
+	VkPresentModeKHR presentMode = AF_WAIT_VBLANK ? VK_PRESENT_MODE_FIFO_KHR : VK_PRESENT_MODE_IMMEDIATE_KHR;
 	IsPresentModeSupported(physicalDevice, surface, presentMode);
 	VkSurfaceCapabilitiesKHR surfaceCaps = {};
 	afHandleVKError(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface, &surfaceCaps));
