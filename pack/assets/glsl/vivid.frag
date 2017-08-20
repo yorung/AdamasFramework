@@ -1,3 +1,6 @@
+#ifdef GL_ES
+precision mediump float;
+#endif
 varying vec2 position;
 varying vec2 texcoord;
 uniform sampler2D s0;

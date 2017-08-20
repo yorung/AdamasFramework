@@ -1,3 +1,6 @@
+#ifdef GL_ES
+precision mediump float;
+#endif
 varying vec2 position;
 varying vec3 normal;
 varying vec2 texcoord;
