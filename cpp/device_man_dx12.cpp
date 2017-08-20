@@ -64,7 +64,10 @@ void DeviceManDX12::BeginScene()
 	numAssignedConstantBufferBlocks = 0;
 	frameIndex = swapChain->GetCurrentBackBufferIndex();
 	FrameResources& res = frameResources[frameIndex];
-	commandQueue.WaitFenceValue(res.fenceValueToGuard);
+	{
+		AF_PROFILE_RANGE(BeginSceneWaitFenceValue);
+		commandQueue.WaitFenceValue(res.fenceValueToGuard);
+	}
 
 	res.intermediateCommandlistDependentResources.clear();
 	res.commandAllocators.clear();
@@ -80,7 +83,10 @@ void DeviceManDX12::EndScene()
 
 	commandList->Close();
 	ID3D12CommandList* lists[] = { commandList.Get() };
-	commandQueue.Get()->ExecuteCommandLists(arrayparam(lists));
+	{
+		AF_PROFILE_RANGE(Execute);
+		commandQueue.Get()->ExecuteCommandLists(arrayparam(lists));
+	}
 	res.fenceValueToGuard = commandQueue.InsertFence();
 }
 
@@ -112,10 +118,11 @@ void DeviceManDX12::ResetCommandListAndSetDescriptorHeap()
 	ComPtr<ID3D12CommandAllocator> allocator;
 	device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&allocator));
 	res.commandAllocators.push_back(allocator);
-
-	device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, allocator.Get(), nullptr, IID_PPV_ARGS(&commandList));
-
-//	commandList->Reset(allocator.Get(), nullptr);
+	{
+		AF_PROFILE_RANGE(Reset);
+		//	device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, allocator.Get(), nullptr, IID_PPV_ARGS(&commandList));
+		commandList->Reset(allocator.Get(), nullptr);
+	}
 	commandList->SetDescriptorHeaps(1, ToPtr<ID3D12DescriptorHeap*>(srvHeap.Get()));
 }
 
@@ -155,8 +162,12 @@ void DeviceManDX12::Present()
 	{
 		return;
 	}
+	AF_PROFILE_RANGE(Whole);
 	EndScene();
-	swapChain->Present(AF_WAIT_VBLANK, 0);
+	{
+		AF_PROFILE_RANGE(Present);
+		swapChain->Present(AF_WAIT_VBLANK, 0);
+	}
 	BeginScene();
 }
 

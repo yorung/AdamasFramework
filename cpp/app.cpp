@@ -22,6 +22,7 @@ App::App()
 
 void App::Draw()
 {
+	AF_PROFILE_RANGE(AppDraw);
 #ifdef GL_TRUE
 	afDepthStencilMode(AFRS_DEPTH_ENABLE);	// This needed to clear depth stencil buffer
 #endif
