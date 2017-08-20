@@ -52,3 +52,32 @@ void MakeFontBitmap(const char* fontName, const CharSignature& code, class DIB& 
 
 void _afVerify(const char* file, const char* func, int line, const char* command, bool result);
 #define afVerify(command) do{ _afVerify(__FILE__, __FUNCTION__, __LINE__, #command, !!(command)); } while(0)
+
+typedef const char* AFName;
+
+AFName afToUniqueName(const char* name);
+
+class AFProfiler
+{
+	std::map<AFName, float> results;
+public:
+	void Store(AFName name, float duration) { results[name] = duration; }
+	void Clear() { results.clear(); }
+	void Print();
+};
+extern AFProfiler afProfiler;
+
+struct AFProfileRecorder
+{
+	AFName name;
+	double before = GetTime();
+	AFProfileRecorder(AFName inName) : name(inName) {}
+	~AFProfileRecorder()
+	{
+		afProfiler.Store(name, float(GetTime() - before));
+	}
+};
+
+#define AF_PROFILE_RANGE(name)	\
+	static AFName nameUnique ## name = afToUniqueName(#name);	\
+	AFProfileRecorder profilerRecorder ## name(nameUnique ## name);

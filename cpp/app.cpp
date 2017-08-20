@@ -133,5 +133,6 @@ void App::Update()
 	luaMan.Update();
 	fps.Update();
 	fontMan.DrawString(Vec2(20, 40), 20, SPrintf("FPS: %f", fps.Get()), 0xffffffff);
+	afProfiler.Print();
 	Draw();
 }

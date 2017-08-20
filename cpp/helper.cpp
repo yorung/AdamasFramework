@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include <random>
+#include <set>
 
 float Random()
 {
@@ -23,4 +24,30 @@ void _afVerify(const char* file, const char* func, int line, const char* command
 	}
 	aflog("afVerify Fatal: %s %d %s %s", file, line, func, command);
 	*(uint32_t*)(4) = 1;	// crash
+}
+
+AFName afToUniqueName(const char* name)
+{
+	static std::set<std::shared_ptr<std::string>> tbl;
+	auto it = std::find_if(tbl.begin(), tbl.end(), [name](const std::shared_ptr<std::string>& storedName) { return !strcmp(storedName.get()->c_str(), name); });
+	if (it != tbl.end())
+	{
+		return (*it).get()->c_str();
+	}
+	std::shared_ptr<std::string> str(new std::string(name));
+	tbl.insert(str);
+	return str.get()->c_str();
+}
+
+AFProfiler afProfiler;
+
+void AFProfiler::Print()
+{
+	float y = 60;
+	for (auto it : results)
+	{
+		fontMan.DrawString(Vec2(20, y), 20, SPrintf("%s: %f", it.first, it.second), 0xffffffff);
+		y += 20;
+	}
+	results.clear();
 }
