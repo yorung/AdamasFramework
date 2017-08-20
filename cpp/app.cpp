@@ -127,12 +127,15 @@ void App::Destroy()
 
 void App::Update()
 {
-	systemMisc.lastUpdateTime = GetTime();
-	inputMan.Update();
-	matrixMan.Set(MatrixMan::VIEW, devCamera.CalcViewMatrix());
-	moduleManager.UpdateAll();
-	luaMan.Update();
-	fps.Update();
+	{
+		AF_PROFILE_RANGE(Update);
+		systemMisc.lastUpdateTime = GetTime();
+		inputMan.Update();
+		matrixMan.Set(MatrixMan::VIEW, devCamera.CalcViewMatrix());
+		moduleManager.UpdateAll();
+		luaMan.Update();
+		fps.Update();
+	}
 	fontMan.DrawString(Vec2(20, 40), 20, SPrintf("FPS: %f", fps.Get()), 0xffffffff);
 	afProfiler.Print();
 	Draw();

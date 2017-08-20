@@ -46,6 +46,7 @@ void DeviceMan11::Create(HWND hWnd)
 
 void DeviceMan11::Present()
 {
+	AF_PROFILE_RANGE(Present);
 	pSwapChain->Present(AF_WAIT_VBLANK, 0);
 }
 
