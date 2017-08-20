@@ -114,6 +114,7 @@ class AFCommandQueue
 	ComPtr<ID3D12Fence> fence;
 	UINT64 fenceValue = 1;
 	UINT64 lastCompletedValue = 0;
+	HANDLE fenceEvent = NULL;
 public:
 	~AFCommandQueue() { Destroy(); }
 	void Create();

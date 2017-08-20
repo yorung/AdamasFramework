@@ -563,9 +563,11 @@ void AFRenderStates::Destroy()
 
 void AFCommandQueue::Create()
 {
+	Destroy();
 	ComPtr<ID3D12Device> device = deviceMan.GetDevice();
 	afHandleDXError(device->CreateCommandQueue(ToPtr<D3D12_COMMAND_QUEUE_DESC>({}), IID_PPV_ARGS(&commandQueue)));
 	afHandleDXError(device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence)));
+	fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 }
 
 void AFCommandQueue::Destroy()
@@ -574,6 +576,11 @@ void AFCommandQueue::Destroy()
 	fence.Reset();
 	fenceValue = 1;
 	lastCompletedValue = 0;
+	if (fenceEvent != NULL)
+	{
+		CloseHandle(fenceEvent);
+		fenceEvent = NULL;
+	}
 }
 
 UINT64 AFCommandQueue::InsertFence()
@@ -594,9 +601,6 @@ void AFCommandQueue::WaitFenceValue(UINT64 waitFor)
 	{
 		return;
 	}
-	HANDLE fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-	assert(fenceEvent);
 	fence->SetEventOnCompletion(waitFor, fenceEvent);
 	WaitForSingleObject(fenceEvent, INFINITE);
-	CloseHandle(fenceEvent);
 }
