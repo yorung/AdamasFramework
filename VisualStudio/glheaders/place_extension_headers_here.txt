@@ -2,3 +2,5 @@ Please download following OpenGL extension header files from https://www.opengl.
 
 - glcorearb.h
 - wglext.h
+
+or, run download.vbs to download them.
