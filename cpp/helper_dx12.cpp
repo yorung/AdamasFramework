@@ -544,8 +544,6 @@ void afBindBuffer(UBOID ubo, int rootParameterIndex)
 	deviceMan.GetCommandList()->SetGraphicsRootConstantBufferView(rootParameterIndex, ubo->GetGPUVirtualAddress());
 }
 
-#endif
-
 void AFRenderStates::Apply() const
 {
 	ID3D12GraphicsCommandList* list = deviceMan.GetCommandList();
@@ -604,3 +602,5 @@ void AFCommandQueue::WaitFenceValue(UINT64 waitFor)
 	fence->SetEventOnCompletion(waitFor, fenceEvent);
 	WaitForSingleObject(fenceEvent, INFINITE);
 }
+
+#endif
