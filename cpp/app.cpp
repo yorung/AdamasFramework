@@ -67,6 +67,11 @@ void App::Draw()
 	rtDefault.EndRenderToThis();
 }
 
+static const SamplerType samplers[] =
+{
+	AFST_POINT_WRAP,
+};
+
 void App::Create()
 {
 #ifdef _MSC_VER
@@ -86,7 +91,7 @@ void App::Create()
 #if defined(AF_GLES) || defined(AF_VULKAN)
 	int numElements = 0;
 	const InputElement* elements = stockObjects.GetFullScreenInputElements(numElements);
-	copyPSO.Create("glow_copy", numElements, elements, 0, 0, nullptr);
+	copyPSO.Create("glow_copy", numElements, elements, 0, arrayparam(samplers));
 #else
 	copyPSO.Create("copy_rgba", 0, nullptr, 0, 0, nullptr);
 #endif
