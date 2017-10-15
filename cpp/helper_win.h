@@ -42,7 +42,7 @@ inline DXGI_FORMAT afRenderFlagsToDSVFormat(uint32_t flags)
 	{
 		return DXGI_FORMAT_D32_FLOAT;
 	}
-	if (flags & AFRS_DEPTH_STENCIL_D32_FLOAT_S8_UINT)
+	if (flags & AFRS_AUTO_DEPTH_STENCIL)
 	{
 		return DXGI_FORMAT_D32_FLOAT_S8X24_UINT;
 	}

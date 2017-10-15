@@ -373,9 +373,9 @@ static VkPrimitiveTopology RenderFlagsToPrimitiveTopology(uint32_t flags)
 
 static AFFormat RenderFlagsToDSFormat(uint32_t flags)
 {
-	if (flags & AFRS_DEPTH_STENCIL_D32_FLOAT_S8_UINT)
+	if (flags & AFRS_AUTO_DEPTH_STENCIL)
 	{
-		return AFF_D32_FLOAT_S8_UINT;
+		return AFF_AUTO_DEPTH_STENCIL;
 	}
 	if (flags & AFRS_DEPTH_STENCIL_D32_FLOAT)
 	{
