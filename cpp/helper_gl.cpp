@@ -249,8 +249,16 @@ static void CreateTextureInternal(AFFormat format, const IVec2& size, void* img)
 	case AFF_D32_FLOAT_S8_UINT:
 		gen(GL_DEPTH32F_STENCIL8, GL_DEPTH_STENCIL, GL_FLOAT_32_UNSIGNED_INT_24_8_REV);
 		break;
+#else
+	case AFF_D24_UNORM_S8_UINT:
+		gen(GL_DEPTH_STENCIL_OES, GL_DEPTH_STENCIL_OES, GL_UNSIGNED_INT_24_8_OES);
+		break;
+	case AFF_D32_FLOAT_S8_UINT:
+		aflog("CreateTextureInternal: Most mobile devices not support 32+8 depth stencil texture!\n");
+		break;
 #endif
 	default:
+		aflog("CreateTextureInternal error! not implemented format %d\n", format);
 		assert(0);
 		break;
 	}
@@ -632,11 +640,17 @@ void AFRenderTarget::Init(IVec2 size, AFFormat colorFormat, AFFormat depthStenci
 	Destroy();
 	texSize = size;
 	texColor = afCreateDynamicTexture(colorFormat, size);
-	if (texColor == 0) {
-		aflog("AFRenderTarget::Init: cannot create dynamic texture. format=%d", colorFormat);
+	if (texColor == 0)
+	{
+		aflog("AFRenderTarget::Init: cannot create color texture. format=%d", colorFormat);
 	}
-	if (depthStencilFormat != AFF_INVALID) {
+	if (depthStencilFormat != AFF_INVALID)
+	{
 		texDepth = afCreateDynamicTexture(depthStencilFormat, size);
+		if (texDepth == 0)
+		{
+			aflog("AFRenderTarget::Init: cannot create depth-stencil texture. format=%d", colorFormat);
+		}
 	}
 
 	afHandleGLError(glGenFramebuffers(1, &framebufferObject));
@@ -644,9 +658,8 @@ void AFRenderTarget::Init(IVec2 size, AFFormat colorFormat, AFFormat depthStenci
 	afHandleGLError(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texColor->name, 0));
 	if (texDepth)
 	{
-#ifdef AF_GLES31
-		afHandleGLError(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, texDepth->name, 0));
-#endif
+		afHandleGLError(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, texDepth->name, 0));
+		afHandleGLError(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_TEXTURE_2D, texDepth->name, 0));
 	}
 	afHandleGLError(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 }
