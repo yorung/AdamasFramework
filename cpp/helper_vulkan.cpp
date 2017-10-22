@@ -376,33 +376,6 @@ static VkPrimitiveTopology RenderFlagsToPrimitiveTopology(uint32_t flags)
 	return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
 }
 
-static AFFormat RenderFlagsToDSFormat(uint32_t flags)
-{
-	if (flags & AFRS_AUTO_DEPTH_STENCIL)
-	{
-		return AFF_AUTO_DEPTH_STENCIL;
-	}
-	if (flags & AFRS_DEPTH_STENCIL_D32_FLOAT)
-	{
-		return AFF_D32_FLOAT;
-	}
-	return AFF_INVALID;
-}
-
-static AFFormat RenderFlagsToRTFormat(uint32_t flags)
-{
-	if (flags & AFRS_OFFSCREEN_RENDER_TARGET_R8G8B8A8_UNORM)
-	{
-		return AFF_R8G8B8A8_UNORM;
-	}
-	if (flags & AFRS_OFFSCREEN_RENDER_TARGET_R16G16B16A16_FLOAT)
-	{
-		return AFF_R16G16B16A16_FLOAT;
-	}
-	assert(0);
-	return AFF_INVALID;
-}
-
 static VkRenderPass VkFormatToRenderPassForOffScreenRenderTarget(VkFormat renderTargetFormat, VkFormat depthStencilFormat)
 {
 	if (renderTargetFormat == VK_FORMAT_R8G8B8A8_UNORM && depthStencilFormat == VK_FORMAT_D32_SFLOAT_S8_UINT)
@@ -425,18 +398,13 @@ static VkRenderPass VkFormatToRenderPassForOffScreenRenderTarget(VkFormat render
 	return 0;
 }
 
-static bool IsRenderFlagsPrimarySurface(uint32_t flags)
-{
-	return !(flags & (AFRS_OFFSCREEN_RENDER_TARGET_R8G8B8A8_UNORM | AFRS_OFFSCREEN_RENDER_TARGET_R16G16B16A16_FLOAT));
-}
-
 static VkRenderPass RenderFlagsToRenderPass(uint32_t flags)
 {
-	if (IsRenderFlagsPrimarySurface(flags))
+	if (afIsRenderFlagsRenderToSwapchainSurface(flags))
 	{
 		return deviceMan.primaryRenderPass;
 	}
-	return VkFormatToRenderPassForOffScreenRenderTarget(RenderFlagsToRTFormat(flags), RenderFlagsToDSFormat(flags));
+	return VkFormatToRenderPassForOffScreenRenderTarget(afRenderFlagsToRTFormat(flags), afRenderFlagsToDSFormat(flags));
 }
 
 static bool IsPresentModeSupported(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, VkPresentModeKHR presentMode)

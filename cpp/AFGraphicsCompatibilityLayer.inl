@@ -16,3 +16,34 @@ inline AFCommandList& afGetCommandList()
 #else
 #define AFF_AUTO_DEPTH_STENCIL AFF_D24_UNORM_S8_UINT
 #endif
+
+inline AFFormat afRenderFlagsToDSFormat(uint32_t flags)
+{
+	if (flags & AFRS_AUTO_DEPTH_STENCIL)
+	{
+		return AFF_AUTO_DEPTH_STENCIL;
+	}
+	if (flags & AFRS_DEPTH_STENCIL_D32_FLOAT)
+	{
+		return AFF_D32_FLOAT;
+	}
+	return AFF_INVALID;
+}
+
+inline AFFormat afRenderFlagsToRTFormat(uint32_t flags)
+{
+	if (flags & AFRS_OFFSCREEN_RENDER_TARGET_R8G8B8A8_UNORM)
+	{
+		return AFF_R8G8B8A8_UNORM;
+	}
+	if (flags & AFRS_OFFSCREEN_RENDER_TARGET_R16G16B16A16_FLOAT)
+	{
+		return AFF_R16G16B16A16_FLOAT;
+	}
+	if (flags & AFRS_OFFSCREEN_RENDER_TARGET_R32_FLOAT)
+	{
+		return AFF_R32_FLOAT;
+	}
+	assert(0);
+	return AFF_INVALID;
+}
