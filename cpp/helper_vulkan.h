@@ -184,7 +184,6 @@ class DeviceManVK
 	VkPipelineCache pipelineCache = 0;
 	uint32_t frameIndex = 0;
 	RECT rc = {};
-	bool inRenderPass = false;
 public:
 	VkRenderPass primaryRenderPass = 0, offscreenR8G8B8A8D32S8RenderPass = 0, offscreenR16G16B16A16D32S8RenderPass = 0, offscreenR8G8B8A8RenderPass = 0, offscreenR16G16B16A16RenderPass = 0;
 	VkPhysicalDeviceMemoryProperties physicalDeviceMemoryProperties;

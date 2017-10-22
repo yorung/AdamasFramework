@@ -285,6 +285,7 @@ void WaterSurfaceES2::Update()
 
 void WaterSurfaceES2::Draw2D(AFCommandList& cmd, AFRenderTarget& rt)
 {
+	rt.EndRenderToThis();//workaround
 	UpdateRipple();
 
 	cmd.SetRenderStates(renderStatesWater);

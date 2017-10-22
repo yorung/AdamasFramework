@@ -52,8 +52,8 @@ void App::Draw()
 	luaMan.Draw3D();
 	meshRenderer.Flush();
 	skyMan.Draw(cmd);
-	moduleManager.Draw2DAll(cmd, appRenderTarget);
 	luaMan.Draw2D(cmd);
+	moduleManager.Draw2DAll(cmd, appRenderTarget);
 	appRenderTarget.EndRenderToThis();
 
 	AFRenderTarget rtDefault;

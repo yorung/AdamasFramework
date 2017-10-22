@@ -26,7 +26,7 @@ void LetterBox::Draw(AFCommandList& cmd, AFRenderTarget& target, AFTexRef srcTex
 
 	target.BeginRenderToThis();
 	cmd.Draw(4);
-	target.EndRenderToThis();
+//	target.EndRenderToThis();	// workaround: EndRenderToThis called in app.cpp
 }
 
 void LetterBox::Destroy()

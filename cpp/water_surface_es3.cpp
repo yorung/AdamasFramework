@@ -251,6 +251,7 @@ void WaterSurfaceES3::RenderWater(AFCommandList& cmd, const UniformBuffer& hmub)
 
 void WaterSurfaceES3::Draw2D(AFCommandList& cmd, AFRenderTarget& rt)
 {
+	rt.EndRenderToThis();//workaround
 	UpdateTime();
 
 	bool mouseEdge = !lastMouseDown && systemMisc.mouseDown;

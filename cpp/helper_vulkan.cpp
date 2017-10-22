@@ -602,7 +602,6 @@ void DeviceManVK::Create(HWND hWnd)
 	}
 
 	afHandleVKError(vkAcquireNextImageKHR(device, swapchain, UINT64_MAX, semaphore, VK_NULL_HANDLE, &frameIndex));
-	inRenderPass = false;
 }
 
 void DeviceManVK::BeginRenderPassToCurrentBackBuffer()
@@ -612,24 +611,11 @@ void DeviceManVK::BeginRenderPassToCurrentBackBuffer()
 
 void DeviceManVK::EndRenderPass()
 {
-	if (inRenderPass)
-	{
-		vkCmdEndRenderPass(commandBuffer);
-		inRenderPass = false;
-	}
+	vkCmdEndRenderPass(commandBuffer);
 }
 
 void DeviceManVK::BeginRenderPass(VkRenderPass nextRenderPass, VkFramebuffer nextFramebuffer, IVec2 size, bool needDepth)
 {
-	if (inRenderPass)
-	{
-		vkCmdEndRenderPass(commandBuffer);
-	}
-	else
-	{
-		inRenderPass = true;
-	}
-
 	const VkRenderPassBeginInfo renderPassBeginInfo = { VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO, nullptr, nextRenderPass, nextFramebuffer,{ {},{ (uint32_t)size.x, (uint32_t)size.y } }, needDepth ? 2u : 1u, clearValues };
 	vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 	VkViewport v = { 0, 0, (float)size.x, (float)size.y, 0, 1 };
@@ -640,11 +626,6 @@ void DeviceManVK::BeginRenderPass(VkRenderPass nextRenderPass, VkFramebuffer nex
 
 void DeviceManVK::Present()
 {
-	if (inRenderPass)
-	{
-		vkCmdEndRenderPass(commandBuffer);
-		inRenderPass = false;
-	}
 	afTransition(commandBuffer, swapChainImages[frameIndex], VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
 
 	afHandleVKError(vkEndCommandBuffer(commandBuffer));
@@ -872,8 +853,6 @@ void AFRenderTarget::Destroy()
 
 void AFRenderTarget::BeginRenderToThis()
 {
-	deviceMan.EndRenderPass();
-
 	if (asDefault)
 	{
 		deviceMan.BeginRenderPassToCurrentBackBuffer();
@@ -892,11 +871,11 @@ void AFRenderTarget::BeginRenderToThis()
 
 void AFRenderTarget::EndRenderToThis()
 {
+	deviceMan.EndRenderPass();
 	if (asDefault)
 	{
 		return;
 	}
-	deviceMan.EndRenderPass();
 	if (currentStateIsRtv)
 	{
 		currentStateIsRtv = false;
