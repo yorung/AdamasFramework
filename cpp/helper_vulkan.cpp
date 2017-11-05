@@ -34,12 +34,12 @@ VkResult _afHandleVKError(const char* file, const char* func, int line, const ch
 
 static void afTransition(VkCommandBuffer commandBuffer, VkImage image, VkImageLayout from, VkImageLayout to)
 {
-	vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0, 0, nullptr, 0, nullptr, 1, ToPtr<VkImageMemoryBarrier>({ VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER, nullptr, VK_ACCESS_SHADER_READ_BIT, VK_ACCESS_COLOR_ATTACHMENT_READ_BIT, from, to, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, image,{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 } }));
+	vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0, 0, nullptr, 0, nullptr, 1, ToPtr<VkImageMemoryBarrier>({ VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER, nullptr, VK_ACCESS_SHADER_READ_BIT, VK_ACCESS_COLOR_ATTACHMENT_READ_BIT, from, to, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, image,{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 } }));
 }
 
 static void afTransition(VkCommandBuffer commandBuffer, AFTexRef res, VkImageLayout from, VkImageLayout to)
 {
-	vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0, 0, nullptr, 0, nullptr, 1, ToPtr<VkImageMemoryBarrier>({ VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER, nullptr, VK_ACCESS_SHADER_READ_BIT, VK_ACCESS_COLOR_ATTACHMENT_READ_BIT, from, to, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, res->image,{ VK_IMAGE_ASPECT_COLOR_BIT, 0, (uint32_t)res->mipCount, 0, (res->texDesc.isCubeMap ? 6u : 1u) } }));
+	vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0, 0, nullptr, 0, nullptr, 1, ToPtr<VkImageMemoryBarrier>({ VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER, nullptr, VK_ACCESS_SHADER_READ_BIT, VK_ACCESS_COLOR_ATTACHMENT_READ_BIT, from, to, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, res->image,{ VK_IMAGE_ASPECT_COLOR_BIT, 0, (uint32_t)res->mipCount, 0, (res->texDesc.isCubeMap ? 6u : 1u) } }));
 }
 
 static VkShaderModule CreateShaderModule(VkDevice device, const char* fileName)
