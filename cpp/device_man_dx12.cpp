@@ -73,20 +73,17 @@ void DeviceManDX12::BeginScene()
 	res.commandAllocators.clear();
 
 	ResetCommandListAndSetDescriptorHeap();
-	afTransition(commandList.Get(), res.renderTarget, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
 }
 
 void DeviceManDX12::EndScene()
 {
-	FrameResources& res = frameResources[frameIndex];
-	afTransition(commandList.Get(), res.renderTarget, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
-
 	commandList->Close();
 	ID3D12CommandList* lists[] = { commandList.Get() };
 	{
 		AF_PROFILE_RANGE(Execute);
 		commandQueue.Get()->ExecuteCommandLists(arrayparam(lists));
 	}
+	FrameResources& res = frameResources[frameIndex];
 	res.fenceValueToGuard = commandQueue.InsertFence();
 }
 

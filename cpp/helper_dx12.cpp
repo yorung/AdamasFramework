@@ -450,14 +450,8 @@ int AFHeapStackAllocator::AssignDescriptorHeap(int numRequired)
 	return head;
 }
 
-void AFRenderTarget::InitForDefaultRenderTarget()
-{
-	asDefault = true;
-}
-
 void AFRenderTarget::Init(IVec2 size, AFFormat colorFormat, AFFormat depthStencilFormat)
 {
-	texSize = size;
 	renderTarget = afCreateDynamicTexture(colorFormat, size, AFTF_RTV | AFTF_SRV);
 	currentState = D3D12_RESOURCE_STATE_RENDER_TARGET;
 	if (depthStencilFormat != AFF_INVALID)
@@ -505,12 +499,6 @@ void afSetRenderTarget(ComPtr<ID3D12Resource> color, ComPtr<ID3D12Resource> dept
 
 void AFRenderTarget::BeginRenderToThis()
 {
-	if (asDefault)
-	{
-		afSetRenderTarget(deviceMan.GetDefaultRenderTarget(), nullptr, AFSRTF_CLEAR_ALL);
-		return;
-	}
-
 	ID3D12GraphicsCommandList* commandList = deviceMan.GetCommandList();
 	if (currentState != D3D12_RESOURCE_STATE_RENDER_TARGET)
 	{
@@ -601,6 +589,21 @@ void AFCommandQueue::WaitFenceValue(UINT64 waitFor)
 	}
 	fence->SetEventOnCompletion(waitFor, fenceEvent);
 	WaitForSingleObject(fenceEvent, INFINITE);
+}
+
+void afBeginRenderToSwapChain()
+{
+	ComPtr<ID3D12Resource> res = deviceMan.GetDefaultRenderTarget();
+	ID3D12GraphicsCommandList* list = deviceMan.GetCommandList();
+	afTransition(list, res, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+	afSetRenderTarget(res, nullptr, AFSRTF_CLEAR_COLOR);
+}
+
+void afEndRenderToSwapChain()
+{
+	ComPtr<ID3D12Resource> res = deviceMan.GetDefaultRenderTarget();
+	ID3D12GraphicsCommandList* list = deviceMan.GetCommandList();
+	afTransition(list, res, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 }
 
 #endif

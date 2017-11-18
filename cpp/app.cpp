@@ -56,15 +56,13 @@ void App::Draw()
 	moduleManager.Draw2DAll(cmd, appRenderTarget);
 	appRenderTarget.EndRenderToThis();
 
-	AFRenderTarget rtDefault;
-	rtDefault.InitForDefaultRenderTarget();
-	rtDefault.BeginRenderToThis();
+	afBeginRenderToSwapChain();
 	cmd.SetRenderStates(copyPSO);
 	stockObjects.ApplyFullScreenVertexBuffer(cmd);
 	cmd.SetTexture(appRenderTarget.GetTexture(), 0);
 	cmd.Draw(4);
 	fontMan.Draw(cmd, systemMisc.GetScreenSize());
-	rtDefault.EndRenderToThis();
+	afEndRenderToSwapChain();
 }
 
 static const SamplerType samplers[] =

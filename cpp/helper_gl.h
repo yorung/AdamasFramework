@@ -177,6 +177,9 @@ void afDraw(PrimitiveTopology primitiveTopology, int numVertices, int start = 0,
 void afDumpCaps();
 void afDumpIsEnabled();
 
+void afBeginRenderToSwapChain();
+inline void afEndRenderToSwapChain() {}
+
 class AFRenderTarget
 {
 	IVec2 texSize;

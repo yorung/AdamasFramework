@@ -145,11 +145,9 @@ class AFRenderTarget
 	VkFramebuffer framebuffer = 0;
 	AFTexRef renderTarget;
 	AFTexRef depthStencil;
-	bool asDefault = false;
 	bool currentStateIsRtv = false;
 public:
 	~AFRenderTarget() { Destroy(); }
-	void InitForDefaultRenderTarget();
 	void Init(IVec2 size, AFFormat colorFormat, AFFormat depthStencilFormat = AFF_INVALID);
 	void Destroy();
 	void BeginRenderToThis();
@@ -202,11 +200,21 @@ public:
 	void Present();
 	void Destroy();
 	void BeginRenderPass(VkRenderPass nextRenderPass, VkFramebuffer nextFramebuffer, IVec2 size, bool needDepth);
-	void BeginRenderPassToCurrentBackBuffer();
+	void BeginRenderToSwapChain();
 	void EndRenderPass();
 	void Flush();
 };
 extern DeviceManVK deviceMan;
+
+inline void afBeginRenderToSwapChain()
+{
+	deviceMan.BeginRenderToSwapChain();
+}
+
+inline void afEndRenderToSwapChain()
+{
+	deviceMan.EndRenderPass();
+}
 
 class AFCommandList
 {

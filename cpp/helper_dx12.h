@@ -128,19 +128,19 @@ public:
 
 class AFRenderTarget
 {
-	IVec2 texSize;
 	ComPtr<ID3D12Resource> renderTarget, depthStencil;
-	bool asDefault = false;
 	D3D12_RESOURCE_STATES currentState;
 public:
 	~AFRenderTarget() { Destroy(); }
-	void InitForDefaultRenderTarget();
 	void Init(IVec2 size, AFFormat colorFormat, AFFormat depthStencilFormat = AFF_INVALID);
 	void Destroy();
 	void BeginRenderToThis();
 	void EndRenderToThis() {}
 	ComPtr<ID3D12Resource> GetTexture();
 };
+
+void afBeginRenderToSwapChain();
+void afEndRenderToSwapChain();
 
 void afBindBuffer(int size, const void* buf, int rootParameterIndex);
 void afBindBuffer(UBOID ubo, int rootParameterIndex);

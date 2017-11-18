@@ -615,6 +615,14 @@ void afDumpIsEnabled()
 #undef _
 }
 
+void afBeginRenderToSwapChain()
+{
+	IVec2 screenSize = systemMisc.GetScreenSize();
+	afHandleGLError(glViewport(0, 0, screenSize.x, screenSize.y));
+	afHandleGLError(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+	afHandleGLError(glClear(GL_COLOR_BUFFER_BIT));
+}
+
 void AFRenderTarget::Destroy()
 {
 	afSafeDeleteTexture(texColor);

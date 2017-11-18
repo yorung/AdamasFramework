@@ -76,6 +76,16 @@ void DeviceMan11::Destroy()
 	}
 }
 
+void afBeginRenderToSwapChain()
+{
+	afSetRenderTarget(deviceMan.GetDefaultRenderTarget(), nullptr, AFSRTF_CLEAR_COLOR);
+}
+
+void afEndRenderToSwapChain()
+{
+	afSetRenderTarget(nullptr, nullptr);
+}
+
 void afSetVertexBuffer(VBOID vertexBuffer, int stride_)
 {
 	ID3D11Buffer* d11Bufs[] = { vertexBuffer.Get() };
@@ -426,17 +436,9 @@ void afSetRenderTarget(ComPtr<ID3D11Resource> color, ComPtr<ID3D11Resource> dept
 	context->RSSetScissorRects(1, ToPtr<D3D11_RECT>({ 0, 0, (LONG)desc.Width, (LONG)desc.Height }));
 }
 
-void AFRenderTarget::InitForDefaultRenderTarget()
-{
-	Destroy();
-	renderTarget = deviceMan11.GetDefaultRenderTarget();
-	texSize = afGetTextureSize(renderTarget);
-}
-
 void AFRenderTarget::Init(IVec2 size, DXGI_FORMAT colorFormat, DXGI_FORMAT depthStencilFormat)
 {
 	Destroy();
-	texSize = size;
 	renderTarget = afCreateDynamicTexture(colorFormat, size, AFTF_RTV | AFTF_SRV);
 	switch (depthStencilFormat)
 	{

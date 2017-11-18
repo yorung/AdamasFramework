@@ -572,7 +572,7 @@ void DeviceManVK::Create(HWND hWnd)
 	afHandleVKError(vkAcquireNextImageKHR(device, swapchain, UINT64_MAX, semaphore, VK_NULL_HANDLE, &frameIndex));
 }
 
-void DeviceManVK::BeginRenderPassToCurrentBackBuffer()
+void DeviceManVK::BeginRenderToSwapChain()
 {
 	BeginRenderPass(primaryRenderPass, framebuffers[frameIndex], { (int)rc.right, (int)rc.bottom }, false);
 }
@@ -779,11 +779,6 @@ void AFRenderStates::Destroy()
 	afSafeDeleteVk(vkDestroyPipeline, device, pipeline);
 }
 
-void AFRenderTarget::InitForDefaultRenderTarget()
-{
-	asDefault = true;
-}
-
 void AFRenderTarget::Init(IVec2 size, AFFormat colorFormat, AFFormat depthStencilFormat)
 {
 	VkDevice device = deviceMan.GetDevice();
@@ -821,12 +816,6 @@ void AFRenderTarget::Destroy()
 
 void AFRenderTarget::BeginRenderToThis()
 {
-	if (asDefault)
-	{
-		deviceMan.BeginRenderPassToCurrentBackBuffer();
-		return;
-	}
-
 	if (!currentStateIsRtv)
 	{
 		currentStateIsRtv = true;
@@ -840,10 +829,6 @@ void AFRenderTarget::BeginRenderToThis()
 void AFRenderTarget::EndRenderToThis()
 {
 	deviceMan.EndRenderPass();
-	if (asDefault)
-	{
-		return;
-	}
 	if (currentStateIsRtv)
 	{
 		currentStateIsRtv = false;

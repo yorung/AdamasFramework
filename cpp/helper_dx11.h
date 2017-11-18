@@ -8,12 +8,9 @@ class DeviceMan11
 	ComPtr<ID3D11Texture2D> renderTarget;
 public:
 	~DeviceMan11();
-
 	void Create(HWND hWnd);
 	void Destroy();
-
 	void Present();
-
 	ID3D11Device* GetDevice() { return pDevice; }
 	ID3D11DeviceContext* GetContext() { return pImmediateContext.Get(); }
 	ComPtr<ID3D11Texture2D>	GetDefaultRenderTarget() { return renderTarget.Get(); }
@@ -73,6 +70,9 @@ void afBindSamplerToBindingPoint(SAMPLERID sampler, UINT slot);
 void afDrawIndexed(int numIndices, int start = 0, int instanceCount = 1);
 void afDraw(int numVertices, int start = 0, int instanceCount = 1);
 
+void afBeginRenderToSwapChain();
+void afEndRenderToSwapChain();
+
 typedef D3D11_SUBRESOURCE_DATA AFTexSubresourceData;
 
 ComPtr<ID3D11Texture2D> afCreateTexture2D(AFFormat format, const struct TexDesc& desc, int mipCount, const AFTexSubresourceData datas[]);
@@ -85,11 +85,9 @@ void afSetRenderTarget(ComPtr<ID3D11Resource> color, ComPtr<ID3D11Resource> dept
 
 class AFRenderTarget
 {
-	IVec2 texSize;
 	ComPtr<ID3D11Texture2D> renderTarget, depthStencil;
 public:
 	~AFRenderTarget() { Destroy(); }
-	void InitForDefaultRenderTarget();
 	void Init(IVec2 size, AFFormat colorFormat, AFFormat depthStencilFormat = AFF_INVALID);
 	void Destroy();
 	void BeginRenderToThis();
