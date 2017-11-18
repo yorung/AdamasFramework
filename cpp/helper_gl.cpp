@@ -678,7 +678,11 @@ void AFRenderTarget::BeginRenderToThis()
 	afHandleGLError(glBindFramebuffer(GL_FRAMEBUFFER, framebufferObject));
 	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	afVerify(status == GL_FRAMEBUFFER_COMPLETE);
+	GLboolean oldDepthMask;
+	glGetBooleanv(GL_DEPTH_WRITEMASK, &oldDepthMask);
+	glDepthMask(GL_TRUE);	// This needed to clear depth stencil buffer
 	afHandleGLError(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT));
+	glDepthMask(oldDepthMask);
 }
 
 #ifdef AF_GLES31
