@@ -36,7 +36,6 @@ class WaterSurfaceES2 : public AFModule
 	double elapsedTime = 0;
 	double lastTime;
 	double nextTime;
-	VBOID vbo;
 	IBOID ibo;
 	int nIndi;
 	std::vector<AFTexRef> texIds;
@@ -185,7 +184,6 @@ WaterSurfaceES2::~WaterSurfaceES2()
 
 void WaterSurfaceES2::Destroy()
 {
-	afSafeDeleteBuffer(vbo);
 	afSafeDeleteBuffer(ibo);
 	for (auto& it : texIds) {
 		afSafeDeleteTexture(it);
@@ -217,7 +215,6 @@ void WaterSurfaceES2::Init()
 	std::vector<WaterVert> vert;
 	UpdateVert(vert);
 
-	vbo = afCreateDynamicVertexBuffer((int)vert.size() * sizeof(WaterVert));
 	ibo = afCreateTiledPlaneIBO(tileMax, &nIndi);
 	renderStatesWater.Create("water_es2", arrayparam(elements), AFRS_OFFSCREEN_RENDER_TARGET_R8G8B8A8_UNORM, arrayparam(samplers));
 
@@ -248,10 +245,6 @@ void WaterSurfaceES2::UpdateRipple()
 		Vec2 pos = (Vec2)systemMisc.GetMousePos() / (Vec2)systemMisc.GetScreenSize() * Vec2(2, -2) + Vec2(-1, 1);
 		CreateRipple(pos);
 	}
-
-	std::vector<WaterVert> vert;
-	UpdateVert(vert);
-	afWriteBuffer(vbo, (int)vert.size() * sizeof(WaterVert), &vert[0]);
 }
 
 void WaterSurfaceES2::Update()
@@ -295,7 +288,9 @@ void WaterSurfaceES2::Draw2D(AFCommandList& cmd, AFRenderTarget& rt)
 	}
 
 	cmd.SetBuffer(sizeof(uboBuf), &uboBuf, 6);
-	cmd.SetVertexBuffer(vbo, sizeof(WaterVert));
+	std::vector<WaterVert> vert;
+	UpdateVert(vert);
+	cmd.SetVertexBuffer((int)vert.size() * sizeof(WaterVert), &vert[0], sizeof(WaterVert));
 	cmd.SetIndexBuffer(ibo);
 
 	rtWater.BeginRenderToThis();
