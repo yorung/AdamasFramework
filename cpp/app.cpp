@@ -22,7 +22,6 @@ App::App()
 
 void App::Draw()
 {
-	AF_PROFILE_RANGE(AppDraw);
 
 	IVec2 scrSize = systemMisc.GetScreenSize();
 	float f = 1000;
@@ -44,22 +43,37 @@ void App::Draw()
 	*/
 	AFCommandList& cmd = afGetCommandList();
 
-	appRenderTarget.BeginRenderToThis();
-	moduleManager.Draw3DAll(cmd, appRenderTarget);
-	luaMan.Draw3D();
-	meshRenderer.Flush();
-	skyMan.Draw(cmd);
-	luaMan.Draw2D(cmd);
-	moduleManager.Draw2DAll(cmd, appRenderTarget);
-	appRenderTarget.EndRenderToThis();
+	{
+		AF_PROFILE_RANGE(AppDrawOffscreen);
+		appRenderTarget.BeginRenderToThis();
+		moduleManager.Draw3DAll(cmd, appRenderTarget);
+		luaMan.Draw3D();
+		meshRenderer.Flush();
+		skyMan.Draw(cmd);
+		luaMan.Draw2D(cmd);
+		moduleManager.Draw2DAll(cmd, appRenderTarget);
+		appRenderTarget.EndRenderToThis();
+	}
 
-	afBeginRenderToSwapChain();
-	cmd.SetRenderStates(copyPSO);
-	stockObjects.ApplyFullScreenVertexBuffer(cmd);
-	cmd.SetTexture(appRenderTarget.GetTexture(), 0);
-	cmd.Draw(4);
-	fontMan.Draw(cmd, systemMisc.GetScreenSize());
-	afEndRenderToSwapChain();
+	{
+		AF_PROFILE_RANGE(AppDrawBeginSwapchain);
+		afBeginRenderToSwapChain();
+	}
+	{
+		AF_PROFILE_RANGE(AppDrawDrawSwapchain);
+		cmd.SetRenderStates(copyPSO);
+		stockObjects.ApplyFullScreenVertexBuffer(cmd);
+		cmd.SetTexture(appRenderTarget.GetTexture(), 0);
+		cmd.Draw(4);
+	}
+	{
+		AF_PROFILE_RANGE(AppDrawDrawFontToSwapchain);
+		fontMan.Draw(cmd, systemMisc.GetScreenSize());
+	}
+	{
+		AF_PROFILE_RANGE(AppDrawEndSwapchain);
+		afEndRenderToSwapChain();
+	}
 }
 
 static const SamplerType samplers[] =
