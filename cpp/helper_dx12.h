@@ -31,7 +31,6 @@ void afSetIndexBuffer(IBOID id);
 void afWriteBuffer(const IBOID id, int size, const void* buf);
 VBOID afCreateVertexBuffer(int size, const void* buf = nullptr);
 IBOID afCreateIndexBuffer(int numIndi, const AFIndex* indi);
-ComPtr<ID3D12Resource> afCreateDynamicVertexBuffer(int size, const void* buf = nullptr);
 UBOID afCreateUBO(int size, const void* buf = nullptr);
 
 ComPtr<ID3D12PipelineState> afCreatePSO(const char *shaderName, const InputElement elements[], int numElements, uint32_t flags, ComPtr<ID3D12RootSignature>& rootSignature);
@@ -54,7 +53,6 @@ void afWriteTexture(SRVID srv, const TexDesc& desc, const void* buf);
 void afWriteTexture(SRVID id, const TexDesc& desc, int mipCount, const AFTexSubresourceData datas[]);
 
 IVec2 afGetTextureSize(SRVID tex);
-void afSetVertexBufferFromSystemMemory(const void* buf, int size, int stride);
 void afSetRenderTarget(ComPtr<ID3D12Resource> color, ComPtr<ID3D12Resource> depthStencil, uint32_t flags = 0);
 
 class AFHeapAllocator

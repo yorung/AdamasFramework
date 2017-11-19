@@ -34,9 +34,10 @@ void afSetVertexBuffer(VBOID id, int stride)
 
 void afSetVertexBuffer(int size, const void* buf, int stride)
 {
-	VBOID vbo = afCreateDynamicVertexBuffer(size, buf);
-	afSetVertexBuffer(vbo, stride);
-	deviceMan.AddIntermediateCommandlistDependentResource(vbo);
+	int top = deviceMan.AssignConstantBuffer(buf, size);
+	ID3D12GraphicsCommandList* list = deviceMan.GetCommandList();
+	D3D12_VERTEX_BUFFER_VIEW vertexBufferView = { deviceMan.GetConstantBufferGPUAddress(top), (UINT)size, (UINT)stride };
+	list->IASetVertexBuffers(0, 1, &vertexBufferView);
 }
 
 void afSetVertexBuffers(int numIds, VBOID ids[], int strides[])
@@ -87,11 +88,6 @@ static ComPtr<ID3D12Resource> afCreateUploadHeap(int size, const void* buf = nul
 		afWriteBuffer(o, size, buf);
 	}
 	return o;
-}
-
-VBOID afCreateDynamicVertexBuffer(int size, const void* buf)
-{
-	return afCreateUploadHeap(size, buf);
 }
 
 static ComPtr<ID3D12Resource> afCreateBufferAs(int size, const void* buf, D3D12_RESOURCE_STATES as)
@@ -366,13 +362,6 @@ void afBindTextures(int numResources, ComPtr<ID3D12Resource> resources[], int ro
 	}
 	ID3D12GraphicsCommandList* commandList = deviceMan.GetCommandList();
 	commandList->SetGraphicsRootDescriptorTable(rootParameterIndex, heap.GetGPUAddress(descriptorHeapIndex));
-}
-
-void afSetVertexBufferFromSystemMemory(const void* buf, int size, int stride)
-{
-	VBOID vbo = afCreateDynamicVertexBuffer(size, buf);
-	afSetVertexBuffer(vbo, stride);
-	deviceMan.AddIntermediateCommandlistDependentResource(vbo);
 }
 
 AFHeapAllocator::~AFHeapAllocator()
