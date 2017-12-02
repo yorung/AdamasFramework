@@ -60,10 +60,24 @@ void App::Draw()
 		afBeginRenderToSwapChain();
 	}
 	{
-		AF_PROFILE_RANGE(AppDrawDrawSwapchain);
+		AF_PROFILE_RANGE(AppDrawSetPSO);
 		cmd.SetRenderStates(copyPSO);
+	}
+	{
+		AF_PROFILE_RANGE(AppDrawSetVB);
 		stockObjects.ApplyFullScreenVertexBuffer(cmd);
-		cmd.SetTexture(appRenderTarget.GetTexture(), 0);
+	}
+	AFTexRef tex;
+	{
+		AF_PROFILE_RANGE(AppDrawRenderTargetTransition);
+		tex = appRenderTarget.GetTexture();
+	}
+	{
+		AF_PROFILE_RANGE(AppDrawTextureBinding);
+		cmd.SetTexture(tex, 0);
+	}
+	{
+		AF_PROFILE_RANGE(AppDrawOffscreenBuffer);
 		cmd.Draw(4);
 	}
 	{
