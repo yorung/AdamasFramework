@@ -612,7 +612,7 @@ void Bvh::Draw(int animId, double time)
 			BvhFrame& f = m_frames[i];
 			BoneMatrices[i] = f.result;
 		}
-		debugRenderer.DrawPivots(BoneMatrices, (int)m_frames.size());
+		debugBoneRenderer.DrawPivots(BoneMatrices, (int)m_frames.size());
 	} else {
 		for (BONE_ID i = 0; (unsigned)i < m_frames.size(); i++)	{
 			BvhFrame& f = m_frames[i];

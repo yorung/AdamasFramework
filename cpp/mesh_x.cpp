@@ -1090,7 +1090,7 @@ void MeshX::Draw(const MeshXAnimResult& animResult, const Mat& worldMat) const
 	assert(m_frames.size() <= dimof(animResult.boneMat));
 
 	if (g_type == "pivot") {
-		debugRenderer.DrawPivots(animResult.boneMat, (int)m_frames.size());
+		debugBoneRenderer.DrawPivots(animResult.boneMat, (int)m_frames.size());
 	} else {
 		Mat vertexTransformMat[BONE_MAX];
 		for (BONE_ID i = 0; (unsigned)i < m_frames.size(); i++)	{

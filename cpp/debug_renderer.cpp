@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-DebugRenderer debugRenderer;
+DebugBoneRenderer debugBoneRenderer;
 
 static void InitVertex(MeshVertex& v, uint32_t color, BONE_ID boneId)
 {
@@ -46,7 +46,7 @@ void CreateCone(Block& b, const Vec3& v1, const Vec3& v2, BONE_ID boneId, uint32
 	}
 }
 
-void DebugRenderer::CreatePivotMesh()
+void DebugBoneRenderer::CreatePivotMesh()
 {
 	for (BONE_ID i = 0; (unsigned)i < BONE_MAX; i++)	{
 		float len = 12.0f;
@@ -78,21 +78,21 @@ void DebugRenderer::CreatePivotMesh()
 	pivots.materialMaps.push_back(map);
 }
 
-DebugRenderer::DebugRenderer()
+DebugBoneRenderer::DebugBoneRenderer()
 {
 }
 
-DebugRenderer::~DebugRenderer()
+DebugBoneRenderer::~DebugBoneRenderer()
 {
 	Destroy();
 }
 
-void DebugRenderer::Init()
+void DebugBoneRenderer::Init()
 {
 	CreatePivotMesh();
 }
 
-void DebugRenderer::DrawPivots(const Mat mat[BONE_MAX], int num)
+void DebugBoneRenderer::DrawPivots(const Mat mat[BONE_MAX], int num)
 {
 	Mat mat2[BONE_MAX];
 	for (int i = 0; i < BONE_MAX; i++) {
@@ -107,7 +107,7 @@ void DebugRenderer::DrawPivots(const Mat mat[BONE_MAX], int num)
 	meshRenderer.DrawRenderMesh(pivotsRenderMeshId, Mat(), mat2, BONE_MAX);
 }
 
-void DebugRenderer::Destroy()
+void DebugBoneRenderer::Destroy()
 {
 	meshRenderer.SafeDestroyRenderMesh(pivotsRenderMeshId);
 }
