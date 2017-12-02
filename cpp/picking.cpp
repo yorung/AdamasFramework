@@ -1,25 +1,11 @@
 #include "stdafx.h"
 
-const static InputElement elements[] =
-{
-	AF_INPUT_ELEMENT(0, "POSITION", AFF_R32G32B32_FLOAT, 0),
-	AF_INPUT_ELEMENT(1, "COLOR", AFF_R32G32B32_FLOAT, 12),
-};
-
-struct Vertex
-{
-	Vec3 pos;
-	Vec3 color;
-};
-
 class Picking
 {
-	AFRenderStates polygonRenderStates;
-	AFRenderStates lineRenderStates;
 public:
 	Picking();
-	void Update2D(Vertex v[3]);
-	void Update3D(Vertex poly[3], Vertex lines[6]);
+	void Update2D(DebugSolidVertex v[3]);
+	void Update3D(DebugSolidVertex poly[3], DebugSolidVertex lines[6]);
 	void Draw2D();
 	void Draw3D();
 };
@@ -49,8 +35,6 @@ public:
 
 Picking::Picking()
 {
-	polygonRenderStates.Create("solid", arrayparam(elements), AFRS_DEPTH_ENABLE | AFRS_WIREFRAME | AFRS_OFFSCREEN_RENDER_TARGET_R8G8B8A8_UNORM | AFRS_AUTO_DEPTH_STENCIL);
-	lineRenderStates.Create("solid", arrayparam(elements), AFRS_DEPTH_ENABLE | AFRS_PRIMITIVE_LINELIST | AFRS_OFFSCREEN_RENDER_TARGET_R8G8B8A8_UNORM | AFRS_AUTO_DEPTH_STENCIL);
 }
 
 void ScreenPosToRay(const Vec2& scrPos, Vec3& nearPos, Vec3& farPos)
@@ -65,7 +49,7 @@ void ScreenPosToRay(const Vec2& scrPos, Vec3& nearPos, Vec3& farPos)
 	farPos = Vec3(farPos4.x, farPos4.y, farPos4.z) / farPos4.w;
 }
 
-bool RayVsTriangle(const Vec3& ray1, const Vec3& ray2, const Vec3 triangle[])
+static bool RayVsTriangle(const Vec3& ray1, const Vec3& ray2, const Vec3 triangle[])
 {
 	Vec3 rayDir = ray2 - ray1;
 	float inner[3];
@@ -77,7 +61,7 @@ bool RayVsTriangle(const Vec3& ray1, const Vec3& ray2, const Vec3 triangle[])
 	return (inner[0] < 0 && inner[1] < 0 && inner[2] < 0) || (inner[0] > 0 && inner[1] > 0 && inner[2] > 0);
 }
 
-bool RayVsTriangleMollerTrumbore(const Vec3& ray1, const Vec3& ray2, const Vec3 triangle[], Vec3& hitPos)
+static bool RayVsTriangleMollerTrumbore(const Vec3& ray1, const Vec3& ray2, const Vec3 triangle[], Vec3& hitPos)
 {
 	Vec3 ray1relative = ray1 - triangle[0];
 	Vec3 axes[] = { triangle[1] - triangle[0], triangle[2] - triangle[0], ray1 - ray2 };
@@ -87,7 +71,7 @@ bool RayVsTriangleMollerTrumbore(const Vec3& ray1, const Vec3& ray2, const Vec3 
 	return uvt.x >= 0 && uvt.y >= 0 && (uvt.x + uvt.y) <= 1.f;
 }
 
-void Picking::Update2D(Vertex v[3])
+void Picking::Update2D(DebugSolidVertex v[3])
 {
 	float radian = (float)(std::fmod(GetTime(), 3) * M_PI * 2 / 3);
 	float radius = 0.5f;
@@ -127,7 +111,7 @@ void Picking::Update2D(Vertex v[3])
 	}
 }
 
-void Picking::Update3D(Vertex poly[3], Vertex lines[6])
+void Picking::Update3D(DebugSolidVertex poly[3], DebugSolidVertex lines[6])
 {
 	float radian = (float)(std::fmod(GetTime(), 10) * M_PI * 2 / 10);
 	float radius = 50.f;
@@ -156,40 +140,24 @@ void Picking::Update3D(Vertex poly[3], Vertex lines[6])
 	}
 }
 
-static void DrawDynamicVertexBuffer(AFCommandList& cmd, int nVertices, Vertex vertices[])
-{
-	cmd.SetVertexBuffer(sizeof(Vertex) * nVertices, vertices, sizeof(Vertex));
-	cmd.Draw(nVertices);
-}
-
 void Picking::Draw3D()
 {
-	Vertex poly[3], lines[6];
+	DebugSolidVertex poly[3], lines[6];
 	Update3D(poly, lines);
 	Mat mView = matrixMan.Get(MatrixMan::VIEW);
 	Mat mProj = matrixMan.Get(MatrixMan::PROJ);
 	Mat mVP = mView * mProj;
-
-	AFCommandList& cmd = afGetCommandList();
-	cmd.SetRenderStates(polygonRenderStates);
-	cmd.SetBuffer(sizeof(Mat), &mVP, 0);
-	DrawDynamicVertexBuffer(cmd, arrayparam(poly));
-
-	cmd.SetRenderStates(lineRenderStates);
-	cmd.SetBuffer(sizeof(Mat), &mVP, 0);
-	DrawDynamicVertexBuffer(cmd, arrayparam(lines));
+	debugShapeRenderer.DrawSolidPolygons(mVP, arrayparam(poly));
+	debugShapeRenderer.DrawSolidLines(mVP, arrayparam(lines));
 }
 
 void Picking::Draw2D()
 {
-	AFCommandList& cmd = afGetCommandList();
-	cmd.SetRenderStates(polygonRenderStates);
-	Vertex v[3];
+	DebugSolidVertex v[3];
 	Update2D(v);
 	Mat proj2d;
 #ifdef AF_VULKAN
 	proj2d._22 = -1;
 #endif
-	cmd.SetBuffer(sizeof(Mat), &proj2d, 0);
-	DrawDynamicVertexBuffer(cmd, arrayparam(v));
+	debugShapeRenderer.DrawSolidPolygons(proj2d, arrayparam(v));
 }

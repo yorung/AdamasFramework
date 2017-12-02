@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 DebugBoneRenderer debugBoneRenderer;
+DebugShapeRenderer debugShapeRenderer;
 
 static void InitVertex(MeshVertex& v, uint32_t color, BONE_ID boneId)
 {
@@ -110,4 +111,39 @@ void DebugBoneRenderer::DrawPivots(const Mat mat[BONE_MAX], int num)
 void DebugBoneRenderer::Destroy()
 {
 	meshRenderer.SafeDestroyRenderMesh(pivotsRenderMeshId);
+}
+
+void DebugShapeRenderer::DrawSolidPolygons(Mat& mat, int nVertices, DebugSolidVertex vertices[])
+{
+	AFCommandList& cmd = afGetCommandList();
+	cmd.SetRenderStates(polygonRenderStates);
+	cmd.SetBuffer(sizeof(Mat), &mat, 0);
+	cmd.SetVertexBuffer(sizeof(DebugSolidVertex) * nVertices, vertices, sizeof(DebugSolidVertex));
+	cmd.Draw(nVertices);
+}
+
+void DebugShapeRenderer::DrawSolidLines(Mat& mat, int nVertices, DebugSolidVertex vertices[])
+{
+	AFCommandList& cmd = afGetCommandList();
+	cmd.SetRenderStates(lineRenderStates);
+	cmd.SetBuffer(sizeof(Mat), &mat, 0);
+	cmd.SetVertexBuffer(sizeof(DebugSolidVertex) * nVertices, vertices, sizeof(DebugSolidVertex));
+	cmd.Draw(nVertices);
+}
+
+void DebugShapeRenderer::Create()
+{
+	const static InputElement elements[] =
+	{
+		AF_INPUT_ELEMENT(0, "POSITION", AFF_R32G32B32_FLOAT, 0),
+		AF_INPUT_ELEMENT(1, "COLOR", AFF_R32G32B32_FLOAT, 12),
+	};
+	polygonRenderStates.Create("solid", arrayparam(elements), AFRS_DEPTH_ENABLE | AFRS_OFFSCREEN_RENDER_TARGET_R8G8B8A8_UNORM | AFRS_AUTO_DEPTH_STENCIL);
+	lineRenderStates.Create("solid", arrayparam(elements), AFRS_DEPTH_ENABLE | AFRS_PRIMITIVE_LINELIST | AFRS_OFFSCREEN_RENDER_TARGET_R8G8B8A8_UNORM | AFRS_AUTO_DEPTH_STENCIL);
+}
+
+void DebugShapeRenderer::Destroy()
+{
+	polygonRenderStates.Destroy();
+	lineRenderStates.Destroy();
 }

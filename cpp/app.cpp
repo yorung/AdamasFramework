@@ -105,6 +105,7 @@ void App::Create()
 	glClearColor(0.0f, 0.0f, 0.5f, 1.0f);
 	glClearDepthf(0);	// for left-handed coordinate
 #endif
+	debugShapeRenderer.Create();
 	meshRenderer.Create();
 	fontMan.Create();
 	spriteRenderer.Create();
@@ -149,6 +150,7 @@ void App::Destroy()
 	letterBox.Destroy();
 	appRenderTarget.Destroy();
 	copyPSO.Destroy();
+	debugShapeRenderer.Destroy();
 	ClearMenu();
 	meshId = MeshMan::INVALID_MMID;
 }
