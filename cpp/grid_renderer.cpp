@@ -97,11 +97,10 @@ GridRenderer::GridRenderer(int numGrid_, float pitch_)
 
 void GridRenderer::Draw()
 {
+	ViewDesc* view = luaMan.GetViewDesc();
 	AFCommandList& cmd = afGetCommandList();
 	cmd.SetRenderStates(renderStates);
-	Mat matView = matrixMan.Get(MatrixMan::VIEW);
-	Mat matProj = matrixMan.Get(MatrixMan::PROJ);
-	Mat matVP = matView * matProj;
+	Mat matVP = view->matView * view->matProj;
 	cmd.SetBuffer(sizeof(Mat), &matVP, 0);
 	cmd.SetVertexBuffer(vbo, sizeof(GridVert));
 	cmd.SetIndexBuffer(ibo);
@@ -118,13 +117,15 @@ void GridRenderer::Draw()
 #endif
 }
 
-void ScreenPosToRay(const Vec2& scrPos, Vec3& nearPos, Vec3& farPos);
+void ScreenPosToRay(const ViewDesc& viewDesc, const Vec2& scrPos, Vec3& nearPos, Vec3& farPos);
 
 bool GridRenderer::GetMousePosInGrid(Vec2& v)
 {
+	ViewDesc* view = luaMan.GetViewDesc();
+
 	// make a ray from cursor pos
 	Vec3 n, f;
-	ScreenPosToRay(systemMisc.GetMousePos(), n, f);
+	ScreenPosToRay(*view, systemMisc.GetMousePos(), n, f);
 
 	// ray-grid intersection
 	Vec3 planeNormal = { 0, 1, 0 };

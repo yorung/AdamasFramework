@@ -112,7 +112,7 @@ RenderMesh* MeshRenderer::GetMeshByMRID(MRID id)
 	return r;
 }
 
-void MeshRenderer::DrawRenderMesh(MRID id, const Mat& worldMat, const Mat BoneMatrices[], int nBones)
+void MeshRenderer::DrawRenderMesh(const ViewDesc& view, MRID id, const Mat& worldMat, const Mat BoneMatrices[], int nBones)
 {
 	if (!renderStates.IsReady())
 	{
@@ -122,15 +122,15 @@ void MeshRenderer::DrawRenderMesh(MRID id, const Mat& worldMat, const Mat BoneMa
 
 	if (nStoredCommands && id != perDrawCallUBO.commands[0].meshId)
 	{
-		Flush();
+		Flush(view);
 	}
 	if (nStoredCommands == MAX_INSTANCES)
 	{
-		Flush();
+		Flush(view);
 	}
 	if (nBones + renderBoneMatrices.size() > MAX_BONES_PER_DRAW_CALL)
 	{
-		Flush();
+		Flush(view);
 	}
 
 	RenderCommand& c = perDrawCallUBO.commands[nStoredCommands++];
@@ -143,7 +143,7 @@ void MeshRenderer::DrawRenderMesh(MRID id, const Mat& worldMat, const Mat BoneMa
 	memcpy(&renderBoneMatrices[0] + c.boneStartIndex, &BoneMatrices[0], sizeof(Mat) * nBones);
 }
 
-void MeshRenderer::Flush()
+void MeshRenderer::Flush(const ViewDesc& view)
 {
 	if (!renderStates.IsReady()) {
 		return;
@@ -152,8 +152,8 @@ void MeshRenderer::Flush()
 		return;
 	}
 
-	perDrawCallUBO.matV = matrixMan.Get(MatrixMan::VIEW);
-	perDrawCallUBO.matP = matrixMan.Get(MatrixMan::PROJ);
+	perDrawCallUBO.matV = view.matView;
+	perDrawCallUBO.matP = view.matProj;
 
 	AFCommandList& cmd = afGetCommandList();
 	cmd.SetRenderStates(renderStates);

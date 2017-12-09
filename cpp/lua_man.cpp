@@ -2,6 +2,7 @@
 
 LuaMan luaMan;
 extern SpriteCommands luaSpriteCommands;
+extern ViewDesc* luaViewDesc;
 
 LuaBindFuncContainer& GetLuaBindFuncContainer()
 {
@@ -69,8 +70,9 @@ void LuaMan::CallGlobal(const char* func)
 	}
 }
 
-void LuaMan::Update()
+void LuaMan::Update(ViewDesc& viewDesc)
 {
+	luaViewDesc = &viewDesc;
 	CallGlobal("Update");
 }
 
@@ -83,7 +85,13 @@ void LuaMan::Draw2D(AFCommandList& cmd)
 	luaSpriteCommands.clear();
 }
 
-void LuaMan::Draw3D()
+void LuaMan::Draw3D(ViewDesc& viewDesc)
 {
+	luaViewDesc = &viewDesc;
 	CallGlobal("Draw3D");
+}
+
+ViewDesc* LuaMan::GetViewDesc()
+{
+	return luaViewDesc;
 }

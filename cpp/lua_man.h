@@ -7,9 +7,10 @@ public:
 	~LuaMan();
 	void Create();
 	void Destroy();
-	void Update();
+	void Update(ViewDesc& viewDesc);
 	void Draw2D(AFCommandList& cmd);
-	void Draw3D();
+	void Draw3D(ViewDesc& viewDesc);
+	ViewDesc* GetViewDesc();	// workaround to access 'ViewDesc' from lua managed instances.
 	lua_State* GetState() { return L; }
 };
 

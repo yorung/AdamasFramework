@@ -7,7 +7,7 @@ public:
 	DebugBoneRenderer();
 	~DebugBoneRenderer();
 	void Init();
-	void DrawPivots(const Mat mat[BONE_MAX], int num);
+	void DrawPivots(const ViewDesc& view, const Mat mat[BONE_MAX], int num);
 	void Destroy();
 };
 

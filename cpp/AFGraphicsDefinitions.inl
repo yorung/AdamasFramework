@@ -7,6 +7,13 @@ struct TexDesc
 	bool isCubeMap = false;
 };
 
+struct ViewDesc
+{
+	IVec2 screenSize;
+	Mat matView;
+	Mat matProj;
+};
+
 enum RenderStateFlags : uint32_t
 {
 	AFRS_NONE = 0,

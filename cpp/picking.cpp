@@ -1,13 +1,10 @@
 #include "stdafx.h"
 
-class Picking
+class Picking : public AFModule
 {
 public:
-	Picking();
-	void Update2D(DebugSolidVertex v[3]);
-	void Update3D(DebugSolidVertex poly[3], DebugSolidVertex lines[6]);
-	void Draw2D();
-	void Draw3D();
+	void Draw2D(AFCommandList& cmd, AFRenderTarget& rt) override;
+	void Draw3D(AFCommandList& cmd, AFRenderTarget& rt, ViewDesc& viewDesc) override;
 };
 
 #define CLASSNAME "Picking"
@@ -23,8 +20,6 @@ public:
 		GetLuaBindFuncContainer().push_back([](lua_State* L) {
 			static luaL_Reg methods[] =
 			{
-				{ "Draw2D", [](lua_State* L) { GET_PICKING p->Draw2D(); return 0; } },
-				{ "Draw3D", [](lua_State* L) { GET_PICKING p->Draw3D(); return 0; } },
 				{ "__gc", [](lua_State* L) { GET_PICKING p->~Picking(); return 0; } },
 				{ nullptr, nullptr },
 			};
@@ -33,22 +28,16 @@ public:
 	}
 } static binder;
 
-Picking::Picking()
+void ScreenPosToRay(const ViewDesc& viewDesc, const Vec2& scrPos, Vec3& nearPos, Vec3& farPos)
 {
-}
-
-void ScreenPosToRay(const Vec2& scrPos, Vec3& nearPos, Vec3& farPos)
-{
-	Mat v = matrixMan.Get(MatrixMan::VIEW);
-	Mat p = matrixMan.Get(MatrixMan::PROJ);
-	Mat vp = makeViewportMatrix(systemMisc.GetScreenSize());
-	Mat mInv = inv(v * p * vp);
+	Mat mInv = inv(viewDesc.matView * viewDesc.matProj * makeViewportMatrix(viewDesc.screenSize));
 	Vec4 nearPos4 = transform(Vec4(scrPos.x, scrPos.y, NDC_SPACE_NEAR, 1), mInv);
 	Vec4 farPos4 = transform(Vec4(scrPos.x, scrPos.y, NDC_SPACE_FAR, 1), mInv);
 	nearPos = Vec3(nearPos4.x, nearPos4.y, nearPos4.z) / nearPos4.w;
 	farPos = Vec3(farPos4.x, farPos4.y, farPos4.z) / farPos4.w;
 }
 
+#if 0
 static bool RayVsTriangle(const Vec3& ray1, const Vec3& ray2, const Vec3 triangle[])
 {
 	Vec3 rayDir = ray2 - ray1;
@@ -60,8 +49,10 @@ static bool RayVsTriangle(const Vec3& ray1, const Vec3& ray2, const Vec3 triangl
 	}
 	return (inner[0] < 0 && inner[1] < 0 && inner[2] < 0) || (inner[0] > 0 && inner[1] > 0 && inner[2] > 0);
 }
+#endif
 
-static bool RayVsTriangleMollerTrumbore(const Vec3& ray1, const Vec3& ray2, const Vec3 triangle[], Vec3& hitPos)
+// Moller Trumbore intersection algorithm
+static bool RayVsTriangle(const Vec3& ray1, const Vec3& ray2, const Vec3 triangle[], Vec3& hitPos)
 {
 	Vec3 ray1relative = ray1 - triangle[0];
 	Vec3 axes[] = { triangle[1] - triangle[0], triangle[2] - triangle[0], ray1 - ray2 };
@@ -71,8 +62,42 @@ static bool RayVsTriangleMollerTrumbore(const Vec3& ray1, const Vec3& ray2, cons
 	return uvt.x >= 0 && uvt.y >= 0 && (uvt.x + uvt.y) <= 1.f;
 }
 
-void Picking::Update2D(DebugSolidVertex v[3])
+void Picking::Draw3D(AFCommandList&, AFRenderTarget&, ViewDesc& viewDesc)
 {
+	DebugSolidVertex poly[3], lines[6];
+	float radian = (float)(std::fmod(GetTime(), 10) * M_PI * 2 / 10);
+	float radius = 50.f;
+	Vec3 triangle[3];
+	for (int i = 0; i < 3; i++) {
+		radian += (float)M_PI * 2 / 3;
+		triangle[i] = poly[i].pos = Vec3(std::sin(radian) * radius, std::cos(radian) * radius, 50.f);
+		poly[i].color = Vec3(0.5, 0.5, 0.5);
+	}
+
+	Vec3 n, f;
+	ScreenPosToRay(viewDesc, systemMisc.GetMousePos(), n, f);
+	Vec3 hitPos;
+	bool hit = RayVsTriangle(n, f, triangle, hitPos);
+	for (int i = 0; i < 3; i++)
+	{
+		poly[i].color = hit ? Vec3(i == 0, i == 1, i == 2) : Vec3(0.5, 0.5, 0.5);
+	}
+
+	for (int i = 0; i < 3; i++)
+	{
+		Vec3 axis = Vec3(i == 0, i == 1, i == 2);
+		lines[i * 2].color = lines[i * 2 + 1].color = axis;
+		lines[i * 2].pos = hitPos + axis * 10;
+		lines[i * 2 + 1].pos = hitPos + axis * -10;
+	}
+	Mat mVP = viewDesc.matView * viewDesc.matProj;
+	debugShapeRenderer.DrawSolidPolygons(mVP, arrayparam(poly));
+	debugShapeRenderer.DrawSolidLines(mVP, arrayparam(lines));
+}
+
+void Picking::Draw2D(AFCommandList&, AFRenderTarget&)
+{
+	DebugSolidVertex v[3];
 	float radian = (float)(std::fmod(GetTime(), 3) * M_PI * 2 / 3);
 	float radius = 0.5f;
 	float aspect = (float)systemMisc.GetScreenSize().x / systemMisc.GetScreenSize().y;
@@ -109,55 +134,6 @@ void Picking::Update2D(DebugSolidVertex v[3])
 	for (int i = 0; i < 3; i++) {
 		v[i].color = hit ? Vec3(i == 0, i == 1, i == 2) : Vec3(0.5, 0.5, 0.5);
 	}
-}
 
-void Picking::Update3D(DebugSolidVertex poly[3], DebugSolidVertex lines[6])
-{
-	float radian = (float)(std::fmod(GetTime(), 10) * M_PI * 2 / 10);
-	float radius = 50.f;
-	Vec3 triangle[3];
-	for (int i = 0; i < 3; i++) {
-		radian += (float)M_PI * 2 / 3;
-		triangle[i] = poly[i].pos = Vec3(std::sin(radian) * radius, std::cos(radian) * radius, 50.f);
-		poly[i].color = Vec3(0.5, 0.5, 0.5);
-	}
-
-	Vec3 n, f;
-	ScreenPosToRay(systemMisc.GetMousePos(), n, f);
-	Vec3 hitPos;
-	bool hit = RayVsTriangleMollerTrumbore(n, f, triangle, hitPos);
-	for (int i = 0; i < 3; i++)
-	{
-		poly[i].color = hit ? Vec3(i == 0, i == 1, i == 2) : Vec3(0.5, 0.5, 0.5);
-	}
-
-	for (int i = 0; i < 3; i++)
-	{
-		Vec3 axis = Vec3(i == 0, i == 1, i == 2);
-		lines[i * 2].color = lines[i * 2 + 1].color = axis;
-		lines[i * 2].pos = hitPos + axis * 10;
-		lines[i * 2 + 1].pos = hitPos + axis * -10;
-	}
-}
-
-void Picking::Draw3D()
-{
-	DebugSolidVertex poly[3], lines[6];
-	Update3D(poly, lines);
-	Mat mView = matrixMan.Get(MatrixMan::VIEW);
-	Mat mProj = matrixMan.Get(MatrixMan::PROJ);
-	Mat mVP = mView * mProj;
-	debugShapeRenderer.DrawSolidPolygons(mVP, arrayparam(poly));
-	debugShapeRenderer.DrawSolidLines(mVP, arrayparam(lines));
-}
-
-void Picking::Draw2D()
-{
-	DebugSolidVertex v[3];
-	Update2D(v);
-	Mat proj2d;
-#ifdef AF_VULKAN
-	proj2d._22 = -1;
-#endif
 	debugShapeRenderer.DrawSolidPolygons(proj2d, arrayparam(v));
 }

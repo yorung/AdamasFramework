@@ -69,6 +69,7 @@ static void ProcessLuaCommandTbl(int cmd)
 		const char *p = lua_tostring(L, -1);
 		MessageBoxA(GetActiveWindow(), p, "luaL_dostring error", MB_OK);
 	}
+	lua_gc(L, LUA_GCCOLLECT, 0);
 }
 
 // Forward declarations of functions included in this code module:

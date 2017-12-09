@@ -73,8 +73,8 @@ public:
 	void Destroy();
 	MRID CreateRenderMesh(const Block& block);
 	void SafeDestroyRenderMesh(MRID& id);
-	void DrawRenderMesh(MRID id, const Mat& worldMat, const Mat BoneMatrices[], int nBones);
-	void Flush();
+	void DrawRenderMesh(const ViewDesc& view, MRID id, const Mat& worldMat, const Mat BoneMatrices[], int nBones);
+	void Flush(const ViewDesc& view);
 	MMID CreateMaterial(const Material& mat);
 	const Material* GetMaterial(MMID id);
 };

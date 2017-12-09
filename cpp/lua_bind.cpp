@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 SpriteCommands luaSpriteCommands;
+ViewDesc* luaViewDesc;
 
 #ifndef _MSC_VER
 typedef int LONG;
@@ -17,6 +18,7 @@ static const char* vec4ClassName = "Vec4";
 static const char* voiceClassName = "Voice";
 static const char* rectClassName = "RECT";
 static const char* matrixStackClassName = "MatrixStack";
+const char* viewDescClassName = "ViewDesc";
 
 static int LLookAt(lua_State* L)
 {
@@ -25,17 +27,15 @@ static int LLookAt(lua_State* L)
 	if (!eye || !at) {
 		return 0;
 	}
-	matrixMan.Set(MatrixMan::VIEW, lookatLH(*eye, *at, Vec3(0, 1, 0)));
+	luaViewDesc->matView = lookatLH(*eye, *at, Vec3(0, 1, 0));
 	return 0;
 }
 
 static IVec2 GetScreenPos(const MatrixStack* ms)
 {
-	Mat mV = matrixMan.Get(MatrixMan::VIEW);
-	Mat mP = matrixMan.Get(MatrixMan::PROJ);
 	Mat mW = ms ? ms->Get() : Mat();
-	Mat mViewport = makeViewportMatrix(systemMisc.GetScreenSize());
-	Mat m = mW * mV * mP * mViewport;
+	Mat mViewport = makeViewportMatrix(luaViewDesc->screenSize);
+	Mat m = mW * luaViewDesc->matView * luaViewDesc->matProj * mViewport;
 	return IVec2((int)(m._41 / m._44), (int)(m._42 / m._44));
 }
 
@@ -130,6 +130,19 @@ static void BindMesBox(lua_State *L)
 	luaL_setfuncs(L, globalFuncs, 0);
 	lua_pop(L, 1);
 	aflDumpStack();
+}
+
+static void BindViewDesc(lua_State *L)
+{
+#define GET_VIEW_DESC \
+		ViewDesc* p = (ViewDesc*)luaL_checkudata(L, 1, viewDescClassName); \
+		if (!p) { return 0; }
+	static luaL_Reg methods[] = {
+		{ nullptr, nullptr },
+	};
+#undef GET_MATRIX_STACK
+	aflBindClass(L, viewDescClassName, methods, [](lua_State* L) { void* u = lua_newuserdata(L, sizeof(ViewDesc)); new (u) ViewDesc(); return 1; });
+
 }
 
 static void BindMatrixStack(lua_State *L)
@@ -269,7 +282,7 @@ static void BindMesh(lua_State* L)
 			}
 			MeshXAnimResult r;
 			mesh->CalcAnimation(animId, time, r);
-			mesh->Draw(r, m ? m->Get() : Mat());
+			mesh->Draw(*luaMan.GetViewDesc(), r, m ? m->Get() : Mat());
 		}
 	};
 	static const char* meshClassName = "Mesh";
@@ -489,6 +502,7 @@ void LuaBind(lua_State* L)
 	BindVec4(L);
 	BindImage(L);
 	BindMatrixStack(L);
+	BindViewDesc(L);
 	BindGlobalFuncs(L);
 	ReplaceLuaStandardLibraryFunctions(L);
 	ShareVariables(L);

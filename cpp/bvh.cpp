@@ -589,7 +589,7 @@ void Bvh::ResetAnim()
 	CalcFrameMatrices();
 }
 
-void Bvh::Draw(int animId, double time)
+void Bvh::Draw(const ViewDesc& view, int animId, double time)
 {
 	if (!m_block.indices.size()) {
 		return;
@@ -612,13 +612,13 @@ void Bvh::Draw(int animId, double time)
 			BvhFrame& f = m_frames[i];
 			BoneMatrices[i] = f.result;
 		}
-		debugBoneRenderer.DrawPivots(BoneMatrices, (int)m_frames.size());
+		debugBoneRenderer.DrawPivots(view, BoneMatrices, (int)m_frames.size());
 	} else {
 		for (BONE_ID i = 0; (unsigned)i < m_frames.size(); i++)	{
 			BvhFrame& f = m_frames[i];
 			BoneMatrices[i] = f.boneOffsetMatrix * f.result;
 		}
-		meshRenderer.DrawRenderMesh(renderMeshId, Mat(), BoneMatrices, (int)m_frames.size());
+		meshRenderer.DrawRenderMesh(view, renderMeshId, Mat(), BoneMatrices, (int)m_frames.size());
 	}
 }
 

@@ -20,15 +20,8 @@ App::App()
 	meshId = MeshMan::INVALID_MMID;
 }
 
-void App::Draw()
+void App::Draw(ViewDesc& view)
 {
-
-	IVec2 scrSize = systemMisc.GetScreenSize();
-	float f = 1000;
-	float n = 1;
-	float aspect = (float)scrSize.x / scrSize.y;
-	Mat proj = perspectiveLH(45.0f * (float)M_PI / 180.0f, aspect, n, f);
-	matrixMan.Set(MatrixMan::PROJ, proj);
 	/*
 	MeshXAnimResult r;
 	MeshX* mesh = (MeshX*)meshMan.Get(meshId);
@@ -46,10 +39,10 @@ void App::Draw()
 	{
 		AF_PROFILE_RANGE(AppDrawOffscreen);
 		appRenderTarget.BeginRenderToThis();
-		moduleManager.Draw3DAll(cmd, appRenderTarget);
-		luaMan.Draw3D();
-		meshRenderer.Flush();
-		skyMan.Draw(cmd);
+		moduleManager.Draw3DAll(cmd, appRenderTarget, view);
+		luaMan.Draw3D(view);
+		meshRenderer.Flush(view);
+		skyMan.Draw(cmd, view);
 		luaMan.Draw2D(cmd);
 		moduleManager.Draw2DAll(cmd, appRenderTarget);
 		appRenderTarget.EndRenderToThis();
@@ -157,16 +150,23 @@ void App::Destroy()
 
 void App::Update()
 {
+	ViewDesc view;
 	{
 		AF_PROFILE_RANGE(Update);
 		systemMisc.lastUpdateTime = GetTime();
 		inputMan.Update();
-		matrixMan.Set(MatrixMan::VIEW, devCamera.CalcViewMatrix());
+		view.screenSize = systemMisc.GetScreenSize();
+		view.matView = devCamera.CalcViewMatrix();
+		IVec2 scrSize = systemMisc.GetScreenSize();
+		float f = 1000;
+		float n = 1;
+		float aspect = (float)scrSize.x / scrSize.y;
+		view.matProj = perspectiveLH(45.0f * (float)M_PI / 180.0f, aspect, n, f);
 		moduleManager.UpdateAll();
-		luaMan.Update();
+		luaMan.Update(view);
 		fps.Update();
 	}
 	fontMan.DrawString(Vec2(20, 40), 20, SPrintf("FPS: %f", fps.Get()), 0xffffffff);
 	afProfiler.Print();
-	Draw();
+	Draw(view);
 }

@@ -59,7 +59,7 @@ public:
 	const std::vector<BvhFrame>& GetFrames() const { return m_frames; }
 	Bvh(const char *fileName);
 	~Bvh();
-	void Draw(int animId, double time);
+	void Draw(const ViewDesc& view, int animId, double time);
 	void ResetAnim();
 	void GetRotAnim(Quat quats[BONE_MAX], double time) const;
 	BONE_ID BoneTypeToId(BoneType type) const;

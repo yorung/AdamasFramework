@@ -1,11 +1,10 @@
-local w = Picking()
+local picking = Picking()
 function Update()
+	local oceanGuard = picking;	-- workaround: this prevents GC
 end
 
 function Draw2D()
-	w:Draw2D()
 end
 
 function Draw3D()
-	w:Draw3D()
 end

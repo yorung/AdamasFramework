@@ -1081,7 +1081,7 @@ void MeshX::CalcAnimation(int animId, double time, MeshXAnimResult& animResult) 
 	CalcFrameMatrices(animResult, localMats);
 }
 
-void MeshX::Draw(const MeshXAnimResult& animResult, const Mat& worldMat) const
+void MeshX::Draw(const ViewDesc& view, const MeshXAnimResult& animResult, const Mat& worldMat) const
 {
 	if (!m_block.indices.size()) {
 		return;
@@ -1090,7 +1090,7 @@ void MeshX::Draw(const MeshXAnimResult& animResult, const Mat& worldMat) const
 	assert(m_frames.size() <= dimof(animResult.boneMat));
 
 	if (g_type == "pivot") {
-		debugBoneRenderer.DrawPivots(animResult.boneMat, (int)m_frames.size());
+		debugBoneRenderer.DrawPivots(view, animResult.boneMat, (int)m_frames.size());
 	} else {
 		Mat vertexTransformMat[BONE_MAX];
 		for (BONE_ID i = 0; (unsigned)i < m_frames.size(); i++)	{
@@ -1099,10 +1099,10 @@ void MeshX::Draw(const MeshXAnimResult& animResult, const Mat& worldMat) const
 		}
 
 		if (g_type == "mesh") {
-			meshRenderer.DrawRenderMesh(renderMeshId, worldMat, vertexTransformMat, (int)m_frames.size());
+			meshRenderer.DrawRenderMesh(view, renderMeshId, worldMat, vertexTransformMat, (int)m_frames.size());
 		}
 		if (g_type == "bone") {
-			meshRenderer.DrawRenderMesh(boneRenderMeshId, worldMat, vertexTransformMat, (int)m_frames.size());
+			meshRenderer.DrawRenderMesh(view, boneRenderMeshId, worldMat, vertexTransformMat, (int)m_frames.size());
 		}
 	}
 }
