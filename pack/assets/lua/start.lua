@@ -16,6 +16,7 @@ function RunModule(moduleFileName)
 	dofile(moduleFileName)
 end
 
+AddMenu("Ocean", "RunModule('lua/ocean.lua')")
 AddMenu("Picking", "RunModule('lua/picking.lua')")
 AddMenu("Hasami Shogi", "RunModule('lua/hasami_shogi/main.lua')")
 AddMenu("Puzzle", "RunModule('lua/puzzle.lua')")

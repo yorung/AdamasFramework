@@ -205,6 +205,7 @@
     <ClCompile Include="..\cpp\mesh_renderer.cpp" />
     <ClCompile Include="..\cpp\mesh_x.cpp" />
     <ClCompile Include="..\cpp\ModuleManager.cpp" />
+    <ClCompile Include="..\cpp\ocean.cpp" />
     <ClCompile Include="..\cpp\picking.cpp" />
     <ClCompile Include="..\cpp\puzzle.cpp" />
     <ClCompile Include="..\cpp\sky_man.cpp" />

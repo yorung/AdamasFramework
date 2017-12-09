@@ -136,6 +136,9 @@
     <ClCompile Include="..\cpp\ModuleManager.cpp">
       <Filter>PlatformIndipendent</Filter>
     </ClCompile>
+    <ClCompile Include="..\cpp\ocean.cpp">
+      <Filter>PlatformIndipendent</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resource.h">
