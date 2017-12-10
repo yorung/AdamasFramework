@@ -85,32 +85,32 @@ void Puzzle::Update()
 		return v.x >= 0 && v.y >= 0 && v.x < 1 && v.y < 1;
 	};
 	Vec2 scrSize = systemMisc.GetScreenSize();
-	MatrixStack m;
 	float mini = std::min(scrSize.x, scrSize.y);
-	m.Mul(translate((scrSize.x - mini) / 2, (scrSize.y - mini) / 2, 0));
-	m.Mul(scale(mini));
-	for (int x = 0; x < 4; x++) {
-		for (int y = 0; y < 4; y++) {
+	for (int x = 0; x < 4; x++)
+	{
+		for (int y = 0; y < 4; y++)
+		{
 			int spr = panels[x + y * 4];
-			if (spr < 0) {
+			if (spr < 0)
+			{
 				continue;
 			}
 			int xx = spr % 4;
 			int yy = spr / 4;
 			cmd.quad = Vec4(xx * pitch, yy * pitch, xx * pitch + pitch, yy * pitch + pitch);
-			m.Push();
-			m.Mul(translate(pitch * x, pitch * y, 0));
-			m.Mul(scale(0.25f));
-			cmd.matW = m.Get();
-			if (isHit(m.Get())) {
+			cmd.matW = scale(0.25f) * translate(pitch * x, pitch * y, 0) * scale(mini) * translate((scrSize.x - mini) / 2, (scrSize.y - mini) / 2, 0);
+			if (isHit(cmd.matW))
+			{
 				cmd.color = 0xff0000ff;
-				if (systemMisc.mouseDown) {
+				if (systemMisc.mouseDown)
+				{
 					TryMove(x, y);
 				}
-			} else {
+			}
+			else
+			{
 				cmd.color = 0xffffffff;
 			}
-			m.Pop();
 			cmds.push_back(cmd);
 		}
 	}
