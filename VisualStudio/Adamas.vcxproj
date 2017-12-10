@@ -200,7 +200,6 @@
     <ClCompile Include="..\cpp\letterbox.cpp" />
     <ClCompile Include="..\cpp\lua_bind.cpp" />
     <ClCompile Include="..\cpp\lua_man.cpp" />
-    <ClCompile Include="..\cpp\matrix_stack.cpp" />
     <ClCompile Include="..\cpp\mesh_man.cpp" />
     <ClCompile Include="..\cpp\mesh_renderer.cpp" />
     <ClCompile Include="..\cpp\mesh_x.cpp" />
@@ -400,7 +399,6 @@
     <ClInclude Include="..\cpp\joint_db.h" />
     <ClInclude Include="..\cpp\letterbox.h" />
     <ClInclude Include="..\cpp\lua_man.h" />
-    <ClInclude Include="..\cpp\matrix_stack.h" />
     <ClInclude Include="..\cpp\mesh_man.h" />
     <ClInclude Include="..\cpp\mesh_renderer.h" />
     <ClInclude Include="..\cpp\mesh_x.h" />

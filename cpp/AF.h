@@ -81,7 +81,6 @@ using Microsoft::WRL::ComPtr;
 
 static const int BONE_MAX = 50;
 
-#include "matrix_stack.h"
 #include "tex_man.h"
 #include "dib.h"
 #include "fps.h"

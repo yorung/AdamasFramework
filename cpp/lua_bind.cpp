@@ -13,6 +13,48 @@ struct RECT {
 };
 #endif
 
+class MatrixStack
+{
+	std::stack<Mat> stack;
+public:
+	MatrixStack();
+	void Reset();
+	void Push();
+	void Pop();
+	void Mul(const Mat& m);
+	const Mat& Get() const { return stack.top(); }
+};
+
+MatrixStack::MatrixStack()
+{
+	Reset();
+}
+
+void MatrixStack::Reset()
+{
+	std::stack<Mat> e;
+	e.push(Mat());
+	std::swap(stack, e);
+}
+
+void MatrixStack::Push()
+{
+	stack.push(stack.top());
+}
+
+void MatrixStack::Pop()
+{
+	assert(stack.size() > 1);
+	if (stack.size() > 1) {
+		stack.pop();
+	}
+}
+
+void MatrixStack::Mul(const Mat& m)
+{
+	stack.top() = m * stack.top();
+}
+
 static const char* vec3ClassName = "Vec3";
 static const char* vec4ClassName = "Vec4";
 static const char* voiceClassName = "Voice";
