@@ -1,17 +1,10 @@
-class App
+class AFApp
 {
-	AFRenderTarget appRenderTarget;
-	AFRenderStates copyPSO;
-	MeshMan::MMID meshId;
-	void Draw(ViewDesc& view);
 public:
-	App();
-	void Create();
-	void LoadMesh(const char* fileName);
-	void Update();
-	void Destroy();
+	virtual void Create() = 0;
+	virtual void Update() = 0;
+	virtual void Destroy() = 0;
+	static AFApp* (*Generator)();
 };
-
-extern App app;
 
 extern std::string g_type;

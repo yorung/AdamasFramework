@@ -13,6 +13,8 @@ HACCEL hAccelTable;
 static UINT g_itemId = 1000;
 static std::map<int, std::string> g_menuTbl;
 
+AFApp *app;
+
 void PostCommand(const char* cmdString)
 {
 	if (!strcmp(cmdString, "exit")) {
@@ -97,6 +99,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE,
 	MyRegisterClass(hInstance);
 
 	// Perform application initialization:
+	app = AFApp::Generator();
 	if (!InitInstance (hInstance))
 	{
 		return FALSE;
@@ -116,15 +119,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE,
 		if (w != lastW || h != lastH) {
 			lastW = w;
 			lastH = h;
-			app.Destroy();
+			app->Destroy();
 			deviceMan.Destroy();
 			deviceMan.Create(s_hWnd);
-			app.Create();
+			app->Create();
 		}
-		app.Update();
+		app->Update();
 		deviceMan.Present();
 		Sleep(1);
 	}
+	afSafeDelete(app);
+
 	return 0;
 }
 
@@ -220,8 +225,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			SendMessage(hWnd, WM_CLOSE, 0, 0);
 			break;
 		case IDM_RELOAD:
-			app.Destroy();
-			app.Create();
+			app->Destroy();
+			app->Create();
 			break;
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
@@ -233,7 +238,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		EndPaint(hWnd, &ps);
 		break;
 	case WM_CLOSE:
-		app.Destroy();
+		app->Destroy();
 		deviceMan.Destroy();
 		DestroyWindow(hWnd);
 		return 0;
@@ -243,7 +248,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		char fileName[MAX_PATH];
 		DragQueryFileA(hDrop, 0, fileName, MAX_PATH);
 		DragFinish(hDrop);
-		app.LoadMesh(fileName);
+	//	app.LoadMesh(fileName);
 		break;
 	}
 	case WM_LBUTTONDOWN:

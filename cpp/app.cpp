@@ -1,9 +1,41 @@
 #include "stdafx.h"
 
-App app;
+AFApp* (*AFApp::Generator)();
+
+class AFSampleApp : public AFApp
+{
+	AFRenderTarget appRenderTarget;
+	AFRenderStates copyPSO;
+	MeshMan::MMID meshId = MeshMan::INVALID_MMID;
+	void Draw(ViewDesc& view);
+public:
+	virtual void Create() override;
+	//	void LoadMesh(const char* fileName);
+	virtual void Update() override;
+	virtual void Destroy() override;
+};
+
+namespace
+{
+	AFApp* GenerateSampleApp()
+	{
+		return new AFSampleApp;
+	};
+
+	struct _
+	{
+		_()
+		{
+			if (!AFApp::Generator)
+			{
+				AFApp::Generator = GenerateSampleApp;
+			}
+		}
+	}_;
+}
 
 std::string g_type = "mesh";
-
+/*
 static float CalcRadius(const Mesh* m)
 {
 	const Block& b = m->GetRawDatas();
@@ -13,14 +45,9 @@ static float CalcRadius(const Mesh* m)
 		maxSq = std::max(maxSq, sq);
 	}
 	return std::sqrt(maxSq);
-}
+}*/
 
-App::App()
-{
-	meshId = MeshMan::INVALID_MMID;
-}
-
-void App::Draw(ViewDesc& view)
+void AFSampleApp::Draw(ViewDesc& view)
 {
 	/*
 	MeshXAnimResult r;
@@ -88,7 +115,7 @@ static const SamplerType samplers[] =
 	AFST_POINT_WRAP,
 };
 
-void App::Create()
+void AFSampleApp::Create()
 {
 #ifdef _MSC_VER
 	GoMyDir();
@@ -114,6 +141,7 @@ void App::Create()
 #endif
 }
 
+/*
 void App::LoadMesh(const char* fileName)
 {
 	meshId = meshMan.Create(fileName);
@@ -125,8 +153,9 @@ void App::LoadMesh(const char* fileName)
 	}
 	g_type = "mesh";
 }
+*/
 
-void App::Destroy()
+void AFSampleApp::Destroy()
 {
 #if defined(AF_DX12) || defined(AF_VULKAN)
 	deviceMan.Flush();
@@ -148,7 +177,7 @@ void App::Destroy()
 	meshId = MeshMan::INVALID_MMID;
 }
 
-void App::Update()
+void AFSampleApp::Update()
 {
 	ViewDesc view;
 	{
