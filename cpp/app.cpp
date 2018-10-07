@@ -157,9 +157,7 @@ void App::LoadMesh(const char* fileName)
 
 void AFSampleApp::Destroy()
 {
-#if defined(AF_DX12) || defined(AF_VULKAN)
 	deviceMan.Flush();
-#endif
 	luaMan.Destroy();
 	stockObjects.Destroy();
 	spriteRenderer.Destroy();

@@ -10,6 +10,7 @@ public:
 	~DeviceMan11();
 	void Create(HWND hWnd);
 	void Destroy();
+	void Flush() {}
 	void Present();
 	ID3D11Device* GetDevice() { return pDevice; }
 	ID3D11DeviceContext* GetContext() { return pImmediateContext.Get(); }

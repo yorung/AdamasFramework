@@ -8,6 +8,7 @@ class DeviceManWgl
 public:
 	void Create(HWND hWnd);
 	void Destroy();
+	void Flush() {}
 	void Present();
 };
 
