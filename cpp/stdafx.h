@@ -2,7 +2,7 @@
 
 #include "AF.h"
 
-#include <../submodules/lua/src/lua.hpp>
+#include <lua.hpp>
 
 #include "af_lua_helpers.h"
 
