@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "dev_camera.h"
 
 DevCamera devCamera;
 

@@ -87,7 +87,6 @@ static const int BONE_MAX = 50;
 #include "font_man.h"
 #include "sky_man.h"
 #include "glow.h"
-#include "dev_camera.h"
 #include "joint_db.h"
 #include "mesh_renderer.h"
 #include "mesh_x.h"

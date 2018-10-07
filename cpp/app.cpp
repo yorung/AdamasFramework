@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "dev_camera.h"
 
 AFApp* (*AFApp::Generator)();
 
@@ -13,6 +14,21 @@ public:
 	//	void LoadMesh(const char* fileName);
 	virtual void Update() override;
 	virtual void Destroy() override;
+	virtual void LButtonDown(int x, int y) override
+	{
+		IVec2 screenSize = systemMisc.GetScreenSize();
+		devCamera.LButtonDown(x / (float)screenSize.x, y / (float)screenSize.y);
+	}
+	virtual void LButtonUp(int x, int y) override
+	{
+		IVec2 screenSize = systemMisc.GetScreenSize();
+		devCamera.LButtonUp(x / (float)screenSize.x, y / (float)screenSize.y);
+	}
+	virtual void MouseMove(int x, int y) override
+	{
+		IVec2 screenSize = systemMisc.GetScreenSize();
+		devCamera.MouseMove(x / (float)screenSize.x, y / (float)screenSize.y);
+	}
 };
 
 namespace

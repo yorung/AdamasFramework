@@ -253,20 +253,30 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	}
 	case WM_LBUTTONDOWN:
 		SetCapture(hWnd);
-		devCamera.LButtonDown(LOWORD(lParam) / (float)screenSize.x, HIWORD(lParam) / (float)screenSize.y);
+		app->LButtonDown(LOWORD(lParam), HIWORD(lParam));
 		systemMisc.mouseDown = true;
 		break;
 	case WM_LBUTTONUP:
 		ReleaseCapture();
-		devCamera.LButtonUp(LOWORD(lParam) / (float)screenSize.x, HIWORD(lParam) / (float)screenSize.y);
+		app->LButtonUp(LOWORD(lParam), HIWORD(lParam));
+		systemMisc.mouseDown = false;
+		break;
+	case WM_RBUTTONDOWN:
+		SetCapture(hWnd);
+		app->RButtonDown(LOWORD(lParam), HIWORD(lParam));
+		systemMisc.mouseDown = true;
+		break;
+	case WM_RBUTTONUP:
+		ReleaseCapture();
+		app->RButtonUp(LOWORD(lParam), HIWORD(lParam));
 		systemMisc.mouseDown = false;
 		break;
 	case WM_MOUSEMOVE:
 		systemMisc.SetMousePos(IVec2(MAKEPOINTS(lParam).x, MAKEPOINTS(lParam).y));
-		devCamera.MouseMove(MAKEPOINTS(lParam).x / (float)screenSize.x, MAKEPOINTS(lParam).y / (float)screenSize.y);
+		app->MouseMove(MAKEPOINTS(lParam).x, MAKEPOINTS(lParam).y);
 		break;
 	case WM_MOUSEWHEEL:
-		devCamera.MouseWheel((short)HIWORD(wParam) / (float)WHEEL_DELTA);
+		app->MouseWheel((short)HIWORD(wParam) / (float)WHEEL_DELTA);
 		break;
 	case WM_SIZE:
 		systemMisc.SetScreenSize(IVec2(LOWORD(lParam), HIWORD(lParam)));
