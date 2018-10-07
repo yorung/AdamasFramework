@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#ifdef AF_GLES
 
 static void SetSamplerLayoutByName(GLuint program)
 {
@@ -772,3 +773,5 @@ void afSetSampler(SamplerType type, int slot)
 	afBindSamplerToBindingPoint(stockObjects.GetBuiltInSampler(type), slot);
 }
 #endif
+
+#endif	// AF_GLES

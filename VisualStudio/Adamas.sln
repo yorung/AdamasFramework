@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Adamas", "Adamas.vcxproj", "{D13F848D-7701-43BA-B781-1481A54FE77D}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -12,10 +12,14 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lua", "Lua.vcxproj", "{B951
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SharedLua", "SharedLua.vcxitems", "{45D41ACC-2C3C-43D2-BC10-02AA73FFC7C7}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SharedAFItems", "SharedAFItems\SharedAFItems.vcxitems", "{827AED6A-DF8D-4B64-B939-F22671F4972B}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		SharedLua.vcxitems*{b9510ae9-6611-42bb-abc3-73fcabf768d1}*SharedItemsImports = 4
 		SharedLua.vcxitems*{45d41acc-2c3c-43d2-bc10-02aa73ffc7c7}*SharedItemsImports = 9
+		SharedAFItems\SharedAFItems.vcxitems*{827aed6a-df8d-4b64-b939-f22671f4972b}*SharedItemsImports = 9
+		SharedLua.vcxitems*{b9510ae9-6611-42bb-abc3-73fcabf768d1}*SharedItemsImports = 4
+		SharedAFItems\SharedAFItems.vcxitems*{d13f848d-7701-43ba-b781-1481a54fe77d}*SharedItemsImports = 4
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		DX11Debug|Win32 = DX11Debug|Win32
@@ -40,7 +44,6 @@ Global
 		{D13F848D-7701-43BA-B781-1481A54FE77D}.DX11Debug|Win32.Build.0 = DX11Debug|Win32
 		{D13F848D-7701-43BA-B781-1481A54FE77D}.DX11Debug|x64.ActiveCfg = Debug|x64
 		{D13F848D-7701-43BA-B781-1481A54FE77D}.DX11Debug|x64.Build.0 = DX11Debug|x64
-		{D13F848D-7701-43BA-B781-1481A54FE77D}.DX11Debug|x64.Build.2 = Debug|x64
 		{D13F848D-7701-43BA-B781-1481A54FE77D}.DX11Release|Win32.ActiveCfg = DX11Release|Win32
 		{D13F848D-7701-43BA-B781-1481A54FE77D}.DX11Release|Win32.Build.0 = DX11Release|Win32
 		{D13F848D-7701-43BA-B781-1481A54FE77D}.DX11Release|x64.ActiveCfg = DX11Release|x64
@@ -73,7 +76,6 @@ Global
 		{B9510AE9-6611-42BB-ABC3-73FCABF768D1}.DX11Debug|Win32.Build.0 = DX11Debug|Win32
 		{B9510AE9-6611-42BB-ABC3-73FCABF768D1}.DX11Debug|x64.ActiveCfg = Debug|x64
 		{B9510AE9-6611-42BB-ABC3-73FCABF768D1}.DX11Debug|x64.Build.0 = DX11Debug|x64
-		{B9510AE9-6611-42BB-ABC3-73FCABF768D1}.DX11Debug|x64.Build.2 = Debug|x64
 		{B9510AE9-6611-42BB-ABC3-73FCABF768D1}.DX11Release|Win32.ActiveCfg = DX11Release|Win32
 		{B9510AE9-6611-42BB-ABC3-73FCABF768D1}.DX11Release|Win32.Build.0 = DX11Release|Win32
 		{B9510AE9-6611-42BB-ABC3-73FCABF768D1}.DX11Release|x64.ActiveCfg = DX11Release|x64

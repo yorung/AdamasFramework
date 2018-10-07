@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#ifdef __ANDROID__
 #include <SLES/OpenSLES.h>
 #include <SLES/OpenSLES_Android.h>
 
@@ -158,3 +159,4 @@ void Voice::Destroy()
 	}
 	afSafeDelete(context);
 }
+#endif	// __ANDROID__

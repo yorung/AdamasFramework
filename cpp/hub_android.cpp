@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#ifdef __ANDROID__
 #include <jni.h>
 
 JNIEnv* jniEnv;
@@ -60,3 +61,4 @@ JNIEXPORT void JNICALL FUNC(update)(JNIEnv* env, jobject obj, jfloat inputX, jfl
 	jniEnv = nullptr;
 }
 }
+#endif	// __ANDROID__

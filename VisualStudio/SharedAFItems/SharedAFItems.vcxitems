@@ -1,0 +1,117 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{827AED6A-DF8D-4B64-B939-F22671F4972B}</ItemsProjectGuid>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\cpp\AF.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\cpp\af_lua_helpers.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\cpp\af_math.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\cpp\app.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\cpp\bvh.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\cpp\debug_renderer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\cpp\device_man_dx12.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\cpp\dev_camera.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\cpp\dib.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\cpp\font_man.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\cpp\fps.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\cpp\glow.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\cpp\helper.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\cpp\helper_dx11.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\cpp\helper_dx12.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\cpp\helper_gl.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\cpp\helper_text.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\cpp\helper_vulkan.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\cpp\helper_win.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\cpp\input_man.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\cpp\joint_db.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\cpp\letterbox.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\cpp\lua_bind.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\cpp\lua_man.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\cpp\mesh_man.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\cpp\mesh_renderer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\cpp\mesh_x.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\cpp\ModuleManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\cpp\sky_man.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\cpp\sprite_renderer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\cpp\stdafx.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\cpp\stock_objects.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\cpp\system_misc.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\cpp\tex_man.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\cpp\voice.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\device_man_wgl.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\Resource.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\wgl_grabber_gen.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\cpp\af_lua_helpers.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\cpp\app.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\cpp\bvh.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\cpp\debug_renderer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\cpp\device_man_dx12.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\cpp\dev_camera.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\cpp\dib.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\cpp\font_man.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\cpp\fps.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\cpp\glow.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\cpp\grid_renderer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\cpp\helper.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\cpp\helper_android.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\cpp\helper_dx11.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\cpp\helper_dx12.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\cpp\helper_gl.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\cpp\helper_vulkan.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\cpp\helper_win.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\cpp\hub_android.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\cpp\input_man.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\cpp\joint_db.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\cpp\letterbox.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\cpp\lua_bind.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\cpp\lua_man.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\cpp\mesh_man.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\cpp\mesh_renderer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\cpp\mesh_x.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\cpp\ModuleManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\cpp\ocean.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\cpp\picking.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\cpp\puzzle.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\cpp\sky_man.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\cpp\sprite_renderer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\cpp\stdafx.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\cpp\stock_objects.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\cpp\system_misc.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\cpp\tex_man.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\cpp\voice.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\cpp\voice_android.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\cpp\water_surface_es2.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\cpp\water_surface_es3.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\device_man_wgl.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\main.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\voice_win.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\wgl_grabber_gen.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)..\..\cpp\AFDynamicQuadListVertexBuffer.inl" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\cpp\AFGraphicsCompatibilityLayer.inl" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\cpp\AFGraphicsDefinitions.inl" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\cpp\AFGraphicsFunctions.inl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="$(MSBuildThisFileDirectory)..\icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="$(MSBuildThisFileDirectory)..\Resource.rc" />
+  </ItemGroup>
+</Project>

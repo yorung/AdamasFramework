@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#ifdef __ANDROID__
 #include <jni.h>
 
 extern JNIEnv* jniEnv;
@@ -164,3 +165,4 @@ void MakeFontBitmap(const char* fontName, const CharSignature& sig, DIB& dib, Ch
 	jniEnv->ReleaseByteArrayElements(array, byteArray, 0);
 	dib.DibToDXFont();
 }
+#endif	// __ANDROID__

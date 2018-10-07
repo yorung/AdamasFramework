@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#ifdef _MSC_VER
+#ifdef AF_GLES
 
 #pragma comment(lib, "opengl32.lib")
 
@@ -138,3 +140,6 @@ void DeviceManWgl::Present()
 {
 	SwapBuffers(wglGetCurrentDC());
 }
+
+#endif	// AF_GLES
+#endif	// _MSC_VER
