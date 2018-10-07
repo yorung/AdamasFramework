@@ -157,7 +157,7 @@ inline void afSafeDeleteSampler(SAMPLERID& s)
 #endif
 
 
- // without "binding" Layout Qualifier
+// without "binding" Layout Qualifier
 void afLayoutSamplerBindingManually(GLuint program, const GLchar* name, GLuint samplerBinding);
 #if 0
 void afLayoutSSBOBindingManually(GLuint program, const GLchar* name, GLuint storageBlockBinding);

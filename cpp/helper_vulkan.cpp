@@ -154,7 +154,7 @@ void afWriteTexture(AFTexRef textureContext, const TexDesc& texDesc, int mipCoun
 	}
 
 	VkCommandBuffer cmd = deviceMan.commandBuffer;
-	const VkImageMemoryBarrier undefToDest = { VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER, nullptr, 0, VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, textureContext->image, { VK_IMAGE_ASPECT_COLOR_BIT, 0, (uint32_t)mipCount, 0, (texDesc.isCubeMap ? 6u : 1u) } };
+	const VkImageMemoryBarrier undefToDest = { VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER, nullptr, 0, VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, textureContext->image,{ VK_IMAGE_ASPECT_COLOR_BIT, 0, (uint32_t)mipCount, 0, (texDesc.isCubeMap ? 6u : 1u) } };
 	vkCmdPipelineBarrier(cmd, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0, 0, nullptr, 0, nullptr, 1, &undefToDest);
 	vkCmdCopyBufferToImage(cmd, staging.buffer, textureContext->image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, subResources, copyInfo);
 	const VkImageMemoryBarrier destToRead = { VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER, nullptr, undefToDest.dstAccessMask, VK_ACCESS_SHADER_READ_BIT, undefToDest.newLayout, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, textureContext->image,{ VK_IMAGE_ASPECT_COLOR_BIT, 0, (uint32_t)mipCount, 0, (texDesc.isCubeMap ? 6u : 1u) } };
@@ -189,9 +189,9 @@ static VkImageAspectFlags FormatToAspectFlags(VkFormat format)
 
 AFTexRef afCreateDynamicTexture(VkFormat format, const IVec2& size, uint32_t flags)
 {
-//	VkFormatProperties formatProperties;
-//	vkGetPhysicalDeviceFormatProperties(deviceMan.physicalDevice, format, &formatProperties);
-//	assert(formatProperties.linearTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT);
+	//	VkFormatProperties formatProperties;
+	//	vkGetPhysicalDeviceFormatProperties(deviceMan.physicalDevice, format, &formatProperties);
+	//	assert(formatProperties.linearTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT);
 
 	VkDevice device = deviceMan.GetDevice();
 
@@ -562,7 +562,7 @@ void DeviceManVK::Create(HWND hWnd)
 	offscreenR16G16B16A16RenderPass = CreateRenderPass(AFF_R16G16B16A16_FLOAT, VK_FORMAT_UNDEFINED);
 	for (int i = 0; i < (int)swapChainCount; i++)
 	{
-		const VkImageViewCreateInfo imageViewCreateInfo = { VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, nullptr, 0, swapChainImages[i], VK_IMAGE_VIEW_TYPE_2D, surfaceFormats[0].format, colorComponentMapping, { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 } };
+		const VkImageViewCreateInfo imageViewCreateInfo = { VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, nullptr, 0, swapChainImages[i], VK_IMAGE_VIEW_TYPE_2D, surfaceFormats[0].format, colorComponentMapping,{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 } };
 		afHandleVKError(vkCreateImageView(device, &imageViewCreateInfo, nullptr, &imageViews[i]));
 		const VkImageView frameBufferAttachmentImageView[] = { imageViews[i] };
 		const VkFramebufferCreateInfo framebufferInfo = { VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO, nullptr, 0, primaryRenderPass, arrayparam(frameBufferAttachmentImageView), (uint32_t)rc.right, (uint32_t)rc.bottom, 1 };
@@ -750,7 +750,7 @@ void AFRenderStates::Create(const char* shaderName, int numInputElements, const 
 	std::vector<VkDescriptorSetLayout> descriptorLayouts;
 	for (size_t i = 0; i < strlen(layout); i++)
 	{
-		switch(layout[i])
+		switch (layout[i])
 		{
 		case 'U':
 			descriptorLayouts.push_back(deviceMan.commonUboDescriptorSetLayout);

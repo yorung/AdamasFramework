@@ -157,7 +157,7 @@ public:
 		{
 			return;
 		}
-		ComPtr<ID3D12Resource> asArray[] = {texture};
+		ComPtr<ID3D12Resource> asArray[] = { texture };
 		afBindTextures(1, asArray, descritorSetIndex);
 	}
 	void SetBuffer(int size, const void* buf, int descritorSetIndex)

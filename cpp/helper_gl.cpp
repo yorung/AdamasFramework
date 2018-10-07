@@ -3,9 +3,9 @@
 
 static void SetSamplerLayoutByName(GLuint program)
 {
-	for(int i = 0; i <= 9; i++)
+	for (int i = 0; i <= 9; i++)
 	{
-		char name[] = {'s', (char)('0' + i), '\0'};
+		char name[] = { 's', (char)('0' + i), '\0' };
 		afLayoutSamplerBindingManually(program, name, i);
 	}
 }
@@ -52,7 +52,7 @@ static GLuint afCompileGLSL(const char* name, const InputElement elements[], int
 	{
 		return 0;
 	}
-	GLuint fragmentShader = CompileShader(GL_FRAGMENT_SHADER,  SPrintf("glsl/%s.frag", name));
+	GLuint fragmentShader = CompileShader(GL_FRAGMENT_SHADER, SPrintf("glsl/%s.frag", name));
 	if (!fragmentShader)
 	{
 		return 0;
@@ -300,7 +300,8 @@ AFTexRef afCreateTexture2D(AFFormat format, const TexDesc& desc, int mipCount, c
 			int h = std::max(1, desc.size.y >> m);
 			if (format == AFF_R8G8B8A8_UNORM) {
 				afHandleGLError(glTexImage2D(targetFace + a, m, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, datas[idx].ptr));
-			} else if (format == AFF_B8G8R8A8_UNORM) {
+			}
+			else if (format == AFF_B8G8R8A8_UNORM) {
 #ifdef _MSC_VER	// GL_EXT_texture_format_BGRA8888 is an extension for OpenGL ES, so should use this only on Windows.
 				// afHandleGLError(glTexImage2D(targetFace + a, m, GL_BGRA_EXT, w, h, 0, GL_BGRA_EXT, GL_UNSIGNED_BYTE, datas[idx].ptr)); AMD driver doesn't accept both GL_BGRA_EXT and GL_BGRA
 				uint32_t* c = new uint32_t[w * h];
@@ -316,7 +317,8 @@ AFTexRef afCreateTexture2D(AFFormat format, const TexDesc& desc, int mipCount, c
 				aflog("AFF_B8G8R8A8_UNORM is not supported!");
 				afHandleGLError(glTexImage2D(targetFace + a, m, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, datas[idx].ptr));
 #endif
-			} else {
+			}
+			else {
 				afHandleGLError(glCompressedTexImage2D(targetFace + a, m, format, w, h, 0, datas[idx].pitchSlice, datas[idx].ptr));
 			}
 			idx++;
@@ -325,7 +327,8 @@ AFTexRef afCreateTexture2D(AFFormat format, const TexDesc& desc, int mipCount, c
 	if (mipCount == 1) {
 		if (format == AFF_R8G8B8A8_UNORM || format == AFF_B8G8R8A8_UNORM) {
 			afHandleGLError(glGenerateMipmap(target));
-		} else {
+		}
+		else {
 			glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	// temporary disable mipmap
 		}
 	}
@@ -525,7 +528,7 @@ SAMPLERID afCreateSampler(SamplerType type)
 	glGenSamplers(1, &id.x);
 	glSamplerParameteri(id, GL_TEXTURE_WRAP_S, wrap);
 	glSamplerParameteri(id, GL_TEXTURE_WRAP_T, wrap);
-	switch(filter) {
+	switch (filter) {
 	case 2:	// mipmap
 		glSamplerParameteri(id, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glSamplerParameteri(id, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
@@ -550,10 +553,10 @@ GLenum _afHandleGLError(const char* file, const char* func, int line, const char
 		const char *err = nullptr;
 		switch (r) {
 #define E(er) case er: err = #er; break
-		E(GL_INVALID_ENUM);
-		E(GL_INVALID_VALUE);
-		E(GL_INVALID_OPERATION);
-		E(GL_INVALID_FRAMEBUFFER_OPERATION);
+			E(GL_INVALID_ENUM);
+			E(GL_INVALID_VALUE);
+			E(GL_INVALID_OPERATION);
+			E(GL_INVALID_FRAMEBUFFER_OPERATION);
 #undef E
 		default:
 			aflog("%s %s(%d): err=%d %s\n", file, func, line, r, command);
@@ -593,7 +596,7 @@ void afDumpCaps()
 	_(GL_MAX_SHADER_STORAGE_BLOCK_SIZE);
 	_(GL_MAX_VERTEX_SHADER_STORAGE_BLOCKS);
 	_(GL_MAX_FRAGMENT_SHADER_STORAGE_BLOCKS);
-//	_(GL_MAX_GEOMETRY_SHADER_STORAGE_BLOCKS);
+	//	_(GL_MAX_GEOMETRY_SHADER_STORAGE_BLOCKS);
 #undef _
 	aflog("------ GL_EXTENSIONS\n");
 
