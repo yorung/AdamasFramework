@@ -111,10 +111,11 @@ static D3D11_BIND_FLAG BufferTypeToBindFlag(AFBufferType bufferType)
 	switch (bufferType)
 	{
 	case AFBT_VERTEX:
+	case AFBT_VERTEX_CPUWRITE:
 		return D3D11_BIND_VERTEX_BUFFER;
 	case AFBT_INDEX:
 		return D3D11_BIND_INDEX_BUFFER;
-	case AFBT_CONSTANT:
+	case AFBT_CONSTANT_CPUWRITE:
 		return D3D11_BIND_CONSTANT_BUFFER;
 	}
 	assert(0);
@@ -130,9 +131,13 @@ ComPtr<ID3D11Buffer> afCreateBuffer(int size, const void* data, AFBufferType buf
 	case AFBT_INDEX:
 		deviceMan11.GetDevice()->CreateBuffer(ToPtr<D3D11_BUFFER_DESC>({ (UINT)size, D3D11_USAGE_DEFAULT, (UINT)BufferTypeToBindFlag(bufferType) }), ToPtr<D3D11_SUBRESOURCE_DATA>({ data }), &buffer);
 		break;
-	case AFBT_CONSTANT:
-		deviceMan11.GetDevice()->CreateBuffer(ToPtr<D3D11_BUFFER_DESC>({ (UINT)size, D3D11_USAGE_DYNAMIC, (UINT)BufferTypeToBindFlag(bufferType), D3D11_CPU_ACCESS_WRITE }), ToPtr<D3D11_SUBRESOURCE_DATA>({ data }), &buffer);
-		break;
+	case AFBT_VERTEX_CPUWRITE:
+	case AFBT_CONSTANT_CPUWRITE:
+		{
+			D3D11_SUBRESOURCE_DATA subResource{ data };
+			deviceMan11.GetDevice()->CreateBuffer(ToPtr<D3D11_BUFFER_DESC>({ (UINT)size, D3D11_USAGE_DYNAMIC, (UINT)BufferTypeToBindFlag(bufferType), D3D11_CPU_ACCESS_WRITE }), data ? &subResource : nullptr, &buffer);
+			break;
+		}
 	}
 	return buffer;
 }
@@ -151,14 +156,12 @@ ComPtr<ID3D11Buffer> afCreateVertexBuffer(int size, const void* data)
 
 VBOID afCreateDynamicVertexBuffer(int size)
 {
-	VBOID vbo;
-	deviceMan11.GetDevice()->CreateBuffer(ToPtr<D3D11_BUFFER_DESC>({(UINT)size, D3D11_USAGE_DYNAMIC, D3D11_BIND_VERTEX_BUFFER, D3D11_CPU_ACCESS_WRITE}), nullptr, &vbo);
-	return vbo;
+	return afCreateBuffer(size, nullptr, AFBT_VERTEX_CPUWRITE);
 }
 
 UBOID afCreateUBO(int size, const void* buf)
 {
-	return afCreateBuffer(size, buf, AFBT_CONSTANT);
+	return afCreateBuffer(size, buf, AFBT_CONSTANT_CPUWRITE);
 }
 
 ComPtr<ID3D11Texture2D> afCreateTexture2D(AFFormat format, const TexDesc& afDesc, int mipCount, const AFTexSubresourceData datas[])

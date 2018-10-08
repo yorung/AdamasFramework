@@ -37,8 +37,9 @@ enum RenderStateFlags : uint32_t
 enum AFBufferType : uint32_t
 {
 	AFBT_VERTEX,
+	AFBT_VERTEX_CPUWRITE,
 	AFBT_INDEX,
-	AFBT_CONSTANT,
+	AFBT_CONSTANT_CPUWRITE,
 };
 
 inline bool afIsRenderFlagsRenderToSwapchainSurface(uint32_t flags)

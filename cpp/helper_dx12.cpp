@@ -83,7 +83,8 @@ static D3D12_RESOURCE_STATES BufferTypeToResourceState(AFBufferType bufferType)
 	switch (bufferType)
 	{
 	case AFBT_VERTEX:
-	case AFBT_CONSTANT:
+	case AFBT_VERTEX_CPUWRITE:
+	case AFBT_CONSTANT_CPUWRITE:
 		return D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
 	case AFBT_INDEX:
 		return D3D12_RESOURCE_STATE_INDEX_BUFFER;
@@ -126,7 +127,8 @@ ComPtr<ID3D12Resource> afCreateBuffer(int size, const void* buf, AFBufferType bu
 	case AFBT_VERTEX:
 	case AFBT_INDEX:
 		return afCreateFixedBuffer(size, buf, bufferType);
-	case AFBT_CONSTANT:
+	case AFBT_VERTEX_CPUWRITE:
+	case AFBT_CONSTANT_CPUWRITE:
 		{
 			ComPtr<ID3D12Resource> o = afCreateUploadHeap((size + 0xff) & ~0xff);
 			if (buf)
@@ -154,7 +156,7 @@ ComPtr<ID3D12Resource> afCreateIndexBuffer(int numIndi, const AFIndex* indi)
 
 UBOID afCreateUBO(int size, const void* buf)
 {
-	return afCreateBuffer(size, buf, AFBT_CONSTANT);
+	return afCreateBuffer(size, buf, AFBT_CONSTANT_CPUWRITE);
 }
 
 void afWriteTexture(SRVID tex, const TexDesc& desc, int mipCount, const AFTexSubresourceData datas[])

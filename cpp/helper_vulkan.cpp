@@ -86,6 +86,7 @@ static VkBufferUsageFlagBits BufferTypeToBufferUsageFlagBits(AFBufferType buffer
 	switch (bufferType)
 	{
 	case AFBT_VERTEX:
+	case AFBT_VERTEX_CPUWRITE:
 		return VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
 	case AFBT_INDEX:
 		return VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
