@@ -91,30 +91,30 @@ static GLuint afCompileGLSL(const char* name, const InputElement elements[], int
 	return program;
 }
 
-IBOID afCreateIndexBuffer(int numIndi, const AFIndex* indi)
+GLuint afCreateIndexBuffer(int numIndi, const AFIndex* indi)
 {
-	IBOID ibo;
-	afHandleGLError(glGenBuffers(1, &ibo.x));
+	GLuint ibo;
+	afHandleGLError(glGenBuffers(1, &ibo));
 	afHandleGLError(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
 	afHandleGLError(glBufferData(GL_ELEMENT_ARRAY_BUFFER, numIndi * sizeof(AFIndex), &indi[0], GL_STATIC_DRAW));
 	afHandleGLError(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
 	return ibo;
 }
 
-VBOID afCreateVertexBuffer(int size, const void* buf)
+GLuint afCreateVertexBuffer(int size, const void* buf)
 {
-	VBOID vbo;
-	afHandleGLError(glGenBuffers(1, &vbo.x));
+	GLuint vbo;
+	afHandleGLError(glGenBuffers(1, &vbo));
 	afHandleGLError(glBindBuffer(GL_ARRAY_BUFFER, vbo));
 	afHandleGLError(glBufferData(GL_ARRAY_BUFFER, size, buf, GL_STATIC_DRAW));
 	afHandleGLError(glBindBuffer(GL_ARRAY_BUFFER, 0));
 	return vbo;
 }
 
-VBOID afCreateDynamicVertexBuffer(int size)
+GLuint afCreateDynamicVertexBuffer(int size)
 {
-	VBOID vbo;
-	glGenBuffers(1, &vbo.x);
+	GLuint vbo;
+	glGenBuffers(1, &vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER, size, NULL, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -125,17 +125,17 @@ VBOID afCreateDynamicVertexBuffer(int size)
 SSBOID afCreateSSBO(int size)
 {
 	SSBOID name;
-	glGenBuffers(1, &name.x);
+	glGenBuffers(1, &name);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, name);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, size, NULL, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 	return name;
 }
 
-UBOID afCreateUBO(int size, const void* buf)
+GLuint afCreateUBO(int size, const void* buf)
 {
-	UBOID name;
-	glGenBuffers(1, &name.x);
+	GLuint name;
+	glGenBuffers(1, &name);
 	glBindBuffer(GL_UNIFORM_BUFFER, name);
 	glBufferData(GL_UNIFORM_BUFFER, size, buf, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
@@ -166,7 +166,7 @@ void afLayoutUBOBindingManually(GLuint program, const GLchar* name, GLuint unifo
 #endif
 
 #ifdef AF_GLES31
-void afBindBuffer(SSBOID ssbo, GLuint storageBlockBinding)
+void afBindSSBO(SSBOID ssbo, GLuint storageBlockBinding)
 {
 	GLint prev;
 	glGetIntegerv(GL_SHADER_STORAGE_BUFFER_BINDING, &prev);
@@ -174,7 +174,7 @@ void afBindBuffer(SSBOID ssbo, GLuint storageBlockBinding)
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, prev);
 }
 
-void afBindBuffer(UBOID ubo, GLuint uniformBlockBinding)
+void afBindConstantBuffer(UBOID ubo, GLuint uniformBlockBinding)
 {
 	GLint prev;
 	glGetIntegerv(GL_UNIFORM_BUFFER_BINDING, &prev);
@@ -408,7 +408,7 @@ void afSetVertexAttributes(const InputElement elements[], int numElements, int n
 		GLenum r = glGetError();
 		if (r != GL_NO_ERROR)
 		{
-			aflog("glBindBuffer error! i=%d inputSlot=%d vbo=%d\n", i, d.inputSlot, vertexBufferIds[d.inputSlot].x);
+			aflog("glBindBuffer error! i=%d inputSlot=%d vbo=%d\n", i, d.inputSlot, vertexBufferIds[d.inputSlot]);
 		}
 		afHandleGLError(glEnableVertexAttribArray(i));
 		afVertexAttribPointer(i, d.format, strides[d.inputSlot], (void*)(uintptr_t)d.offset);
@@ -455,7 +455,7 @@ void afSetIndexBuffer(IBOID indexBuffer)
 VAOID afCreateVAO(const InputElement elements[], int numElements, int numBuffers, VBOID const vertexBufferIds[], const int strides[], IBOID ibo)
 {
 	VAOID vao;
-	afHandleGLError(glGenVertexArrays(1, &vao.x));
+	afHandleGLError(glGenVertexArrays(1, &vao));
 	afHandleGLError(glBindVertexArray(vao));
 	afSetVertexAttributes(elements, numElements, numBuffers, vertexBufferIds, strides);
 	afHandleGLError(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
@@ -525,7 +525,7 @@ SAMPLERID afCreateSampler(SamplerType type)
 	GLint wrap = (type & 0x01) ? GL_CLAMP_TO_EDGE : GL_REPEAT;
 	int filter = type >> 1;
 	SAMPLERID id;
-	glGenSamplers(1, &id.x);
+	glGenSamplers(1, &id);
 	glSamplerParameteri(id, GL_TEXTURE_WRAP_S, wrap);
 	glSamplerParameteri(id, GL_TEXTURE_WRAP_T, wrap);
 	switch (filter) {

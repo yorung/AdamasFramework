@@ -68,20 +68,9 @@ struct DrawElementsIndirectCommand
 	GLuint baseInstance;
 };
 
-template <GLenum bufType_>
-struct TBufName {
-	static const GLenum bufType = bufType_;
-	GLuint x = 0;
-	operator GLuint() const { return x; }
-};
-struct AFGLName {
-	GLuint x = 0;
-	operator GLuint() const { return x; }
-};
-
-typedef TBufName<GL_ELEMENT_ARRAY_BUFFER> IBOID;
-typedef TBufName<GL_ARRAY_BUFFER> VBOID;
-typedef AFGLName SAMPLERID;
+typedef GLuint IBOID;
+typedef GLuint VBOID;
+typedef GLuint SAMPLERID;
 
 class TextureContext
 {
@@ -106,20 +95,12 @@ void afSetVertexAttributes(const InputElement elements[], int numElements, int n
 void afSetVertexAttributes(const InputElement elements[], int numElements, int numBuffers, void const* vertexBuffers[], const int strides[]);
 void afSetIndexBuffer(IBOID indexBuffer);
 
-template <class BufName>
-void afWriteBuffer(BufName bufName, int size, const void* buf)
+inline void afSafeDeleteBuffer(GLuint& b)
 {
-	afHandleGLError(glBindBuffer(BufName::bufType, bufName));
-	afHandleGLError(glBufferSubData(BufName::bufType, 0, size, buf));
-	afHandleGLError(glBindBuffer(BufName::bufType, 0));
-}
-
-template <class BufName>
-inline void afSafeDeleteBuffer(BufName& b)
-{
-	if (b.x != 0) {
-		glDeleteBuffers(1, &b.x);
-		b.x = 0;
+	if (b != 0)
+	{
+		glDeleteBuffers(1, &b);
+		b = 0;
 	}
 }
 
@@ -137,9 +118,9 @@ SRVID afCreateDynamicTexture(AFFormat format, const IVec2& size);
 
 void afWriteTexture(SRVID srv, const TexDesc& desc, const void* buf);
 
-IBOID afCreateIndexBuffer(int numIndi, const AFIndex* indi);
-VBOID afCreateVertexBuffer(int size, const void* buf);
-VBOID afCreateDynamicVertexBuffer(int size);
+GLuint afCreateIndexBuffer(int numIndi, const AFIndex* indi);
+GLuint afCreateVertexBuffer(int size, const void* buf);
+GLuint afCreateDynamicVertexBuffer(int size);
 
 #ifdef AF_GLES31
 inline void afBindSamplerToBindingPoint(SAMPLERID samp, int pnt)
@@ -149,13 +130,13 @@ inline void afBindSamplerToBindingPoint(SAMPLERID samp, int pnt)
 
 inline void afSafeDeleteSampler(SAMPLERID& s)
 {
-	if (s != 0) {
-		glDeleteSamplers(1, &s.x);
-		s.x = 0;
+	if (s != 0)
+	{
+		glDeleteSamplers(1, &s);
+		s = 0;
 	}
 }
 #endif
-
 
 // without "binding" Layout Qualifier
 void afLayoutSamplerBindingManually(GLuint program, const GLchar* name, GLuint samplerBinding);
@@ -197,19 +178,20 @@ public:
 };
 
 #ifdef AF_GLES31
-typedef TBufName<GL_SHADER_STORAGE_BUFFER> SSBOID;
-typedef TBufName<GL_UNIFORM_BUFFER> UBOID;
-typedef AFGLName VAOID;
+typedef GLuint SSBOID;
+typedef GLuint UBOID;
+typedef GLuint VAOID;
 SSBOID afCreateSSBO(int size);
-UBOID afCreateUBO(int size, const void* buf = nullptr);
-void afBindBuffer(SSBOID ssbo, GLuint storageBlockBinding);
-void afBindBuffer(UBOID ubo, GLuint uniformBlockBinding);
+GLuint afCreateUBO(int size, const void* buf = nullptr);
+void afBindSSBO(SSBOID ssbo, GLuint storageBlockBinding);
+void afBindConstantBuffer(UBOID ubo, GLuint uniformBlockBinding);
 VAOID afCreateVAO(const InputElement elements[], int numElements, int numBuffers, VBOID const *vertexBufferIds, const int* strides, IBOID ibo);
 inline void afSafeDeleteVAO(VAOID& vao)
 {
-	if (vao != 0) {
-		glDeleteVertexArrays(1, &vao.x);
-		vao.x = 0;
+	if (vao != 0)
+	{
+		glDeleteVertexArrays(1, &vao);
+		vao = 0;
 	}
 }
 IVec2 afGetRenderbufferSize(GLuint renderbuffer);
@@ -270,7 +252,7 @@ public:
 #if defined(AF_GLES31)
 	void SetBuffer(UBOID uniformBuffer, int descriptorSetIndex)
 	{
-		afBindBuffer(uniformBuffer, descriptorSetIndex);
+		afBindConstantBuffer(uniformBuffer, descriptorSetIndex);
 	}
 #endif
 	// The driver doesn't know the size of buffer before draw calls.
