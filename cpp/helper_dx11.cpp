@@ -115,6 +115,7 @@ static D3D11_BIND_FLAG BufferTypeToBindFlag(AFBufferType bufferType)
 		return D3D11_BIND_VERTEX_BUFFER;
 	case AFBT_INDEX:
 		return D3D11_BIND_INDEX_BUFFER;
+	case AFBT_CONSTANT:
 	case AFBT_CONSTANT_CPUWRITE:
 		return D3D11_BIND_CONSTANT_BUFFER;
 	}
@@ -129,6 +130,7 @@ ComPtr<ID3D11Buffer> afCreateBuffer(int size, const void* data, AFBufferType buf
 	{
 	case AFBT_VERTEX:
 	case AFBT_INDEX:
+	case AFBT_CONSTANT:
 		deviceMan11.GetDevice()->CreateBuffer(ToPtr<D3D11_BUFFER_DESC>({ (UINT)size, D3D11_USAGE_DEFAULT, (UINT)BufferTypeToBindFlag(bufferType) }), ToPtr<D3D11_SUBRESOURCE_DATA>({ data }), &buffer);
 		break;
 	case AFBT_VERTEX_CPUWRITE:

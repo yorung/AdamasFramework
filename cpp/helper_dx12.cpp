@@ -84,6 +84,7 @@ static D3D12_RESOURCE_STATES BufferTypeToResourceState(AFBufferType bufferType)
 	{
 	case AFBT_VERTEX:
 	case AFBT_VERTEX_CPUWRITE:
+	case AFBT_CONSTANT:
 	case AFBT_CONSTANT_CPUWRITE:
 		return D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
 	case AFBT_INDEX:
@@ -126,6 +127,7 @@ ComPtr<ID3D12Resource> afCreateBuffer(int size, const void* buf, AFBufferType bu
 	{
 	case AFBT_VERTEX:
 	case AFBT_INDEX:
+	case AFBT_CONSTANT:
 		return afCreateFixedBuffer(size, buf, bufferType);
 	case AFBT_VERTEX_CPUWRITE:
 	case AFBT_CONSTANT_CPUWRITE:
