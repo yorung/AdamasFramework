@@ -72,13 +72,11 @@ void afSafeDeleteBuffer(BufferContext& buffer);
 void afWriteBuffer(BufferContext& buffer, int size, const void* srcData);
 BufferContext afCreateBuffer(int size, const void* srcData, VkBufferUsageFlags usage);
 
-typedef BufferContext VBOID;
-typedef BufferContext IBOID;
-typedef BufferContext UBOID;
-VBOID afCreateVertexBuffer(int size, const void* srcData);
-VBOID afCreateDynamicVertexBuffer(int size, const void* srcData = nullptr);
-IBOID afCreateIndexBuffer(int numIndi, const AFIndex* indi);
-UBOID afCreateUBO(int size, const void* srcData = nullptr);
+typedef BufferContext AFBufferResource;
+AFBufferResource afCreateVertexBuffer(int size, const void* srcData);
+AFBufferResource afCreateDynamicVertexBuffer(int size, const void* srcData = nullptr);
+AFBufferResource afCreateIndexBuffer(int numIndi, const AFIndex* indi);
+AFBufferResource afCreateUBO(int size, const void* srcData = nullptr);
 
 struct AFTexSubresourceData
 {
@@ -116,8 +114,8 @@ inline IVec2 afGetTextureSize(AFTexRef tex)
 	return tex->texDesc.size;
 }
 
-void afSetVertexBuffer(VBOID id, int stride);
-void afSetIndexBuffer(IBOID id);
+void afSetVertexBuffer(AFBufferResource id, int stride);
+void afSetIndexBuffer(AFBufferResource id);
 void afSetVertexBuffer(int size, const void* buffer, int stride);
 
 void afDrawIndexed(int numIndices, int start = 0, int instanceCount = 1);
@@ -237,11 +235,11 @@ public:
 	{
 		afSetVertexBuffer(size, buf, stride);
 	}
-	void SetVertexBuffer(VBOID vertexBuffer, int stride)
+	void SetVertexBuffer(AFBufferResource vertexBuffer, int stride)
 	{
 		afSetVertexBuffer(vertexBuffer, stride);
 	}
-	void SetIndexBuffer(IBOID indexBuffer)
+	void SetIndexBuffer(AFBufferResource indexBuffer)
 	{
 		afSetIndexBuffer(indexBuffer);
 	}

@@ -68,8 +68,6 @@ struct DrawElementsIndirectCommand
 	GLuint baseInstance;
 };
 
-typedef GLuint IBOID;
-typedef GLuint VBOID;
 typedef GLuint SAMPLERID;
 
 class TextureContext
@@ -90,10 +88,11 @@ public:
 
 typedef std::shared_ptr<TextureContext> SRVID;
 typedef SRVID AFTexRef;
+typedef GLuint AFBufferResource;
 
-void afSetVertexAttributes(const InputElement elements[], int numElements, int numBuffers, VBOID const vertexBufferIds[], const int strides[]);
+void afSetVertexAttributes(const InputElement elements[], int numElements, int numBuffers, AFBufferResource const vertexBufferIds[], const int strides[]);
 void afSetVertexAttributes(const InputElement elements[], int numElements, int numBuffers, void const* vertexBuffers[], const int strides[]);
-void afSetIndexBuffer(IBOID indexBuffer);
+void afSetIndexBuffer(AFBufferResource indexBuffer);
 
 inline void afSafeDeleteBuffer(GLuint& b)
 {
@@ -179,13 +178,12 @@ public:
 
 #ifdef AF_GLES31
 typedef GLuint SSBOID;
-typedef GLuint UBOID;
 typedef GLuint VAOID;
 SSBOID afCreateSSBO(int size);
 GLuint afCreateUBO(int size, const void* buf = nullptr);
 void afBindSSBO(SSBOID ssbo, GLuint storageBlockBinding);
-void afBindConstantBuffer(UBOID ubo, GLuint uniformBlockBinding);
-VAOID afCreateVAO(const InputElement elements[], int numElements, int numBuffers, VBOID const *vertexBufferIds, const int* strides, IBOID ibo);
+void afBindConstantBuffer(AFBufferResource ubo, GLuint uniformBlockBinding);
+VAOID afCreateVAO(const InputElement elements[], int numElements, int numBuffers, AFBufferResource const *vertexBufferIds, const int* strides, AFBufferResource ibo);
 inline void afSafeDeleteVAO(VAOID& vao)
 {
 	if (vao != 0)
@@ -250,7 +248,7 @@ public:
 		afUpdateUniformVariable(currentRS->GetShaderId(), size, buf, name);
 	}
 #if defined(AF_GLES31)
-	void SetBuffer(UBOID uniformBuffer, int descriptorSetIndex)
+	void SetBuffer(AFBufferResource uniformBuffer, int descriptorSetIndex)
 	{
 		afBindConstantBuffer(uniformBuffer, descriptorSetIndex);
 	}
@@ -264,14 +262,14 @@ public:
 		currentRS->GetInputElements(elements, numElements);
 		afSetVertexAttributes(elements, numElements, 1, &buf, &stride);
 	}
-	void SetVertexBuffer(VBOID vertexBuffer, int stride)
+	void SetVertexBuffer(AFBufferResource vertexBuffer, int stride)
 	{
 		const InputElement* elements;
 		int numElements;
 		currentRS->GetInputElements(elements, numElements);
 		afSetVertexAttributes(elements, numElements, 1, &vertexBuffer, &stride);
 	}
-	void SetIndexBuffer(IBOID indexBuffer)
+	void SetIndexBuffer(AFBufferResource indexBuffer)
 	{
 		afSetIndexBuffer(indexBuffer);
 	}

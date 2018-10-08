@@ -1,6 +1,6 @@
 class StockObjects
 {
-	VBOID vboFullScr;
+	AFBufferResource vboFullScr;
 #if defined(AF_GLES31) || defined(AF_DX11)
 	SAMPLERID builtInSamplers[AFST_MAX];
 #endif

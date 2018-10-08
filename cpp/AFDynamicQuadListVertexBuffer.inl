@@ -1,6 +1,6 @@
 class AFDynamicQuadListVertexBuffer
 {
-	IBOID ibo;
+	AFBufferResource ibo;
 	uint32_t stride;
 	int vertexBufferSize;
 public:

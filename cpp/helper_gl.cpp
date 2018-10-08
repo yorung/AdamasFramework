@@ -174,7 +174,7 @@ void afBindSSBO(SSBOID ssbo, GLuint storageBlockBinding)
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, prev);
 }
 
-void afBindConstantBuffer(UBOID ubo, GLuint uniformBlockBinding)
+void afBindConstantBuffer(AFBufferResource ubo, GLuint uniformBlockBinding)
 {
 	GLint prev;
 	glGetIntegerv(GL_UNIFORM_BUFFER_BINDING, &prev);
@@ -397,7 +397,7 @@ static void afVertexAttribPointer(GLuint index, AFFormat format, GLsizei stride,
 	}
 }
 
-void afSetVertexAttributes(const InputElement elements[], int numElements, int numBuffers, VBOID const vertexBufferIds[], const int strides[])
+void afSetVertexAttributes(const InputElement elements[], int numElements, int numBuffers, AFBufferResource const vertexBufferIds[], const int strides[])
 {
 	(void)numBuffers;
 	for (int i = 0; i < numElements; i++)
@@ -446,13 +446,13 @@ void afSetVertexAttributes(const InputElement elements[], int numElements, int n
 	}
 }
 
-void afSetIndexBuffer(IBOID indexBuffer)
+void afSetIndexBuffer(AFBufferResource indexBuffer)
 {
 	afHandleGLError(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer));
 }
 
 #ifdef AF_GLES31
-VAOID afCreateVAO(const InputElement elements[], int numElements, int numBuffers, VBOID const vertexBufferIds[], const int strides[], IBOID ibo)
+VAOID afCreateVAO(const InputElement elements[], int numElements, int numBuffers, AFBufferResource const vertexBufferIds[], const int strides[], AFBufferResource ibo)
 {
 	VAOID vao;
 	afHandleGLError(glGenVertexArrays(1, &vao));

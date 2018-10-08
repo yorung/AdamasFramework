@@ -35,9 +35,7 @@ public:
 	}
 };
 
-typedef ComPtr<ID3D11Buffer> IBOID;
-typedef ComPtr<ID3D11Buffer> VBOID;
-typedef ComPtr<ID3D11Buffer> UBOID;
+typedef ComPtr<ID3D11Buffer> AFBufferResource;
 typedef ComPtr<ID3D11SamplerState> SAMPLERID;
 typedef ComPtr<ID3D11ShaderResourceView> SRVID;
 typedef ComPtr<ID3D11Resource> AFTexRef;
@@ -46,24 +44,24 @@ inline void afSafeDeleteSampler(SAMPLERID& p) { p.Reset(); }
 inline void afSafeDeleteTexture(SRVID& p) { p.Reset(); }
 inline void afSafeDeleteTexture(AFTexRef& p) { p.Reset(); }
 
-void afSetVertexBuffer(VBOID vertexBuffer, int stride);
+void afSetVertexBuffer(AFBufferResource vertexBuffer, int stride);
 void afSetVertexBuffer(int size, const void* buf, int stride);
-void afSetIndexBuffer(IBOID indexBuffer);
+void afSetIndexBuffer(AFBufferResource indexBuffer);
 
-void afWriteBuffer(const IBOID p, int size, const void* buf);
+void afWriteBuffer(const AFBufferResource p, int size, const void* buf);
 void afWriteTexture(AFTexRef srv, const struct TexDesc& desc, const void* buf);
 
 ComPtr<ID3D11Buffer> afCreateBuffer(int size, const void* data, AFBufferType bufferType);
 ComPtr<ID3D11Buffer> afCreateIndexBuffer(int numIndi, const AFIndex* indi);
 ComPtr<ID3D11Buffer> afCreateVertexBuffer(int size, const void* buf);
-VBOID afCreateDynamicVertexBuffer(int size);
-UBOID afCreateUBO(int size, const void* buf = nullptr);
+AFBufferResource afCreateDynamicVertexBuffer(int size);
+AFBufferResource afCreateUBO(int size, const void* buf = nullptr);
 
 SRVID afCreateSRVFromTexture(AFTexRef tex);
 ComPtr<ID3D11DepthStencilView> afCreateDSVFromTexture(ComPtr<ID3D11Resource> tex);
 ComPtr<ID3D11RenderTargetView> afCreateRTVFromTexture(AFTexRef tex, AFFormat formatAs = AFF_INVALID);
 
-void afBindBuffer(UBOID ubo, UINT slot);
+void afBindBuffer(AFBufferResource ubo, UINT slot);
 void afBindBuffer(int size, const void* buf, UINT slot);
 void afBindTexture(SRVID srv, uint32_t slot);
 void afBindTexture(ComPtr<ID3D11Resource> tex, uint32_t slot);
@@ -138,7 +136,7 @@ public:
 	{
 		afBindBuffer(size, buf, descritorSetIndex);
 	}
-	void SetBuffer(UBOID uniformBuffer, int descriptorSetIndex)
+	void SetBuffer(AFBufferResource uniformBuffer, int descriptorSetIndex)
 	{
 		afBindBuffer(uniformBuffer, descriptorSetIndex);
 	}
@@ -146,11 +144,11 @@ public:
 	{
 		afSetVertexBuffer(size, buf, stride);
 	}
-	void SetVertexBuffer(VBOID vertexBuffer, int stride)
+	void SetVertexBuffer(AFBufferResource vertexBuffer, int stride)
 	{
 		afSetVertexBuffer(vertexBuffer, stride);
 	}
-	void SetIndexBuffer(IBOID indexBuffer)
+	void SetIndexBuffer(AFBufferResource indexBuffer)
 	{
 		afSetIndexBuffer(indexBuffer);
 	}

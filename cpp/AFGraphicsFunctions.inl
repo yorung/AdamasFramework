@@ -1,4 +1,8 @@
-inline IBOID afCreateTiledPlaneIBO(int numTiles, int* numIndies)
+typedef AFBufferResource VBOID;
+typedef AFBufferResource IBOID;
+typedef AFBufferResource UBOID;
+
+inline AFBufferResource afCreateTiledPlaneIBO(int numTiles, int* numIndies)
 {
 	const int numVert = numTiles + 1;
 
@@ -31,7 +35,7 @@ inline IBOID afCreateTiledPlaneIBO(int numTiles, int* numIndies)
 	return afCreateIndexBuffer((int)indi.size(), &indi[0]);
 }
 
-inline VBOID afCreateTiledPlaneVBO(int numTiles)
+inline AFBufferResource afCreateTiledPlaneVBO(int numTiles)
 {
 	std::vector<Vec2> v;
 	for (int y = 0; y <= numTiles; y++) {
@@ -42,7 +46,7 @@ inline VBOID afCreateTiledPlaneVBO(int numTiles)
 	return afCreateVertexBuffer((int)v.size() * sizeof(v[0]), &v[0]);
 }
 
-inline IBOID afCreateQuadListIndexBuffer(int numQuads)
+inline AFBufferResource afCreateQuadListIndexBuffer(int numQuads)
 {
 	std::vector<AFIndex> indi;
 	int numIndi = numQuads * 6;

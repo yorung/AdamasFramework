@@ -86,7 +86,7 @@ void afEndRenderToSwapChain()
 	afSetRenderTarget(nullptr, nullptr);
 }
 
-void afSetVertexBuffer(VBOID vertexBuffer, int stride_)
+void afSetVertexBuffer(AFBufferResource vertexBuffer, int stride_)
 {
 	ID3D11Buffer* d11Bufs[] = { vertexBuffer.Get() };
 	UINT stride = (UINT)stride_;
@@ -96,12 +96,12 @@ void afSetVertexBuffer(VBOID vertexBuffer, int stride_)
 
 void afSetVertexBuffer(int size, const void* buf, int stride)
 {
-	VBOID vbo = afCreateDynamicVertexBuffer(size);
+	AFBufferResource vbo = afCreateDynamicVertexBuffer(size);
 	afWriteBuffer(vbo, size, buf);
 	afSetVertexBuffer(vbo, stride);
 }
 
-void afSetIndexBuffer(IBOID indexBuffer)
+void afSetIndexBuffer(AFBufferResource indexBuffer)
 {
 	deviceMan11.GetContext()->IASetIndexBuffer(indexBuffer.Get(), AFIndexTypeToDevice, 0);
 }
@@ -156,12 +156,12 @@ ComPtr<ID3D11Buffer> afCreateVertexBuffer(int size, const void* data)
 	return afCreateBuffer(size, data, AFBT_VERTEX);
 }
 
-VBOID afCreateDynamicVertexBuffer(int size)
+AFBufferResource afCreateDynamicVertexBuffer(int size)
 {
 	return afCreateBuffer(size, nullptr, AFBT_VERTEX_CPUWRITE);
 }
 
-UBOID afCreateUBO(int size, const void* buf)
+AFBufferResource afCreateUBO(int size, const void* buf)
 {
 	return afCreateBuffer(size, buf, AFBT_CONSTANT_CPUWRITE);
 }
@@ -237,7 +237,7 @@ SAMPLERID afCreateSampler(SamplerType type)
 	return sampler;
 }
 
-void afBindBuffer(UBOID ubo, UINT slot)
+void afBindBuffer(AFBufferResource ubo, UINT slot)
 {
 	deviceMan11.GetContext()->VSSetConstantBuffers(slot, 1, ubo.GetAddressOf());
 	deviceMan11.GetContext()->PSSetConstantBuffers(slot, 1, ubo.GetAddressOf());
@@ -247,7 +247,7 @@ void afBindBuffer(UBOID ubo, UINT slot)
 
 void afBindBuffer(int size, const void* buf, UINT slot)
 {
-	UBOID id = afCreateUBO(size, buf);
+	AFBufferResource id = afCreateUBO(size, buf);
 	afBindBuffer(id, slot);
 }
 
@@ -314,7 +314,7 @@ void afBindSamplerToBindingPoint(SAMPLERID sampler, UINT slot)
 	deviceMan11.GetContext()->HSSetSamplers(slot, 1, sampler.GetAddressOf());
 }
 
-void afWriteBuffer(const IBOID p, int size, const void* buf)
+void afWriteBuffer(const AFBufferResource p, int size, const void* buf)
 {
 	assert(p);
 #ifdef _DEBUG

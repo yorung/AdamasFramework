@@ -98,24 +98,24 @@ static VkBufferUsageFlagBits BufferTypeToBufferUsageFlagBits(AFBufferType buffer
 }
 #endif
 
-VBOID afCreateVertexBuffer(int size, const void* srcData)
+AFBufferResource afCreateVertexBuffer(int size, const void* srcData)
 {
 	return afCreateBuffer(size, srcData, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
 }
 
-VBOID afCreateDynamicVertexBuffer(int size, const void* srcData)
+AFBufferResource afCreateDynamicVertexBuffer(int size, const void* srcData)
 {
 	return afCreateBuffer(size, srcData, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
 }
 
-IBOID afCreateIndexBuffer(int numIndi, const AFIndex* indi)
+AFBufferResource afCreateIndexBuffer(int numIndi, const AFIndex* indi)
 {
 	assert(indi);
 	int size = numIndi * sizeof(AFIndex);
 	return afCreateBuffer(size, indi, VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
 }
 
-UBOID afCreateUBO(int size, const void* srcData)
+AFBufferResource afCreateUBO(int size, const void* srcData)
 {
 	return afCreateBuffer(size, srcData, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
 }
@@ -327,7 +327,7 @@ void afSetVertexBuffer(int size, const void* buffer, int stride)
 	vkCmdBindVertexBuffers(commandBuffer, 0, 1, &allocator.bufferContext.buffer, &offset);
 }
 
-void afSetVertexBuffer(VBOID vertexBuffer, int stride)
+void afSetVertexBuffer(AFBufferResource vertexBuffer, int stride)
 {
 	(void)stride;
 	VkDeviceSize offsets[1] = {};
@@ -335,7 +335,7 @@ void afSetVertexBuffer(VBOID vertexBuffer, int stride)
 	vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertexBuffer.buffer, offsets);
 }
 
-void afSetIndexBuffer(IBOID indexBuffer)
+void afSetIndexBuffer(AFBufferResource indexBuffer)
 {
 	VkCommandBuffer commandBuffer = deviceMan.commandBuffer;
 	vkCmdBindIndexBuffer(commandBuffer, indexBuffer.buffer, 0, AFIndexTypeToDevice);

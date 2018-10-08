@@ -35,8 +35,8 @@ struct RenderCommand
 class RenderMesh
 {
 public:
-	VBOID vbo;
-	IBOID ibo;
+	AFBufferResource vbo;
+	AFBufferResource ibo;
 	std::vector<MaterialMap> materialMaps;
 	~RenderMesh();
 	void Destroy();

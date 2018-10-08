@@ -15,20 +15,18 @@ public:
 	}
 };
 
-typedef ComPtr<ID3D12Resource> IBOID;
-typedef ComPtr<ID3D12Resource> VBOID;
-typedef ComPtr<ID3D12Resource> UBOID;
+typedef ComPtr<ID3D12Resource> AFBufferResource;
 typedef ComPtr<ID3D12Resource> SRVID;
 typedef SRVID AFTexRef;
 void afSafeDeleteBuffer(ComPtr<ID3D12Resource>& p);
 void afSafeDeleteTexture(SRVID& p);
 
 void afTransition(ID3D12GraphicsCommandList* cmd, ComPtr<ID3D12Resource> res, D3D12_RESOURCE_STATES from, D3D12_RESOURCE_STATES to);
-void afSetVertexBuffer(VBOID id, int stride);
+void afSetVertexBuffer(AFBufferResource id, int stride);
 void afSetVertexBuffer(int size, const void* buf, int stride);
-void afSetVertexBuffers(int numIds, VBOID ids[], int strides[]);
-void afSetIndexBuffer(IBOID id);
-void afWriteBuffer(const IBOID id, int size, const void* buf);
+void afSetVertexBuffers(int numIds, AFBufferResource ids[], int strides[]);
+void afSetIndexBuffer(AFBufferResource id);
+void afWriteBuffer(const AFBufferResource id, int size, const void* buf);
 ComPtr<ID3D12Resource> afCreateBuffer(int size, const void* buf, AFBufferType bufferType);
 ComPtr<ID3D12Resource> afCreateVertexBuffer(int size, const void* buf = nullptr);
 ComPtr<ID3D12Resource> afCreateIndexBuffer(int numIndi, const AFIndex* indi);
@@ -142,7 +140,7 @@ void afBeginRenderToSwapChain();
 void afEndRenderToSwapChain();
 
 void afBindBuffer(int size, const void* buf, int rootParameterIndex);
-void afBindBuffer(UBOID ubo, int rootParameterIndex);
+void afBindBuffer(AFBufferResource ubo, int rootParameterIndex);
 void afBindTextures(int numResources, ComPtr<ID3D12Resource> resources[], int rootParameterIndex);
 
 class AFCommandList
@@ -165,7 +163,7 @@ public:
 	{
 		afBindBuffer(size, buf, descritorSetIndex);
 	}
-	void SetBuffer(UBOID uniformBuffer, int descriptorSetIndex)
+	void SetBuffer(AFBufferResource uniformBuffer, int descriptorSetIndex)
 	{
 		afBindBuffer(uniformBuffer, descriptorSetIndex);
 	}
@@ -173,11 +171,11 @@ public:
 	{
 		afSetVertexBuffer(size, buf, stride);
 	}
-	void SetVertexBuffer(VBOID vertexBuffer, int stride)
+	void SetVertexBuffer(AFBufferResource vertexBuffer, int stride)
 	{
 		afSetVertexBuffer(vertexBuffer, stride);
 	}
-	void SetIndexBuffer(IBOID indexBuffer)
+	void SetIndexBuffer(AFBufferResource indexBuffer)
 	{
 		afSetIndexBuffer(indexBuffer);
 	}

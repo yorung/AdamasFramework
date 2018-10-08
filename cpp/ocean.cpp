@@ -16,8 +16,8 @@ struct ImmutableCB
 
 class Ocean : AFModule
 {
-	VBOID vbo;
-	IBOID ibo;
+	AFBufferResource vbo;
+	AFBufferResource ibo;
 	AFRenderStates renderStates;
 	int nIndi = 0;
 	const int numGrid = 100;

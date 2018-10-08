@@ -36,7 +36,7 @@ class WaterSurfaceES2 : public AFModule
 	double elapsedTime = 0;
 	double lastTime;
 	double nextTime;
-	IBOID ibo;
+	AFBufferResource ibo;
 	int nIndi;
 	std::vector<AFTexRef> texIds;
 public:

@@ -2,8 +2,8 @@
 
 class GridRenderer
 {
-	VBOID vbo;
-	IBOID ibo;
+	AFBufferResource vbo;
+	AFBufferResource ibo;
 	AFRenderStates renderStates;
 	int lines;
 	int numGrid;
