@@ -70,7 +70,7 @@ struct BufferContext
 
 void afSafeDeleteBuffer(BufferContext& buffer);
 void afWriteBuffer(BufferContext& buffer, int size, const void* srcData);
-BufferContext CreateBuffer(VkDevice device, VkBufferUsageFlags usage, const VkPhysicalDeviceMemoryProperties& memoryProperties, int size, const void* srcData);
+BufferContext afCreateBuffer(int size, const void* srcData, VkBufferUsageFlags usage);
 
 typedef BufferContext VBOID;
 typedef BufferContext IBOID;

@@ -106,18 +106,47 @@ void afSetIndexBuffer(IBOID indexBuffer)
 	deviceMan11.GetContext()->IASetIndexBuffer(indexBuffer.Get(), AFIndexTypeToDevice, 0);
 }
 
-IBOID afCreateIndexBuffer(int numIndi, const AFIndex* indi)
+static D3D11_BIND_FLAG BufferTypeToBindFlag(AFBufferType bufferType)
 {
-	IBOID indexBuffer;
-	deviceMan11.GetDevice()->CreateBuffer(ToPtr<D3D11_BUFFER_DESC>({numIndi * sizeof(AFIndex), D3D11_USAGE_DEFAULT, D3D11_BIND_INDEX_BUFFER}), ToPtr<D3D11_SUBRESOURCE_DATA>({indi}), &indexBuffer);
-	return indexBuffer;
+	switch (bufferType)
+	{
+	case AFBT_VERTEX:
+		return D3D11_BIND_VERTEX_BUFFER;
+	case AFBT_INDEX:
+		return D3D11_BIND_INDEX_BUFFER;
+	case AFBT_CONSTANT:
+		return D3D11_BIND_CONSTANT_BUFFER;
+	}
+	assert(0);
+	return D3D11_BIND_VERTEX_BUFFER;
 }
 
-VBOID afCreateVertexBuffer(int size, const void* data)
+ComPtr<ID3D11Buffer> afCreateBuffer(int size, const void* data, AFBufferType bufferType)
 {
-	VBOID vbo;
-	deviceMan11.GetDevice()->CreateBuffer(ToPtr<D3D11_BUFFER_DESC>({(UINT)size, D3D11_USAGE_DEFAULT, D3D11_BIND_VERTEX_BUFFER}), ToPtr<D3D11_SUBRESOURCE_DATA>({data}), &vbo);
-	return vbo;
+	ComPtr<ID3D11Buffer> buffer;
+	switch (bufferType)
+	{
+	case AFBT_VERTEX:
+	case AFBT_INDEX:
+		deviceMan11.GetDevice()->CreateBuffer(ToPtr<D3D11_BUFFER_DESC>({ (UINT)size, D3D11_USAGE_DEFAULT, (UINT)BufferTypeToBindFlag(bufferType) }), ToPtr<D3D11_SUBRESOURCE_DATA>({ data }), &buffer);
+		break;
+	case AFBT_CONSTANT:
+		deviceMan11.GetDevice()->CreateBuffer(ToPtr<D3D11_BUFFER_DESC>({ (UINT)size, D3D11_USAGE_DYNAMIC, (UINT)BufferTypeToBindFlag(bufferType), D3D11_CPU_ACCESS_WRITE }), ToPtr<D3D11_SUBRESOURCE_DATA>({ data }), &buffer);
+		break;
+	}
+	return buffer;
+}
+
+ComPtr<ID3D11Buffer> afCreateIndexBuffer(int numIndi, const AFIndex* indi)
+{
+	assert(indi);
+	int size = numIndi * sizeof(AFIndex);
+	return afCreateBuffer(size, indi, AFBT_INDEX);
+}
+
+ComPtr<ID3D11Buffer> afCreateVertexBuffer(int size, const void* data)
+{
+	return afCreateBuffer(size, data, AFBT_VERTEX);
 }
 
 VBOID afCreateDynamicVertexBuffer(int size)
@@ -129,10 +158,7 @@ VBOID afCreateDynamicVertexBuffer(int size)
 
 UBOID afCreateUBO(int size, const void* buf)
 {
-	UBOID ubo;
-	D3D11_SUBRESOURCE_DATA subresData = { buf };
-	deviceMan11.GetDevice()->CreateBuffer(ToPtr<D3D11_BUFFER_DESC>({(UINT)size, D3D11_USAGE_DYNAMIC, D3D11_BIND_CONSTANT_BUFFER, D3D11_CPU_ACCESS_WRITE}), buf ? &subresData : nullptr, &ubo);
-	return ubo;
+	return afCreateBuffer(size, buf, AFBT_CONSTANT);
 }
 
 ComPtr<ID3D11Texture2D> afCreateTexture2D(AFFormat format, const TexDesc& afDesc, int mipCount, const AFTexSubresourceData datas[])

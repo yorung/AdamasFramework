@@ -34,6 +34,13 @@ enum RenderStateFlags : uint32_t
 	AFRS_DEPTH_STENCIL_D32_FLOAT = 0x2000,
 };
 
+enum AFBufferType : uint32_t
+{
+	AFBT_VERTEX,
+	AFBT_INDEX,
+	AFBT_CONSTANT,
+};
+
 inline bool afIsRenderFlagsRenderToSwapchainSurface(uint32_t flags)
 {
 	return !(flags & (AFRS_OFFSCREEN_RENDER_TARGET_R8G8B8A8_UNORM | AFRS_OFFSCREEN_RENDER_TARGET_R16G16B16A16_FLOAT | AFRS_OFFSCREEN_RENDER_TARGET_R32_FLOAT));

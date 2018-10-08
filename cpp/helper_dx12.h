@@ -29,9 +29,10 @@ void afSetVertexBuffer(int size, const void* buf, int stride);
 void afSetVertexBuffers(int numIds, VBOID ids[], int strides[]);
 void afSetIndexBuffer(IBOID id);
 void afWriteBuffer(const IBOID id, int size, const void* buf);
-VBOID afCreateVertexBuffer(int size, const void* buf = nullptr);
-IBOID afCreateIndexBuffer(int numIndi, const AFIndex* indi);
-UBOID afCreateUBO(int size, const void* buf = nullptr);
+ComPtr<ID3D12Resource> afCreateBuffer(int size, const void* buf, AFBufferType bufferType);
+ComPtr<ID3D12Resource> afCreateVertexBuffer(int size, const void* buf = nullptr);
+ComPtr<ID3D12Resource> afCreateIndexBuffer(int numIndi, const AFIndex* indi);
+ComPtr<ID3D12Resource> afCreateUBO(int size, const void* buf = nullptr);
 
 ComPtr<ID3D12PipelineState> afCreatePSO(const char *shaderName, const InputElement elements[], int numElements, uint32_t flags, ComPtr<ID3D12RootSignature>& rootSignature);
 

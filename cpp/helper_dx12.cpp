@@ -78,55 +78,83 @@ void afWriteBuffer(const IBOID id, int size, const void* buf)
 	id->Unmap(0, &wroteRange);
 }
 
-static ComPtr<ID3D12Resource> afCreateUploadHeap(int size, const void* buf = nullptr)
+static D3D12_RESOURCE_STATES BufferTypeToResourceState(AFBufferType bufferType)
+{
+	switch (bufferType)
+	{
+	case AFBT_VERTEX:
+	case AFBT_CONSTANT:
+		return D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
+	case AFBT_INDEX:
+		return D3D12_RESOURCE_STATE_INDEX_BUFFER;
+	}
+	assert(0);
+	return D3D12_RESOURCE_STATE_COMMON;
+}
+
+static ComPtr<ID3D12Resource> afCreateUploadHeap(int size)
 {
 	D3D12_RESOURCE_DESC desc = { D3D12_RESOURCE_DIMENSION_BUFFER, 0, (UINT64)size, 1, 1, 1, DXGI_FORMAT_UNKNOWN, { 1, 0 }, D3D12_TEXTURE_LAYOUT_ROW_MAJOR, D3D12_RESOURCE_FLAG_NONE };
 	UBOID o;
 	afHandleDXError(deviceMan.GetDevice()->CreateCommittedResource(&uploadHeapProperties, D3D12_HEAP_FLAG_NONE, &desc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&o)));
-	if (buf)
-	{
-		afWriteBuffer(o, size, buf);
-	}
 	return o;
 }
 
-static ComPtr<ID3D12Resource> afCreateBufferAs(int size, const void* buf, D3D12_RESOURCE_STATES as)
+static ComPtr<ID3D12Resource> afCreateFixedBuffer(int size, const void* buf, AFBufferType bufferType)
 {
+	assert(buf);
 	D3D12_RESOURCE_DESC desc = { D3D12_RESOURCE_DIMENSION_BUFFER, 0, (UINT64)size, 1, 1, 1, DXGI_FORMAT_UNKNOWN,{ 1, 0 }, D3D12_TEXTURE_LAYOUT_ROW_MAJOR, D3D12_RESOURCE_FLAG_NONE };
 	VBOID o;
-	deviceMan.GetDevice()->CreateCommittedResource(&defaultHeapProperties, D3D12_HEAP_FLAG_NONE, &desc, D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(&o));
+	afHandleDXError(deviceMan.GetDevice()->CreateCommittedResource(&defaultHeapProperties, D3D12_HEAP_FLAG_NONE, &desc, D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(&o)));
 	if (o)
 	{
-		ComPtr<ID3D12Resource> intermediateBuffer = afCreateUploadHeap(size, buf);
+		ComPtr<ID3D12Resource> intermediateBuffer = afCreateUploadHeap(size);
+		afWriteBuffer(intermediateBuffer, size, buf);
 		ID3D12GraphicsCommandList* list = deviceMan.GetCommandList();
 		list->CopyBufferRegion(o.Get(), 0, intermediateBuffer.Get(), 0, size);
-		afTransition(list, o, D3D12_RESOURCE_STATE_COPY_DEST, as);
+		afTransition(list, o, D3D12_RESOURCE_STATE_COPY_DEST, BufferTypeToResourceState(bufferType));
 		deviceMan.AddIntermediateCommandlistDependentResource(intermediateBuffer);
 		deviceMan.AddIntermediateCommandlistDependentResource(o);
 	}
 	return o;
 }
 
-VBOID afCreateVertexBuffer(int size, const void* buf)
+ComPtr<ID3D12Resource> afCreateBuffer(int size, const void* buf, AFBufferType bufferType)
 {
-	return afCreateBufferAs(size, buf, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+	switch (bufferType)
+	{
+	case AFBT_VERTEX:
+	case AFBT_INDEX:
+		return afCreateFixedBuffer(size, buf, bufferType);
+	case AFBT_CONSTANT:
+		{
+			ComPtr<ID3D12Resource> o = afCreateUploadHeap((size + 0xff) & ~0xff);
+			if (buf)
+			{
+				afWriteBuffer(o, size, buf);
+			}
+			return o;
+		}
+	}
+	assert(0);
+	return nullptr;
 }
 
-IBOID afCreateIndexBuffer(int numIndi, const AFIndex* indi)
+ComPtr<ID3D12Resource> afCreateVertexBuffer(int size, const void* buf)
+{
+	return afCreateBuffer(size, buf, AFBT_VERTEX);
+}
+
+ComPtr<ID3D12Resource> afCreateIndexBuffer(int numIndi, const AFIndex* indi)
 {
 	assert(indi);
 	int size = numIndi * sizeof(AFIndex);
-	return afCreateBufferAs(size, indi, D3D12_RESOURCE_STATE_INDEX_BUFFER);
+	return afCreateBuffer(size, indi, AFBT_INDEX);
 }
 
 UBOID afCreateUBO(int size, const void* buf)
 {
-	UBOID ubo = afCreateUploadHeap((size + 0xff) & ~0xff);
-	if (buf)
-	{
-		afWriteBuffer(ubo, size, buf);
-	}
-	return ubo;
+	return afCreateBuffer(size, buf, AFBT_CONSTANT);
 }
 
 void afWriteTexture(SRVID tex, const TexDesc& desc, int mipCount, const AFTexSubresourceData datas[])

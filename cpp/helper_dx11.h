@@ -53,8 +53,9 @@ void afSetIndexBuffer(IBOID indexBuffer);
 void afWriteBuffer(const IBOID p, int size, const void* buf);
 void afWriteTexture(AFTexRef srv, const struct TexDesc& desc, const void* buf);
 
-IBOID afCreateIndexBuffer(int numIndi, const AFIndex* indi);
-VBOID afCreateVertexBuffer(int size, const void* buf);
+ComPtr<ID3D11Buffer> afCreateBuffer(int size, const void* data, AFBufferType bufferType);
+ComPtr<ID3D11Buffer> afCreateIndexBuffer(int numIndi, const AFIndex* indi);
+ComPtr<ID3D11Buffer> afCreateVertexBuffer(int size, const void* buf);
 VBOID afCreateDynamicVertexBuffer(int size);
 UBOID afCreateUBO(int size, const void* buf = nullptr);
 
