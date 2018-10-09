@@ -117,9 +117,7 @@ SRVID afCreateDynamicTexture(AFFormat format, const IVec2& size);
 
 void afWriteTexture(SRVID srv, const TexDesc& desc, const void* buf);
 
-GLuint afCreateIndexBuffer(int numIndi, const AFIndex* indi);
-GLuint afCreateVertexBuffer(int size, const void* buf);
-GLuint afCreateDynamicVertexBuffer(int size);
+GLuint afCreateBuffer(int size, const void* buf, AFBufferType bufferType);
 
 #ifdef AF_GLES31
 inline void afBindSamplerToBindingPoint(SAMPLERID samp, int pnt)
@@ -180,7 +178,6 @@ public:
 typedef GLuint SSBOID;
 typedef GLuint VAOID;
 SSBOID afCreateSSBO(int size);
-GLuint afCreateUBO(int size, const void* buf = nullptr);
 void afBindSSBO(SSBOID ssbo, GLuint storageBlockBinding);
 void afBindConstantBuffer(AFBufferResource ubo, GLuint uniformBlockBinding);
 VAOID afCreateVAO(const InputElement elements[], int numElements, int numBuffers, AFBufferResource const *vertexBufferIds, const int* strides, AFBufferResource ibo);

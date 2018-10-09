@@ -1,3 +1,25 @@
+inline AFBufferResource afCreateVertexBuffer(int size, const void* buf)
+{
+	return afCreateBuffer(size, buf, AFBT_VERTEX);
+}
+
+inline AFBufferResource afCreateDynamicVertexBuffer(int size)
+{
+	return afCreateBuffer(size, nullptr, AFBT_VERTEX_CPUWRITE);
+}
+
+inline AFBufferResource afCreateIndexBuffer(int numIndi, const AFIndex* indi)
+{
+	assert(indi);
+	int size = numIndi * sizeof(AFIndex);
+	return afCreateBuffer(size, indi, AFBT_INDEX);
+}
+
+inline AFBufferResource afCreateUBO(int size, const void* buf = nullptr)
+{
+	return afCreateBuffer(size, buf, AFBT_CONSTANT_CPUWRITE);
+}
+
 typedef AFBufferResource VBOID;
 typedef AFBufferResource IBOID;
 typedef AFBufferResource UBOID;

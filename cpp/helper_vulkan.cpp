@@ -80,7 +80,6 @@ void afWriteBuffer(BufferContext& buffer, int size, const void* srcData)
 	memcpy(buffer.mappedMemory, srcData, size);
 }
 
-#if 0
 static VkBufferUsageFlagBits BufferTypeToBufferUsageFlagBits(AFBufferType bufferType)
 {
 	switch (bufferType)
@@ -91,36 +90,14 @@ static VkBufferUsageFlagBits BufferTypeToBufferUsageFlagBits(AFBufferType buffer
 	case AFBT_INDEX:
 		return VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
 	case AFBT_CONSTANT:
+	case AFBT_CONSTANT_CPUWRITE:
 		return VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
 	}
 	assert(0);
 	return VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
 }
-#endif
 
-AFBufferResource afCreateVertexBuffer(int size, const void* srcData)
-{
-	return afCreateBuffer(size, srcData, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
-}
-
-AFBufferResource afCreateDynamicVertexBuffer(int size, const void* srcData)
-{
-	return afCreateBuffer(size, srcData, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
-}
-
-AFBufferResource afCreateIndexBuffer(int numIndi, const AFIndex* indi)
-{
-	assert(indi);
-	int size = numIndi * sizeof(AFIndex);
-	return afCreateBuffer(size, indi, VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
-}
-
-AFBufferResource afCreateUBO(int size, const void* srcData)
-{
-	return afCreateBuffer(size, srcData, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
-}
-
-BufferContext afCreateBuffer(int size, const void* srcData, VkBufferUsageFlags usage)
+static BufferContext afCreateBufferInternal(int size, const void* srcData, VkBufferUsageFlags usage)
 {
 	VkDevice device = deviceMan.GetDevice();
 	const VkBufferCreateInfo bufferCreateInfo = { VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, nullptr, 0, (VkDeviceSize)size, usage };
@@ -138,6 +115,11 @@ BufferContext afCreateBuffer(int size, const void* srcData, VkBufferUsageFlags u
 		afWriteBuffer(buffer, size, srcData);
 	}
 	return buffer;
+}
+
+AFBufferResource afCreateBuffer(int size, const void* srcData, AFBufferType bufferType)
+{
+	return afCreateBufferInternal(size, srcData, BufferTypeToBufferUsageFlagBits(bufferType));
 }
 
 void afWriteTexture(AFTexRef textureContext, const TexDesc& texDesc, void *image)
@@ -165,7 +147,7 @@ void afWriteTexture(AFTexRef textureContext, const TexDesc& texDesc, int mipCoun
 		total += datas[i].pitchSlice;
 	}
 
-	BufferContext staging = afCreateBuffer((int)total, nullptr, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+	BufferContext staging = afCreateBufferInternal((int)total, nullptr, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
 	for (uint32_t i = 0; i < subResources; i++)
 	{
 		memcpy((uint8_t*)staging.mappedMemory + copyInfo[i].bufferOffset, datas[i].ptr, datas[i].pitchSlice);
@@ -711,7 +693,7 @@ void DeviceManVK::Flush()
 
 void AFBufferStackAllocator::Create(VkBufferUsageFlags usage, int size)
 {
-	bufferContext = afCreateBuffer(size, nullptr, usage);
+	bufferContext = afCreateBufferInternal(size, nullptr, usage);
 	ResetAllocation();
 }
 

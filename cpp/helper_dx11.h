@@ -51,11 +51,7 @@ void afSetIndexBuffer(AFBufferResource indexBuffer);
 void afWriteBuffer(const AFBufferResource p, int size, const void* buf);
 void afWriteTexture(AFTexRef srv, const struct TexDesc& desc, const void* buf);
 
-ComPtr<ID3D11Buffer> afCreateBuffer(int size, const void* data, AFBufferType bufferType);
-ComPtr<ID3D11Buffer> afCreateIndexBuffer(int numIndi, const AFIndex* indi);
-ComPtr<ID3D11Buffer> afCreateVertexBuffer(int size, const void* buf);
-AFBufferResource afCreateDynamicVertexBuffer(int size);
-AFBufferResource afCreateUBO(int size, const void* buf = nullptr);
+AFBufferResource afCreateBuffer(int size, const void* data, AFBufferType bufferType);
 
 SRVID afCreateSRVFromTexture(AFTexRef tex);
 ComPtr<ID3D11DepthStencilView> afCreateDSVFromTexture(ComPtr<ID3D11Resource> tex);

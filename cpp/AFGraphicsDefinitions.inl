@@ -34,6 +34,11 @@ enum RenderStateFlags : uint32_t
 	AFRS_DEPTH_STENCIL_D32_FLOAT = 0x2000,
 };
 
+inline bool afIsRenderFlagsRenderToSwapchainSurface(uint32_t flags)
+{
+	return !(flags & (AFRS_OFFSCREEN_RENDER_TARGET_R8G8B8A8_UNORM | AFRS_OFFSCREEN_RENDER_TARGET_R16G16B16A16_FLOAT | AFRS_OFFSCREEN_RENDER_TARGET_R32_FLOAT));
+}
+
 enum AFBufferType : uint32_t
 {
 	AFBT_VERTEX,
@@ -43,9 +48,15 @@ enum AFBufferType : uint32_t
 	AFBT_CONSTANT_CPUWRITE,
 };
 
-inline bool afIsRenderFlagsRenderToSwapchainSurface(uint32_t flags)
+inline bool afIsBufferTypeAllowsCpuWrite(AFBufferType bufferType)
 {
-	return !(flags & (AFRS_OFFSCREEN_RENDER_TARGET_R8G8B8A8_UNORM | AFRS_OFFSCREEN_RENDER_TARGET_R16G16B16A16_FLOAT | AFRS_OFFSCREEN_RENDER_TARGET_R32_FLOAT));
+	switch (bufferType)
+	{
+	case AFBT_CONSTANT_CPUWRITE:
+	case AFBT_VERTEX_CPUWRITE:
+		return true;
+	}
+	return false;
 }
 
 enum TextureFlags : uint32_t

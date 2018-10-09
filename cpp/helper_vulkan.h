@@ -67,16 +67,12 @@ struct BufferContext
 	VkMemoryRequirements memoryRequirement = {};
 	bool operator !() { return !buffer; }
 };
+typedef BufferContext AFBufferResource;
 
 void afSafeDeleteBuffer(BufferContext& buffer);
 void afWriteBuffer(BufferContext& buffer, int size, const void* srcData);
-BufferContext afCreateBuffer(int size, const void* srcData, VkBufferUsageFlags usage);
 
-typedef BufferContext AFBufferResource;
-AFBufferResource afCreateVertexBuffer(int size, const void* srcData);
-AFBufferResource afCreateDynamicVertexBuffer(int size, const void* srcData = nullptr);
-AFBufferResource afCreateIndexBuffer(int numIndi, const AFIndex* indi);
-AFBufferResource afCreateUBO(int size, const void* srcData = nullptr);
+AFBufferResource afCreateBuffer(int size, const void* srcData, AFBufferType bufferType);
 
 struct AFTexSubresourceData
 {

@@ -144,23 +144,6 @@ ComPtr<ID3D12Resource> afCreateBuffer(int size, const void* buf, AFBufferType bu
 	return nullptr;
 }
 
-ComPtr<ID3D12Resource> afCreateVertexBuffer(int size, const void* buf)
-{
-	return afCreateBuffer(size, buf, AFBT_VERTEX);
-}
-
-ComPtr<ID3D12Resource> afCreateIndexBuffer(int numIndi, const AFIndex* indi)
-{
-	assert(indi);
-	int size = numIndi * sizeof(AFIndex);
-	return afCreateBuffer(size, indi, AFBT_INDEX);
-}
-
-AFBufferResource afCreateUBO(int size, const void* buf)
-{
-	return afCreateBuffer(size, buf, AFBT_CONSTANT_CPUWRITE);
-}
-
 void afWriteTexture(SRVID tex, const TexDesc& desc, int mipCount, const AFTexSubresourceData datas[])
 {
 	const int maxSubresources = 100;

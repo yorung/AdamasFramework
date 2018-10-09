@@ -91,33 +91,31 @@ static GLuint afCompileGLSL(const char* name, const InputElement elements[], int
 	return program;
 }
 
-GLuint afCreateIndexBuffer(int numIndi, const AFIndex* indi)
+static GLenum AFBufferTypeToGLBufferType(AFBufferType bufferType)
 {
-	GLuint ibo;
-	afHandleGLError(glGenBuffers(1, &ibo));
-	afHandleGLError(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
-	afHandleGLError(glBufferData(GL_ELEMENT_ARRAY_BUFFER, numIndi * sizeof(AFIndex), &indi[0], GL_STATIC_DRAW));
-	afHandleGLError(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
-	return ibo;
+	switch (bufferType)
+	{
+	case AFBT_VERTEX:
+	case AFBT_VERTEX_CPUWRITE:
+		return GL_ARRAY_BUFFER;
+	case AFBT_INDEX:
+		return GL_ELEMENT_ARRAY_BUFFER;
+	case AFBT_CONSTANT:
+	case AFBT_CONSTANT_CPUWRITE:
+		return GL_UNIFORM_BUFFER;
+	}
+	assert(0);
+	return 0;
 }
 
-GLuint afCreateVertexBuffer(int size, const void* buf)
+GLuint afCreateBuffer(int size, const void* buf, AFBufferType bufferType)
 {
 	GLuint vbo;
+	GLenum glBufferType = AFBufferTypeToGLBufferType(bufferType);
 	afHandleGLError(glGenBuffers(1, &vbo));
-	afHandleGLError(glBindBuffer(GL_ARRAY_BUFFER, vbo));
-	afHandleGLError(glBufferData(GL_ARRAY_BUFFER, size, buf, GL_STATIC_DRAW));
-	afHandleGLError(glBindBuffer(GL_ARRAY_BUFFER, 0));
-	return vbo;
-}
-
-GLuint afCreateDynamicVertexBuffer(int size)
-{
-	GLuint vbo;
-	glGenBuffers(1, &vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, size, NULL, GL_DYNAMIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	afHandleGLError(glBindBuffer(glBufferType, vbo));
+	afHandleGLError(glBufferData(glBufferType, size, buf, afIsBufferTypeAllowsCpuWrite(bufferType) ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW));
+	afHandleGLError(glBindBuffer(glBufferType, 0));
 	return vbo;
 }
 
@@ -129,16 +127,6 @@ SSBOID afCreateSSBO(int size)
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, name);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, size, NULL, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-	return name;
-}
-
-GLuint afCreateUBO(int size, const void* buf)
-{
-	GLuint name;
-	glGenBuffers(1, &name);
-	glBindBuffer(GL_UNIFORM_BUFFER, name);
-	glBufferData(GL_UNIFORM_BUFFER, size, buf, GL_DYNAMIC_DRAW);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	return name;
 }
 #endif

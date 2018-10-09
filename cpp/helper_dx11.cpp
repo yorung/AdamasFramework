@@ -144,28 +144,6 @@ ComPtr<ID3D11Buffer> afCreateBuffer(int size, const void* data, AFBufferType buf
 	return buffer;
 }
 
-ComPtr<ID3D11Buffer> afCreateIndexBuffer(int numIndi, const AFIndex* indi)
-{
-	assert(indi);
-	int size = numIndi * sizeof(AFIndex);
-	return afCreateBuffer(size, indi, AFBT_INDEX);
-}
-
-ComPtr<ID3D11Buffer> afCreateVertexBuffer(int size, const void* data)
-{
-	return afCreateBuffer(size, data, AFBT_VERTEX);
-}
-
-AFBufferResource afCreateDynamicVertexBuffer(int size)
-{
-	return afCreateBuffer(size, nullptr, AFBT_VERTEX_CPUWRITE);
-}
-
-AFBufferResource afCreateUBO(int size, const void* buf)
-{
-	return afCreateBuffer(size, buf, AFBT_CONSTANT_CPUWRITE);
-}
-
 ComPtr<ID3D11Texture2D> afCreateTexture2D(AFFormat format, const TexDesc& afDesc, int mipCount, const AFTexSubresourceData datas[])
 {
 	ComPtr<ID3D11Texture2D> tex;
