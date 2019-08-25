@@ -238,6 +238,10 @@ AFTexRef afCreateDynamicTexture(VkFormat format, const IVec2& size, uint32_t fla
 	{
 		afTransition(deviceMan.commandBuffer, textureContext, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 	}
+	if (flags & AFTF_CPU_WRITE)
+	{
+		vkCmdPipelineBarrier(deviceMan.commandBuffer, VK_PIPELINE_STAGE_HOST_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT | VK_PIPELINE_STAGE_HOST_BIT, 0, 0, nullptr, 0, nullptr, 1, ToPtr<VkImageMemoryBarrier>({ VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER, nullptr, 0, VK_ACCESS_HOST_WRITE_BIT | VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, textureContext->image,{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1u, 0, 1u } }));
+	}
 	return textureContext;
 }
 
