@@ -117,9 +117,7 @@ void afSetVertexBuffer(int size, const void* buffer, int stride);
 void afDrawIndexed(int numIndices, int start = 0, int instanceCount = 1);
 void afDraw(int numVertices, int start = 0, int instanceCount = 1);
 
-inline void afSetTextureName(AFTexRef, const char* /*name*/)
-{
-}
+void afSetTextureName(AFTexRef tex, const char* name);
 
 class AFRenderStates
 {

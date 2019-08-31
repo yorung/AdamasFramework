@@ -341,6 +341,30 @@ void afDraw(int numVertices, int start, int instanceCount)
 	vkCmdDraw(commandBuffer, numVertices, instanceCount, 0, 0);
 }
 
+#if 0
+void afSetTextureName(AFTexRef tex, const char* name)
+{
+	static PFN_vkDebugMarkerSetObjectNameEXT vkDebugMarkerSetObjectNameEXT_ = reinterpret_cast<PFN_vkDebugMarkerSetObjectNameEXT>(vkGetDeviceProcAddr(deviceMan.GetDevice(), "vkDebugMarkerSetObjectNameEXT"));
+	if (!vkDebugMarkerSetObjectNameEXT_)
+	{
+		return;
+	}
+	VkDebugMarkerObjectNameInfoEXT info = { VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_NAME_INFO_EXT, nullptr, VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, (uint64_t)tex->image, name };
+	vkDebugMarkerSetObjectNameEXT_(deviceMan.GetDevice(), &info);
+}
+#else
+void afSetTextureName(AFTexRef tex, const char* name)
+{
+	static PFN_vkSetDebugUtilsObjectNameEXT vkSetDebugUtilsObjectNameEXT_ = reinterpret_cast<PFN_vkSetDebugUtilsObjectNameEXT>(vkGetDeviceProcAddr(deviceMan.GetDevice(), "vkSetDebugUtilsObjectNameEXT"));
+	if (!vkSetDebugUtilsObjectNameEXT_)
+	{
+		return;
+	}
+	VkDebugUtilsObjectNameInfoEXT info = { VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT, nullptr, VK_OBJECT_TYPE_IMAGE, (uint64_t)tex->image, name };
+	afHandleVKError(vkSetDebugUtilsObjectNameEXT_(deviceMan.GetDevice(), &info));
+}
+#endif
+
 static VkRenderPass CreateRenderPass(VkFormat colorBufferFormat, VkFormat depthStencilFormat)
 {
 	const VkAttachmentReference colorAttachmentReference = { 0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL };
@@ -454,12 +478,13 @@ static VkPipeline afCreatePipeline(VkDevice device, VkPipelineCache pipelineCach
 
 void DeviceManVK::Create(HWND hWnd)
 {
-	const char* extensions[] =
+	const char* instanceExtensions[] =
 	{
-		"VK_KHR_surface",
-		"VK_KHR_win32_surface",
+		VK_KHR_SURFACE_EXTENSION_NAME,
+		VK_KHR_WIN32_SURFACE_EXTENSION_NAME,
 #ifndef NDEBUG
-		"VK_EXT_debug_report",
+//		VK_EXT_DEBUG_REPORT_EXTENSION_NAME,	// old
+		VK_EXT_DEBUG_UTILS_EXTENSION_NAME,
 #endif
 	};
 	const char* instanceLayers[] =
@@ -472,7 +497,7 @@ void DeviceManVK::Create(HWND hWnd)
 #else
 		0,
 #endif
-		instanceLayers, arrayparam(extensions) };
+		instanceLayers, arrayparam(instanceExtensions) };
 	afHandleVKError(vkCreateInstance(&instInfo, nullptr, &inst));
 
 	VkPhysicalDevice devices[16] = {};
@@ -494,12 +519,20 @@ void DeviceManVK::Create(HWND hWnd)
 	vkGetPhysicalDeviceProperties(physicalDevice, &physicalDeviceProperties);
 	vkGetPhysicalDeviceMemoryProperties(physicalDevice, &physicalDeviceMemoryProperties);
 
+	VkExtensionProperties deviceExtensions[128] = {};
+	uint32_t deviceExtensionCount = _countof(deviceExtensions);
+	vkEnumerateDeviceExtensionProperties(physicalDevice, nullptr, &deviceExtensionCount, deviceExtensions);
+
 	float priorities[] = { 0 };
 	const VkDeviceQueueCreateInfo devQueueInfos[] = { { VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO, nullptr, 0, 0, 1, priorities } };
-	const char* deviceExtensions[] = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
+	const char* enabledDeviceExtensions[] =
+	{
+		VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+	//	VK_EXT_DEBUG_MARKER_EXTENSION_NAME	// old
+	};
 	VkPhysicalDeviceFeatures features = {};
 	features.fillModeNonSolid = VK_TRUE;
-	const VkDeviceCreateInfo devInfo = { VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO, nullptr, 0, 1, devQueueInfos, 0, nullptr, arrayparam(deviceExtensions), &features };
+	const VkDeviceCreateInfo devInfo = { VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO, nullptr, 0, 1, devQueueInfos, 0, nullptr, arrayparam(enabledDeviceExtensions), &features };
 	afHandleVKError(vkCreateDevice(physicalDevice, &devInfo, nullptr, &device));
 
 	// preallocated resources and descriptors
