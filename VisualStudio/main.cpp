@@ -116,7 +116,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE,
 		GetClientRect(s_hWnd, &rc);
 		int w = rc.right - rc.left;
 		int h = rc.bottom - rc.top;
-		if (w != lastW || h != lastH) {
+		if (w != lastW || h != lastH)
+		{
 			lastW = w;
 			lastH = h;
 			app->Destroy();

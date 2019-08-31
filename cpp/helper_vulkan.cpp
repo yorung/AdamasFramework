@@ -32,15 +32,16 @@ VkResult _afHandleVKError(const char* file, const char* func, int line, const ch
 	return result;
 }
 
+#if 0
 static void afTransition(VkCommandBuffer commandBuffer, VkImage image, VkImageLayout from, VkImageLayout to)
 {
 	vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0, 0, nullptr, 0, nullptr, 1, ToPtr<VkImageMemoryBarrier>({ VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER, nullptr, VK_ACCESS_SHADER_READ_BIT, VK_ACCESS_COLOR_ATTACHMENT_READ_BIT, from, to, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, image,{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 } }));
 }
-
 static void afTransition(VkCommandBuffer commandBuffer, AFTexRef res, VkImageLayout from, VkImageLayout to)
 {
 	vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0, 0, nullptr, 0, nullptr, 1, ToPtr<VkImageMemoryBarrier>({ VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER, nullptr, VK_ACCESS_SHADER_READ_BIT, VK_ACCESS_COLOR_ATTACHMENT_READ_BIT, from, to, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, res->image,{ VK_IMAGE_ASPECT_COLOR_BIT, 0, (uint32_t)res->mipCount, 0, (res->texDesc.isCubeMap ? 6u : 1u) } }));
 }
+#endif
 
 static VkShaderModule CreateShaderModule(VkDevice device, const char* fileName)
 {
@@ -236,7 +237,9 @@ AFTexRef afCreateDynamicTexture(VkFormat format, const IVec2& size, uint32_t fla
 	}
 	if (flags & AFTF_RTV)
 	{
-		afTransition(deviceMan.commandBuffer, textureContext, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+//		GetTickCount64();
+//		vkCmdPipelineBarrier(deviceMan.commandBuffer, VK_PIPELINE_STAGE_HOST_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, 0, 0, nullptr, 0, nullptr, 1, ToPtr<VkImageMemoryBarrier>({ VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER, nullptr, VK_ACCESS_SHADER_READ_BIT, VK_ACCESS_COLOR_ATTACHMENT_READ_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, textureContext->image,{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 } }));
+//		afTransition(deviceMan.commandBuffer, textureContext, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 	}
 	if (flags & AFTF_CPU_WRITE)
 	{
@@ -365,12 +368,23 @@ void afSetTextureName(AFTexRef tex, const char* name)
 }
 #endif
 
+static VkRenderPass CreateRenderPassForPresent(VkFormat colorBufferFormat)
+{
+	const VkAttachmentReference colorAttachmentReference = { 0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL };
+	const VkSubpassDescription subpassDescriptions[] = { { 0, VK_PIPELINE_BIND_POINT_GRAPHICS, 0, nullptr, 1, &colorAttachmentReference } };
+	const VkAttachmentDescription attachments[] = { { 0, colorBufferFormat, VK_SAMPLE_COUNT_1_BIT, VK_ATTACHMENT_LOAD_OP_CLEAR, VK_ATTACHMENT_STORE_OP_STORE, VK_ATTACHMENT_LOAD_OP_DONT_CARE, VK_ATTACHMENT_STORE_OP_DONT_CARE, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR } };
+	const VkRenderPassCreateInfo renderPassInfo = { VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO, nullptr, 0, arrayparam(attachments), arrayparam(subpassDescriptions) };
+	VkRenderPass renderPass = 0;
+	afHandleVKError(vkCreateRenderPass(deviceMan.GetDevice(), &renderPassInfo, nullptr, &renderPass));
+	return renderPass;
+}
+
 static VkRenderPass CreateRenderPass(VkFormat colorBufferFormat, VkFormat depthStencilFormat)
 {
 	const VkAttachmentReference colorAttachmentReference = { 0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL };
 	const VkAttachmentReference depthStencilAttachmentReference = { 1, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL };
 	const VkSubpassDescription subpassDescriptions[] = { { 0, VK_PIPELINE_BIND_POINT_GRAPHICS, 0, nullptr, 1, &colorAttachmentReference, nullptr, depthStencilFormat == AFF_INVALID ? nullptr : &depthStencilAttachmentReference } };
-	const VkAttachmentDescription attachments[2] = { { 0, colorBufferFormat, VK_SAMPLE_COUNT_1_BIT, VK_ATTACHMENT_LOAD_OP_CLEAR, VK_ATTACHMENT_STORE_OP_STORE, VK_ATTACHMENT_LOAD_OP_DONT_CARE, VK_ATTACHMENT_STORE_OP_DONT_CARE, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL }, { 0, depthStencilFormat, VK_SAMPLE_COUNT_1_BIT, VK_ATTACHMENT_LOAD_OP_CLEAR, VK_ATTACHMENT_STORE_OP_STORE, VK_ATTACHMENT_LOAD_OP_CLEAR, VK_ATTACHMENT_STORE_OP_STORE, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL } };
+	const VkAttachmentDescription attachments[2] = { { 0, colorBufferFormat, VK_SAMPLE_COUNT_1_BIT, VK_ATTACHMENT_LOAD_OP_CLEAR, VK_ATTACHMENT_STORE_OP_STORE, VK_ATTACHMENT_LOAD_OP_DONT_CARE, VK_ATTACHMENT_STORE_OP_DONT_CARE, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL }, { 0, depthStencilFormat, VK_SAMPLE_COUNT_1_BIT, VK_ATTACHMENT_LOAD_OP_CLEAR, VK_ATTACHMENT_STORE_OP_STORE, VK_ATTACHMENT_LOAD_OP_CLEAR, VK_ATTACHMENT_STORE_OP_STORE, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL } };
 	const VkRenderPassCreateInfo renderPassInfo = { VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO, nullptr, 0, depthStencilFormat == AFF_INVALID ? 1u : 2u, attachments, arrayparam(subpassDescriptions) };
 	VkRenderPass renderPass = 0;
 	afHandleVKError(vkCreateRenderPass(deviceMan.GetDevice(), &renderPassInfo, nullptr, &renderPass));
@@ -592,7 +606,7 @@ void DeviceManVK::Create(HWND hWnd)
 	afHandleVKError(vkGetSwapchainImagesKHR(device, swapchain, &swapChainCount, swapChainImages));
 
 	// render pass
-	primaryRenderPass = CreateRenderPass(swapchainInfo.imageFormat, VK_FORMAT_UNDEFINED);
+	primaryRenderPass = CreateRenderPassForPresent(swapchainInfo.imageFormat);
 	offscreenR8G8B8A8D32S8RenderPass = CreateRenderPass(AFF_R8G8B8A8_UNORM, VK_FORMAT_D32_SFLOAT_S8_UINT);
 	offscreenR16G16B16A16D32S8RenderPass = CreateRenderPass(AFF_R16G16B16A16_FLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT);
 	offscreenR8G8B8A8RenderPass = CreateRenderPass(AFF_R8G8B8A8_UNORM, VK_FORMAT_UNDEFINED);
@@ -631,7 +645,7 @@ void DeviceManVK::BeginRenderPass(VkRenderPass nextRenderPass, VkFramebuffer nex
 
 void DeviceManVK::Present()
 {
-	afTransition(commandBuffer, swapChainImages[frameIndex], VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+//	afTransition(commandBuffer, swapChainImages[frameIndex], VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
 
 	afHandleVKError(vkEndCommandBuffer(commandBuffer));
 
@@ -856,8 +870,8 @@ void AFRenderTarget::BeginRenderToThis()
 	if (!currentStateIsRtv)
 	{
 		currentStateIsRtv = true;
-		VkCommandBuffer commandBuffer = deviceMan.commandBuffer;
-		afTransition(commandBuffer, renderTarget, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+//		VkCommandBuffer commandBuffer = deviceMan.commandBuffer;
+//		afTransition(commandBuffer, renderTarget, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 	}
 	AFFormat dsFormat = depthStencil ? depthStencil->format : AFF_INVALID;
 	deviceMan.BeginRenderPass(VkFormatToRenderPassForOffScreenRenderTarget(renderTarget->format, dsFormat), framebuffer, renderTarget->texDesc.size, dsFormat != AFF_INVALID);
@@ -869,8 +883,9 @@ void AFRenderTarget::EndRenderToThis()
 	if (currentStateIsRtv)
 	{
 		currentStateIsRtv = false;
-		VkCommandBuffer commandBuffer = deviceMan.commandBuffer;
-		afTransition(commandBuffer, renderTarget, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+	//	VkCommandBuffer commandBuffer = deviceMan.commandBuffer;
+//		afTransition(commandBuffer, renderTarget, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+		//vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0, 0, nullptr, 0, nullptr, 1, ToPtr<VkImageMemoryBarrier>({ VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER, nullptr, VK_ACCESS_SHADER_READ_BIT, VK_ACCESS_COLOR_ATTACHMENT_READ_BIT, from, to, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, res->image,{ VK_IMAGE_ASPECT_COLOR_BIT, 0, (uint32_t)res->mipCount, 0, (res->texDesc.isCubeMap ? 6u : 1u) } }));
 	}
 }
 
