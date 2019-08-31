@@ -137,7 +137,6 @@ class AFRenderTarget
 	VkFramebuffer framebuffer = 0;
 	AFTexRef renderTarget;
 	AFTexRef depthStencil;
-	bool currentStateIsRtv = true;
 public:
 	~AFRenderTarget() { Destroy(); }
 	void Init(IVec2 size, AFFormat colorFormat, AFFormat depthStencilFormat = AFF_INVALID);
