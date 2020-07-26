@@ -1,4 +1,6 @@
-#include <stdafx.h>
+#include "stdafx.h"
+#include "sky_man.h"
+#include "stock_objects.h"
 
 SkyMan skyMan;
 

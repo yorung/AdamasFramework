@@ -1,3 +1,5 @@
+#pragma once
+
 class LuaMan
 {
 	lua_State* L;

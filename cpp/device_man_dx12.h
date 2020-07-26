@@ -1,3 +1,5 @@
+#pragma once
+
 class DeviceManDX12
 {
 	static const UINT numFrameBuffers = 2;

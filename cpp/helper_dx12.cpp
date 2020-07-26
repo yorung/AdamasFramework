@@ -45,7 +45,8 @@ void afSetVertexBuffers(int numIds, AFBufferResource ids[], int strides[])
 	ID3D12GraphicsCommandList* list = deviceMan.GetCommandList();
 	D3D12_VERTEX_BUFFER_VIEW views[10];
 	assert(numIds < _countof(views));
-	for (int i = 0; i < numIds; i++) {
+	for (int i = 0; i < numIds; i++)
+	{
 		D3D12_RESOURCE_DESC desc = ids[i]->GetDesc();
 		views[i] = { ids[i]->GetGPUVirtualAddress(), (UINT)desc.Width, (UINT)strides[i] };
 	}
@@ -65,7 +66,8 @@ void afWriteBuffer(const AFBufferResource id, int size, const void* buf)
 {
 #ifdef _DEBUG
 	D3D12_RESOURCE_DESC desc = id->GetDesc();
-	if (size > (int)desc.Width) {
+	if (size > (int)desc.Width)
+	{
 		return;
 	}
 #endif

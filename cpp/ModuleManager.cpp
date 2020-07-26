@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "ModuleManager.h"
 
 AFModuleManager moduleManager;
 

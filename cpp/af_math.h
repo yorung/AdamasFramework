@@ -1,3 +1,5 @@
+#pragma once
+
 //#define USE_DXMATH
 //#define USE_SIMPLE_MATH
 //#define USE_D3DX

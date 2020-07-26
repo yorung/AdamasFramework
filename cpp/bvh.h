@@ -1,3 +1,8 @@
+#pragma once
+
+#include "joint_db.h"
+#include "mesh_x.h"
+
 struct Pose
 {
 	std::vector<Quat> quats;

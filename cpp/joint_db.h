@@ -1,3 +1,5 @@
+#pragma once
+
 class Bvh;
 
 typedef int BONE_ID;

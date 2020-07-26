@@ -1,3 +1,5 @@
+#pragma once
+
 class InputMan {
 	int keyDownCount[256];
 	void HandleEdge(int virtualKey, bool up);

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "bvh.h"
 
 static const char *xBones[] =
 {

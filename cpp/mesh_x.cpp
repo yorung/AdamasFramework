@@ -1,4 +1,8 @@
 #include "stdafx.h"
+#include "debug_renderer.h"
+#include "bvh.h"
+#include "mesh_x.h"
+#include "tex_man.h"
 
 static void _enterBrace(char*& p)
 {

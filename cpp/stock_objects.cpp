@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "stock_objects.h"
 
 static const InputElement elements[] =
 {

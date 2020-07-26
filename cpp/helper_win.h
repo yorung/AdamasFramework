@@ -1,3 +1,5 @@
+#pragma once
+
 #if defined(__d3d11_h__) || defined(__d3d12_h__)
 #include "AFGraphicsDefinitions.inl"
 

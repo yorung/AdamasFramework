@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "font_man.h"
 
 class GridRenderer
 {

@@ -1,3 +1,5 @@
+#pragma once
+
 inline AFCommandList& afGetCommandList()
 {
 	static AFCommandList commandList;

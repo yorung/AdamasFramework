@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "input_man.h"
 
 InputMan inputMan;
 

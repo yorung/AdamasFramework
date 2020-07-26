@@ -1,5 +1,18 @@
 #include "stdafx.h"
 #include "dev_camera.h"
+#include "debug_renderer.h"
+#include "sky_man.h"
+#include "letterbox.h"
+#include "input_man.h"
+#include "font_man.h"
+#include "fps.h"
+#include "stock_objects.h"
+#include "sprite_renderer.h"
+#include "glow.h"
+#include "mesh_man.h"
+#include "ModuleManager.h"
+#include "mesh_renderer.h"
+#include "tex_man.h"
 
 AFApp* (*AFApp::Generator)();
 

@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include "mesh_man.h"
+#include "mesh_x.h"
 
 MeshMan meshMan;
 

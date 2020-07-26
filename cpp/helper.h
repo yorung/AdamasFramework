@@ -1,3 +1,5 @@
+#pragma once
+
 #define dimof(x) (sizeof(x) / sizeof(x[0]))
 #define arrayparam(x) dimof(x), x
 

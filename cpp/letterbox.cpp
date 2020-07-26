@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include "letterbox.h"
+#include "stock_objects.h"
 
 LetterBox letterBox;
 

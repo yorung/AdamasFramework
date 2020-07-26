@@ -1,3 +1,5 @@
+#pragma once
+
 #include "AFGraphicsDefinitions.inl"
 
 typedef D3D12_INPUT_ELEMENT_DESC InputElement;

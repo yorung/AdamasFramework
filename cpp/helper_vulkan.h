@@ -1,3 +1,5 @@
+#pragma once
+
 #include "AFGraphicsDefinitions.inl"
 
 typedef unsigned short AFIndex;

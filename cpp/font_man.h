@@ -1,3 +1,6 @@
+#pragma once
+#include "dib.h"
+
 class FontMan
 {
 	struct CharCache

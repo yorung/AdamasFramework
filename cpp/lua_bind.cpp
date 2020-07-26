@@ -1,4 +1,10 @@
 #include "stdafx.h"
+#include "sky_man.h"
+#include "voice.h"
+#include "input_man.h"
+#include "sprite_renderer.h"
+#include "mesh_man.h"
+#include "mesh_x.h"
 
 SpriteCommands luaSpriteCommands;
 ViewDesc* luaViewDesc;

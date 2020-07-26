@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "stock_objects.h"
 
 #ifdef __d3d11_h__
 

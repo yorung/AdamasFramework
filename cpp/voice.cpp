@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "voice.h"
 
 const void *RiffFindChunk(const void *img, const char *requestChunkName, int *size)
 {

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "dib.h"
 
 DIB::DIB()
 {

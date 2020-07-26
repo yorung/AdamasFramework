@@ -1,3 +1,5 @@
+#pragma once
+
 void _aflDumpStack(lua_State* L, const char* func, int line);
 #ifndef NDEBUG
 #define aflDumpStack() _aflDumpStack(L, __FUNCTION__, __LINE__)

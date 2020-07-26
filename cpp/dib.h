@@ -1,3 +1,5 @@
+#pragma once
+
 class DIB {
 	int m_w, m_h;
 	int m_pitch;

@@ -1,4 +1,7 @@
 #include "stdafx.h"
+#include "bvh.h"
+#include "debug_renderer.h"
+#include "tex_man.h"
 
 static const char *bvhPerfume[] =
 {

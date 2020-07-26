@@ -1,3 +1,7 @@
+#pragma once
+#include "joint_db.h"
+#include "mesh_x.h"
+
 class DebugBoneRenderer
 {
 	MRID pivotsRenderMeshId;

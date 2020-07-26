@@ -1,4 +1,7 @@
 #include "stdafx.h"
+#include "mesh_renderer.h"
+#include "mesh_x.h"
+#include "tex_man.h"
 
 MeshRenderer meshRenderer;
 

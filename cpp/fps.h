@@ -1,3 +1,5 @@
+#pragma once
+
 class FPS
 {
 	const static int SAMPLE_MAX = 60;

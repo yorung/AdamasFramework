@@ -1,3 +1,5 @@
+#pragma once
+
 inline AFBufferResource afCreateVertexBuffer(int size, const void* buf)
 {
 	return afCreateBuffer(size, buf, AFBT_VERTEX);

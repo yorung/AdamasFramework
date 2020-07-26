@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include "debug_renderer.h"
+#include "tex_man.h"
 
 DebugBoneRenderer debugBoneRenderer;
 DebugShapeRenderer debugShapeRenderer;

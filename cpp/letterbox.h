@@ -1,3 +1,5 @@
+#pragma once
+
 class LetterBox
 {
 	AFRenderStates renderStates;

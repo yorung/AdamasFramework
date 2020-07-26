@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "sprite_renderer.h"
 
 LuaMan luaMan;
 extern SpriteCommands luaSpriteCommands;

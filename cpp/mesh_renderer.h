@@ -1,3 +1,5 @@
+#pragma once
+
 struct Block;
 struct MeshVertex;
 struct MeshColor;

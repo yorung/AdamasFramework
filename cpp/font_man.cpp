@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "font_man.h"
 
 #define TEX_W		512
 #define TEX_H		512

@@ -1,3 +1,8 @@
+#pragma once
+
+#include "joint_db.h"
+#include "mesh_renderer.h"
+
 class Bvh;
 
 class Mesh

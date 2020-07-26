@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include "glow.h"
+#include "stock_objects.h"
 
 Glow glow;
 AFRenderTarget glowMap[6];

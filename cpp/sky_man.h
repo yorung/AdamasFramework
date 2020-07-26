@@ -1,3 +1,5 @@
+#pragma once
+
 class SkyMan
 {
 	AFTexRef texRef;

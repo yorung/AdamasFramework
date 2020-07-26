@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "tex_man.h"
 
 TexMan texMan;
 

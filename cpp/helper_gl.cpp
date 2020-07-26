@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include "stock_objects.h"
+
 #ifdef AF_GLES
 
 static void SetSamplerLayoutByName(GLuint program)

@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include "debug_renderer.h"
+#include "ModuleManager.h"
 
 class Picking : public AFModule
 {

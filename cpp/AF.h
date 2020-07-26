@@ -81,21 +81,3 @@ using Microsoft::WRL::ComPtr;
 
 static const int BONE_MAX = 50;
 
-#include "tex_man.h"
-#include "dib.h"
-#include "fps.h"
-#include "font_man.h"
-#include "sky_man.h"
-#include "glow.h"
-#include "joint_db.h"
-#include "mesh_renderer.h"
-#include "mesh_x.h"
-#include "debug_renderer.h"
-#include "bvh.h"
-#include "mesh_man.h"
-#include "sprite_renderer.h"
-#include "stock_objects.h"
-#include "letterbox.h"
-#include "input_man.h"
-#include "voice.h"
-#include "ModuleManager.h"

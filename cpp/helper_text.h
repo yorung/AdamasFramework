@@ -1,4 +1,6 @@
-﻿#ifdef _MSC_VER
+﻿#pragma once
+
+#ifdef _MSC_VER
 #define aflog printf
 #define stricmp _stricmp
 #else
