@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "ModuleManager.h"
+#include "lua_man.h"
 
 struct Wave
 {

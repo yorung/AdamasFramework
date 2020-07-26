@@ -1,5 +1,7 @@
 #pragma once
 
+static const int BONE_MAX = 50;
+
 class Bvh;
 
 typedef int BONE_ID;

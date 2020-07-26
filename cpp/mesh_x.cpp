@@ -4,6 +4,8 @@
 #include "mesh_x.h"
 #include "tex_man.h"
 
+extern std::string g_type;
+
 static void _enterBrace(char*& p)
 {
 	if (!p) {

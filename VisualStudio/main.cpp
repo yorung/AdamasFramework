@@ -1,6 +1,9 @@
 #include "stdafx.h"
 #include "resource.h"
 #include "input_man.h"
+#include "system_misc.h"
+#include "lua_man.h"
+#include "app.h"
 
 #define MAX_LOADSTRING 100
 

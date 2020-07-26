@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include <lua.hpp>
+#include "af_lua_helpers.h"
 
 void _aflDumpStack(lua_State* L, const char* func, int line)
 {

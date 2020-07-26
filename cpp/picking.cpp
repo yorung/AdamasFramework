@@ -1,6 +1,8 @@
 #include "stdafx.h"
+#include "lua_man.h"
 #include "debug_renderer.h"
 #include "ModuleManager.h"
+#include "system_misc.h"
 
 class Picking : public AFModule
 {

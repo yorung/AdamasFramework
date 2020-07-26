@@ -5,6 +5,8 @@
 #include "sprite_renderer.h"
 #include "mesh_man.h"
 #include "mesh_x.h"
+#include "system_misc.h"
+#include "lua_man.h"
 
 SpriteCommands luaSpriteCommands;
 ViewDesc* luaViewDesc;

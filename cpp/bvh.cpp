@@ -3,6 +3,8 @@
 #include "debug_renderer.h"
 #include "tex_man.h"
 
+extern std::string g_type;
+
 static const char *bvhPerfume[] =
 {
 	"RightWrist",

@@ -1,5 +1,9 @@
 #pragma once
 
+#include <lua.hpp>
+
+#include "af_lua_helpers.h"
+
 class LuaMan
 {
 	lua_State* L;

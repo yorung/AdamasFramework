@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "app.h"
 #include "dev_camera.h"
 #include "debug_renderer.h"
 #include "sky_man.h"
@@ -13,6 +14,8 @@
 #include "ModuleManager.h"
 #include "mesh_renderer.h"
 #include "tex_man.h"
+#include "system_misc.h"
+#include "lua_man.h"
 
 AFApp* (*AFApp::Generator)();
 

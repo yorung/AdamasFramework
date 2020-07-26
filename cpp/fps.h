@@ -1,5 +1,7 @@
 #pragma once
 
+#include <chrono>
+
 class FPS
 {
 	const static int SAMPLE_MAX = 60;

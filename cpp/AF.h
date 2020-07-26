@@ -43,7 +43,6 @@ using Microsoft::WRL::ComPtr;
 #include <string>
 #include <map>
 #include <stack>
-#include <chrono>
 #include <memory>
 #include <limits>
 
@@ -52,7 +51,6 @@ using Microsoft::WRL::ComPtr;
 
 #include "af_math.h"
 
-#include "system_misc.h"
 #include "helper.h"
 #include "helper_text.h"
 
@@ -79,5 +77,4 @@ using Microsoft::WRL::ComPtr;
 
 #include "AFGraphicsCompatibilityLayer.inl"
 
-static const int BONE_MAX = 50;
 

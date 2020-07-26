@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "stock_objects.h"
+#include "system_misc.h"
 
 #ifdef AF_GLES
 

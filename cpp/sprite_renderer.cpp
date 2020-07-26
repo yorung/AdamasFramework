@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "sprite_renderer.h"
+#include "system_misc.h"
 
 SpriteRenderer spriteRenderer;
 

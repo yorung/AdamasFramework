@@ -1,5 +1,8 @@
 #include "stdafx.h"
+#include "lua_man.h"
 #include "sprite_renderer.h"
+#include "system_misc.h"
+#include <chrono>
 
 class Puzzle
 {

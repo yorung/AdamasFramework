@@ -1,7 +1,9 @@
 #include "stdafx.h"
+#include "lua_man.h"
 #include "input_man.h"
 #include "stock_objects.h"
 #include "ModuleManager.h"
+#include "system_misc.h"
 
 struct WaterVert
 {
