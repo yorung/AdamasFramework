@@ -2,10 +2,10 @@
 
 #ifdef __d3d12_h__
 
-static const D3D12_HEAP_PROPERTIES defaultHeapProperties = { D3D12_HEAP_TYPE_DEFAULT, D3D12_CPU_PAGE_PROPERTY_UNKNOWN, D3D12_MEMORY_POOL_UNKNOWN, 1, 1 };
-static const D3D12_HEAP_PROPERTIES uploadHeapProperties = { D3D12_HEAP_TYPE_UPLOAD, D3D12_CPU_PAGE_PROPERTY_UNKNOWN, D3D12_MEMORY_POOL_UNKNOWN, 1, 1 };
-static const float clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
-static const D3D12_RESOURCE_STATES TEXTURE_STATE = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE | D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE;
+static constexpr D3D12_HEAP_PROPERTIES defaultHeapProperties = { D3D12_HEAP_TYPE_DEFAULT, D3D12_CPU_PAGE_PROPERTY_UNKNOWN, D3D12_MEMORY_POOL_UNKNOWN, 1, 1 };
+static constexpr D3D12_HEAP_PROPERTIES uploadHeapProperties = { D3D12_HEAP_TYPE_UPLOAD, D3D12_CPU_PAGE_PROPERTY_UNKNOWN, D3D12_MEMORY_POOL_UNKNOWN, 1, 1 };
+static constexpr float clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+static constexpr D3D12_RESOURCE_STATES TEXTURE_STATE = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE | D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE;
 
 void afSafeDeleteTexture(SRVID& p)
 {
@@ -148,7 +148,7 @@ ComPtr<ID3D12Resource> afCreateBuffer(int size, const void* buf, AFBufferType bu
 
 void afWriteTexture(SRVID tex, const TexDesc& desc, int mipCount, const AFTexSubresourceData datas[])
 {
-	const int maxSubresources = 100;
+	constexpr int maxSubresources = 100;
 	const UINT subResources = mipCount * desc.arraySize;
 	assert(subResources <= maxSubresources);
 	D3D12_PLACED_SUBRESOURCE_FOOTPRINT footprints[maxSubresources];

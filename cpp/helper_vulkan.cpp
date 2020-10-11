@@ -3,11 +3,11 @@
 #ifdef VK_TRUE
 
 #pragma comment(lib, "vulkan-1.lib")
-static const uint32_t descriptorPoolSize = 64;
+static constexpr uint32_t descriptorPoolSize = 64;
 
-static const VkComponentMapping colorComponentMapping = { VK_COMPONENT_SWIZZLE_R, VK_COMPONENT_SWIZZLE_G, VK_COMPONENT_SWIZZLE_B, VK_COMPONENT_SWIZZLE_A };
-static const VkComponentMapping depthComponentMapping = {};
-static const VkClearValue clearValues[2] = { { 0.0f, 0.0f, 0.0f },{ 1.0f, 0u } };
+static constexpr VkComponentMapping colorComponentMapping = { VK_COMPONENT_SWIZZLE_R, VK_COMPONENT_SWIZZLE_G, VK_COMPONENT_SWIZZLE_B, VK_COMPONENT_SWIZZLE_A };
+static constexpr VkComponentMapping depthComponentMapping = {};
+static constexpr VkClearValue clearValues[2] = { { 0.0f, 0.0f, 0.0f },{ 1.0f, 0u } };
 
 DeviceManVK deviceMan;
 
@@ -124,7 +124,7 @@ void afWriteTexture(AFTexRef textureContext, const TexDesc& texDesc, void *image
 
 void afWriteTexture(AFTexRef textureContext, const TexDesc& texDesc, int mipCount, const AFTexSubresourceData datas[])
 {
-	const uint32_t maxSubresources = 100;
+	constexpr uint32_t maxSubresources = 100;
 	const uint32_t subResources = mipCount * texDesc.arraySize;
 	VkBufferImageCopy copyInfo[maxSubresources];
 	assert(subResources <= dimof(copyInfo));
