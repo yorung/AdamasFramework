@@ -1,3 +1,5 @@
+#pragma once
+
 struct RiffHeader
 {
 	char type1[4];

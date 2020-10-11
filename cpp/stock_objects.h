@@ -1,3 +1,5 @@
+#pragma once
+
 class StockObjects
 {
 	AFBufferResource vboFullScr;
