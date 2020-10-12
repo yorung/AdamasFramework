@@ -438,7 +438,7 @@ static VkRenderPass RenderFlagsToRenderPass(uint32_t flags)
 static bool IsPresentModeSupported(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, VkPresentModeKHR presentMode)
 {
 	uint32_t numPresentModes = 0;
-	VkPresentModeKHR presentModes[VK_PRESENT_MODE_RANGE_SIZE_KHR] = {};
+	VkPresentModeKHR presentModes[6] = {};
 	afHandleVKError(vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &numPresentModes, nullptr));
 	assert(numPresentModes <= _countof(presentModes));
 	afHandleVKError(vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &numPresentModes, presentModes));
