@@ -3,7 +3,7 @@
 #include "AFGraphicsDefinitions.inl"
 
 typedef unsigned short AFIndex;
-#define AFIndexTypeToDevice VK_INDEX_TYPE_UINT16
+constexpr VkIndexType AFIndexTypeToDevice = VK_INDEX_TYPE_UINT16;
 
 typedef VkFormat AFFormat;
 #define AFF_INVALID VK_FORMAT_UNDEFINED

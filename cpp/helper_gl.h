@@ -3,7 +3,7 @@
 #include "AFGraphicsDefinitions.inl"
 
 typedef unsigned short AFIndex;
-#define AFIndexTypeToDevice GL_UNSIGNED_SHORT
+constexpr GLenum AFIndexTypeToDevice = GL_UNSIGNED_SHORT;
 
 GLenum _afHandleGLError(const char* file, const char* func, int line, const char* command);
 #define afHandleGLError(command) do{ command; _afHandleGLError(__FILE__, __FUNCTION__, __LINE__, #command); } while(0)

@@ -6,7 +6,7 @@
 ComPtr<ID3DBlob> afCompileHLSL(const char* name, const char* entryPoint, const char* target);
 
 typedef unsigned short AFIndex;
-#define AFIndexTypeToDevice DXGI_FORMAT_R16_UINT
+constexpr DXGI_FORMAT AFIndexTypeToDevice = DXGI_FORMAT_R16_UINT;
 
 inline D3D_PRIMITIVE_TOPOLOGY RenderFlagsToPrimitiveTopology(uint32_t flags)
 {
